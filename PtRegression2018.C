@@ -89,10 +89,9 @@ void PtRegression2018 ( TString myMethodList = "" ) {
       }
    }
    
-   //=================================
-   //Here the preparation phase begins
-   //=================================
-	
+   //===================
+   //Preparation phase 
+   //===================
    // Configure settings for this mode and user
    PtRegression2018_cfg::ConfigureMode( MODE );
    PtRegression2018_cfg::ConfigureUser( USER );
@@ -161,12 +160,11 @@ void PtRegression2018 ( TString myMethodList = "" ) {
    //////////////////////////////////////////////////////////////////////////
    ///  Factories: Use different sets of variables, target, weights, etc. ///
    //////////////////////////////////////////////////////////////////////////
-   
    TString fact_set = "!V:!Silent:Color:DrawProgressBar:AnalysisType=Regression";
    std::vector<TString> var_names; // Holds names of variables for a given factory and permutation
    std::vector<Double_t> var_vals; // Holds values of variables for a given factory and permutation
    TMVA::Factory* nullF = new TMVA::Factory("NULL", out_file, fact_set); // Placeholder factory
-   TMVA::DataLoader* nullL = new TMVA::DataLoader("NULL");                 // Placeholder loader
+   TMVA::DataLoader* nullL = new TMVA::DataLoader("NULL");// Placeholder loader
 
    // Tuple is defined by the factory and dataloader,  followed by a name, 
    // var name and value vectors, and hex bit masks for input variables.
@@ -232,9 +230,6 @@ void PtRegression2018 ( TString myMethodList = "" ) {
      } // End loop: for (int iTarg = 0; iTarg < TARG_VARS.size(); iTarg++)
    } // End loop: for (int iWgt = 0; iWgt < EVT_WGTS.size(); iWgt++)
 
-
-
-
    // Initialize factories and dataloaders
    for (UInt_t iFact = 0; iFact < factories.size(); iFact++) {
      std::get<0>(factories.at(iFact)) = new TMVA::Factory( std::get<2>(factories.at(iFact)), out_file, fact_set );
@@ -251,7 +246,6 @@ void PtRegression2018 ( TString myMethodList = "" ) {
    /////////////////////////////////////////////////////////
    ///  Input variables: used in BDT to estimate the pT  ///
    /////////////////////////////////////////////////////////
-   
    in_vars.push_back( MVA_var( "theta",     "Track #theta",          "int", 'I', -88 ) ); // 0x0000 0001
    in_vars.push_back( MVA_var( "St1_ring2", "St 1 hit in ring 2",    "int", 'I', -88 ) ); // 0x0000 0002  
    in_vars.push_back( MVA_var( "dPhi_12",   "#phi(2) - #phi(1)",     "int", 'I', -88 ) ); // 0x0000 0004
@@ -298,7 +292,6 @@ void PtRegression2018 ( TString myMethodList = "" ) {
    ////////////////////////////////////////////////////////////
    //  Target variable: true muon pT, or 1/pT, or log2(pT)  ///
    ////////////////////////////////////////////////////////////
-   
    targ_vars.push_back( MVA_var( "GEN_pt_trg",      "GEN p_{T} for trigger",               "GeV",      'F', -99 ) );
    targ_vars.push_back( MVA_var( "inv_GEN_pt_trg",  "1 / GEN muon p_{T} for trigger",      "GeV^{-1}", 'F', -99 ) );
    targ_vars.push_back( MVA_var( "log2_GEN_pt_trg", "log_{2}(GEN muon p_{T} for trigger)", "GeV",      'F', -99 ) );
@@ -308,40 +301,24 @@ void PtRegression2018 ( TString myMethodList = "" ) {
    /////////////////////////////////////////////////////////////////////////////
    ///  Spectator variables: not used in training, but saved in output tree  ///
    /////////////////////////////////////////////////////////////////////////////
-   
    spec_vars.push_back( MVA_var( "GEN_pt",       "GEN p_{T}",               "GeV",      'F', -77 ) );
    spec_vars.push_back( MVA_var( "EMTF_pt",      "EMTF p_{T}",              "GeV",      'F', -77 ) );
-   // spec_vars.push_back( MVA_var( "inv_GEN_pt",   "1 / GEN muon p_{T}",      "GeV^{-1}", 'F', -77 ) );
-   // spec_vars.push_back( MVA_var( "inv_EMTF_pt",  "1 / EMTF p_{T}",          "GeV^{-1}", 'F', -77 ) );
-   // spec_vars.push_back( MVA_var( "log2_GEN_pt",  "log_{2}(GEN muon p_{T})", "GeV",      'F', -77 ) );
-   // spec_vars.push_back( MVA_var( "log2_EMTF_pt", "log_{2}(EMTF p_{T})",     "GeV",      'F', -77 ) );
-
    spec_vars.push_back( MVA_var( "GEN_eta",       "GEN #eta",                "", 'F', -77 ) );
    spec_vars.push_back( MVA_var( "EMTF_eta",      "EMTF #eta",               "", 'F', -77 ) );
    spec_vars.push_back( MVA_var( "TRK_eta",       "Track #eta",              "", 'F', -77 ) );
-   // spec_vars.push_back( MVA_var( "GEN_phi",       "GEN #phi",                "", 'F', -77 ) );
-   // spec_vars.push_back( MVA_var( "EMTF_phi",      "EMTF #phi",               "", 'F', -77 ) );
-   // spec_vars.push_back( MVA_var( "TRK_phi",       "Track #phi",              "", 'F', -77 ) );
    spec_vars.push_back( MVA_var( "GEN_charge",    "GEN charge",              "", 'I', -77 ) );
    spec_vars.push_back( MVA_var( "EMTF_charge",   "EMTF charge",             "", 'I', -77 ) );
-
    spec_vars.push_back( MVA_var( "EMTF_mode",     "EMTF mode",                   "", 'I', -77 ) );
    spec_vars.push_back( MVA_var( "EMTF_mode_CSC", "EMTF CSC-only mode",          "", 'I', -77 ) );
    spec_vars.push_back( MVA_var( "EMTF_mode_RPC", "EMTF RPC-only",               "", 'I', -77 ) );
    spec_vars.push_back( MVA_var( "TRK_mode",      "Track mode",                  "", 'I', -77 ) );
    spec_vars.push_back( MVA_var( "TRK_mode_CSC",  "Track CSC-only mode",         "", 'I', -77 ) );
    spec_vars.push_back( MVA_var( "TRK_mode_RPC",  "Track RPC-only mode",         "", 'I', -77 ) );
-   // spec_vars.push_back( MVA_var( "SHRD_mode",     "EMTF-track shared mode",      "", 'I', -77 ) );
-   // spec_vars.push_back( MVA_var( "SHRD_mode_CSC", "EMTF-track shared CSC mode",  "", 'I', -77 ) );
-   // spec_vars.push_back( MVA_var( "SHRD_mode_RPC", "EMTF-track shared RPC mode",  "", 'I', -77 ) );
-
    spec_vars.push_back( MVA_var( "dPhi_sign",  "#phi(B) - #phi(A) sign",    "", 'I', -77 ) );
-   // spec_vars.push_back( MVA_var( "nTRK",       "Number of tracks built",    "", 'I', -77 ) );
    spec_vars.push_back( MVA_var( "evt_weight", "Event weight for training", "", 'F', -77 ) );
 
-
-   assert( in_vars.size() > 0 );   // You need at least one input variable
-   assert( targ_vars.size() > 0 ); // You need at least one target variable
+   assert( in_vars.size() > 0 );   // Need at least one input variable
+   assert( targ_vars.size() > 0 ); // Need at least one target variable
    // Order is important: input variables first, then target, then specator
    all_vars.insert( all_vars.end(), in_vars.begin(), in_vars.end() );
    all_vars.insert( all_vars.end(), targ_vars.begin(), targ_vars.end() );
