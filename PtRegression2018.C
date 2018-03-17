@@ -275,10 +275,10 @@ void PtRegression2018 ( TString myMethodList = "" ) {
    in_vars.push_back( MVA_var( "dTh_24",    "#theta(4) - #theta(2)", "int", 'I', -88 ) ); // 0x0800 0000
 
    if (USE_RPC) {
-     in_vars.push_back( MVA_var( "RPC_1",     "St 1 hit is RPC",       "int", 'I', -88 ) ); // 0x1000 0000
-     in_vars.push_back( MVA_var( "RPC_2",     "St 2 hit is RPC",       "int", 'I', -88 ) ); // 0x2000 0000
-     in_vars.push_back( MVA_var( "RPC_3",     "St 3 hit is RPC",       "int", 'I', -88 ) ); // 0x4000 0000
-     in_vars.push_back( MVA_var( "RPC_4",     "St 4 hit is RPC",       "int", 'I', -88 ) ); // 0x8000 0000
+     in_vars.push_back( MVA_var( "RPC_1",   "St 1 hit is RPC",       "int", 'I', -88 ) ); // 0x1000 0000
+     in_vars.push_back( MVA_var( "RPC_2",   "St 2 hit is RPC",       "int", 'I', -88 ) ); // 0x2000 0000
+     in_vars.push_back( MVA_var( "RPC_3",   "St 3 hit is RPC",       "int", 'I', -88 ) ); // 0x4000 0000
+     in_vars.push_back( MVA_var( "RPC_4",   "St 4 hit is RPC",       "int", 'I', -88 ) ); // 0x8000 0000
    }
 
    ////////////////////////////////////////////////////////////
@@ -293,21 +293,21 @@ void PtRegression2018 ( TString myMethodList = "" ) {
    /////////////////////////////////////////////////////////////////////////////
    ///  Spectator variables: not used in training, but saved in output tree  ///
    /////////////////////////////////////////////////////////////////////////////
-   spec_vars.push_back( MVA_var( "GEN_pt",       "GEN p_{T}",               "GeV",      'F', -77 ) );
-   spec_vars.push_back( MVA_var( "EMTF_pt",      "EMTF p_{T}",              "GeV",      'F', -77 ) );
-   spec_vars.push_back( MVA_var( "GEN_eta",       "GEN #eta",                "", 'F', -77 ) );
-   spec_vars.push_back( MVA_var( "EMTF_eta",      "EMTF #eta",               "", 'F', -77 ) );
-   spec_vars.push_back( MVA_var( "TRK_eta",       "Track #eta",              "", 'F', -77 ) );
-   spec_vars.push_back( MVA_var( "GEN_charge",    "GEN charge",              "", 'I', -77 ) );
-   spec_vars.push_back( MVA_var( "EMTF_charge",   "EMTF charge",             "", 'I', -77 ) );
-   spec_vars.push_back( MVA_var( "EMTF_mode",     "EMTF mode",                   "", 'I', -77 ) );
-   spec_vars.push_back( MVA_var( "EMTF_mode_CSC", "EMTF CSC-only mode",          "", 'I', -77 ) );
-   spec_vars.push_back( MVA_var( "EMTF_mode_RPC", "EMTF RPC-only",               "", 'I', -77 ) );
-   spec_vars.push_back( MVA_var( "TRK_mode",      "Track mode",                  "", 'I', -77 ) );
-   spec_vars.push_back( MVA_var( "TRK_mode_CSC",  "Track CSC-only mode",         "", 'I', -77 ) );
-   spec_vars.push_back( MVA_var( "TRK_mode_RPC",  "Track RPC-only mode",         "", 'I', -77 ) );
-   spec_vars.push_back( MVA_var( "dPhi_sign",  "#phi(B) - #phi(A) sign",    "", 'I', -77 ) );
-   spec_vars.push_back( MVA_var( "evt_weight", "Event weight for training", "", 'F', -77 ) );
+   spec_vars.push_back( MVA_var( "GEN_pt",        "GEN p_{T}",                 "GeV", 'F', -77 ) );
+   spec_vars.push_back( MVA_var( "EMTF_pt",       "EMTF p_{T}",                "GeV", 'F', -77 ) );
+   spec_vars.push_back( MVA_var( "GEN_eta",       "GEN #eta",                  "",    'F', -77 ) );
+   spec_vars.push_back( MVA_var( "EMTF_eta",      "EMTF #eta",                 "",    'F', -77 ) );
+   spec_vars.push_back( MVA_var( "TRK_eta",       "Track #eta",                "",    'F', -77 ) );
+   spec_vars.push_back( MVA_var( "GEN_charge",    "GEN charge",                "",    'I', -77 ) );
+   spec_vars.push_back( MVA_var( "EMTF_charge",   "EMTF charge",               "",    'I', -77 ) );
+   spec_vars.push_back( MVA_var( "EMTF_mode",     "EMTF mode",                 "",    'I', -77 ) );
+   spec_vars.push_back( MVA_var( "EMTF_mode_CSC", "EMTF CSC-only mode",        "",    'I', -77 ) );
+   spec_vars.push_back( MVA_var( "EMTF_mode_RPC", "EMTF RPC-only",             "",    'I', -77 ) );
+   spec_vars.push_back( MVA_var( "TRK_mode",      "Track mode",                "",    'I', -77 ) );
+   spec_vars.push_back( MVA_var( "TRK_mode_CSC",  "Track CSC-only mode",       "",    'I', -77 ) );
+   spec_vars.push_back( MVA_var( "TRK_mode_RPC",  "Track RPC-only mode",       "",    'I', -77 ) );
+   spec_vars.push_back( MVA_var( "dPhi_sign",     "#phi(B) - #phi(A) sign",    "",    'I', -77 ) );
+   spec_vars.push_back( MVA_var( "evt_weight",    "Event weight for training", "",    'F', -77 ) );
 
    assert( in_vars.size() > 0 );   // Need at least one input variable
    assert( targ_vars.size() > 0 ); // Need at least one target variable
