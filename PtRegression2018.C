@@ -1162,6 +1162,6 @@ int main( int argc, char** argv )
       if (!methodList.IsNull()) methodList += TString(",");
       methodList += regMethod;
    }
-   PtRegression_Apr_2017(methodList);
+   PtRegression_2018(methodList);
    return 0;
 }
