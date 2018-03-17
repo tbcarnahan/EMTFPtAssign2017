@@ -98,7 +98,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
    // ---------------------------------------------------------------
 
    std::cout << std::endl;
-   std::cout << "==> Start PtRegression_Apr_2017" << std::endl;
+   std::cout << "==> Start PtRegression2018" << std::endl;
 
    // Select methods (don't look at this code - not of interest)
    std::vector<TString> mlist;
@@ -124,8 +124,8 @@ void PtRegression2018 ( TString myMethodList = "" ) {
    // Here the preparation phase begins
 
    // Configure settings for this mode and user
-   PtRegression_Apr_2017_cfg::ConfigureMode( MODE );
-   PtRegression_Apr_2017_cfg::ConfigureUser( USER );
+   PtRegression2018_cfg::ConfigureMode( MODE );
+   PtRegression2018_cfg::ConfigureUser( USER );
 
    // Create a new root output file
    TString out_file_str;
