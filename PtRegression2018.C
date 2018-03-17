@@ -965,8 +965,8 @@ void PtRegression2018 ( TString myMethodList = "" ) {
        } // End loop: for (UInt_t iMu = 0; iMu < nMuons; iMu++)
        if (isMC) iEvt += 1;
        else iEvtZB += 1;
-     } // End loop: for (UInt_t jEvt = 0; jEvt < in_chain->GetEntries(); jEvt++)
-   } // End loop: for (int iCh = 0; iCh < in_chains.size(); iCh++) {
+     } // End loop: for jEvt 
+   } // End loop: for iTrCh
 
    std::cout << "******* Made it out of the event loop *******" << std::endl;
 
