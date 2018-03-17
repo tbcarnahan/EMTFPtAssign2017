@@ -1,6 +1,4 @@
 // *** Default user settings *** //
-TString OUT_DIR_NAME  = ".";  // Directory for output ROOT file
-TString OUT_FILE_NAME = "PtRegression2018";  // Name base for output ROOT file
 TString EOS_DIR_NAME  = "root://eoscms.cern.ch//store/user/abrinke1/EMTF/Emulator/ntuples";  // Input directory in 
 TString in_dir = "Ntuples/"; 
 TString SingleMu_files[3] = { 
@@ -14,6 +12,8 @@ TString ZeroBias_files[4] = {
 		            "NTuple_ZeroBias3_FlatNtuple_Run_306091_2018_03_02_ZB3.root", 
 		 	    "NTuple_ZeroBias4_FlatNtuple_Run_306091_2018_03_02_ZB4.root"
 };
+TString OUT_DIR_NAME  = ".";  // Directory for output ROOT file
+TString OUT_FILE_NAME = "PtRegression2018";  // Name base for output ROOT file
 
 namespace PtRegression2018_cfg {
   
