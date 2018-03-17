@@ -1,7 +1,7 @@
 // *** Default user settings *** //
 TString OUT_DIR_NAME  = ".";  // Directory for output ROOT file
-TString OUT_FILE_NAME = "PtRegression_Apr_2017";  // Name base for output ROOT file
-TString EOS_DIR_NAME  = "root://eoscms.cern.ch//store/user/abrinke1/EMTF/Emulator/ntuples";  // Input directory in eos
+TString OUT_FILE_NAME = "PtRegression2018";  // Name base for output ROOT file
+TString EOS_DIR_NAME  = "root://eoscms.cern.ch//store/user/abrinke1/EMTF/Emulator/ntuples";  // Input directory in 
 
 namespace PtRegression2018_cfg {
   
@@ -9,12 +9,10 @@ namespace PtRegression2018_cfg {
     
     std::cout << "\nConfiguring PtRegression_Apr_2017 code for user " << USER << std::endl;
     
-    if (USER == "AWB") {
-      EOS_DIR_NAME = "root://eoscms.cern.ch//store/user/abrinke1/EMTF/Emulator/ntuples";  // Input directory in eos
-      OUT_DIR_NAME = "/afs/cern.ch/work/a/abrinke1/public/EMTF/PtAssign2017/files";
-      OUT_FILE_NAME = "PtRegression_Apr_2017_06_05_invPtTarg_invPtWgt";
-    }
-    if (USER == "JTR") {
+    if (USER == "Wei") {
+      EOS_DIR_NAME = "/home/ws13/TMVA/TMVA/INPUT/Ntuples";  // Input directory in eos
+      OUT_DIR_NAME = "/home/ws13/TMVA/TMVA/EMTFPtAssign2018";
+      OUT_FILE_NAME = "PtRegression2018";
     }
     
   } // End function: inline void ConfigureUser()    
