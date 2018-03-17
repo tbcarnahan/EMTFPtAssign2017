@@ -50,4 +50,4 @@ namespace PtRegression2018_cfg {
     
   }  // End function: inline void ConfigureMode( const int MODE )
 
-} // End namespace PtRegression2018
+} // End namespace PtRegression2018_cfg
