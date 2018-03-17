@@ -101,10 +101,11 @@ void PtRegression2018 ( TString myMethodList = "" ) {
    // Create a new root output file
    TString out_file_str;
    TString bit_str = (BIT_COMP ? "bitCompr" : "noBitCompr");
-
+   TString RPC_str = (USE_RPC  ? "RPC"      : "noRPC");
+	
    out_file_str.Form( "%s/%s_MODE_%d_%s.root", 
 		      OUT_DIR_NAME.Data(), OUT_FILE_NAME.Data(), 
-		      MODE, bit_str.Data() );
+		      MODE, bit_str.Data(), RPC_str.Data() );
 
    TFile* out_file = TFile::Open( out_file_str, "RECREATE" );
 
