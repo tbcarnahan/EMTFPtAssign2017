@@ -7,7 +7,7 @@ namespace PtRegression2018_cfg {
   
   inline void ConfigureUser( const TString USER ) {
     
-    std::cout << "\nConfiguring PtRegression_Apr_2017 code for user " << USER << std::endl;
+    std::cout << "\nConfiguring PtRegression2018 code for user " << USER << std::endl;
     
     if (USER == "Wei") {
       EOS_DIR_NAME = "/home/ws13/TMVA/TMVA/INPUT/Ntuples";  // Input directory in eos
