@@ -51,12 +51,8 @@ void PtRegression2018 ( TString myMethodList = "" ) {
    ///  USER choose MVA  ///
    /////////////////////////
    //=================================
-   // Linear Discriminant Analysis
-   Use["LD"]		  = 0;
-   
    // Neural Network
    Use["MLP"]             = 0;
-   Use["DNN"]             = 0;
    
    // Support Vector Machine
    Use["SVM"]             = 0;
@@ -1013,12 +1009,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
      
      //==================
      // Book MVA methods
-     //==================
-     // Linear discriminant
-     if (Use["LD"])
-       factX->BookMethod( loadX,  TMVA::Types::kLD, "LD",
-			  "!H:!V:VarTransform=None" );
-     
+     //==================    
      // Neural network (MLP)
      if (Use["MLP"])
        factX->BookMethod( loadX,  TMVA::Types::kMLP, "MLP", (string)
@@ -1026,34 +1017,10 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 			  "TestRate=6:TrainingMethod=BFGS:Sampling=0.3:SamplingEpoch=0.8:"+
 			  "ConvergenceImprove=1e-6:ConvergenceTests=15:!UseRegulator" );
      
-     if (Use["DNN"])
-       {
-	 TString layoutString ("Layout=TANH|100,LINEAR");
-	 
-	 TString training0 ( (string) "LearningRate=1e-5,Momentum=0.5,Repetitions=1,"+
-			     "ConvergenceSteps=500,BatchSize=50,TestRepetitions=7,WeightDecay=0.01,"+
-			     "Regularization=NONE,DropConfig=0.5+0.5+0.5+0.5,DropRepetitions=2");
-	 TString training1 ( (string) "LearningRate=1e-5,Momentum=0.9,Repetitions=1,"+
-			     "ConvergenceSteps=170,BatchSize=30,TestRepetitions=7,WeightDecay=0.01,"+
-			     "Regularization=L2,DropConfig=0.1+0.1+0.1,DropRepetitions=1");
-	 TString training2 ( (string) "LearningRate=1e-5,Momentum=0.3,Repetitions=1,ConvergenceSteps=150,"+
-			     "BatchSize=40,TestRepetitions=7,WeightDecay=0.01,Regularization=NONE");
-	 TString training3 ( (string) "LearningRate=1e-6,Momentum=0.1,Repetitions=1,ConvergenceSteps=500,"+
-			     "BatchSize=100,TestRepetitions=7,WeightDecay=0.0001,Regularization=NONE"); 
-	 TString trainingStrategyString ("TrainingStrategy=");
-	 trainingStrategyString += training0 + "|" + training1 + "|" + training2 + "|" + training3;
-	 
-	 TString nnOptions ("!H:V:ErrorStrategy=SUMOFSQUARES:VarTransform=G:WeightInitialization=XAVIERUNIFORM");
-	 nnOptions.Append (":"); nnOptions.Append (layoutString);
-	 nnOptions.Append (":"); nnOptions.Append (trainingStrategyString);
-	 
-	 factX->BookMethod(loadX, TMVA::Types::kDNN, "DNN", nnOptions ); // NN
-       }
-
      // Support Vector Machine
      if (Use["SVM"])
        factX->BookMethod( loadX,  TMVA::Types::kSVM, "SVM", "Gamma=0.25:Tol=0.001:VarTransform=Norm" );
-     
+	   
      // Boosted Decision Trees
      // AWB settings - AbsoluteDeviation
      if (Use["BDTG_AWB"]) // Optimized settings
