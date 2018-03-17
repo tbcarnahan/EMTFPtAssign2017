@@ -2,9 +2,9 @@
 const TString USER = "Wei";  // Settings applied in User.h
 
 // *** Events to process *** //
-const int MAX_EVT    =  4000000;  // Number of events to process      
-const int MAX_TR     =  2000000;  // Number of events for training 
-const int REPORT_EVT =    10000;  // Report every Nth event during processing
+const int MAX_TR = 2000000;  // Number of events for training 
+const int MAX_TE = 4000000;  // Number of events for test   
+const int REPORT_EVT = 10000;  // Report every Nth event during processing
 
 // *** Track-building settings *** //
 const int MODE      = 15;     // Track mode to build - settings applied in Modes.h
