@@ -2,16 +2,9 @@
 const TString USER = "Wei";  // Settings applied in User.h
 
 // *** Events to process *** //
-const int MAX_EVT    =  4000000;  // Number of MC events to process          (4M default for mode 15, 12M available)
-const int MAX_TR     =  2000000;  // Number of MC events to use for training (2M default for mode 15)
+const int MAX_EVT    =  4000000;  // Number of events to process      
+const int MAX_TR     =  2000000;  // Number of events for training 
 const int REPORT_EVT =    10000;  // Report every Nth event during processing
-const int MAX_ZB_FIL =       50;  // Number of ZeroBias files to include (~200 CSC-only, ~30 with RPC)
-
-/* // // ***** Test settings ***** // // */
-/* const int MAX_EVT    =  40000;  // Number of MC events to process */
-/* const int MAX_TR     =  20000;  // Number of MC events to use for training */
-/* const int REPORT_EVT =   1000;  // Report every Nth event during processing */
-/* const int MAX_ZB_FIL =      3;  // Number of ZeroBias files to include */
 
 // *** Track-building settings *** //
 const int MODE      = 15;     // Track mode to build - settings applied in Modes.h
