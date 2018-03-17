@@ -216,9 +216,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
        } else if (MODE ==  3) {
 	 // BASELINE mode  3 - dPhi34, theta, FR3/4, dTh12, bend3/4, RPC 3/4
 	 factories.push_back( std::make_tuple( nullF, nullL, factName, var_names, var_vals, 0xc100cc11) );
-       }
-
-       else if   (MODE == 0) {
+       } else if (MODE == 0) {
 	 // Null track, for testing EMTF performance
 	 factories.push_back( std::make_tuple( nullF, nullL, factName, var_names, var_vals, 0xc0000001) );
        }
@@ -233,15 +231,14 @@ void PtRegression2018 ( TString myMethodList = "" ) {
    }
 
    // Defined in interface/MVA_helper.h
-   // MVA_var(TString name, TString descr, TString unit, TString type, Double_t def_val)
    std::vector<MVA_var> in_vars;   // All input variables
    std::vector<MVA_var> targ_vars; // All target variables (should only define 1, unless using MLP)
    std::vector<MVA_var> spec_vars; // All spectator variables
    std::vector<MVA_var> all_vars;  // All variables
    
-   /////////////////////////////////////////////////////////
-   ///  Input variables: used in BDT to estimate the pT  ///
-   /////////////////////////////////////////////////////////
+   /////////////////////////
+   ///  Input variables  ///
+   /////////////////////////
    in_vars.push_back( MVA_var( "theta",     "Track #theta",          "int", 'I', -88 ) ); // 0x0000 0001
    in_vars.push_back( MVA_var( "St1_ring2", "St 1 hit in ring 2",    "int", 'I', -88 ) ); // 0x0000 0002  
    in_vars.push_back( MVA_var( "dPhi_12",   "#phi(2) - #phi(1)",     "int", 'I', -88 ) ); // 0x0000 0004
@@ -284,7 +281,6 @@ void PtRegression2018 ( TString myMethodList = "" ) {
      in_vars.push_back( MVA_var( "RPC_4",     "St 4 hit is RPC",       "int", 'I', -88 ) ); // 0x8000 0000
    }
 
-
    ////////////////////////////////////////////////////////////
    //  Target variable: true muon pT, or 1/pT, or log2(pT)  ///
    ////////////////////////////////////////////////////////////
@@ -319,7 +315,6 @@ void PtRegression2018 ( TString myMethodList = "" ) {
    all_vars.insert( all_vars.end(), in_vars.begin(), in_vars.end() );
    all_vars.insert( all_vars.end(), targ_vars.begin(), targ_vars.end() );
    if (SPEC_VARS) all_vars.insert( all_vars.end(), spec_vars.begin(), spec_vars.end() );
-
 
    // Fill each factory with the correct set of variables
    for (UInt_t iFact = 0; iFact < factories.size(); iFact++) {
@@ -363,7 +358,6 @@ void PtRegression2018 ( TString myMethodList = "" ) {
        std::get<4>(factories.at(iFact)).push_back( v.def_val );
      }
    } // End loop: for (UInt_t iFact = 0; iFact < factories.size(); iFact++)
-
 
    std::cout << "\n******* About to loop over chains *******" << std::endl;
    UInt_t iEvt = 0;
