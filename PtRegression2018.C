@@ -1,8 +1,8 @@
-/////////////////////////////////////////////////////////////////////
-///  pT Regression with 2017 data for 2018 EMTF pT assignment     ///
-///                  Wei Shi                                      ///
-///  Adapted from PtRegression_Apr_2017.C                         ///        
-/////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+///  pT Regression with 2017 data for 2018 EMTF pT assignment  ///
+///                  Wei Shi                                   ///
+///  Adapted from PtRegression_Apr_2017.C                      ///        
+//////////////////////////////////////////////////////////////////
 #include <cstdlib>
 #include <iostream>
 #include <map>
@@ -27,11 +27,11 @@
 #include "src/PtLutVarCalc.cc"
 
 // Configuration settings
-#include "configs/PtRegression2018/Standard.h" // Settings that are not likely to change
-#include "configs/PtRegression2018/General.h"  // General settings relevant for all modes
-#include "configs/PtRegression2018/User.h"     // Specific settings for each user
-#include "configs/PtRegression2018/Modes.h"    // Specific settigns for each mode
-#include "configs/PtRegression2018/Read_FlatNtuple.h" //Read 2017 data Ntuple, make sure it's up-to-date 
+#include "configs/PtRegression2018/Standard.h" // Constants
+#include "configs/PtRegression2018/General.h"  // Settings for all modes
+#include "configs/PtRegression2018/User.h"     // User specific setting
+#include "configs/PtRegression2018/Modes.h"    // Mode specific settign
+#include "configs/PtRegression2018/Read_FlatNtuple.h" //Make sure it's up-to-date 
 
 //////////////////////////////////
 ///  Main executable function  ///
