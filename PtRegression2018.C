@@ -1086,15 +1086,6 @@ void PtRegression2018 ( TString myMethodList = "" ) {
      
      if (Use["DNN"])
        {
-	 
-	 // TString layoutString ("Layout=TANH|(N+100)*2,LINEAR");
-	 // TString layoutString ("Layout=SOFTSIGN|100,SOFTSIGN|50,SOFTSIGN|20,LINEAR");
-	 // TString layoutString ("Layout=RELU|300,RELU|100,RELU|30,RELU|10,LINEAR");
-	 // TString layoutString ("Layout=SOFTSIGN|50,SOFTSIGN|30,SOFTSIGN|20,SOFTSIGN|10,LINEAR");
-	 // TString layoutString ("Layout=TANH|50,TANH|30,TANH|20,TANH|10,LINEAR");
-	 // TString layoutString ("Layout=SOFTSIGN|50,SOFTSIGN|20,LINEAR");
-	 // TString layoutString ("Layout=TANH|100,TANH|30,LINEAR");
-
 	 TString layoutString ("Layout=TANH|100,LINEAR");
 	 
 	 TString training0 ( (string) "LearningRate=1e-5,Momentum=0.5,Repetitions=1,"+
@@ -1106,24 +1097,16 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	 TString training2 ( (string) "LearningRate=1e-5,Momentum=0.3,Repetitions=1,ConvergenceSteps=150,"+
 			     "BatchSize=40,TestRepetitions=7,WeightDecay=0.01,Regularization=NONE");
 	 TString training3 ( (string) "LearningRate=1e-6,Momentum=0.1,Repetitions=1,ConvergenceSteps=500,"+
-			     "BatchSize=100,TestRepetitions=7,WeightDecay=0.0001,Regularization=NONE");
-	 
+			     "BatchSize=100,TestRepetitions=7,WeightDecay=0.0001,Regularization=NONE"); 
 	 TString trainingStrategyString ("TrainingStrategy=");
 	 trainingStrategyString += training0 + "|" + training1 + "|" + training2 + "|" + training3;
 	 
-	 
-	 // TString trainingStrategyString ( (string) "TrainingStrategy=LearningRate=1e-1,Momentum=0.3,"+
-	 // 				  "Repetitions=3,ConvergenceSteps=20,BatchSize=30,TestRepetitions=7,"+
-	 // 				  "WeightDecay=0.0,L1=false,DropFraction=0.0,DropRepetitions=5");
-	 
 	 TString nnOptions ("!H:V:ErrorStrategy=SUMOFSQUARES:VarTransform=G:WeightInitialization=XAVIERUNIFORM");
-	 // TString nnOptions ("!H:V:VarTransform=Normalize:ErrorStrategy=CHECKGRADIENTS");
 	 nnOptions.Append (":"); nnOptions.Append (layoutString);
 	 nnOptions.Append (":"); nnOptions.Append (trainingStrategyString);
 	 
 	 factX->BookMethod(loadX, TMVA::Types::kDNN, "DNN", nnOptions ); // NN
        }
-
 
      // Support Vector Machine
      if (Use["SVM"])
@@ -1156,80 +1139,16 @@ void PtRegression2018 ( TString myMethodList = "" ) {
        factX->BookMethod( loadX, TMVA::Types::kBDT, "BDTG_AWB_Sq", (string)
 			  "!H:!V:NTrees=400::BoostType=Grad:Shrinkage=0.1:nCuts=1000:MaxDepth=5:MinNodeSize=0.000001:"+
 			  "RegressionLossFunctionBDTG=LeastSquares" );
-
      if (Use["BDTG_AWB_lite"]) // Fast, simple BDT
        factX->BookMethod( loadX, TMVA::Types::kBDT, "BDTG_AWB_lite", (string)
 			  "!H:!V:NTrees=40::BoostType=Grad:Shrinkage=0.1:nCuts=1000:MaxDepth=3:MinNodeSize=0.01:"+
 			  "RegressionLossFunctionBDTG=AbsoluteDeviation" );
-
-     if (Use["BDTG_AWB_50_trees"])
-       factX->BookMethod( loadX, TMVA::Types::kBDT, "BDTG_AWB_50_trees", (string)
-			  "!H:!V:NTrees=50::BoostType=Grad:Shrinkage=0.1:nCuts=1000:MaxDepth=3:MinNodeSize=0.001:"+
-			  "RegressionLossFunctionBDTG=AbsoluteDeviation" );
-     if (Use["BDTG_AWB_100_trees"])
-       factX->BookMethod( loadX, TMVA::Types::kBDT, "BDTG_AWB_100_trees", (string)
-			  "!H:!V:NTrees=100::BoostType=Grad:Shrinkage=0.1:nCuts=1000:MaxDepth=3:MinNodeSize=0.001:"+
-			  "RegressionLossFunctionBDTG=AbsoluteDeviation" );
-     if (Use["BDTG_AWB_200_trees"])
-       factX->BookMethod( loadX, TMVA::Types::kBDT, "BDTG_AWB_200_trees", (string)
-			  "!H:!V:NTrees=200::BoostType=Grad:Shrinkage=0.1:nCuts=1000:MaxDepth=3:MinNodeSize=0.001:"+
-			  "RegressionLossFunctionBDTG=AbsoluteDeviation" );
-     if (Use["BDTG_AWB_400_trees"])
-       factX->BookMethod( loadX, TMVA::Types::kBDT, "BDTG_AWB_400_trees", (string)
-			  "!H:!V:NTrees=400::BoostType=Grad:Shrinkage=0.1:nCuts=1000:MaxDepth=3:MinNodeSize=0.001:"+
-			  "RegressionLossFunctionBDTG=AbsoluteDeviation" );
-     if (Use["BDTG_AWB_800_trees"])
-       factX->BookMethod( loadX, TMVA::Types::kBDT, "BDTG_AWB_800_trees", (string)
-			  "!H:!V:NTrees=800::BoostType=Grad:Shrinkage=0.1:nCuts=1000:MaxDepth=3:MinNodeSize=0.001:"+
-			  "RegressionLossFunctionBDTG=AbsoluteDeviation" );
-     
-     if (Use["BDTG_AWB_3_deep"])
-       factX->BookMethod( loadX, TMVA::Types::kBDT, "BDTG_AWB_3_deep", (string)
-			  "!H:!V:NTrees=100::BoostType=Grad:Shrinkage=0.1:nCuts=1000:MaxDepth=3:MinNodeSize=0.001:"+
-			  "RegressionLossFunctionBDTG=AbsoluteDeviation" );
-     if (Use["BDTG_AWB_4_deep"])
-       factX->BookMethod( loadX, TMVA::Types::kBDT, "BDTG_AWB_4_deep", (string)
-			  "!H:!V:NTrees=100::BoostType=Grad:Shrinkage=0.1:nCuts=1000:MaxDepth=4:MinNodeSize=0.001:"+
-			  "RegressionLossFunctionBDTG=AbsoluteDeviation" );
-     if (Use["BDTG_AWB_5_deep"])
-       factX->BookMethod( loadX, TMVA::Types::kBDT, "BDTG_AWB_5_deep", (string)
-			  "!H:!V:NTrees=100::BoostType=Grad:Shrinkage=0.1:nCuts=1000:MaxDepth=5:MinNodeSize=0.001:"+
-			  "RegressionLossFunctionBDTG=AbsoluteDeviation" );
-     if (Use["BDTG_AWB_6_deep"])
-       factX->BookMethod( loadX, TMVA::Types::kBDT, "BDTG_AWB_6_deep", (string)
-			  "!H:!V:NTrees=100::BoostType=Grad:Shrinkage=0.1:nCuts=1000:MaxDepth=6:MinNodeSize=0.001:"+
-			  "RegressionLossFunctionBDTG=AbsoluteDeviation" );
-     
      // Default TMVA settings with LeastSquares loss function
      if (Use["BDTG_LeastSq"])
        factX->BookMethod( loadX, TMVA::Types::kBDT, "BDTG_LeastSq", (string)
 			  "!H:!V:NTrees=2000::BoostType=Grad:Shrinkage=0.1:UseBaggedBoost:"+
 			  "BaggedSampleFraction=0.5:nCuts=20:MaxDepth=3:"+
 			  "RegressionLossFunctionBDTG=LeastSquares");
-     
-     // Factory settings from Andrew Carnes ... what do they do? - AWB 04.01.17
-     if (Use["BDTG_Carnes_AbsDev"])
-       factX->BookMethod( loadX, TMVA::Types::kBDT, "BDTG_Carnes_AbsDev", (string)
- 			  "!H:!V:NTrees=64::BoostType=Grad:Shrinkage=0.3:nCuts=99999:MaxDepth=4:MinNodeSize=0.001:"+
-			  "NegWeightTreatment=IgnoreNegWeightsInTraining:PruneMethod=NoPruning:"+
-			  "RegressionLossFunctionBDTG=AbsoluteDeviation" );
-     
-     if (Use["BDTG_Carnes_Huber"])
-       factX->BookMethod( loadX, TMVA::Types::kBDT, "BDTG_Carnes_Huber", (string)
- 			  "!H:!V:NTrees=64::BoostType=Grad:Shrinkage=0.3:nCuts=99999:MaxDepth=4:MinNodeSize=0.001:"+
-			  "NegWeightTreatment=IgnoreNegWeightsInTraining:PruneMethod=NoPruning:"+
-			  "RegressionLossFunctionBDTG=Huber" );
-     
-     if (Use["BDTG_Carnes_LeastSq"])
-       factX->BookMethod( loadX, TMVA::Types::kBDT, "BDTG_Carnes_LeastSq", (string)
- 			  "!H:!V:NTrees=64::BoostType=Grad:Shrinkage=0.3:nCuts=99999:MaxDepth=4:MinNodeSize=0.001:"+
-			  "NegWeightTreatment=IgnoreNegWeightsInTraining:PruneMethod=NoPruning:"+
-			  "RegressionLossFunctionBDTG=LeastSquares" );
-     
-     
-     // --------------------------------------------------------------------------------------------------
-     
-     // Now you can tell the factory to train, test, and evaluate the MVAs
      
      // Train MVAs using the set of training events
      factX->TrainAllMethods();
