@@ -393,18 +393,15 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	 double mu_eta = -99.;
 	 double mu_phi = -99.;
 	 int mu_charge = -99;
-	 if (isMC) {
-	   mu_pt     = (muon_br->GetLeaf("pt"))->GetValue(iMu);
-	   mu_eta    = (muon_br->GetLeaf("eta"))->GetValue(iMu);
-	   mu_phi    = (muon_br->GetLeaf("phi"))->GetValue(iMu);
-	   mu_charge = (muon_br->GetLeaf("charge"))->GetValue(iMu);
-	 }
+	       
+	 mu_pt     = F("reco_pt", iMu);
+	 mu_eta    = F("reco_eta",iMu);
+	 mu_phi    = F("reco_phi",iMu);
+	 mu_charge = F("reco_charge",iMu);
 
-	 if ( isMC && (mu_pt < PTMIN || mu_pt > PTMAX) ) continue;
-	 if ( isMC && (fabs( mu_eta ) < ETAMIN || fabs( mu_eta ) > ETAMAX) ) continue;
-	 if ( isMC && (mu_pt < PTMIN_TR || mu_pt > PTMAX_TR) ) trainEvt = false;
-	 // std::cout << "\nMuon " << iMu+1 << " has pt = " << mu_pt << ", eta = " << mu_eta << ", phi = " << mu_phi << std::endl;
-
+	 if ( mu_pt < PTMIN || mu_pt > PTMAX ) continue;
+	 if ( fabs( mu_eta ) < ETAMIN || fabs( mu_eta ) > ETAMAX ) continue;
+	 if ( mu_pt < PTMIN_TR || mu_pt > PTMAX_TR ) trainEvt = false;
 
 	 // Find the relevant EMTF track
 	 double emtf_pt    = 999.;
