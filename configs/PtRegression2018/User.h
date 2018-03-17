@@ -10,7 +10,7 @@ namespace PtRegression2018_cfg {
     std::cout << "\nConfiguring PtRegression2018 code for user " << USER << std::endl;
     
     if (USER == "Wei") {
-      EOS_DIR_NAME = "/home/ws13/TMVA/TMVA/INPUT/Ntuples";  // Input directory in eos
+      EOS_DIR_NAME = "/home/ws13/TMVA/TMVA/INPUT/";  // Input directory in eos
       OUT_DIR_NAME = "/home/ws13/TMVA/TMVA/EMTFPtAssign2018";
       OUT_FILE_NAME = "PtRegression2018";
     }
