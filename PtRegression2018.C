@@ -57,12 +57,11 @@ void PtRegression2018 ( TString myMethodList = "" ) {
    // Neural Network
    Use["MLP"]             = 0;
    Use["DNN"]             = 0;
-   //
+   
    // Support Vector Machine
    Use["SVM"]             = 0;
-   //
+   
    // Boosted Decision Trees
-   Use["BDT"]                     = 0;
    Use["BDTG_AWB"]                = 0;
    Use["BDTG_AWB_Hub"]            = 0;
    Use["BDTG_AWB_Sq"]             = 1;
@@ -1079,11 +1078,6 @@ void PtRegression2018 ( TString myMethodList = "" ) {
        factX->BookMethod( loadX,  TMVA::Types::kSVM, "SVM", "Gamma=0.25:Tol=0.001:VarTransform=Norm" );
      
      // Boosted Decision Trees
-     if (Use["BDT"])
-       factX->BookMethod( loadX,  TMVA::Types::kBDT, "BDT", (string)
-			  "!H:!V:NTrees=100:MinNodeSize=1.0%:BoostType=AdaBoostR2:SeparationType=RegressionVariance"+
-			  ":nCuts=20:PruneMethod=CostComplexity:PruneStrength=30" );
-
      // AWB settings - AbsoluteDeviation
      if (Use["BDTG_AWB"]) // Optimized settings
        factX->BookMethod( loadX, TMVA::Types::kBDT, "BDTG_AWB", (string)
