@@ -3,7 +3,7 @@ TString OUT_DIR_NAME  = ".";  // Directory for output ROOT file
 TString OUT_FILE_NAME = "PtRegression_Apr_2017";  // Name base for output ROOT file
 TString EOS_DIR_NAME  = "root://eoscms.cern.ch//store/user/abrinke1/EMTF/Emulator/ntuples";  // Input directory in eos
 
-namespace PtRegression_Apr_2017_cfg {
+namespace PtRegression2018_cfg {
   
   inline void ConfigureUser( const TString USER ) {
     
@@ -19,4 +19,4 @@ namespace PtRegression_Apr_2017_cfg {
     
   } // End function: inline void ConfigureUser()    
   
-} // End namespace PtRegression2018
+} // End namespace PtRegression2018_cfg
