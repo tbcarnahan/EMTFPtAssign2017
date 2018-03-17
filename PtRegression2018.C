@@ -105,10 +105,11 @@ void PtRegression2018 ( TString myMethodList = "" ) {
       }
    }
 
-   // --------------------------------------------------------------------------------------------------
-
-   // Here the preparation phase begins
-
+   
+   //=================================
+   //Here the preparation phase begins
+   //=================================
+	
    // Configure settings for this mode and user
    PtRegression2018_cfg::ConfigureMode( MODE );
    PtRegression2018_cfg::ConfigureUser( USER );
@@ -124,83 +125,54 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 
    TFile* out_file = TFile::Open( out_file_str, "RECREATE" );
 
-   // Read training and test data (see TMVAClassification for reading ASCII files)
-   // load the signal and background event samples from ROOT trees
-   TFile *input(0);
+   // Initialize empty file to access each file in the list
+   TFile *file_tmp(0);
 
-   std::vector<TString> in_file_names;
-   TString in_file_name;
+   // List of input files
+   std::vector<TString> SM_in_file_names;//SingleMu
+   std::vector<TString> ZB_in_file_names;//Zerobias
+   TString SM_file_name;
+   TString ZB_file_name;
 
-   int nZB_in = 0;
-   if (USE_RPC) {
-     TString in_dir = "Ntuples/";
-     for (int j = 20; j < 50; j++) {  
-       if (nZB_in >= MAX_ZB_FIL) break;
-       in_file_name.Form("%s/%s/tuple_%d.root", EOS_DIR_NAME.Data(), in_dir.Data(), j);
-       std::cout << "Adding file " << in_file_name.Data() << std::endl;
-       in_file_names.push_back(in_file_name.Data());
-       nZB_in += 1;
-     }
-   } else {
-     TString in_dirs[4] = { "ZeroBias",
-   			    "ZeroBias",
-   			    "ZeroBiasIsolatedBunch4/Slim/170130_175005/0000",
-   			    "ZeroBiasIsolatedBunch5/Slim/170130_174947/0000" };     
-     for (int i = 0; i < 4; i++) {
-       for (int j = 1; j < 50; j++) {
-	 if (nZB_in >= MAX_ZB_FIL) break;
-   	 in_file_name.Form("%s/%s/tuple_%d.root", EOS_DIR_NAME.Data(), in_dirs[i].Data(), j);
-   	 std::cout << "Adding file " << in_file_name.Data() << std::endl;
-   	 in_file_names.push_back(in_file_name.Data());
-   	 nZB_in += 1;
-       }
+   for (int i = 0; i < USESingleMu; i++) {
+	  SM_file_name.Form( "%s/%s/%s", store.Data(), in_dir.Data(), SingleMu_files[i].Data() );
+  	  std::cout << "Adding file " << SM_file_name.Data() << std::endl;
+          SM_in_file_names.push_back(SM_file_name.Data());
+   }
+   for (int i = 0; i < USEZerobias; i++) {
+	  ZB_file_name.Form( "%s/%s/%s", store.Data(), in_dir.Data(), ZeroBias_files[i].Data() );
+  	  std::cout << "Adding file " << ZB_file_name.Data() << std::endl;
+          ZB_in_file_names.push_back(ZB_file_name.Data());
+   }
+  
+   // Open all input files
+   for (int i = 0; i < SM_in_file_names.size(); i++) {
+     if ( !gSystem->AccessPathName(SM_in_file_names.at(i)) )
+       file_tmp = TFile::Open( SM_in_file_names.at(i) ); // Check if file exists
+     if (!file_tmp) {
+       std::cout << "ERROR: could not open data file " << SM_in_file_names.at(i) << std::endl;
+       return;
      }
    }
 
-
-   // Load files with RPC hits
-   TString in_dir_RPC = "SingleMu_Pt1To1000_FlatRandomOneOverPt/RPC/170213_173255/0000";
-   for (int i = 1; i < 99; i++) {
-     if (!USE_RPC) continue;
-     in_file_name.Form("%s/%s/tuple_%d.root", EOS_DIR_NAME.Data(), in_dir_RPC.Data(), i);
-     std::cout << "Adding file " << in_file_name.Data() << std::endl;
-     in_file_names.push_back(in_file_name.Data());
-     if (i*100000 > MAX_EVT) break; // ~100k events per file
-   }
-   
-   // Load files without RPC hits
-   TString in_dir_CSC = "SingleMu_Pt1To1000_FlatRandomOneOverPt/EMTF_MuGun/170113_165434/0000";
-   for (int i = 1; i < 99; i++) {
-     if (USE_RPC) continue;
-     in_file_name.Form("%s/%s/EMTF_MC_NTuple_SingleMu_noRPC_%d.root", EOS_DIR_NAME.Data(), in_dir_CSC.Data(), i);
-     std::cout << "Adding file " << in_file_name.Data() << std::endl;
-     in_file_names.push_back(in_file_name.Data());
-     if (i*100000 > MAX_EVT) break; // ~100k events per file
-   }
-
-   for (UInt_t i = 0; i < in_file_names.size(); i++) {
-     if ( !gSystem->AccessPathName(in_file_names.at(i)) )
-       input = TFile::Open( in_file_names.at(i) ); // check if file in local directory exists
-     if (!input) {
-       std::cout << "ERROR: could not open data file " << in_file_names.at(i) << std::endl;
-       in_file_names.erase( in_file_names.begin()+i );
-       if (i < nZB_in) 
-	 nZB_in -= 1;
-       i -= 1;
+   for (int i = 0; i < ZB_in_file_names.size(); i++) {
+     if ( !gSystem->AccessPathName(ZB_in_file_names.at(i)) )
+       file_tmp = TFile::Open( ZB_in_file_names.at(i) ); // Check if file exists
+     if (!file_tmp) {
+       std::cout << "ERROR: could not open data file " << ZB_in_file_names.at(i) << std::endl;
+       return;
      }
    }
-
-   // Add trees from the input files to the TChain
-   // Have to use TChain for both SetBranchAddress and GetEntry to work
-   std::vector<TChain*> in_chains;
-   // Super-hacky ... but using "GetBranch" with a single chain with multiple files causes a segfault - AWB 19.01.16
-   int nChains_ZB  = -99;
-   for (UInt_t i = 0; i < in_file_names.size(); i++) {
-     TChain *tmp_chain = new TChain("ntuple/tree");
-     tmp_chain->Add( in_file_names.at(i) );
-     in_chains.push_back(tmp_chain);
-     if ( i == (nZB_in - 1) && nChains_ZB < 0)
-       nChains_ZB = i + 1;
+	
+   // Add tree from the input files to the TChain
+   TChain *SM_in_chain= new TChain("FlatNtupleData/tree");
+   for (int i = 0; i < SM_in_file_names.size(); i++) {
+     SM_in_chain->Add( SM_in_file_names.at(i) );
+   }
+	
+   TChain *ZB_in_chain= new TChain("FlatNtupleData/tree");
+   for (int i = 0; i < ZB_in_file_names.size(); i++) {
+     ZB_in_chain->Add( ZB_in_file_names.at(i) );
    }
 
    //////////////////////////////////////////////////////////////////////////
