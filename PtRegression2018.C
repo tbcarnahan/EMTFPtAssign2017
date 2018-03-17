@@ -3,7 +3,6 @@
 ///                  Wei Shi                                      ///
 ///  Adapted from PtRegression_Apr_2017.C                         ///        
 /////////////////////////////////////////////////////////////////////
-
 #include <cstdlib>
 #include <iostream>
 #include <map>
@@ -51,20 +50,10 @@ void PtRegression2018 ( TString myMethodList = "" ) {
    /////////////////////////
    ///  USER choose MVA  ///
    /////////////////////////
-   // Mutidimensional likelihood and Nearest-Neighbour methods
-   Use["PDERS"]           = 0;
-   Use["PDEFoam"]         = 0;
-   Use["KNN"]             = 0;
-   //
+   //=================================
    // Linear Discriminant Analysis
    Use["LD"]		  = 0;
-   //
-   // Function Discriminant analysis
-   Use["FDA_GA"]          = 0;
-   Use["FDA_MC"]          = 0;
-   Use["FDA_MT"]          = 0;
-   Use["FDA_GAMT"]        = 0;
-   //
+   
    // Neural Network
    Use["MLP"]             = 0;
    Use["DNN"]             = 0;
@@ -74,13 +63,9 @@ void PtRegression2018 ( TString myMethodList = "" ) {
    //
    // Boosted Decision Trees
    Use["BDT"]                     = 0;
-
-   Use["BDTG_default"]            = 0;
-
    Use["BDTG_AWB"]                = 0;
    Use["BDTG_AWB_Hub"]            = 0;
    Use["BDTG_AWB_Sq"]             = 1;
-   Use["BDTG_AWB_lite"]           = 0;
    //==================================
 
    std::cout << std::endl;
@@ -104,7 +89,6 @@ void PtRegression2018 ( TString myMethodList = "" ) {
          Use[regMethod] = 1;
       }
    }
-
    
    //=================================
    //Here the preparation phase begins
@@ -117,11 +101,10 @@ void PtRegression2018 ( TString myMethodList = "" ) {
    // Create a new root output file
    TString out_file_str;
    TString bit_str = (BIT_COMP ? "bitCompr" : "noBitCompr");
-   TString RPC_str = (USE_RPC  ? "RPC"      : "noRPC");
 
-   out_file_str.Form( "%s/%s_MODE_%d_%s_%s.root", 
+   out_file_str.Form( "%s/%s_MODE_%d_%s.root", 
 		      OUT_DIR_NAME.Data(), OUT_FILE_NAME.Data(), 
-		      MODE, bit_str.Data(), RPC_str.Data() );
+		      MODE, bit_str.Data() );
 
    TFile* out_file = TFile::Open( out_file_str, "RECREATE" );
 
@@ -1044,34 +1027,16 @@ void PtRegression2018 ( TString myMethodList = "" ) {
      
      TMVA::Factory* factX = std::get<0>(factories.at(iFact));
      TMVA::DataLoader* loadX = std::get<1>(factories.at(iFact));
-     
-     // // You can add an arbitrary number of regression trees
-     // loadX->AddRegressionTree( regTree, regWeight );
-     
-     // // This would set individual event weights (the variables defined in the
-     // // expression need to exist in the original TTree)
-     // loadX->SetWeightExpression( "var1", "Regression" );
+   
      loadX->SetWeightExpression( 1.0 );
-     
-     // // Apply additional cuts on the signal and background samples (can be different)
-     // TCut mycut = "( abs(muon.eta[0]) > 1.25 && abs(muon.eta[1]) < 2.4 )"; // && track.mode[0] == 15 )"; 
      
      // Set nTest_Regression to 0 to tell the DataLoader to use all remaining events in the trees after training for testing:
      loadX->PrepareTrainingAndTestTree( "", numTrainStr+"SplitMode=Random:NormMode=NumEvents:!V" );   
      // loadX->PrepareTrainingAndTestTree( mycut, "nTrain_Regression=0:nTest_Regression=0:SplitMode=Random:NormMode=NumEvents:!V" );
      
-     // If no numbers of events are given, half of the events in the tree are used
-     // for training, and the other half for testing:
-     //
-     //     loadX->PrepareTrainingAndTestTree( mycut, "SplitMode=random:!V" );
-     
+     //==================
      // Book MVA methods
-     //
-     // Please lookup the various method configuration options in the corresponding cxx files, eg:
-     // src/MethoCuts.cxx, etc, or here: http://tmva.sourceforge.net/optionRef.html
-     // it is possible to preset ranges in the option string in which the cut optimisation should be done:
-     // "...:CutRangeMin[2]=-1:CutRangeMax[2]=1"...", where [2] is the third input variable
-     
+     //==================
      // Linear discriminant
      if (Use["LD"])
        factX->BookMethod( loadX,  TMVA::Types::kLD, "LD",
@@ -1117,12 +1082,6 @@ void PtRegression2018 ( TString myMethodList = "" ) {
        factX->BookMethod( loadX,  TMVA::Types::kBDT, "BDT", (string)
 			  "!H:!V:NTrees=100:MinNodeSize=1.0%:BoostType=AdaBoostR2:SeparationType=RegressionVariance"+
 			  ":nCuts=20:PruneMethod=CostComplexity:PruneStrength=30" );
-     
-     // Default TMVA settings
-     if (Use["BDTG_default"])
-       factX->BookMethod( loadX, TMVA::Types::kBDT, "BDTG_default", (string)
-			  "!H:!V:NTrees=2000::BoostType=Grad:Shrinkage=0.1:UseBaggedBoost:"+
-			  "BaggedSampleFraction=0.5:nCuts=20:MaxDepth=3" );
 
      // AWB settings - AbsoluteDeviation
      if (Use["BDTG_AWB"]) // Optimized settings
@@ -1139,16 +1098,6 @@ void PtRegression2018 ( TString myMethodList = "" ) {
        factX->BookMethod( loadX, TMVA::Types::kBDT, "BDTG_AWB_Sq", (string)
 			  "!H:!V:NTrees=400::BoostType=Grad:Shrinkage=0.1:nCuts=1000:MaxDepth=5:MinNodeSize=0.000001:"+
 			  "RegressionLossFunctionBDTG=LeastSquares" );
-     if (Use["BDTG_AWB_lite"]) // Fast, simple BDT
-       factX->BookMethod( loadX, TMVA::Types::kBDT, "BDTG_AWB_lite", (string)
-			  "!H:!V:NTrees=40::BoostType=Grad:Shrinkage=0.1:nCuts=1000:MaxDepth=3:MinNodeSize=0.01:"+
-			  "RegressionLossFunctionBDTG=AbsoluteDeviation" );
-     // Default TMVA settings with LeastSquares loss function
-     if (Use["BDTG_LeastSq"])
-       factX->BookMethod( loadX, TMVA::Types::kBDT, "BDTG_LeastSq", (string)
-			  "!H:!V:NTrees=2000::BoostType=Grad:Shrinkage=0.1:UseBaggedBoost:"+
-			  "BaggedSampleFraction=0.5:nCuts=20:MaxDepth=3:"+
-			  "RegressionLossFunctionBDTG=LeastSquares");
      
      // Train MVAs using the set of training events
      factX->TrainAllMethods();
@@ -1156,11 +1105,11 @@ void PtRegression2018 ( TString myMethodList = "" ) {
      // Evaluate all MVAs using the set of test events
      factX->TestAllMethods();
      
-     // // Evaluate and compare performance of all configured MVAs
-     // factX->EvaluateAllMethods();
-
+     // Evaluate and compare performance of all configured MVAs
      // Instead of "EvaluateAllMethods()", just write out the training and testing trees
      // Skip unnecessary evaluatioh histograms, which take time on large datasets 
+     //factX->EvaluateAllMethods();
+     
      // Code gleaned from original "EvaluateAllMethods()" function in tmva/tmva/src/Factory.cxx - AWB 31.01.17
      if ( factX->fMethodsMap.empty() )
        std::cout << "factX->fMethodsMap is empty" << std::endl;
