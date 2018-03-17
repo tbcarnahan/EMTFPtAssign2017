@@ -20,7 +20,8 @@ const bool BIT_COMP = true;   // Use bit-compressed versions of input variables
 const std::vector<int> CSC_MASK = {};  // Mask CSC LCTs in these stations
 const std::vector<int> RPC_MASK = {};  // Mask RPC hits in these stations
 
-// *** Target and event weights *** //
+// *** Target and event weights      ***//
+// *** Can put multiple choices here ***// 
 // Choose "pt", "invPt", "logPt", and/or "charge"
 const std::vector<TString> TARG_VARS = {"invPt"}; // Default "invPt"
 // Choose "no", "invPt", and/or "invPtSq"
