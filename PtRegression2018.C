@@ -48,6 +48,9 @@ void PtRegression2018 ( TString myMethodList = "" ) {
    // Default MVA methods to be trained + tested
    std::map<std::string,int> Use;
 
+   /////////////////////////
+   ///  USER choose MVA  ///
+   /////////////////////////
    // Mutidimensional likelihood and Nearest-Neighbour methods
    Use["PDERS"]           = 0;
    Use["PDEFoam"]         = 0;
@@ -78,24 +81,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
    Use["BDTG_AWB_Hub"]            = 0;
    Use["BDTG_AWB_Sq"]             = 1;
    Use["BDTG_AWB_lite"]           = 0;
-
-   Use["BDTG_AWB_50_trees"]       = 0;
-   Use["BDTG_AWB_100_trees"]      = 0;
-   Use["BDTG_AWB_200_trees"]      = 0;
-   Use["BDTG_AWB_400_trees"]      = 0;
-   Use["BDTG_AWB_800_trees"]      = 0;
-
-   Use["BDTG_AWB_3_deep"]         = 0;
-   Use["BDTG_AWB_4_deep"]         = 0;
-   Use["BDTG_AWB_5_deep"]         = 0;
-   Use["BDTG_AWB_6_deep"]         = 0;
-
-   Use["BDTG_LeastSq"]            = 0;
-
-   Use["BDTG_Carnes_AbsDev"]      = 0;
-   Use["BDTG_Carnes_Huber"]       = 0;
-   Use["BDTG_Carnes_LeastSq"]     = 0;
-   // ---------------------------------------------------------------
+   //==================================
 
    std::cout << std::endl;
    std::cout << "==> Start PtRegression2018" << std::endl;
@@ -147,8 +133,8 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 
    int nZB_in = 0;
    if (USE_RPC) {
-     TString in_dir = "ZeroBiasIsolatedBunch0/Slim_RPC/170213_174254/0000";
-     for (int j = 20; j < 50; j++) {  // First 19 files are empty
+     TString in_dir = "Ntuples/";
+     for (int j = 20; j < 50; j++) {  
        if (nZB_in >= MAX_ZB_FIL) break;
        in_file_name.Form("%s/%s/tuple_%d.root", EOS_DIR_NAME.Data(), in_dir.Data(), j);
        std::cout << "Adding file " << in_file_name.Data() << std::endl;
@@ -156,8 +142,8 @@ void PtRegression2018 ( TString myMethodList = "" ) {
        nZB_in += 1;
      }
    } else {
-     TString in_dirs[4] = { "ZeroBiasIsolatedBunch0/Slim/170130_224405/0000",
-   			    "ZeroBiasIsolatedBunch1/Slim/170130_175144/0000",
+     TString in_dirs[4] = { "ZeroBias",
+   			    "ZeroBias",
    			    "ZeroBiasIsolatedBunch4/Slim/170130_175005/0000",
    			    "ZeroBiasIsolatedBunch5/Slim/170130_174947/0000" };     
      for (int i = 0; i < 4; i++) {
