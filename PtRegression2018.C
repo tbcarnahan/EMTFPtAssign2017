@@ -364,32 +364,28 @@ void PtRegression2018 ( TString myMethodList = "" ) {
    UInt_t iEvtZB = 0;
    UInt_t nTrain = 0;
    UInt_t nTest  = 0;
-
-   for (int iCh = 0; iCh < in_chains.size(); iCh++) {
-     TChain *in_chain = in_chains.at(iCh);
-     
-     // Get branches from the chain
-     TBranch *muon_br  = in_chain->GetBranch("muon");
-     TBranch *hit_br   = in_chain->GetBranch("hit");
-     TBranch *trk_br = in_chain->GetBranch("track");
+	
+   //================================================
+   //Register training events from SingleMu Data ONLY
+   //================================================
+   for (int iCh = 0; iCh < SM_in_chains.size(); iCh++) {
+     TChain *in_chain = SM_in_chains.at(iCh);
      
      std::cout << "\n******* About to enter the event loop for chain " << iCh+1 << " *******" << std::endl;
      
      for (UInt_t jEvt = 0; jEvt < in_chain->GetEntries(); jEvt++) {
-       if (iEvt > MAX_EVT) break;
+       if (iEvt > MAX_TR) break;
 
        in_chain->GetEntry(jEvt);
-       
-       UInt_t nMuons = (muon_br->GetLeaf("nMuons"))->GetValue();
-       UInt_t nHits  = (hit_br->GetLeaf("nHits"))->GetValue();
-       UInt_t nTrks  = (trk_br->GetLeaf("nTracks"))->GetValue();
-       Bool_t isMC     = (nMuons > 0);
-       Bool_t trainEvt = true;  // Can use the event for training
-       if (not isMC)  // Process ZeroBias anyway
-	 nMuons = nTrks;
-       // std::cout << "There are " << nMuons << " GEN muons and " << nTrks << " EMTF tracks\n" << std::endl;
+   
+       UInt_t nMuons = I("nRecoMuons");//reco_* branches are true info reference
+       UInt_t nHits  = I("nHits");//hit_* branches are unpacked hits 
+       UInt_t nTrks  = I("nTracks");//trk_* branches are EMTF tracks
+	     
+       //Flag: can use the event for training   
+       Bool_t trainEvt = true;  
 
-       if ( ( (iEvt % REPORT_EVT) == 0 && isMC) || (iEvtZB > 0 && (iEvtZB % REPORT_EVT) == 0) )
+       if ( ( (iEvt % REPORT_EVT) == 0) || (iEvtZB > 0 && (iEvtZB % REPORT_EVT) == 0) )
 	 std::cout << "Looking at MC event " << iEvt << " (ZeroBias event " << iEvtZB << ")" << std::endl;
        
        for (UInt_t iMu = 0; iMu < nMuons; iMu++) {
