@@ -494,8 +494,6 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	     continue;
 	   }
 
-	   break; // Only one EMTF track per Reco muon considered
-
 	 } // End loop iTrk
 
 	 //////////////////////////////////////////
