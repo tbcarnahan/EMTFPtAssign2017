@@ -474,7 +474,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 		 }
 	 }//for ii
 	 
-	 if (emtf_mode < 0) continue;
+	 if (emtf_mode < 0) continue;//skip track-build and go to next emtf trk
 
 	 //////////////////////////////////////////
 	 ///  Build tracks from available hits  ///
