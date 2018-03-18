@@ -426,7 +426,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	 //====================
 	 if ( mu_pt < PTMIN || mu_pt > PTMAX ) continue;
 	 if ( fabs( mu_eta ) < ETAMIN || fabs( mu_eta ) > ETAMAX ) continue;
-	 if ( mu_pt < PTMIN_TR || mu_pt > PTMAX_TR || mu_unique_match!=1) trainEvt = false;
+	 if ( mu_pt < PTMIN_TR || mu_pt > PTMAX_TR || mu_unique_match!=1) mu_train = false;
 	       
          //============================
 	 //Matched EMTF track
