@@ -440,9 +440,9 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	         mu_charge = emtf_charge;
 	 }
 	    
-	 //====================    
-         //RECO mu kinematics
-	 //====================
+	 //===============================    
+         //RECO mu kinematics requirements
+	 //===============================
 	 if ( mu_pt < PTMIN || mu_pt > PTMAX ) continue;
 	 if ( fabs( mu_eta ) < ETAMIN || fabs( mu_eta ) > ETAMAX ) continue;
 	 if ( mu_pt < PTMIN_TR || mu_pt > PTMAX_TR || isZB) mu_train = false;
@@ -451,47 +451,36 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	 std::array<int, 4> emtf_ph = {-99, -99, -99, -99};
 	 std::array<int, 4> emtf_th = {-99, -99, -99, -99};
 	 std::array<int, 4> emtf_dt = {-99, -99, -99, -99};
-
-	   emtf_eta     = F("trk_eta", iTrk);
-	   emtf_eta_int = I("trk_eta_int", iTrk);
-
-	   //==================
-	   //Require valid mode
-	   //==================
-	   emtf_mode = I("trk_mode", iTrk);
-	   emtf_mode_CSC = 0;
-	   emtf_mode_RPC = 0;
-	   bool good_emtf_mode = false;
+         
+	 //==================
+	 //Require valid mode
+	 //==================
+	 bool good_emtf_mode = false;
 		 
-	   for (UInt_t jMode = 0; jMode < EMTF_MODES.size(); jMode++) {
-	     if (emtf_mode == EMTF_MODES.at(jMode))
-	       good_emtf_mode = true;
-	   }
-	   if (!good_emtf_mode) {
-	     emtf_mode = -99;
-	     continue;
-	   }
-	   	   
-	   
-		
-	   for (int ii = 0; ii < 4; ii++) {
-	     if (emtf_mode < 0)
-	       continue;
-	     if ( (emtf_mode % int(pow(2, 4 - ii))) / int(pow(2, 3 - ii)) > 0) {
-	       emtf_id.at(ii) = iTrk*4 + ii;//EMTF track hit id
-	       emtf_ph.at(ii) = I("hit_phi_int", iTrk*4 + ii); 
-	       emtf_th.at(ii) = I("hit_theta_int", iTrk*4 + ii); 
-	       emtf_dt.at(ii) = ( I("hit_isRPC", iTrk*4 + ii) == 1 ? 2 : 1);
-	     }//if valid modes
-	   }//for ii
+	 for (UInt_t jMode = 0; jMode < EMTF_MODES.size(); jMode++) {
+		  if ( emtf_mode == EMTF_MODES.at(jMode) ) good_emtf_mode = true;
+	 }
+	 if (!good_emtf_mode) {
+		  emtf_mode = -99;
+		  continue;
+	 }
+	 //get emtf trk hits	
+	 for (int ii = 0; ii < 4; ii++) {
+		 if (emtf_mode < 0) continue;
+		 if ( (emtf_mode % int(pow(2, 4 - ii))) / int(pow(2, 3 - ii)) > 0) {
+			 emtf_id.at(ii) = iTrk*4 + ii;
+			 emtf_ph.at(ii) = I("hit_phi_int", iTrk*4 + ii); 
+			 emtf_th.at(ii) = I("hit_theta_int", iTrk*4 + ii); 
+			 emtf_dt.at(ii) = ( I("hit_isRPC", iTrk*4 + ii) == 1 ? 2 : 1);
+		 }
+	 }//for ii
 
-	   if (emtf_mode_CSC + emtf_mode_RPC != emtf_mode) {
-	     std::cout << "\n\n*** Super-bizzare case where EMTF mode = " << emtf_mode  << ", but CSC mode = " 
-		       << emtf_mode_CSC << " and RPC mode = " << emtf_mode_RPC << " ***" << std::endl;
-	     std::cout << "  - Rare bug in EMTF emulator - skipping.\n\n" << std::endl;
-	     continue;
-	   }
-
+	 if (emtf_mode_CSC + emtf_mode_RPC != emtf_mode) {
+		 std::cout << "\n\n*** Super-bizzare case where EMTF mode = " << emtf_mode  << ", but CSC mode = " 
+			 << emtf_mode_CSC << " and RPC mode = " << emtf_mode_RPC << " ***" << std::endl;
+	         std::cout << "  - Rare bug in EMTF emulator - skipping.\n\n" << std::endl;
+	         continue;
+	 }
 
 	 //////////////////////////////////////////
 	 ///  Build tracks from available hits  ///
