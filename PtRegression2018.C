@@ -360,11 +360,11 @@ void PtRegression2018 ( TString myMethodList = "" ) {
    int nSMEvents = SM_in_chain->GetEntries();
    int nZBEvents = ZB_in_chain->GetEntries();
    std::cout << "\n******* About to loop over chains *******" << std::endl;
-   UInt_t iEvt = 0;
-   UInt_t iEvtZB = 0;
+   UInt_t NonZBEvt = 0;
+   UInt_t ZBEvt = 0;
    UInt_t nTrain = 0;
    UInt_t nTest  = 0;
-   UInt_t ZBFlag = -1;
+   Bool_t isZB = false;
 	
    //================================
    //Register events: loop over chains
@@ -407,7 +407,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 		 }
 	 }//end if 
        }//end Remove bias  
-       if (ZBFlag!=1 && BarrelRecoMu==0 && EndcapRecoMu<=1 ) continue;//skip EMTF biased event in SingleMu
+       if (!isZB && BarrelRecoMu==0 && EndcapRecoMu<=1 ) mu_train = false;//Don't use EMTF biased event in training
 	     
        //==================
        //Loop over Reco mu 
