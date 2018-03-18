@@ -474,6 +474,8 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 			 emtf_dt.at(ii) = ( I("hit_isRPC", iTrk*4 + ii) == 1 ? 2 : 1);
 		 }
 	 }//for ii
+	 
+	 if (emtf_mode < 0) continue;
 
 	 //////////////////////////////////////////
 	 ///  Build tracks from available hits  ///
