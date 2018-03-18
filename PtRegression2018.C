@@ -434,8 +434,10 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	       
 	 //if can't find unique match, assign 1GeV true pT for training
 	 if(trk_unique_match ==0){
-		 mu_pt=1;
-		 mu_eta=(ETAMIN+ETAMAX)/2;
+		 mu_pt = 1;
+		 mu_eta = (ETAMIN+ETAMAX)/2;
+		 mu_phi = emtf_phi;
+	         mu_charge = emtf_charge;
 	 }
 	    
 	 //====================    
@@ -966,7 +968,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	   
 	 } // End loop: for built iTrk
 	       
-       } // End loop: for (UInt_t iMu = 0; iMu < nMuons; iMu++)
+       } // End loop: for emtf trks
 	     
        if(jEvt < ZBEvents){
 	       NonZBEvt += 1;
