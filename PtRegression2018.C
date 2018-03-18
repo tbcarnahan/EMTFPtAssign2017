@@ -382,24 +382,47 @@ void PtRegression2018 ( TString myMethodList = "" ) {
        UInt_t nMuons = I("nRecoMuons");//reco_* branches are true info reference
        UInt_t nHits  = I("nHits");//hit_* branches are unpacked hits 
        UInt_t nTrks  = I("nTracks");//trk_* branches are EMTF tracks
+       int BarrelRecoMu=0;
+       int EndcapRecoMu=0;
 	     
        if ( ( (iEvt % REPORT_EVT) == 0) || (iEvtZB > 0 && (iEvtZB % REPORT_EVT) == 0) )
 	 std::cout << "Looking at SingleMu event " << iEvt << " (ZeroBias event " << iEvtZB << ")" << std::endl;
        
-       //==========================================
-       //Loop over Reco mu to find a EMTF trk match
-       //==========================================
+       //============================================
+       //EMTF biased events can't be used in training
+       //============================================
+       for (UInt_t iMu = 0; iMu < nMuons; iMu++) {
+	 //RECO mu pT >  Bias pT, Iso < Bias_Iso, match St1 segment, medium ID
+	 if( F("reco_pt", iMu) >= Bias_Pt && F("reco_iso", iMu) < Bias_Iso && I("reco_ID_station", iMu) == 1 && I("reco_ID_medium", iMu) == 1){
+		 //Barrel Reco mu
+		 if( fabs(F("reco_eta",iMu) ) < Bias_Eta){
+			 BarrelRecoMu++;
+		 }
+		 //Endcap Reco mu
+		 if( fabs(F("reco_eta",iMu) ) >= Bias_Eta){
+			 EndcapRecoMu++;
+		 }
+	 }//end if 
+       }//end Remove bias  
+       if ( BarrelRecoMu==0 && EndcapRecoMu<=1 ) continue;
+	     
+       //==================
+       //Loop over Reco mu 
+       //==================
        for (UInt_t iMu = 0; iMu < nMuons; iMu++) { 
-	 double mu_pt  = 999.; mu_pt = F("reco_pt", iMu);
-	 double mu_eta = -99.; mu_eta = F("reco_eta",iMu);
-	 double mu_phi = -99.; mu_phi = F("reco_phi",iMu);
-	 int mu_charge = -99; mu_charge = F("reco_charge",iMu);
+	       
+	 mu_pt = F("reco_pt", iMu);
+	 mu_eta = F("reco_eta",iMu);
+	 mu_phi = F("reco_phi",iMu);
+	 mu_charge = F("reco_charge",iMu);
+	       
 	 //====================    
-         //Muon true kinematics
+         //RECO mu kinematics
 	 //====================
 	 if ( mu_pt < PTMIN || mu_pt > PTMAX ) continue;
 	 if ( fabs( mu_eta ) < ETAMIN || fabs( mu_eta ) > ETAMAX ) continue;
 	 if ( mu_pt < PTMIN_TR || mu_pt > PTMAX_TR ) trainEvt = false;
+	       
          //============================
 	 //Matched EMTF track
 	 //============================
@@ -421,13 +444,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 
 	   emtf_eta     = F("trk_eta", iTrk);
 	   emtf_eta_int = I("trk_eta_int", iTrk);
-	   //=================== 
-	   //Require same endcap
-	   //===================
-           if ( (emtf_eta > 0) != (mu_eta > 0) ) {
-	     emtf_eta = -99.;
-	     continue;
-	   }
+
 	   //==================
 	   //Require valid mode
 	   //==================
