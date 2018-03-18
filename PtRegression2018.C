@@ -410,44 +410,45 @@ void PtRegression2018 ( TString myMethodList = "" ) {
        }//end Remove bias  
        if (!isZB && BarrelRecoMu==0 && EndcapRecoMu<=1 ) isZB = true;//Don't use EMTF biased event in training
 	     
-       //==================
-       //Loop over Reco mu 
-       //==================
-       for (UInt_t iMu = 0; iMu < nMuons; iMu++) { 
+       //===================
+       //Loop over EMTF trks
+       //===================
+       for (UInt_t iTrk = 0; iTrk < nTrks; iTrk++) {
+	 double emtf_pt    = F("trk_pt",iTrk);
+	 double emtf_eta   = F("trk_eta",iTrk); 
+	 double emtf_phi   = F("trk_phi",iTrk); 
+	 int emtf_eta_int  = I("trk_eta_int", iTrk); 
+	 int emtf_charge   = I("trk_charge", iTrk); 
+	 int emtf_mode     = I("trk_mode", iTrk);
+	 int emtf_mode_CSC = I("trk_mode_CSC", iTrk); 
+         int emtf_mode_RPC = I("trk_mode_RPC", iTrk);      
+	 int emtf_sect_idx = I("trk_sector_index", iTrk);
+	 int emtf_unique_match = I("trk_dR_match_unique", iTrk);
+	 int emtf_unique_iMu = I("trk_dR_match_iReco", iTrk); 
 	       
-	 double mu_pt = F("reco_pt", iMu);
-	 double mu_eta = F("reco_eta",iMu);
-	 double mu_phi = F("reco_phi",iMu);
-	 int mu_charge = I("reco_charge",iMu);
-	 int mu_unique_match = I("reco_dR_match_unique", iMu);
-	 int mu_unique_iTrk =  I("reco_dR_match_iTrk", iMu); 
+	 double mu_pt = F("reco_pt", emtf_unique_iMu);
+	 double mu_eta = F("reco_eta", emtf_unique_iMu);
+	 double mu_phi = F("reco_phi", emtf_unique_iMu);
+	 int mu_charge = I("reco_charge", emtf_unique_iMu);
 	 Bool_t mu_train = true;  // Can use the reco muon for training 
 	       
+	 //if can't find unique match, assign 1GeV true pT for training
+	 if(trk_unique_match ==0){
+		 mu_pt=1;
+		 mu_eta=(ETAMIN+ETAMAX)/2;
+	 }
+	    
 	 //====================    
          //RECO mu kinematics
 	 //====================
 	 if ( mu_pt < PTMIN || mu_pt > PTMAX ) continue;
 	 if ( fabs( mu_eta ) < ETAMIN || fabs( mu_eta ) > ETAMAX ) continue;
-	 if ( mu_pt < PTMIN_TR || mu_pt > PTMAX_TR || mu_unique_match!=1 || isZB) mu_train = false;
+	 if ( mu_pt < PTMIN_TR || mu_pt > PTMAX_TR || isZB) mu_train = false;
 	       
-         //============================
-	 //Matched EMTF track
-	 //============================
-	 double emtf_pt    = 999.;
-	 double emtf_eta   = -99.;
-	 double emtf_phi   = -99.;
-	 int emtf_eta_int  = -99;
-	 int emtf_charge   = -99;
-	 int emtf_mode     = -99;
-	 int emtf_mode_CSC = -99;
-	 int emtf_mode_RPC = -99;
-	 int emtf_sect_idx = -99;
 	 std::array<int, 4> emtf_id = {-99, -99, -99, -99};
 	 std::array<int, 4> emtf_ph = {-99, -99, -99, -99};
 	 std::array<int, 4> emtf_th = {-99, -99, -99, -99};
 	 std::array<int, 4> emtf_dt = {-99, -99, -99, -99};
-
-	 for (UInt_t iTrk = 0; iTrk < nTrks; iTrk++) {
 
 	   emtf_eta     = F("trk_eta", iTrk);
 	   emtf_eta_int = I("trk_eta_int", iTrk);
@@ -469,12 +470,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	     continue;
 	   }
 	   	   
-	   emtf_pt       = F("trk_pt",iTrk);
-	   emtf_phi      = F("trk_phi",iTrk); 
-	   emtf_charge   = I("trk_charge", iTrk); 
-	   emtf_sect_idx = I("trk_sector_index", iTrk); 
-	   emtf_mode_CSC = I("trk_mode_CSC", iTrk); 
-           emtf_mode_RPC = I("trk_mode_RPC", iTrk); 
+	   
 		
 	   for (int ii = 0; ii < 4; ii++) {
 	     if (emtf_mode < 0)
@@ -494,7 +490,6 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	     continue;
 	   }
 
-	 } // End loop iTrk
 
 	 //////////////////////////////////////////
 	 ///  Build tracks from available hits  ///
