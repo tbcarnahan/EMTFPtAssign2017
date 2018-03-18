@@ -387,7 +387,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
        
 	     
        if ( ( (iEvt % REPORT_EVT) == 0) || (iEvtZB > 0 && (iEvtZB % REPORT_EVT) == 0) )
-	 std::cout << "Looking at SingleMu event " << iEvt << " (ZeroBias event " << iEvtZB << ")" << std::endl;
+	 std::cout << "Looking at Non-ZB event " << iEvt << "; ZB event " << iEvtZB << std::endl;
        
        //============================================
        //EMTF biased events can't be used in training
@@ -974,8 +974,13 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	       
        } // End loop: for (UInt_t iMu = 0; iMu < nMuons; iMu++)
 	     
-       iEvt += 1;
-       if(jEvt> ZBEvents) iEvtZB += 1;
+       if(jEvt < ZBEvents){
+	       iEvt += 1;
+       }
+       else{
+	       iEvtZB += 1;
+       }
+       
      } // End loop: for jEvt 
    } // End loop: for iCh
 
