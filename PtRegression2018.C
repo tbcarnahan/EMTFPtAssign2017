@@ -364,7 +364,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
    UInt_t iEvtZB = 0;
    UInt_t nTrain = 0;
    UInt_t nTest  = 0;
-   UInt_t SMFlag = -1;
+   UInt_t ZBFlag = -1;
 	
    //================================================
    //Register training events from SingleMu Data ONLY
@@ -376,8 +376,8 @@ void PtRegression2018 ( TString myMethodList = "" ) {
      
      for (UInt_t jEvt = 0; jEvt < in_chain->GetEntries(); jEvt++) {
        if (iEvt > MAX_TR) break;
-       if (jEvt < nSMEvents) SMFlag=1;
-       if (jEvt >= nSMEvents) SMFlag=0;
+       if (jEvt < nSMEvents) ZBFlag = 0;
+       if (jEvt >= nSMEvents) ZBFlag = 1;
 
        in_chain->GetEntry(jEvt);
 	     
@@ -407,7 +407,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 		 }
 	 }//end if 
        }//end Remove bias  
-       if ( BarrelRecoMu==0 && EndcapRecoMu<=1 ) continue;//EMTF biased event, skip
+       if (ZBFlag!=1 && BarrelRecoMu==0 && EndcapRecoMu<=1 ) continue;//skip EMTF biased event in SingleMu
 	     
        //==================
        //Loop over Reco mu 
