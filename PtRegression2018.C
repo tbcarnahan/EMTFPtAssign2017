@@ -601,61 +601,54 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	   int shared_mode_RPC = 0;
 	   assert(mode == MODE);
 
-	   // std::cout << "\n    - i1 = " << i1 <<", i2 = " << i2<< ", i3 = " <<i3 << ", i4 = "<< i4 << std::endl;
-
 	   // Properties of hits
-	   int ph1 = (i1 >= 0 ? (hit_br->GetLeaf("phi_int"))->GetValue(i1) : -99);
-	   int ph2 = (i2 >= 0 ? (hit_br->GetLeaf("phi_int"))->GetValue(i2) : -99);
-	   int ph3 = (i3 >= 0 ? (hit_br->GetLeaf("phi_int"))->GetValue(i3) : -99);
-	   int ph4 = (i4 >= 0 ? (hit_br->GetLeaf("phi_int"))->GetValue(i4) : -99);
-
-	   // std::cout << "    - ph1 = " << ph1 << ", ph2 = " << ph2 << ", ph3 = " << ph3 << ", ph4 = " << ph4 << std::endl;
+	   int ph1 = (i1 >= 0 ? I("hit_phi_int", i1 ) : -99); 
+	   int ph2 = (i2 >= 0 ? I("hit_phi_int", i2 ) : -99);
+	   int ph3 = (i3 >= 0 ? I("hit_phi_int", i3 ) : -99);
+	   int ph4 = (i4 >= 0 ? I("hit_phi_int", i4 ) : -99);
 	   
-	   int th1 = (i1 >= 0 ? (hit_br->GetLeaf("theta_int"))->GetValue(i1) : -99);
-	   int th2 = (i2 >= 0 ? (hit_br->GetLeaf("theta_int"))->GetValue(i2) : -99);
-	   int th3 = (i3 >= 0 ? (hit_br->GetLeaf("theta_int"))->GetValue(i3) : -99);
-	   int th4 = (i4 >= 0 ? (hit_br->GetLeaf("theta_int"))->GetValue(i4) : -99);
+	   int th1 = (i1 >= 0 ? I("hit_theta_int", i1 ) : -99);
+	   int th2 = (i2 >= 0 ? I("hit_theta_int", i2 ) : -99);
+	   int th3 = (i3 >= 0 ? I("hit_theta_int", i3 ) : -99);
+	   int th4 = (i4 >= 0 ? I("hit_theta_int", i4 ) : -99);
 
-	   // std::cout << "    - th1 = " << th1 << ", th2 = " << th2 << ", th3 = " << th3 << ", th4 = " << th4 << std::endl;
+	   int pat1 = (i1 >= 0 ? I("hit_pattern", i1 ) : -99);
+	   int pat2 = (i2 >= 0 ? I("hit_pattern", i2 ) : -99);
+	   int pat3 = (i3 >= 0 ? I("hit_pattern", i3 ) : -99);
+	   int pat4 = (i4 >= 0 ? I("hit_pattern", i4 ) : -99); 
 
-	   int pat1 = (i1 >= 0 ? (hit_br->GetLeaf("pattern"))->GetValue(i1) : -99);
-	   int pat2 = (i2 >= 0 ? (hit_br->GetLeaf("pattern"))->GetValue(i2) : -99);
-	   int pat3 = (i3 >= 0 ? (hit_br->GetLeaf("pattern"))->GetValue(i3) : -99);
-	   int pat4 = (i4 >= 0 ? (hit_br->GetLeaf("pattern"))->GetValue(i4) : -99);
-
-	   int st1_ring2 = (i1 >= 0 ? ((hit_br->GetLeaf("ring"))->GetValue(i1) == 2 || (hit_br->GetLeaf("ring"))->GetValue(i1) == 3) : 0);
+	   int st1_ring2 = (i1 >= 0 ? ( I("hit_ring", i1 ) == 2 || I("hit_ring", i1 ) == 3 ) : 0);
 
 	   double eta;
 	   double phi;
 	   int endcap;
-	   if      (i2 >= 0) { eta = (hit_br->GetLeaf("eta"))->GetValue(i2); phi = (hit_br->GetLeaf("phi"))->GetValue(i2); }
-	   else if (i3 >= 0) { eta = (hit_br->GetLeaf("eta"))->GetValue(i3); phi = (hit_br->GetLeaf("phi"))->GetValue(i3); }
-	   else if (i4 >= 0) { eta = (hit_br->GetLeaf("eta"))->GetValue(i4); phi = (hit_br->GetLeaf("phi"))->GetValue(i4); }
-	   else if (i1 >= 0) { eta = (hit_br->GetLeaf("eta"))->GetValue(i1); phi = (hit_br->GetLeaf("phi"))->GetValue(i1); }
+	   if      (i2 >= 0) { eta = F("hit_eta", i2 ); phi = F("hit_phi", i2 ); }
+	   else if (i3 >= 0) { eta = F("hit_eta", i3 ); phi = F("hit_phi", i3 ); }
+	   else if (i4 >= 0) { eta = F("hit_eta", i4 ); phi = F("hit_phi", i4 ); }
+	   else if (i1 >= 0) { eta = F("hit_eta", i1 ); phi = F("hit_phi", i1 ); }
 	   endcap = (eta > 0 ? +1 : -1);
 
 	   // Check which hits match between EMTF track and built track
 	   if (i1 >= 0 && ph1 == emtf_ph.at(0) && th1 == emtf_th.at(0)) {
 	     shared_mode     += 8;
-	     shared_mode_CSC += 8 * ((hit_br->GetLeaf("isRPC"))->GetValue(i1) == 0);
-	     shared_mode_RPC += 8 * ((hit_br->GetLeaf("isRPC"))->GetValue(i1) == 1);
+	     shared_mode_CSC += 8 * ( I("hit_isRPC", i1 ) == 0);
+	     shared_mode_RPC += 8 * ( I("hit_isRPC", i1 ) == 1);
 	   }
 	   if (i2 >= 0 && ph2 == emtf_ph.at(1) && th2 == emtf_th.at(1)) {
 	     shared_mode     += 4;
-	     shared_mode_CSC += 4 * ((hit_br->GetLeaf("isRPC"))->GetValue(i2) == 0);
-	     shared_mode_RPC += 4 * ((hit_br->GetLeaf("isRPC"))->GetValue(i2) == 1);
+	     shared_mode_CSC += 4 * ( I("hit_isRPC", i2 ) == 0);
+	     shared_mode_RPC += 4 * ( I("hit_isRPC", i2 ) == 1);
 	   }
 	   if (i3 >= 0 && ph3 == emtf_ph.at(2) && th3 == emtf_th.at(2)) {
 	     shared_mode     += 2;
-	     shared_mode_CSC += 2 * ((hit_br->GetLeaf("isRPC"))->GetValue(i3) == 0);
-	     shared_mode_RPC += 2 * ((hit_br->GetLeaf("isRPC"))->GetValue(i3) == 1);
+	     shared_mode_CSC += 2 * ( I("hit_isRPC", i3 ) == 0);
+	     shared_mode_RPC += 2 * ( I("hit_isRPC", i3 ) == 1);
 	   }
 	   if (i4 >= 0 && ph4 == emtf_ph.at(3) && th4 == emtf_th.at(3)) {
 	     shared_mode     += 1;
-	     shared_mode_CSC += 1 * ((hit_br->GetLeaf("isRPC"))->GetValue(i4) == 0);
-	     shared_mode_RPC += 1 * ((hit_br->GetLeaf("isRPC"))->GetValue(i4) == 1);
+	     shared_mode_CSC += 1 * ( I("hit_isRPC", i4 ) == 0);
+	     shared_mode_RPC += 1 * ( I("hit_isRPC", i4 ) == 1);
 	   }
-
 
 	   // Variables to go into BDT
 	   int theta;
@@ -674,25 +667,14 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	     goto EMTF_ONLY;
 	   }
 
-	   // std::cout << "    - Computing theta" << std::endl;
 	   theta = CalcTrackTheta( th1, th2, th3, th4, st1_ring2, mode, BIT_COMP );
 	   
-	   // std::cout << "    - Computing dPhis" << std::endl;
 	   CalcDeltaPhis( dPh12, dPh13, dPh14, dPh23, dPh24, dPh34, dPhSign,
 			  dPhSum4, dPhSum4A, dPhSum3, dPhSum3A, outStPh,
 			  ph1, ph2, ph3, ph4, mode, BIT_COMP );
-	   
-	   // std::cout << "    - Computing dThetas" << std::endl;
+	  
 	   CalcDeltaThetas( dTh12, dTh13, dTh14, dTh23, dTh24, dTh34,
 			    th1, th2, th3, th4, mode, BIT_COMP );
-
-	   // std::cout << "    - Computing FRs" << std::endl;
-
-	   // // FR bit directly out of the NTuples
-	   // FR1 = (i1 >= 0 ? (hit_br->GetLeaf("FR"))->GetValue(i1) : -99);
-	   // FR2 = (i2 >= 0 ? (hit_br->GetLeaf("FR"))->GetValue(i2) : -99);
-	   // FR3 = (i3 >= 0 ? (hit_br->GetLeaf("FR"))->GetValue(i3) : -99);
-	   // FR4 = (i4 >= 0 ? (hit_br->GetLeaf("FR"))->GetValue(i4) : -99);
 
 	   // In firmware, RPC 'FR' bit set according to FR of corresponding CSC chamber
 	   ring1 = (i1 >= 0 ? (hit_br->GetLeaf("ring"))   ->GetValue(i1) : -99);
