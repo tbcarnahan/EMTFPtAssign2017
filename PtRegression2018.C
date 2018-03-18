@@ -382,8 +382,6 @@ void PtRegression2018 ( TString myMethodList = "" ) {
        UInt_t nMuons = I("nRecoMuons");//reco_* branches are true info reference
        UInt_t nHits  = I("nHits");//hit_* branches are unpacked hits 
        UInt_t nTrks  = I("nTracks");//trk_* branches are EMTF tracks
-       int BarrelRecoMu=0;
-       int EndcapRecoMu=0;
 	     
        if ( ( (iEvt % REPORT_EVT) == 0) || (iEvtZB > 0 && (iEvtZB % REPORT_EVT) == 0) )
 	 std::cout << "Looking at SingleMu event " << iEvt << " (ZeroBias event " << iEvtZB << ")" << std::endl;
@@ -391,6 +389,8 @@ void PtRegression2018 ( TString myMethodList = "" ) {
        //============================================
        //EMTF biased events can't be used in training
        //============================================
+       int BarrelRecoMu=0;
+       int EndcapRecoMu=0;
        for (UInt_t iMu = 0; iMu < nMuons; iMu++) {
 	 //RECO mu pT >  Bias pT, Iso < Bias_Iso, match St1 segment, medium ID
 	 if( F("reco_pt", iMu) >= Bias_Pt && F("reco_iso", iMu) < Bias_Iso && I("reco_ID_station", iMu) == 1 && I("reco_ID_medium", iMu) == 1){
