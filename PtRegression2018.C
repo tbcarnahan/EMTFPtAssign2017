@@ -377,34 +377,32 @@ void PtRegression2018 ( TString myMethodList = "" ) {
        if (iEvt > MAX_TR) break;
 
        in_chain->GetEntry(jEvt);
-   
+	     
+       Bool_t trainEvt = true;  // Can use the event for training 
        UInt_t nMuons = I("nRecoMuons");//reco_* branches are true info reference
        UInt_t nHits  = I("nHits");//hit_* branches are unpacked hits 
        UInt_t nTrks  = I("nTracks");//trk_* branches are EMTF tracks
 	     
-       //Flag: can use the event for training   
-       Bool_t trainEvt = true;  
-
        if ( ( (iEvt % REPORT_EVT) == 0) || (iEvtZB > 0 && (iEvtZB % REPORT_EVT) == 0) )
-	 std::cout << "Looking at MC event " << iEvt << " (ZeroBias event " << iEvtZB << ")" << std::endl;
+	 std::cout << "Looking at SingleMu event " << iEvt << " (ZeroBias event " << iEvtZB << ")" << std::endl;
        
-       for (UInt_t iMu = 0; iMu < nMuons; iMu++) {
-	 double mu_pt  = 999.;
-	 double mu_eta = -99.;
-	 double mu_phi = -99.;
-	 int mu_charge = -99;
-	       
-	 mu_pt     = F("reco_pt", iMu);
-	 mu_eta    = F("reco_eta",iMu);
-	 mu_phi    = F("reco_phi",iMu);
-	 mu_charge = F("reco_charge",iMu);
-	       
-         // *** Muon true kinematics *** //
+       //==========================================
+       //Loop over Reco mu to find a EMTF trk match
+       //==========================================
+       for (UInt_t iMu = 0; iMu < nMuons; iMu++) { 
+	 double mu_pt  = 999.; mu_pt = F("reco_pt", iMu);
+	 double mu_eta = -99.; mu_eta = F("reco_eta",iMu);
+	 double mu_phi = -99.; mu_phi = F("reco_phi",iMu);
+	 int mu_charge = -99; mu_charge = F("reco_charge",iMu);
+	 //====================    
+         //Muon true kinematics
+	 //====================
 	 if ( mu_pt < PTMIN || mu_pt > PTMAX ) continue;
 	 if ( fabs( mu_eta ) < ETAMIN || fabs( mu_eta ) > ETAMAX ) continue;
 	 if ( mu_pt < PTMIN_TR || mu_pt > PTMAX_TR ) trainEvt = false;
-
-	 // Find the relevant EMTF track
+         //============================
+	 //Find the relevant EMTF track
+	 //============================
 	 double emtf_pt    = 999.;
 	 double emtf_eta   = -99.;
 	 double emtf_phi   = -99.;
@@ -423,17 +421,21 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 
 	   emtf_eta     = F("trk_eta", iTrk);
 	   emtf_eta_int = I("trk_eta_int", iTrk);
-	   // Require same endcap
+	   //=================== 
+	   //Require same endcap
+	   //===================
            if ( (emtf_eta > 0) != (mu_eta > 0) ) {
 	     emtf_eta = -99.;
 	     continue;
 	   }
+	   //==================
+	   //Require valid mode
+	   //==================
 	   emtf_mode = I("trk_mode", iTrk);
 	   emtf_mode_CSC = 0;
 	   emtf_mode_RPC = 0;
-
-	   // Require valid mode
 	   bool good_emtf_mode = false;
+		 
 	   for (UInt_t jMode = 0; jMode < EMTF_MODES.size(); jMode++) {
 	     if (emtf_mode == EMTF_MODES.at(jMode))
 	       good_emtf_mode = true;
@@ -443,22 +445,22 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	     continue;
 	   }
 	   	   
-	   emtf_pt       = (trk_br->GetLeaf("pt"))->GetValue(iTrk);
-	   emtf_phi      = (trk_br->GetLeaf("phi"))->GetValue(iTrk);;
-	   emtf_charge   = (trk_br->GetLeaf("charge"))->GetValue(iTrk);
-	   emtf_sect_idx = (trk_br->GetLeaf("sector_index"))->GetValue(iTrk);
-
+	   emtf_pt       = F("trk_pt",iTrk);
+	   emtf_phi      = F("trk_phi",iTrk); 
+	   emtf_charge   = I("trk_charge", iTrk); 
+	   emtf_sect_idx = I("trk_sector_index", iTrk); 
+		 
 	   for (int ii = 0; ii < 4; ii++) {
 	     if (emtf_mode < 0)
 	       continue;
 	     if ( (emtf_mode % int(pow(2, 4 - ii))) / int(pow(2, 3 - ii)) > 0) {
-	       emtf_id.at(ii) = iTrk*4 + ii;
-	       emtf_ph.at(ii) = (trk_br->GetLeaf("hit_phi_int"))->GetValue(iTrk*4 + ii);
-	       emtf_th.at(ii) = (trk_br->GetLeaf("hit_theta_int"))->GetValue(iTrk*4 + ii);
-	       emtf_dt.at(ii) = ( (trk_br->GetLeaf("hit_isRPC"))->GetValue(iTrk*4 + ii) == 1 ? 2 : 1);
-	       if (emtf_dt.at(ii) == 1)
+	       emtf_id.at(ii) = iTrk*4 + ii;//EMTF track hit id
+	       emtf_ph.at(ii) = I("hit_phi_int", iTrk*4 + ii); 
+	       emtf_th.at(ii) = I("hit_theta_int", iTrk*4 + ii); 
+	       emtf_dt.at(ii) = ( I("hit_isRPC", iTrk*4 + ii) == 1 ? 2 : 1);
+	       if (emtf_dt.at(ii) == 1)//Hit is CSC
 		 emtf_mode_CSC += int(pow(2, 3 - ii));
-	       else if (emtf_dt.at(ii) == 2)
+	       else if (emtf_dt.at(ii) == 2)//Hit is RPC
 		 emtf_mode_RPC += int(pow(2, 3 - ii));
 	     }
 	   }
@@ -472,18 +474,10 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 
 	   break; // Only one EMTF track per GEN muon considered
 
-	 } // End loop: for (UInt_t iTrk = 0; iTrk < nTrks; iTrk++)
+	 } // End loop iTrk
 
 	 if (REQ_EMTF && emtf_mode < 0)
 	   continue;
-
-	 // std::cout << "  * EMTF track has sector_index = " << emtf_sect_idx
-	 // 	   << ", eta = " << emtf_eta << ", phi = " << emtf_phi << std::endl;
-	 // std::cout << "    - St. 1: theta = " << emtf_ph.at(0) << ", phi = " << emtf_th.at(0) << std::endl;
-	 // std::cout << "    - St. 2: theta = " << emtf_ph.at(1) << ", phi = " << emtf_th.at(1) << std::endl;
-	 // std::cout << "    - St. 3: theta = " << emtf_ph.at(2) << ", phi = " << emtf_th.at(2) << std::endl;
-	 // std::cout << "    - St. 4: theta = " << emtf_ph.at(3) << ", phi = " << emtf_th.at(3) << std::endl;
-
 
 	 //////////////////////////////////////////
 	 ///  Build tracks from available hits  ///
