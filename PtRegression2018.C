@@ -143,14 +143,12 @@ void PtRegression2018 ( TString myMethodList = "" ) {
    }
 	
    // Add tree from the input files to the TChain
-   TChain *SM_in_chains = new TChain("FlatNtupleData/tree");
+   TChain *in_chains = new TChain("FlatNtupleData/tree");
    for (int i = 0; i < SM_in_file_names.size(); i++) {
-     SM_in_chains->Add( SM_in_file_names.at(i) );
-   }
-	
-   TChain *ZB_in_chains = new TChain("FlatNtupleData/tree");
+	   in_chains->Add( SM_in_file_names.at(i) );
+   }	
    for (int i = 0; i < ZB_in_file_names.size(); i++) {
-     ZB_in_chains->Add( ZB_in_file_names.at(i) );
+	   in_chains->Add( ZB_in_file_names.at(i) );
    }
 
    //////////////////////////////////////////////////////////////////////////
@@ -359,22 +357,27 @@ void PtRegression2018 ( TString myMethodList = "" ) {
      }
    } // End loop: for (UInt_t iFact = 0; iFact < factories.size(); iFact++)
 
+   int nSMEvents = SM_in_chain->GetEntries();
+   int nZBEvents = ZB_in_chain->GetEntries();
    std::cout << "\n******* About to loop over chains *******" << std::endl;
    UInt_t iEvt = 0;
    UInt_t iEvtZB = 0;
    UInt_t nTrain = 0;
    UInt_t nTest  = 0;
+   UInt_t SMFlag = -1;
 	
    //================================================
    //Register training events from SingleMu Data ONLY
    //================================================
-   for (int iCh = 0; iCh < SM_in_chains.size(); iCh++) {
-     TChain *in_chain = SM_in_chains.at(iCh);
+   for (int iCh = 0; iCh < in_chains.size(); iCh++) {
+     TChain *in_chain = in_chains.at(iCh);
      
      std::cout << "\n******* About to enter the event loop for chain " << iCh+1 << " *******" << std::endl;
      
      for (UInt_t jEvt = 0; jEvt < in_chain->GetEntries(); jEvt++) {
        if (iEvt > MAX_TR) break;
+       if (jEvt < nSMEvents) SMFlag=1;
+       if (jEvt >= nSMEvents) SMFlag=0;
 
        in_chain->GetEntry(jEvt);
 	     
