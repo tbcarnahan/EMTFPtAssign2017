@@ -422,7 +422,6 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	 int emtf_mode     = I("trk_mode", iTrk);
 	 int emtf_mode_CSC = I("trk_mode_CSC", iTrk); 
          int emtf_mode_RPC = I("trk_mode_RPC", iTrk);      
-	 int emtf_sect_idx = I("trk_sector_index", iTrk);
 	 int emtf_unique_match = I("trk_dR_match_unique", iTrk);
 	 int emtf_unique_iMu = I("trk_dR_match_iReco", iTrk); 
 	       
