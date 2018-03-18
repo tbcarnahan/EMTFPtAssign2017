@@ -404,7 +404,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 		 }
 	 }//end if 
        }//end Remove bias  
-       if ( BarrelRecoMu==0 && EndcapRecoMu<=1 ) continue;
+       if ( BarrelRecoMu==0 && EndcapRecoMu<=1 ) continue;//EMTF biased event, skip
 	     
        //==================
        //Loop over Reco mu 
