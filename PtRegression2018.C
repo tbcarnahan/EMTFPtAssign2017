@@ -366,9 +366,9 @@ void PtRegression2018 ( TString myMethodList = "" ) {
    UInt_t nTest  = 0;
    UInt_t ZBFlag = -1;
 	
-   //================================================
-   //Register training events from SingleMu Data ONLY
-   //================================================
+   //================================
+   //Register events: loop over chains
+   //================================
    for (int iCh = 0; iCh < in_chains.size(); iCh++) {
      TChain *in_chain = in_chains.at(iCh);
      
