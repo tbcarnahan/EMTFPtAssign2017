@@ -401,7 +401,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	 if ( fabs( mu_eta ) < ETAMIN || fabs( mu_eta ) > ETAMAX ) continue;
 	 if ( mu_pt < PTMIN_TR || mu_pt > PTMAX_TR ) trainEvt = false;
          //============================
-	 //Find the relevant EMTF track
+	 //Matched EMTF track
 	 //============================
 	 double emtf_pt    = 999.;
 	 double emtf_eta   = -99.;
@@ -449,7 +449,9 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	   emtf_phi      = F("trk_phi",iTrk); 
 	   emtf_charge   = I("trk_charge", iTrk); 
 	   emtf_sect_idx = I("trk_sector_index", iTrk); 
-		 
+	   emtf_mode_CSC = I("trk_mode_CSC", iTrk); 
+           emtf_mode_RPC = I("trk_mode_RPC", iTrk); 
+		
 	   for (int ii = 0; ii < 4; ii++) {
 	     if (emtf_mode < 0)
 	       continue;
@@ -458,12 +460,8 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	       emtf_ph.at(ii) = I("hit_phi_int", iTrk*4 + ii); 
 	       emtf_th.at(ii) = I("hit_theta_int", iTrk*4 + ii); 
 	       emtf_dt.at(ii) = ( I("hit_isRPC", iTrk*4 + ii) == 1 ? 2 : 1);
-	       if (emtf_dt.at(ii) == 1)//Hit is CSC
-		 emtf_mode_CSC += int(pow(2, 3 - ii));
-	       else if (emtf_dt.at(ii) == 2)//Hit is RPC
-		 emtf_mode_RPC += int(pow(2, 3 - ii));
-	     }
-	   }
+	     }//if valid modes
+	   }//for ii
 
 	   if (emtf_mode_CSC + emtf_mode_RPC != emtf_mode) {
 	     std::cout << "\n\n*** Super-bizzare case where EMTF mode = " << emtf_mode  << ", but CSC mode = " 
@@ -472,7 +470,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	     continue;
 	   }
 
-	   break; // Only one EMTF track per GEN muon considered
+	   break; // Only one EMTF track per Reco muon considered
 
 	 } // End loop iTrk
 
