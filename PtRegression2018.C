@@ -582,8 +582,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	 
 	 ///////////////////////////////
 	 ///  Loop over built tracks ///
-	 ///////////////////////////////
-	 
+	 ///////////////////////////////	 
 	 for (UInt_t iTrk = 0; iTrk < all_trk_hits.size(); iTrk++) {
 	   
 	   std::array<int, 4> trk_hits  = all_trk_hits.at(iTrk);
