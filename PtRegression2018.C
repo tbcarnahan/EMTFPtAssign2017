@@ -541,8 +541,8 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 
 	 // Remove masked hits
 	 std::vector<std::tuple<int, int, int>> to_erase;
-	 for (int ii = 0; ii < 12; ii++) { // Loop over sectors
-	   for (int jj = 0; jj < 4; jj++) { // Loop over stations
+	 for (int ii = 0; ii < 12; ii++) { 
+	   for (int jj = 0; jj < 4; jj++) { 
 	     for (int kk = 0; kk < dt.at(ii).at(jj).size(); kk++) { // Loop over hits
 	       for (int ll = 0; ll < CSC_MASK.size(); ll++)
 		 if (jj+1 == CSC_MASK.at(ll) && dt.at(ii).at(jj).at(kk) == 1)
@@ -550,9 +550,10 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	       for (int ll = 0; ll < RPC_MASK.size(); ll++)
 		 if (jj+1 == RPC_MASK.at(ll) && dt.at(ii).at(jj).at(kk) == 2)
 		   to_erase.push_back(std::make_tuple(ii, jj, kk));
-	     }
-	   }
-	 }
+	     }// Loop over hits
+	   }// Loop over stations
+	 }// Loop over sectors
+	       
 	 for (int ii = int(to_erase.size()) - 1; ii >= 0; ii--) {
 	   int iSc = std::get<0>(to_erase.at(ii));
 	   int iSt = std::get<1>(to_erase.at(ii));
