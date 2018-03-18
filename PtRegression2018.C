@@ -479,7 +479,6 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	 //////////////////////////////////////////
 	 ///  Build tracks from available hits  ///
 	 //////////////////////////////////////////
-
 	 std::array< std::array< std::vector<int>, 4>, 12> id; // All hit index values, by sector and station
 	 std::array< std::array< std::vector<int>, 4>, 12> ph; // All full-precision integer phi values
 	 std::array< std::array< std::vector<int>, 4>, 12> th; // All full-precision integer theta values
@@ -490,8 +489,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	 if (USE_EMTF_CSC && emtf_mode > 0) {
 	   for (int ii = 0; ii < 12; ii++) {
 	     for (int jj = 0; jj < 4; jj++) {
-	       if ( (trk_br->GetLeaf("hit_sector_index"))->GetValue(emtf_id.at(jj)) == ii+1 &&
-		    emtf_dt.at(jj) == 1 ) {
+	       if ( I("hit_sector_index", emtf_id.at(jj)) == ii+1 && emtf_dt.at(jj) == 1 ) {
 		 id.at(ii).at(jj).push_back( emtf_id.at(jj) );
 		 ph.at(ii).at(jj).push_back( emtf_ph.at(jj) );
 		 th.at(ii).at(jj).push_back( emtf_th.at(jj) );
@@ -499,20 +497,18 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 		 // std::cout << "In sector " << ii+1 << ", station " << jj+1 << ", adding hit with "
 		 // 	   << "phi = " << emtf_ph.at(jj) << ", theta = " << emtf_th.at(jj) << std::endl;
 	       }
-	     }
-	   } // End loop over stations
-	 } // End loop over sector indices
+	     }// End loop over stations
+	   } // End loop over sector indices
+	 } //End CSC only LCT
 
-	 
 	 // Loop over all hits
 	 for (UInt_t iHit = 0; iHit < nHits; iHit++) {
-	   if ( (mu_eta > 0) != ((hit_br->GetLeaf("eta"))->GetValue(iHit) > 0) )
-	     continue;
-	   int iSc = (hit_br->GetLeaf("sector_index"))->GetValue(iHit) - 1;
-	   int iSt = (hit_br->GetLeaf("station"))     ->GetValue(iHit) - 1;
-	   int iPh = (hit_br->GetLeaf("phi_int"))     ->GetValue(iHit);
-	   int iTh = (hit_br->GetLeaf("theta_int"))   ->GetValue(iHit);
-	   int iDt = (hit_br->GetLeaf("isRPC"))       ->GetValue(iHit) ? 2 : 1;
+	 
+	   int iSc = I("hit_sector_index", iHit) - 1; 
+	   int iSt = I("hit_station", iHit) - 1;
+	   int iPh = I("hit_phi_int", iHit);
+	   int iTh = I("hit_theta_int", iHit);
+	   int iDt = I("hit_isRPC", iHit) ? 2 : 1; 
 
 	   if (USE_EMTF_CSC && iDt == 1) {
 	     if (id.at(iSc).at(iSt).size() > 0) {
