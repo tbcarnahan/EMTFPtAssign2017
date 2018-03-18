@@ -398,7 +398,8 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	 mu_eta    = F("reco_eta",iMu);
 	 mu_phi    = F("reco_phi",iMu);
 	 mu_charge = F("reco_charge",iMu);
-
+	       
+         // *** Muon true kinematics *** //
 	 if ( mu_pt < PTMIN || mu_pt > PTMAX ) continue;
 	 if ( fabs( mu_eta ) < ETAMIN || fabs( mu_eta ) > ETAMAX ) continue;
 	 if ( mu_pt < PTMIN_TR || mu_pt > PTMAX_TR ) trainEvt = false;
