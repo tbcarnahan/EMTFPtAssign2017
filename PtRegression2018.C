@@ -378,10 +378,10 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 
        in_chain->GetEntry(jEvt);
 	     
-       Bool_t trainEvt = true;  // Can use the event for training 
        UInt_t nMuons = I("nRecoMuons");//reco_* branches are true info reference
        UInt_t nHits  = I("nHits");//hit_* branches are unpacked hits 
        UInt_t nTrks  = I("nTracks");//trk_* branches are EMTF tracks
+       Bool_t trainEvt = true;  // Can use the event for training 
 	     
        if ( ( (iEvt % REPORT_EVT) == 0) || (iEvtZB > 0 && (iEvtZB % REPORT_EVT) == 0) )
 	 std::cout << "Looking at SingleMu event " << iEvt << " (ZeroBias event " << iEvtZB << ")" << std::endl;
@@ -411,17 +411,19 @@ void PtRegression2018 ( TString myMethodList = "" ) {
        //==================
        for (UInt_t iMu = 0; iMu < nMuons; iMu++) { 
 	       
-	 mu_pt = F("reco_pt", iMu);
-	 mu_eta = F("reco_eta",iMu);
-	 mu_phi = F("reco_phi",iMu);
-	 mu_charge = F("reco_charge",iMu);
+	 double mu_pt = F("reco_pt", iMu);
+	 double mu_eta = F("reco_eta",iMu);
+	 double mu_phi = F("reco_phi",iMu);
+	 int mu_charge = I("reco_charge",iMu);
+	 int mu_unique_match = I("reco_dR_match_unique", iMu);
+	 int mu_unique_iTrk =  I("reco_dR_match_iTrk", iMu); 
 	       
 	 //====================    
          //RECO mu kinematics
 	 //====================
 	 if ( mu_pt < PTMIN || mu_pt > PTMAX ) continue;
 	 if ( fabs( mu_eta ) < ETAMIN || fabs( mu_eta ) > ETAMAX ) continue;
-	 if ( mu_pt < PTMIN_TR || mu_pt > PTMAX_TR ) trainEvt = false;
+	 if ( mu_pt < PTMIN_TR || mu_pt > PTMAX_TR || mu_unique_match!=1) trainEvt = false;
 	       
          //============================
 	 //Matched EMTF track
