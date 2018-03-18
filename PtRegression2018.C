@@ -467,10 +467,10 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	 for (int ii = 0; ii < 4; ii++) {
 		 if (emtf_mode < 0) continue;
 		 if ( (emtf_mode % int(pow(2, 4 - ii))) / int(pow(2, 3 - ii)) > 0) {
-			 emtf_id.at(ii) = iTrk*4 + ii;
-			 emtf_ph.at(ii) = I("hit_phi_int", iTrk*4 + ii); 
-			 emtf_th.at(ii) = I("hit_theta_int", iTrk*4 + ii); 
-			 emtf_dt.at(ii) = ( I("hit_isRPC", iTrk*4 + ii) == 1 ? 2 : 1);
+			 emtf_id.at(ii) = I("trk_iHit", iTrk, ii);
+			 emtf_ph.at(ii) = I("hit_phi_int", emtf_id.at(ii) ); 
+			 emtf_th.at(ii) = I("hit_theta_int", emtf_id.at(ii) ); 
+			 emtf_dt.at(ii) = ( I("hit_isRPC", emtf_id.at(ii) ) == 1 ? 2 : 1);
 		 }
 	 }//for ii
 	 
