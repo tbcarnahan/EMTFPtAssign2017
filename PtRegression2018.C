@@ -677,11 +677,11 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 			    th1, th2, th3, th4, mode, BIT_COMP );
 
 	   // In firmware, RPC 'FR' bit set according to FR of corresponding CSC chamber
-	   ring1 = (i1 >= 0 ? (hit_br->GetLeaf("ring"))   ->GetValue(i1) : -99);
-	   cham1 = (i1 >= 0 ? (hit_br->GetLeaf("chamber"))->GetValue(i1) : -99);
-	   cham2 = (i2 >= 0 ? (hit_br->GetLeaf("chamber"))->GetValue(i2) : -99);
-	   cham3 = (i3 >= 0 ? (hit_br->GetLeaf("chamber"))->GetValue(i3) : -99);
-	   cham4 = (i4 >= 0 ? (hit_br->GetLeaf("chamber"))->GetValue(i4) : -99);
+	   ring1 = (i1 >= 0 ? I("hit_ring", i1 ) : -99);
+	   cham1 = (i1 >= 0 ? I("hit_chamber", i1 ) : -99);
+	   cham2 = (i2 >= 0 ? I("hit_chamber", i2 ) : -99);
+	   cham3 = (i3 >= 0 ? I("hit_chamber", i3 ) : -99);
+	   cham4 = (i4 >= 0 ? I("hit_chamber", i4 ) : -99);
 
 	   FR1 = (i1 >= 0 ? (cham1 % 2 == 0) : -99);  // Odd chambers are bolted to the iron,
 	   FR2 = (i2 >= 0 ? (cham2 % 2 == 0) : -99);  // which faces forwared in stations 1 & 2,
@@ -689,21 +689,19 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	   FR4 = (i4 >= 0 ? (cham4 % 2 == 1) : -99);
 	   if (ring1 == 3) FR1 = 0;                   // In ME1/3 chambers are non-overlapping
 
-	   // std::cout << "    - Computing bend" << std::endl;
 	   CalcBends( bend1, bend2, bend3, bend4,
 		      pat1, pat2, pat3, pat4, 
 		      dPhSign, endcap, mode, BIT_COMP );
 
-	   // std::cout << "    - Computing RPCs" << std::endl;
-	   RPC1 = (i1 >= 0 ? ((hit_br->GetLeaf("isRPC"))->GetValue(i1) == 1 ? 1 : 0) : -99);
-	   RPC2 = (i2 >= 0 ? ((hit_br->GetLeaf("isRPC"))->GetValue(i2) == 1 ? 1 : 0) : -99);
-	   RPC3 = (i3 >= 0 ? ((hit_br->GetLeaf("isRPC"))->GetValue(i3) == 1 ? 1 : 0) : -99);
-	   RPC4 = (i4 >= 0 ? ((hit_br->GetLeaf("isRPC"))->GetValue(i4) == 1 ? 1 : 0) : -99);
+	   RPC1 = (i1 >= 0 ? ( I("hit_isRPC", i1 ) == 1 ? 1 : 0) : -99);
+	   RPC2 = (i2 >= 0 ? ( I("hit_isRPC", i2 ) == 1 ? 1 : 0) : -99);
+	   RPC3 = (i3 >= 0 ? ( I("hit_isRPC", i3 ) == 1 ? 1 : 0) : -99);
+	   RPC4 = (i4 >= 0 ? ( I("hit_isRPC", i4 ) == 1 ? 1 : 0) : -99);
 
 	   CalcRPCs( RPC1, RPC2, RPC3, RPC4, mode, st1_ring2, theta, BIT_COMP );
 	   
 	   // Clean out showering muons with outlier station 1, or >= 2 outlier stations
-	   if (isMC && log2(mu_pt) > 6 && CLEAN_HI_PT && MODE == 15)
+	   if (log2(mu_pt) > 6 && CLEAN_HI_PT && MODE == 15)
 	     if ( dPhSum4A >= fmax(40., 332. - 40*log2(mu_pt)) )
 	       if ( outStPh < 2 || dPhSum3A >= fmax(24., 174. - 20*log2(mu_pt)) )
 		 mu_train = false;
@@ -723,7 +721,6 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	     Double_t evt_weight = 1.0;
 	     
 	     // Weight by 1/pT or (1/pT)^2 so overall distribution is (1/pT)^2 or (1/pT)^3
-	     //add more weights forms to study the effect
 	     if      ( std::get<2>(factories.at(iFact)).Contains("_Pt0p5Wgt") )
 	       evt_weight = pow(mu_pt,0.5);
 	     else if ( std::get<2>(factories.at(iFact)).Contains("_log2PtWgt") )
