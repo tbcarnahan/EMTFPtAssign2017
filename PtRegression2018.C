@@ -493,9 +493,6 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 
 	 } // End loop iTrk
 
-	 if (REQ_EMTF && emtf_mode < 0)
-	   continue;
-
 	 //////////////////////////////////////////
 	 ///  Build tracks from available hits  ///
 	 //////////////////////////////////////////
@@ -969,12 +966,14 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	     
 	   } // End loop: for (UInt_t iFact = 0; iFact < factories.size(); iFact++) 
 	   
-	 } // End loop: for (UInt_t iTrk = 0; iTrk < nTracks; iTrk++)
+	 } // End loop: for built iTrk
+	       
        } // End loop: for (UInt_t iMu = 0; iMu < nMuons; iMu++)
+	     
        if (isMC) iEvt += 1;
        else iEvtZB += 1;
      } // End loop: for jEvt 
-   } // End loop: for iTrCh
+   } // End loop: for iCh
 
    std::cout << "******* Made it out of the event loop *******" << std::endl;
 
