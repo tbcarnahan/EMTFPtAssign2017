@@ -376,8 +376,8 @@ void PtRegression2018 ( TString myMethodList = "" ) {
      
      for (UInt_t jEvt = 0; jEvt < in_chain->GetEntries(); jEvt++) {
        if (NonZBEvt > MAX_TR) break;
-       if (jEvt < nSMEvents) ZBFlag = 0;
-       if (jEvt >= nSMEvents) ZBFlag = 1;
+       if (jEvt < nSMEvents) isZB = false;
+       if (jEvt >= nSMEvents) isZB = true;
 
        in_chain->GetEntry(jEvt);
 	     
