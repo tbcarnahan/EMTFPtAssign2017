@@ -384,7 +384,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
        UInt_t nMuons = I("nRecoMuons");//reco_* branches are true info reference
        UInt_t nHits  = I("nHits");//hit_* branches are unpacked hits 
        UInt_t nTrks  = I("nTracks");//trk_* branches are EMTF tracks
-       Bool_t trainEvt = true;  // Can use the event for training 
+       
 	     
        if ( ( (iEvt % REPORT_EVT) == 0) || (iEvtZB > 0 && (iEvtZB % REPORT_EVT) == 0) )
 	 std::cout << "Looking at SingleMu event " << iEvt << " (ZeroBias event " << iEvtZB << ")" << std::endl;
@@ -420,13 +420,14 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	 int mu_charge = I("reco_charge",iMu);
 	 int mu_unique_match = I("reco_dR_match_unique", iMu);
 	 int mu_unique_iTrk =  I("reco_dR_match_iTrk", iMu); 
+	 Bool_t mu_train = true;  // Can use the reco muon for training 
 	       
 	 //====================    
          //RECO mu kinematics
 	 //====================
 	 if ( mu_pt < PTMIN || mu_pt > PTMAX ) continue;
 	 if ( fabs( mu_eta ) < ETAMIN || fabs( mu_eta ) > ETAMAX ) continue;
-	 if ( mu_pt < PTMIN_TR || mu_pt > PTMAX_TR || mu_unique_match!=1) mu_train = false;
+	 if ( mu_pt < PTMIN_TR || mu_pt > PTMAX_TR || mu_unique_match!=1 || ZBFlag==1) mu_train = false;
 	       
          //============================
 	 //Matched EMTF track
@@ -748,7 +749,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	   if (isMC && log2(mu_pt) > 6 && CLEAN_HI_PT && MODE == 15)
 	     if ( dPhSum4A >= fmax(40., 332. - 40*log2(mu_pt)) )
 	       if ( outStPh < 2 || dPhSum3A >= fmax(24., 174. - 20*log2(mu_pt)) )
-		 trainEvt = false;
+		 mu_train = false;
 
 	 EMTF_ONLY: // Skip track building, just store EMTF info
 
@@ -956,7 +957,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	     } // End loop: for (UInt_t iVar = 0; iVar < var_names.size(); iVar++)
 	     
 	     // Load values into event
-	     if ( (iEvt % 2) == 0 && isMC && trainEvt && nTrain < (MAX_TR - (iFact == 0)) && (MODE > 0 || (iEvt % 1000) == 0) ) { 
+	     if ( (iEvt % 2) == 0 && mu_train && nTrain < (MAX_TR - (iFact == 0)) && (MODE > 0 || (iEvt % 1000) == 0) ) { 
 	       std::get<1>(factories.at(iFact))->AddTrainingEvent( "Regression", var_vals, evt_weight );
 	       if (iFact == 0) nTrain += 1;
 	       // std::cout << "Added train event " << nTrain << std::endl;
@@ -973,8 +974,8 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	       
        } // End loop: for (UInt_t iMu = 0; iMu < nMuons; iMu++)
 	     
-       if (isMC) iEvt += 1;
-       else iEvtZB += 1;
+       iEvt += 1;
+       if(jEvt> ZBEvents) iEvtZB += 1;
      } // End loop: for jEvt 
    } // End loop: for iCh
 
