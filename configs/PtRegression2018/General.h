@@ -26,7 +26,6 @@ const std::vector<TString> TARG_VARS = {"invPt"}; // Default "invPt"
 const std::vector<TString> EVT_WGTS  = {"invPt"}; // Default "invPt" 
 
 // *** EMTF tracks *** //
-const bool REQ_EMTF     = true;  // Require that an EMTF muon be matched to the GEN muon
 const bool USE_EMTF_CSC = true;  // Only use CSC LCTs from the original EMTF track
 const std::vector<int> EMTF_MODES = {15, 14, 13, 12, 11, 10, 9, 7, 6, 5, 3};  // Modes of saved EMTF tracks
 
