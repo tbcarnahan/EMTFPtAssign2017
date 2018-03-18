@@ -375,7 +375,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
      std::cout << "\n******* About to enter the event loop for chain " << iCh+1 << " *******" << std::endl;
      
      for (UInt_t jEvt = 0; jEvt < in_chain->GetEntries(); jEvt++) {
-       if (iEvt > MAX_TR) break;
+       if (NonZBEvt > MAX_TR) break;
        if (jEvt < nSMEvents) ZBFlag = 0;
        if (jEvt >= nSMEvents) ZBFlag = 1;
 
@@ -386,8 +386,9 @@ void PtRegression2018 ( TString myMethodList = "" ) {
        UInt_t nTrks  = I("nTracks");//trk_* branches are EMTF tracks
        
 	     
-       if ( ( (iEvt % REPORT_EVT) == 0) || (iEvtZB > 0 && (iEvtZB % REPORT_EVT) == 0) )
-	 std::cout << "Looking at Non-ZB event " << iEvt << "; ZB event " << iEvtZB << std::endl;
+       if ( (NonZBEvt % REPORT_EVT) == 0 ||
+	    (ZBEvt > 0 && (ZBEvt % REPORT_EVT) == 0) )
+	 std::cout << "Looking at Non-ZB event " << NonZBEvt << "; ZB event " << ZBEvt << std::endl;
        
        //============================================
        //EMTF biased events can't be used in training
@@ -407,7 +408,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 		 }
 	 }//end if 
        }//end Remove bias  
-       if (!isZB && BarrelRecoMu==0 && EndcapRecoMu<=1 ) mu_train = false;//Don't use EMTF biased event in training
+       if (!isZB && BarrelRecoMu==0 && EndcapRecoMu<=1 ) isZB = true;//Don't use EMTF biased event in training
 	     
        //==================
        //Loop over Reco mu 
@@ -427,7 +428,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	 //====================
 	 if ( mu_pt < PTMIN || mu_pt > PTMAX ) continue;
 	 if ( fabs( mu_eta ) < ETAMIN || fabs( mu_eta ) > ETAMAX ) continue;
-	 if ( mu_pt < PTMIN_TR || mu_pt > PTMAX_TR || mu_unique_match!=1 || ZBFlag==1) mu_train = false;
+	 if ( mu_pt < PTMIN_TR || mu_pt > PTMAX_TR || mu_unique_match!=1 || isZB) mu_train = false;
 	       
          //============================
 	 //Matched EMTF track
@@ -975,10 +976,10 @@ void PtRegression2018 ( TString myMethodList = "" ) {
        } // End loop: for (UInt_t iMu = 0; iMu < nMuons; iMu++)
 	     
        if(jEvt < ZBEvents){
-	       iEvt += 1;
+	       NonZBEvt += 1;
        }
        else{
-	       iEvtZB += 1;
+	       ZBEvt += 1;
        }
        
      } // End loop: for jEvt 
