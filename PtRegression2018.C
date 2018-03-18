@@ -407,8 +407,8 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	 // Find the relevant EMTF track
 	 double emtf_pt    = 999.;
 	 double emtf_eta   = -99.;
-	 int emtf_eta_int  = -99;
 	 double emtf_phi   = -99.;
+	 int emtf_eta_int  = -99;
 	 int emtf_charge   = -99;
 	 int emtf_mode     = -99;
 	 int emtf_mode_CSC = -99;
@@ -421,15 +421,14 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 
 	 for (UInt_t iTrk = 0; iTrk < nTrks; iTrk++) {
 
+	   emtf_eta     = F("trk_eta", iTrk);
+	   emtf_eta_int = I("trk_eta_int", iTrk);
 	   // Require same endcap
-	   emtf_eta     = (trk_br->GetLeaf("eta"))->GetValue(iTrk);
-	   emtf_eta_int = (trk_br->GetLeaf("eta_int"))->GetValue(iTrk);
-	   if (isMC && (emtf_eta > 0) != (mu_eta > 0)) {
+           if ( (emtf_eta > 0) != (mu_eta > 0) ) {
 	     emtf_eta = -99.;
 	     continue;
 	   }
-
-	   emtf_mode = (trk_br->GetLeaf("mode"))->GetValue(iTrk);
+	   emtf_mode = I("trk_mode", iTrk);
 	   emtf_mode_CSC = 0;
 	   emtf_mode_RPC = 0;
 
