@@ -475,13 +475,6 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 		 }
 	 }//for ii
 
-	 if (emtf_mode_CSC + emtf_mode_RPC != emtf_mode) {
-		 std::cout << "\n\n*** Super-bizzare case where EMTF mode = " << emtf_mode  << ", but CSC mode = " 
-			 << emtf_mode_CSC << " and RPC mode = " << emtf_mode_RPC << " ***" << std::endl;
-	         std::cout << "  - Rare bug in EMTF emulator - skipping.\n\n" << std::endl;
-	         continue;
-	 }
-
 	 //////////////////////////////////////////
 	 ///  Build tracks from available hits  ///
 	 //////////////////////////////////////////
