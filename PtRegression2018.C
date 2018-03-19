@@ -1052,8 +1052,8 @@ void PtRegression2018 ( TString myMethodList = "" ) {
    std::cout << "==> Wrote root file: " << out_file->GetName() << std::endl;
    std::cout << "==> TMVARegression is done!" << std::endl;
 
-   delete factory;
-   delete dataloader;
+   //delete factory;
+   //delete dataloader;
 
    // Launch the GUI for the root macros
    if (!gROOT->IsBatch()) TMVA::TMVARegGui( out_file_str );
@@ -1070,6 +1070,6 @@ int main( int argc, char** argv )
       if (!methodList.IsNull()) methodList += TString(",");
       methodList += regMethod;
    }
-   PtRegression_2018(methodList);
+   PtRegression2018(methodList);
    return 0;
 }
