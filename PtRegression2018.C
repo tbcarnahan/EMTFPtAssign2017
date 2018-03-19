@@ -493,7 +493,12 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 			 emtf_dt.at(ii) = ( I("hit_isRPC", emtf_id.at(ii) ) == 1 ? 2 : 1);
 		 }
 	 }//for ii
-	 
+	       
+	 std::cout << "emtf_id.at(1) ... "<<emtf_id.at(0)<< std::endl;
+	 std::cout << "emtf_id.at(2) ... "<<emtf_id.at(1)<< std::endl;
+	 std::cout << "emtf_id.at(3) ... "<<emtf_id.at(2)<< std::endl;
+	 std::cout << "emtf_id.at(4) ... "<<emtf_id.at(3)<< std::endl;
+	       
 	 if (emtf_mode < 0) continue;//skip track-build and go to next emtf trk
 	       
          std::cout << "Build tracks ... "<< std::endl;   
