@@ -31,7 +31,13 @@
 #include "configs/PtRegression2018/General.h"  // Settings for all modes
 #include "configs/PtRegression2018/User.h"     // User specific setting
 #include "configs/PtRegression2018/Modes.h"    // Mode specific settign
-#include "configs/PtRegression2018/Read_FlatNtuple.h" //Make sure it's up-to-date 
+
+//=====================================================
+//Make sure it's up-to-date 
+//Also Ntuple format/index etc changed b/t 2017 and 2018
+//Possibly cause error
+//=====================================================
+#include "configs/PtRegression2018/Read_FlatNtuple.h" 
 
 //////////////////////////////////
 ///  Main executable function  ///
