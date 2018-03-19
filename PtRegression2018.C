@@ -415,6 +415,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	 }//end if 
        }//end Remove bias  
        if (!isZB && BarrelRecoMu==0 && EndcapRecoMu<=1 ) isZB = true;//Don't use EMTF biased event in training
+       std::cout << "End removing bias ... "<< std::endl;    
 	     
        //===================
        //Loop over EMTF trks
@@ -444,7 +445,8 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 		 mu_phi = emtf_phi;
 	         mu_charge = emtf_charge;
 	 }
-	    
+	       
+	 std::cout << "RECO kinematics ... "<< std::endl;      
 	 //===============================    
          //RECO mu kinematics requirements
 	 //===============================
@@ -457,6 +459,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	 std::array<int, 4> emtf_th = {-99, -99, -99, -99};
 	 std::array<int, 4> emtf_dt = {-99, -99, -99, -99};
          
+	 std::cout << "Valid modes ... "<< std::endl;   
 	 //==================
 	 //Require valid mode
 	 //==================
@@ -481,7 +484,8 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	 }//for ii
 	 
 	 if (emtf_mode < 0) continue;//skip track-build and go to next emtf trk
-
+	       
+         std::cout << "Build tracks ... "<< std::endl;   
 	 //////////////////////////////////////////
 	 ///  Build tracks from available hits  ///
 	 //////////////////////////////////////////
@@ -506,7 +510,8 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	     }// End loop over stations
 	   } // End loop over sector indices
 	 } //End CSC only LCT
-
+         
+	 std::cout << "Loop over all hits ... "<< std::endl;  
 	 // Loop over all hits
 	 for (UInt_t iHit = 0; iHit < nHits; iHit++) {
 	 
