@@ -2,8 +2,7 @@
 const TString USER = "Wei";  // Settings applied in User.h
 
 // *** Events to process *** //
-const int MAX_TR = 5000000;  // Number of events for training 
-const int MAX_TE = 10000000;  // Number of events for test   
+const int MAX_TR = 50000000;  // Number of events for training 
 const int REPORT_EVT = 10000;  // Report every Nth event during processing
 
 // *** Remove EMTF Bias settings *** //
