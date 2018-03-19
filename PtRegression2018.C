@@ -550,8 +550,10 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	   ph.at(iSc).at(iSt).push_back( iPh );
 	   th.at(iSc).at(iSt).push_back( iTh );
 	   dt.at(iSc).at(iSt).push_back( iDt );
-	 }
+	 }//end loop over all hits
+	       
          std::cout << "Decide if EMTF LCTs are all found... "<< std::endl; 
+	       
 	 bool found_all_EMTF_LCTs = true;
 	 for (int ii = 0; ii < 4; ii++) {
 	   if (emtf_dt.at(ii) == 1 && !emtf_found.at(ii))
