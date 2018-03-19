@@ -549,7 +549,8 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	   // std::cout << "\n  * Rare case where not all LCTs in EMTF track were in the hit collection\n" << std::endl;
 	   continue;
 	 }
-
+         
+	 std::cout << "Remove masked hits ... "<< std::endl;  
 	 // Remove masked hits
 	 std::vector<std::tuple<int, int, int>> to_erase;
 	 for (int ii = 0; ii < 12; ii++) { 
@@ -590,10 +591,11 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	   all_trk_hits.push_back({-99, -99, -99, -99});
 	   all_trk_modes.push_back({0, 0, 0, 0, 0});
 	 }
-	 
+	       
 	 ///////////////////////////////
 	 ///  Loop over built tracks ///
 	 ///////////////////////////////	 
+	 std::cout << "Loop over built tracks ... "<< std::endl;  
 	 for (UInt_t iTrk = 0; iTrk < all_trk_hits.size(); iTrk++) {
 	   
 	   std::array<int, 4> trk_hits  = all_trk_hits.at(iTrk);
