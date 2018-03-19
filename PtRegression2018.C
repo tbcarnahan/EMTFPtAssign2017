@@ -436,17 +436,21 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	 int emtf_mode_CSC = I("trk_mode_CSC", iTrk); 
          int emtf_mode_RPC = I("trk_mode_RPC", iTrk);      
 	 int emtf_unique_match = I("trk_dR_match_unique", iTrk);
-	 int emtf_unique_iMu = I("trk_dR_match_iReco", iTrk); 
-	 std::cout << "emtf_unique_iMu: "<<emtf_unique_iMu<< std::endl;      
-	 double mu_pt = F("reco_pt", emtf_unique_iMu);
-	 std::cout << "mu_pt: "<<mu_pt<< std::endl;  
-	 double mu_eta = F("reco_eta", emtf_unique_iMu);
-	 double mu_phi = F("reco_phi", emtf_unique_iMu);
-	 int mu_charge = I("reco_charge", emtf_unique_iMu);
+	 int emtf_unique_iMu = I("trk_dR_match_iReco", iTrk);       
+	 double mu_pt=-999.;
+	 double mu_eta = -999.;
+	 double mu_phi = -999.;
+	 int mu_charge = -999.;
 	 Bool_t mu_train = true;  // Can use the reco muon for training 
 	       
-	 //if can't find unique match, assign 1GeV true pT for training
-	 if( I("trk_dR_match_unique", iTrk)==0 ){
+	 //if can't find unique match, assign 1 GeV true pT for training
+	 if( emtf_unique_match == 1 ){//not matched is -999 in 2018 NTuple
+		 mu_pt = F("reco_pt", emtf_unique_iMu);
+		 mu_eta = F("reco_eta", emtf_unique_iMu);
+		 mu_phi = F("reco_phi", emtf_unique_iMu);
+	         mu_charge = I("reco_charge", emtf_unique_iMu);
+	 }
+	 else {
 		 mu_pt = 1;
 		 mu_eta = (ETAMIN+ETAMAX)/2;
 		 mu_phi = emtf_phi;
