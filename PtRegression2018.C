@@ -565,7 +565,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	 }
 	 if (USE_EMTF_CSC && !found_all_EMTF_LCTs) {
 	   std::cout << "\n  * Rare case where not all LCTs in EMTF track were in the hit collection\n" << std::endl;
-	   continue;
+	   //continue;//Remove this 2017 setting so all tracks are used
 	 }
          
 	 std::cout << "Remove masked hits ... "<< std::endl;  
