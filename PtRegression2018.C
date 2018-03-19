@@ -516,7 +516,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	 for (UInt_t iHit = 0; iHit < nHits; iHit++) {
 	   
 	   int iSc = I("hit_sector_index", iHit); 
-	   int iSt = I("hit_station", iHit);
+	   int iSt = I("hit_station", iHit) - 1;
 	   int iPh = I("hit_phi_int", iHit);
 	   int iTh = I("hit_theta_int", iHit);
 	   int iDt = I("hit_isRPC", iHit) ? 2 : 1; 
