@@ -437,8 +437,9 @@ void PtRegression2018 ( TString myMethodList = "" ) {
          int emtf_mode_RPC = I("trk_mode_RPC", iTrk);      
 	 int emtf_unique_match = I("trk_dR_match_unique", iTrk);
 	 int emtf_unique_iMu = I("trk_dR_match_iReco", iTrk); 
-	       
+	 std::cout << "emtf_unique_iMu: "<<emtf_unique_iMu<< std::endl;      
 	 double mu_pt = F("reco_pt", emtf_unique_iMu);
+	 std::cout << "mu_pt: "<<mu_pt<< std::endl;  
 	 double mu_eta = F("reco_eta", emtf_unique_iMu);
 	 double mu_phi = F("reco_phi", emtf_unique_iMu);
 	 int mu_charge = I("reco_charge", emtf_unique_iMu);
