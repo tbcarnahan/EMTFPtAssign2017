@@ -911,7 +911,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	     } // End loop: for (UInt_t iVar = 0; iVar < var_names.size(); iVar++)
 	     
 	     // Load values into event
-	     if ( (iEvt % 2) == 0 && mu_train && nTrain < (MAX_TR - (iFact == 0)) && (MODE > 0 || (iEvt % 1000) == 0) ) { 
+	     if ( mu_train && MODE > 0 ) { 
 	       std::get<1>(factories.at(iFact))->AddTrainingEvent( "Regression", var_vals, evt_weight );
 	       if (iFact == 0) nTrain += 1;
 	       // std::cout << "Added train event " << nTrain << std::endl;
