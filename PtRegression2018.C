@@ -97,7 +97,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
    TString bit_str = (BIT_COMP ? "bitCompr" : "noBitCompr");
    TString RPC_str = (USE_RPC  ? "RPC"      : "noRPC");
 	
-   out_file_str.Form( "%s/%s_MODE_%d_%s.root", 
+   out_file_str.Form( "%s/%s_MODE_%d_%s_%s.root", 
 		      OUT_DIR_NAME.Data(), OUT_FILE_NAME.Data(), 
 		      MODE, bit_str.Data(), RPC_str.Data() );
 
@@ -113,12 +113,12 @@ void PtRegression2018 ( TString myMethodList = "" ) {
    TString ZB_file_name;
 
    for (int i = 0; i < USESingleMu; i++) {
-	  SM_file_name.Form( "%s/%s/%s", store.Data(), in_dir.Data(), SingleMu_files[i].Data() );
+	  SM_file_name.Form( "%s/%s/%s", EOS_DIR_NAME.Data(), in_dir.Data(), SingleMu_files[i].Data() );
   	  std::cout << "Adding file " << SM_file_name.Data() << std::endl;
           SM_in_file_names.push_back(SM_file_name.Data());
    }
    for (int i = 0; i < USEZerobias; i++) {
-	  ZB_file_name.Form( "%s/%s/%s", store.Data(), in_dir.Data(), ZeroBias_files[i].Data() );
+	  ZB_file_name.Form( "%s/%s/%s", EOS_DIR_NAME.Data(), in_dir.Data(), ZeroBias_files[i].Data() );
   	  std::cout << "Adding file " << ZB_file_name.Data() << std::endl;
           ZB_in_file_names.push_back(ZB_file_name.Data());
    }
