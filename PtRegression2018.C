@@ -932,7 +932,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	       
        } // End loop: for emtf trks
 	     
-       if(jEvt < ZBEvents){
+       if(jEvt < nZBEvents){
 	       NonZBEvt += 1;
        }
        else{
