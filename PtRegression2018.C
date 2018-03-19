@@ -514,39 +514,44 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	 std::cout << "Loop over all hits ... "<< std::endl;  
 	 // Loop over all hits
 	 for (UInt_t iHit = 0; iHit < nHits; iHit++) {
-	 
+	   
 	   int iSc = I("hit_sector_index", iHit) - 1; 
 	   int iSt = I("hit_station", iHit) - 1;
 	   int iPh = I("hit_phi_int", iHit);
 	   int iTh = I("hit_theta_int", iHit);
 	   int iDt = I("hit_isRPC", iHit) ? 2 : 1; 
-
+		 
+           std::cout << ". Initialize hits ... "<< std::endl;  
+		 
 	   if (USE_EMTF_CSC && iDt == 1) {
+             std::cout << ".. Use CSC hits ... "<< std::endl;  
 	     if (id.at(iSc).at(iSt).size() > 0) {
+	       std::cout << "... Hit exists ... "<< std::endl;  
 	       assert( USE_RPC || id.at(iSc).at(iSt).size() == 1 ); // There should only be one LCT per station
 	       if ( ph.at(iSc).at(iSt).at(0) == iPh &&
 		    th.at(iSc).at(iSt).at(0) == iTh &&
 		    dt.at(iSc).at(iSt).at(0) == iDt ) {
+		 std::cout << ".... EMTF hit found in general hit collection ... "<< std::endl; 
 		 id.at(iSc).at(iSt).at(0) = iHit; // Change the index to the hit_br index
 		 emtf_found.at(iSt) = true;       // Hit in EMTF track was found in general collection
 	       }
 	     }
 	     continue; // Only look at CSC LCTs if they were included in the EMTF track
 	   }
-
+           std::cout << ". push hit... "<< std::endl; 
 	   id.at(iSc).at(iSt).push_back( iHit );
 	   ph.at(iSc).at(iSt).push_back( iPh );
 	   th.at(iSc).at(iSt).push_back( iTh );
 	   dt.at(iSc).at(iSt).push_back( iDt );
 	 }
-
+         std::cout << "Decide if EMTF LCTs are all found... "<< std::endl; 
 	 bool found_all_EMTF_LCTs = true;
 	 for (int ii = 0; ii < 4; ii++) {
 	   if (emtf_dt.at(ii) == 1 && !emtf_found.at(ii))
 	     found_all_EMTF_LCTs = false;
 	 }
 	 if (USE_EMTF_CSC && !found_all_EMTF_LCTs) {
-	   // std::cout << "\n  * Rare case where not all LCTs in EMTF track were in the hit collection\n" << std::endl;
+	   std::cout << "\n  * Rare case where not all LCTs in EMTF track were in the hit collection\n" << std::endl;
 	   continue;
 	 }
          
