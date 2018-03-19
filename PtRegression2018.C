@@ -494,10 +494,10 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 		 }
 	 }//for ii
 	       
-	 std::cout << "emtf_id.at(1) ... "<<emtf_id.at(0)<< std::endl;
-	 std::cout << "emtf_id.at(2) ... "<<emtf_id.at(1)<< std::endl;
-	 std::cout << "emtf_id.at(3) ... "<<emtf_id.at(2)<< std::endl;
-	 std::cout << "emtf_id.at(4) ... "<<emtf_id.at(3)<< std::endl;
+	 std::cout << "emtf_id.at(1): "<<emtf_id.at(0)<< std::endl;
+	 std::cout << "emtf_id.at(2): "<<emtf_id.at(1)<< std::endl;
+	 std::cout << "emtf_id.at(3): "<<emtf_id.at(2)<< std::endl;
+	 std::cout << "emtf_id.at(4): "<<emtf_id.at(3)<< std::endl;
 	       
 	 if (emtf_mode < 0) continue;//skip track-build and go to next emtf trk
 	       
