@@ -510,13 +510,13 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	 if (USE_EMTF_CSC && emtf_mode > 0) {
 	   for (int ii = 0; ii < 12; ii++) {
 	     for (int jj = 0; jj < 4; jj++) {
-	       if ( I("hit_sector_index", emtf_id.at(jj)) == ii+1 && emtf_dt.at(jj) == 1 ) {
+	       if ( I("hit_sector_index", emtf_id.at(jj) ) == ii+1 && emtf_dt.at(jj) == 1 ) {
 		 id.at(ii).at(jj).push_back( emtf_id.at(jj) );
 		 ph.at(ii).at(jj).push_back( emtf_ph.at(jj) );
 		 th.at(ii).at(jj).push_back( emtf_th.at(jj) );
 		 dt.at(ii).at(jj).push_back( emtf_dt.at(jj) );
-		 // std::cout << "In sector " << ii+1 << ", station " << jj+1 << ", adding hit with "
-		 // 	   << "phi = " << emtf_ph.at(jj) << ", theta = " << emtf_th.at(jj) << std::endl;
+		 std::cout << "In sector " << ii+1 << ", station " << jj+1 << ", adding hit with "
+		    << "id = "<<emtf_id.at(jj) <<", phi = " << emtf_ph.at(jj) << ", theta = " << emtf_th.at(jj) << std::endl;
 	       }
 	     }// End loop over stations
 	   } // End loop over sector indices
