@@ -436,7 +436,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	 Bool_t mu_train = true;  // Can use the reco muon for training 
 	       
 	 //if can't find unique match, assign 1GeV true pT for training
-	 if(trk_unique_match ==0){
+	 if( I("trk_dR_match_unique", iTrk)==0 ){
 		 mu_pt = 1;
 		 mu_eta = (ETAMIN+ETAMAX)/2;
 		 mu_phi = emtf_phi;
