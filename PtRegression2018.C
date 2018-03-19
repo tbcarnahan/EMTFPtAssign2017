@@ -391,7 +391,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
        
 	     
        if ( (NonZBEvt % REPORT_EVT) == 0 ||
-	    (ZBEvt > 0 && (ZBEvt % REPORT_EVT) == 0) )
+	    (ZBEvt % REPORT_EVT) == 0 )
 	 std::cout << "Looking at Non-ZB event " << NonZBEvt << "; ZB event " << ZBEvt << std::endl;
        
        //============================================
