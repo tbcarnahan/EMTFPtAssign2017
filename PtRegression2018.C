@@ -554,7 +554,9 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 		 emtf_found.at(iSt) = true;       // Hit in EMTF track was found in general collection
 	       }
 	     }
-	     continue; // Only look at CSC LCTs if they were included in the EMTF track
+             //This confusing, what's it doing here, why push the track hit before push all hit collection?
+             //Comment continue, don't understand
+	     //continue; // Only look at CSC LCTs if they were included in the EMTF track
 	   }
            std::cout << ". push hit... "<< std::endl; 
 	   id.at(iSc).at(iSt).push_back( iHit );
