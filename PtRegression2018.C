@@ -437,10 +437,10 @@ void PtRegression2018 ( TString myMethodList = "" ) {
          int emtf_mode_RPC = I("trk_mode_RPC", iTrk);      
 	 int emtf_unique_match = I("trk_dR_match_unique", iTrk);
 	 int emtf_unique_iMu = I("trk_dR_match_iReco", iTrk);       
-	 double mu_pt=-999.;
+	 double mu_pt = -999.;
 	 double mu_eta = -999.;
 	 double mu_phi = -999.;
-	 int mu_charge = -999.;
+	 int mu_charge = -999;
 	 Bool_t mu_train = true;  // Can use the reco muon for training 
 	       
 	 //if can't find unique match, assign 1 GeV true pT for training
