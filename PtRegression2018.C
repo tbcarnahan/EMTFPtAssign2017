@@ -152,6 +152,9 @@ void PtRegression2018 ( TString myMethodList = "" ) {
    for (int i = 0; i < ZB_in_file_names.size(); i++) {
 	   ZB_in_chain->Add( ZB_in_file_names.at(i) );
    }
+   InitializeMaps();
+   SetBranchAddresses(SM_in_chain);
+   SetBranchAddresses(ZB_in_chain);
    in_chains.push_back(SM_in_chain);
    in_chains.push_back(ZB_in_chain);
 
