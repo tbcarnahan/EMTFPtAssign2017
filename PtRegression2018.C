@@ -144,11 +144,15 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	
    // Add tree from the input files to the TChain
    TChain *in_chains = new TChain("FlatNtupleData/tree");
+   TChain *SM_in_chain = new TChain("FlatNtupleData/tree");
+   TChain *ZB_in_chain = new TChain("FlatNtupleData/tree");
    for (int i = 0; i < SM_in_file_names.size(); i++) {
 	   in_chains->Add( SM_in_file_names.at(i) );
+	   SM_in_chain->Add( SM_in_file_names.at(i) );
    }	
    for (int i = 0; i < ZB_in_file_names.size(); i++) {
 	   in_chains->Add( ZB_in_file_names.at(i) );
+	   ZB_in_chain->Add( ZB_in_file_names.at(i) );
    }
 
    //////////////////////////////////////////////////////////////////////////
