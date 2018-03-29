@@ -457,7 +457,8 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	         mu_charge = emtf_charge;
 	 }
 	       
-	 std::cout << "RECO kinematics ... "<< std::endl;      
+	 std::cout << "RECO kinematics ... "<< std::endl;   
+	       
 	 //===============================    
          //RECO mu kinematics requirements
 	 //===============================
@@ -471,6 +472,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	 std::array<int, 4> emtf_dt = {-99, -99, -99, -99};
          
 	 std::cout << "Valid modes ... "<< std::endl;   
+	       
 	 //==================
 	 //Require valid mode
 	 //==================
@@ -499,136 +501,10 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	 std::cout << "emtf_id.at(3): "<<emtf_id.at(2)<< std::endl;
 	 std::cout << "emtf_id.at(4): "<<emtf_id.at(3)<< std::endl;
 	       
-	 if (emtf_mode < 0) continue;//skip track-build and go to next emtf trk
-	       
-         std::cout << "Build tracks ... "<< std::endl;   
-	 //////////////////////////////////////////
-	 ///  Build tracks from available hits  ///
-	 //////////////////////////////////////////
-	 std::array< std::array< std::vector<int>, 4>, 12> id; // All hit index values, by sector and station
-	 std::array< std::array< std::vector<int>, 4>, 12> ph; // All full-precision integer phi values
-	 std::array< std::array< std::vector<int>, 4>, 12> th; // All full-precision integer theta values
-	 std::array< std::array< std::vector<int>, 4>, 12> dt; // All detector values (0 for none, 1 for CSC, 2 for RPC)
-	 std::vector<bool> emtf_found = {false, false, false, false}; // Check if hits in EMTF track were found in hits
-
-	 // Fill hits with LCTs from the EMTF track, rather than all the LCTs in the event
-	 if (USE_EMTF_CSC && emtf_mode > 0) {
-	   for (int ii = 0; ii < 12; ii++) {
-	     for (int jj = 0; jj < 4; jj++) {
-	       if (emtf_id.at(jj) >= 0){//-99 if no hit is in station 2018 NTuple
-		       if ( I("hit_sector_index", emtf_id.at(jj) ) == ii+1 && emtf_dt.at(jj) == 1 ) {
-			       id.at(ii).at(jj).push_back( emtf_id.at(jj) );
-		               ph.at(ii).at(jj).push_back( emtf_ph.at(jj) );
-		               th.at(ii).at(jj).push_back( emtf_th.at(jj) );
-		               dt.at(ii).at(jj).push_back( emtf_dt.at(jj) );
-		               std::cout << "In sector " << ii+1 << ", station " << jj+1 << ", adding hit with "<< "id = "<<emtf_id.at(jj) <<", phi = " << emtf_ph.at(jj) << ", theta = " << emtf_th.at(jj) << std::endl;
-		       }
-	       }//end if
-	       
-	     }// End loop over stations
-	   } // End loop over sector indices
-	 } //End CSC only LCT
-         
-	 std::cout << "Loop over all hits ... "<< std::endl;  
-	 // Loop over all hits
-	 for (UInt_t iHit = 0; iHit < nHits; iHit++) {
-	   
-	   int iSc = I("hit_sector_index", iHit); 
-	   int iSt = I("hit_station", iHit) - 1;
-	   int iPh = I("hit_phi_int", iHit);
-	   int iTh = I("hit_theta_int", iHit);
-	   int iDt = I("hit_isRPC", iHit) ? 2 : 1; 
-		 
-           std::cout << ". Initialize hits ... "<< std::endl;  
-		 
-	   if (USE_EMTF_CSC && iDt == 1) {
-             std::cout << ".. Use CSC hits ... "<< std::endl;  
-	     if (id.at(iSc).at(iSt).size() > 0) {
-	       std::cout << "... Hit exists ... "<< std::endl;  
-	       assert( USE_RPC || id.at(iSc).at(iSt).size() == 1 ); // There should only be one LCT per station
-	       if ( ph.at(iSc).at(iSt).at(0) == iPh &&
-		    th.at(iSc).at(iSt).at(0) == iTh &&
-		    dt.at(iSc).at(iSt).at(0) == iDt ) {
-		 std::cout << ".... EMTF hit found in general hit collection ... "<< std::endl; 
-		 id.at(iSc).at(iSt).at(0) = iHit; // Change the index to the hit_br index
-		 emtf_found.at(iSt) = true;       // Hit in EMTF track was found in general collection
-	       }
-	     }
-             //This confusing, what's it doing here, why push the track hit before push all hit collection?
-             //Comment continue, don't understand
-	     //continue; // Only look at CSC LCTs if they were included in the EMTF track
-	   }
-           std::cout << ". push hit... "<< std::endl; 
-	   id.at(iSc).at(iSt).push_back( iHit );
-	   ph.at(iSc).at(iSt).push_back( iPh );
-	   th.at(iSc).at(iSt).push_back( iTh );
-	   dt.at(iSc).at(iSt).push_back( iDt );
-	 }//end loop over all hits
-	       
-         std::cout << "Decide if EMTF LCTs are all found... "<< std::endl; 
-	       
-	 bool found_all_EMTF_LCTs = true;
-	 for (int ii = 0; ii < 4; ii++) {
-	   if (emtf_dt.at(ii) == 1 && !emtf_found.at(ii))
-	     found_all_EMTF_LCTs = false;
+	 if (emtf_mode < 0) {
+		 std::cout << "Rare case: EMTF mode < 0 "<< std::endl; 
 	 }
-	 if (USE_EMTF_CSC && !found_all_EMTF_LCTs) {
-	   std::cout << "\n  * Rare case where not all LCTs in EMTF track were in the hit collection\n" << std::endl;
-	   //continue;//Remove this 2017 setting so all tracks are used
-	 }
-         
-	 std::cout << "Remove masked hits ... "<< std::endl;  
-	 // Remove masked hits
-	 std::vector<std::tuple<int, int, int>> to_erase;
-	 for (int ii = 0; ii < 12; ii++) { 
-	   for (int jj = 0; jj < 4; jj++) { 
-	     for (int kk = 0; kk < dt.at(ii).at(jj).size(); kk++) { // Loop over hits
-	       for (int ll = 0; ll < CSC_MASK.size(); ll++)
-		 if (jj+1 == CSC_MASK.at(ll) && dt.at(ii).at(jj).at(kk) == 1)
-		   to_erase.push_back(std::make_tuple(ii, jj, kk));
-	       for (int ll = 0; ll < RPC_MASK.size(); ll++)
-		 if (jj+1 == RPC_MASK.at(ll) && dt.at(ii).at(jj).at(kk) == 2)
-		   to_erase.push_back(std::make_tuple(ii, jj, kk));
-	     }// Loop over hits
-	   }// Loop over stations
-	 }// Loop over sectors
-	       
-	 for (int ii = int(to_erase.size()) - 1; ii >= 0; ii--) {
-	   int iSc = std::get<0>(to_erase.at(ii));
-	   int iSt = std::get<1>(to_erase.at(ii));
-	   int iHt = std::get<2>(to_erase.at(ii));
-	   id.at(iSc).at(iSt).erase(id.at(iSc).at(iSt).begin() + iHt);
-	   ph.at(iSc).at(iSt).erase(ph.at(iSc).at(iSt).begin() + iHt);
-	   th.at(iSc).at(iSt).erase(th.at(iSc).at(iSt).begin() + iHt);
-	   dt.at(iSc).at(iSt).erase(dt.at(iSc).at(iSt).begin() + iHt);
-	 }
-	 
-	 // Array indices of hits in each track; 4 in each, stations 1-2-3-4 
-	 std::vector< std::array<int, 4> > all_trk_hits;
-	 // Array of mode, CSC mode, RPC mode, sumAbsDPhi, and sumAbsDTheta in each track
-	 std::vector< std::array<int, 5> > all_trk_modes;
-
-	 if (MODE > 0) {
-	   // Build tracks for the specified mode
-	   BuildTracks( all_trk_hits, all_trk_modes, id, ph, th, dt, MODE, MAX_RPC, MIN_CSC, MAX_DPH, MAX_DTH );
-	   // std::cout << "  * Built " << all_trk_hits.size() << " tracks out of " << nHits << " hits" << std::endl;
-	   assert(all_trk_modes.size() == all_trk_hits.size());
-	 } else { 
-	   // Skip track building, just store EMTF info
-	   all_trk_hits.push_back({-99, -99, -99, -99});
-	   all_trk_modes.push_back({0, 0, 0, 0, 0});
-	 }
-	       
-	 ///////////////////////////////
-	 ///  Loop over built tracks ///
-	 ///////////////////////////////	 
-	 std::cout << "Loop over built tracks ... "<< std::endl;  
-	 for (UInt_t iTrk = 0; iTrk < all_trk_hits.size(); iTrk++) {
-	   
-	   std::array<int, 4> trk_hits  = all_trk_hits.at(iTrk);
-	   std::array<int, 5> trk_modes = all_trk_modes.at(iTrk);
-
-	   int i1 = trk_hits.at(0);
+	   int i1 = trk_hits.at(0);//change to EMTF trk hits index
 	   int i2 = trk_hits.at(1);
 	   int i3 = trk_hits.at(2);
 	   int i4 = trk_hits.at(3);
@@ -636,13 +512,10 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	   int mode     = trk_modes.at(0);
 	   int mode_CSC = trk_modes.at(1);
 	   int mode_RPC = trk_modes.at(2);
-	   int shared_mode     = 0;
-	   int shared_mode_CSC = 0;
-	   int shared_mode_RPC = 0;
 	   assert(mode == MODE);
 
 	   // Properties of hits
-	   int ph1 = (i1 >= 0 ? I("hit_phi_int", i1 ) : -99); 
+	   int ph1 = (i1 >= 0 ? I("hit_phi_int", i1 ) : -99); //make sure it's EMTF trk hits index
 	   int ph2 = (i2 >= 0 ? I("hit_phi_int", i2 ) : -99);
 	   int ph3 = (i3 >= 0 ? I("hit_phi_int", i3 ) : -99);
 	   int ph4 = (i4 >= 0 ? I("hit_phi_int", i4 ) : -99);
@@ -667,29 +540,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	   else if (i4 >= 0) { eta = F("hit_eta", i4 ); phi = F("hit_phi", i4 ); }
 	   else if (i1 >= 0) { eta = F("hit_eta", i1 ); phi = F("hit_phi", i1 ); }
 	   endcap = (eta > 0 ? +1 : -1);
-
-	   // Check which hits match between EMTF track and built track
-	   if (i1 >= 0 && ph1 == emtf_ph.at(0) && th1 == emtf_th.at(0)) {
-	     shared_mode     += 8;
-	     shared_mode_CSC += 8 * ( I("hit_isRPC", i1 ) == 0);
-	     shared_mode_RPC += 8 * ( I("hit_isRPC", i1 ) == 1);
-	   }
-	   if (i2 >= 0 && ph2 == emtf_ph.at(1) && th2 == emtf_th.at(1)) {
-	     shared_mode     += 4;
-	     shared_mode_CSC += 4 * ( I("hit_isRPC", i2 ) == 0);
-	     shared_mode_RPC += 4 * ( I("hit_isRPC", i2 ) == 1);
-	   }
-	   if (i3 >= 0 && ph3 == emtf_ph.at(2) && th3 == emtf_th.at(2)) {
-	     shared_mode     += 2;
-	     shared_mode_CSC += 2 * ( I("hit_isRPC", i3 ) == 0);
-	     shared_mode_RPC += 2 * ( I("hit_isRPC", i3 ) == 1);
-	   }
-	   if (i4 >= 0 && ph4 == emtf_ph.at(3) && th4 == emtf_th.at(3)) {
-	     shared_mode     += 1;
-	     shared_mode_CSC += 1 * ( I("hit_isRPC", i4 ) == 0);
-	     shared_mode_RPC += 1 * ( I("hit_isRPC", i4 ) == 1);
-	   }
-
+		 
 	   // Variables to go into BDT
 	   int theta;
 	   int dPh12, dPh13, dPh14, dPh23, dPh24, dPh34, dPhSign;
@@ -933,20 +784,12 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	       	 var_vals.at(iVar) = mode_CSC;
 	       if ( vName == "TRK_mode_RPC" )
 	       	 var_vals.at(iVar) = mode_RPC;
-	       if ( vName == "SHRD_mode" )
-	       	 var_vals.at(iVar) = shared_mode;
-	       if ( vName == "SHRD_mode_CSC" )
-	       	 var_vals.at(iVar) = shared_mode_CSC;
-	       if ( vName == "SHRD_mode_RPC" )
-	       	 var_vals.at(iVar) = shared_mode_RPC;
-
 	       if ( vName == "dPhi_sign" )
 		 var_vals.at(iVar) = dPhSign;
 	       if ( vName == "nTRK" )
 		 var_vals.at(iVar) = all_trk_hits.size();
 	       if ( vName == "evt_weight" )
 		 var_vals.at(iVar) = evt_weight;
-
 	       
 	     } // End loop: for (UInt_t iVar = 0; iVar < var_names.size(); iVar++)
 	     
@@ -963,8 +806,6 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	     }
 	     
 	   } // End loop: for (UInt_t iFact = 0; iFact < factories.size(); iFact++) 
-	   
-	 } // End loop: for built iTrk
 	       
        } // End loop: for emtf trks
 	     
