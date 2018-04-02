@@ -497,17 +497,27 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	 int i2=-99;
 	 int i3=-99;
 	 int i4=-99;
-	 
-	 i1 = I("trk_iHit", iTrk, 0);
-	 i2 = I("trk_iHit", iTrk, 1);
-	 i3 = I("trk_iHit", iTrk, 2);
-	 i4 = I("trk_iHit", iTrk, 3);
+	 for (int jhit = 0; jhit < I("trk_nHits", iTrk); jhit++) {
+		 int iHit = I("trk_iHit", iTrk, jhit);  // Access the index of each hit in the emtf track
+	         if( I("hit_station", iHit) ==1 ){
+			 i1 = iHit;
+		 }
+	         else if ( I("hit_station", iHit) == 2 ){
+	                 i2 = iHit;
+	         }
+	         else if ( I("hit_station", iHit) == 3 ){
+			 i3 = iHit;
+		 }
+		 else if ( I("hit_station", iHit) == 4 ){
+			 i4 = iHit;
+		 }
+         }//end loop over hits in selected emtf track
 	       
 	 if(verbose) {      
-	 std::cout << "hit id at(1): "<<i1<< std::endl;
-	 std::cout << "hit id at(2): "<<i2<< std::endl;
-	 std::cout << "hit id at(3): "<<i3<< std::endl;
-	 std::cout << "hit id at(4): "<<i4<< std::endl;
+	 std::cout << "hit id at 1: "<<i1<< std::endl;
+	 std::cout << "hit id at 2: "<<i2<< std::endl;
+	 std::cout << "hit id at 3: "<<i3<< std::endl;
+	 std::cout << "hit id at 4: "<<i4<< std::endl;
 	 }
 	 
 	 //Assign built trk properties the same as emtf track 
