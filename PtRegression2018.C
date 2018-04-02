@@ -482,10 +482,6 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 		 std::cout << "Rare case: EMTF mode < 0 "<< std::endl; 
 		 continue;
 	 }
-	 if (emtf_mode % 2 == 0) {
-		 std::cout << "Rare case: Single LCT track mode"<< std::endl; 
-		 continue;
-	 }
 	       
 	 //======================
 	 //Trk hits from stations
