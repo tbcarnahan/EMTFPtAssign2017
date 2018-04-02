@@ -523,6 +523,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	 int mode     = emtf_mode;
 	 int mode_CSC = emtf_mode_CSC;
 	 int mode_RPC = emtf_mode_RPC;
+	 if(verbose) std::cout << "mode: "<<mode<<" MODE: "<<MODE<< std::endl;
 	 assert(mode == MODE);
 	 if (mode != mode_CSC) {
 		 std::cout << "Not CSC-only track"<< std::endl; 
