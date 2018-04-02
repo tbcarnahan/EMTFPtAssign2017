@@ -68,7 +68,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
    Use["BDTG_AWB_Hub"]            = 0;
    Use["BDTG_AWB_Sq"]             = 1;
    //==================================
-   bool verbose=true;//for debug
+   bool verbose = false;//for debug
 
    std::cout << std::endl;
    std::cout << "==> Start PtRegression2018" << std::endl;
@@ -191,9 +191,8 @@ void PtRegression2018 ( TString myMethodList = "" ) {
        // 4-station tracks
        if        (MODE == 15) {
 	 // BASELINE mode 15 - dPhi12/23/34 + combos, theta, FR1, St1 ring, dTh14, bend1, RPC 1/2/3/4
-	 factories.push_back( std::make_tuple( nullF, nullL, factName, var_names, var_vals, 0xf41f11ff) );
-       } 
-
+	 factories.push_back( std::make_tuple( nullF, nullL, factName, var_names, var_vals, 0x041f11ff) );
+       }
        // 3-station tracks
        else if   (MODE == 14) {
 	 // BASELINE mode 14 - dPhi12/23/13, theta, FR1/2, St1 ring, dTh13, bend1, RPC 1/2/3
@@ -208,7 +207,6 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	 // BASELINE mode  7 - dPhi23/34/24, theta, FR2, dTh24, bend2, RPC 2/3/4
 	 factories.push_back( std::make_tuple( nullF, nullL, factName, var_names, var_vals, 0xe8002299) );
        } 
-
        // 2-station tracks
        else if   (MODE == 12) {
 	 // BASELINE mode 12 - dPhi12, theta, FR1/2, St1 ring, dTh12, bend1/2, RPC 1/2
