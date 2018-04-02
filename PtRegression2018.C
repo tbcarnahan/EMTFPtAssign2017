@@ -512,8 +512,6 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	 int mode_RPC = I("trk_mode_RPC", iTrk);
 	 assert(mode == MODE);
 
-	 emtf_dt.at(ii) = ( I("hit_isRPC", emtf_id.at(ii) ) == 1 ? 2 : 1);
-	 
 	 int ph1 = (i1 >= 0 ? I("hit_phi_int", i1 ) : -99); 
 	 int ph2 = (i2 >= 0 ? I("hit_phi_int", i2 ) : -99);
 	 int ph3 = (i3 >= 0 ? I("hit_phi_int", i3 ) : -99);
@@ -603,10 +601,10 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 
 	 EMTF_ONLY: // Skip track building, just store EMTF info
 
-	   /////////////////////////////////////////////////////
-	   ///  Loop over factories and set variable values  ///
-	   /////////////////////////////////////////////////////
-	   for (UInt_t iFact = 0; iFact < factories.size(); iFact++) {
+	 /////////////////////////////////////////////////////
+	 ///  Loop over factories and set variable values  ///
+	 /////////////////////////////////////////////////////
+	 for (UInt_t iFact = 0; iFact < factories.size(); iFact++) {
 	     
 	     // Set vars equal to default vector of variables for this factory
 	     var_names = std::get<3>(factories.at(iFact));
@@ -808,8 +806,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	       if (iFact == 0) nTest += 1;
 	       // std::cout << "Added test event " << nTest << std::endl;
 	     }
-	     
-	   } // End loop: for (UInt_t iFact = 0; iFact < factories.size(); iFact++) 
+	 } // End loop: for (UInt_t iFact = 0; iFact < factories.size(); iFact++) 
 	       
        } // End loop: for emtf trks
 	     
