@@ -479,6 +479,11 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	 }
 	 if (emtf_mode < 0) {
 		 std::cout << "Rare case: EMTF mode < 0 "<< std::endl; 
+		 continue;
+	 }
+	 if (emtf_mode % 2 == 0) {
+		 std::cout << "Rare case: Single LCT track mode"<< std::endl; 
+		 continue;
 	 }
 	 if (!good_emtf_mode) {
 		  emtf_mode = -99;
@@ -492,13 +497,11 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	 int i2=-99;
 	 int i3=-99;
 	 int i4=-99;
-	 if (emtf_mode < 0) continue;
-         if ( (emtf_mode % int(pow(2, 4 - ii))) / int(pow(2, 3 - ii)) > 0) {
-		 i1 = I("trk_iHit", iTrk, 0);
-	         i2 = I("trk_iHit", iTrk, 1);
-	         i3 = I("trk_iHit", iTrk, 2);
-	         i4 = I("trk_iHit", iTrk, 3);
-         }
+	 
+	 i1 = I("trk_iHit", iTrk, 0);
+	 i2 = I("trk_iHit", iTrk, 1);
+	 i3 = I("trk_iHit", iTrk, 2);
+	 i4 = I("trk_iHit", iTrk, 3);
 	       
 	 if(verbose) {      
 	 std::cout << "hit id at(1): "<<i1<< std::endl;
