@@ -475,7 +475,11 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	 bool good_emtf_mode = false;
 		 
 	 for (UInt_t jMode = 0; jMode < EMTF_MODES.size(); jMode++) {
-		  if ( emtf_mode == EMTF_MODES.at(jMode) ) good_emtf_mode = true;
+		 if ( emtf_mode == EMTF_MODES.at(jMode) ) good_emtf_mode = true;
+	 }
+	 if (!good_emtf_mode) {
+		 emtf_mode = -99;
+		 continue;
 	 }
 	 if (emtf_mode < 0) {
 		 std::cout << "Rare case: EMTF mode < 0 "<< std::endl; 
@@ -484,10 +488,6 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	 if (emtf_mode % 2 == 0) {
 		 std::cout << "Rare case: Single LCT track mode"<< std::endl; 
 		 continue;
-	 }
-	 if (!good_emtf_mode) {
-		  emtf_mode = -99;
-		  continue;
 	 }
 	       
 	 //======================
@@ -515,6 +515,10 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	 int mode_CSC = emtf_mode_CSC;
 	 int mode_RPC = emtf_mode_RPC;
 	 assert(mode == MODE);
+	 if (mode != mode_CSC) {
+		 std::cout << "Not CSC-only track"<< std::endl; 
+		 continue;
+	 }     
 
 	 int ph1 = (i1 >= 0 ? I("hit_phi_int", i1 ) : -99); 
 	 int ph2 = (i2 >= 0 ? I("hit_phi_int", i2 ) : -99);
