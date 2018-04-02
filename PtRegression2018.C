@@ -641,9 +641,6 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	     else
 	       assert( std::get<2>(factories.at(iFact)).Contains("_noWgt") );
 	     
-	     // Weight by number of tracks in the event
-	     evt_weight *= (1. / all_trk_hits.size());
-	     
 	     // De-weight tracks with one or more RPC hits
 	     evt_weight *= (1. / pow( 4, ((RPC1 == 1) + (RPC2 == 1) + (RPC3 == 1) + (RPC4 == 1)) ) );
 
@@ -653,8 +650,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	       
 	       /////////////////////////
 	       ///  Input variables  ///
-	       /////////////////////////
-	       
+	       /////////////////////////   
 	       if ( vName == "theta" )
 		 var_vals.at(iVar) = theta;
 	       if ( vName == "St1_ring2" )
@@ -788,8 +784,6 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	       	 var_vals.at(iVar) = mode_RPC;
 	       if ( vName == "dPhi_sign" )
 		 var_vals.at(iVar) = dPhSign;
-	       if ( vName == "nTRK" )
-		 var_vals.at(iVar) = all_trk_hits.size();
 	       if ( vName == "evt_weight" )
 		 var_vals.at(iVar) = evt_weight;
 	       
