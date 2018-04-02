@@ -68,6 +68,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
    Use["BDTG_AWB_Hub"]            = 0;
    Use["BDTG_AWB_Sq"]             = 1;
    //==================================
+   bool verbose=true;//for debug
 
    std::cout << std::endl;
    std::cout << "==> Start PtRegression2018" << std::endl;
@@ -421,7 +422,8 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	 }//end if 
        }//end Remove bias  
        if (!isZB && BarrelRecoMu==0 && EndcapRecoMu<=1 ) isZB = true;//Don't use EMTF biased event in training
-       std::cout << "End removing bias ... "<< std::endl;    
+       
+       if(verbose) std::cout << "End removing bias ... "<< std::endl;    
 	     
        //===================
        //Loop over EMTF trks
@@ -457,7 +459,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	         mu_charge = emtf_charge;
 	 }
 	       
-	 std::cout << "RECO kinematics ... "<< std::endl;   
+	 if(verbose) std::cout << "RECO kinematics ... "<< std::endl;   
 	       
 	 //===============================    
          //RECO mu kinematics requirements
@@ -465,137 +467,139 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	 if ( mu_pt < PTMIN || mu_pt > PTMAX ) continue;
 	 if ( fabs( mu_eta ) < ETAMIN || fabs( mu_eta ) > ETAMAX ) continue;
 	 if ( mu_pt < PTMIN_TR || mu_pt > PTMAX_TR || isZB) mu_train = false;
-	       
-	 std::array<int, 4> emtf_id = {-99, -99, -99, -99};
-	 std::array<int, 4> emtf_ph = {-99, -99, -99, -99};
-	 std::array<int, 4> emtf_th = {-99, -99, -99, -99};
-	 std::array<int, 4> emtf_dt = {-99, -99, -99, -99};
          
-	 std::cout << "Valid modes ... "<< std::endl;   
-	       
 	 //==================
 	 //Require valid mode
 	 //==================
+	 if(verbose) std::cout << "Valid modes ... "<< std::endl; 
 	 bool good_emtf_mode = false;
 		 
 	 for (UInt_t jMode = 0; jMode < EMTF_MODES.size(); jMode++) {
 		  if ( emtf_mode == EMTF_MODES.at(jMode) ) good_emtf_mode = true;
 	 }
+	 if (emtf_mode < 0) {
+		 std::cout << "Rare case: EMTF mode < 0 "<< std::endl; 
+	 }
 	 if (!good_emtf_mode) {
 		  emtf_mode = -99;
 		  continue;
 	 }
-	 //get emtf trk hits	
-	 for (int ii = 0; ii < 4; ii++) {
-		 if (emtf_mode < 0) continue;
-		 if ( (emtf_mode % int(pow(2, 4 - ii))) / int(pow(2, 3 - ii)) > 0) {
-			 emtf_id.at(ii) = I("trk_iHit", iTrk, ii);
-			 emtf_ph.at(ii) = I("hit_phi_int", emtf_id.at(ii) ); 
-			 emtf_th.at(ii) = I("hit_theta_int", emtf_id.at(ii) ); 
-			 emtf_dt.at(ii) = ( I("hit_isRPC", emtf_id.at(ii) ) == 1 ? 2 : 1);
-		 }
-	 }//for ii
 	       
-	 std::cout << "emtf_id.at(1): "<<emtf_id.at(0)<< std::endl;
-	 std::cout << "emtf_id.at(2): "<<emtf_id.at(1)<< std::endl;
-	 std::cout << "emtf_id.at(3): "<<emtf_id.at(2)<< std::endl;
-	 std::cout << "emtf_id.at(4): "<<emtf_id.at(3)<< std::endl;
+	 //======================
+	 //Trk hits from stations
+	 //======================
+	 int i1=-99;
+	 int i2=-99;
+	 int i3=-99;
+	 int i4=-99;
+	 if (emtf_mode < 0) continue;
+         if ( (emtf_mode % int(pow(2, 4 - ii))) / int(pow(2, 3 - ii)) > 0) {
+		 i1 = I("trk_iHit", iTrk, 0);
+	         i2 = I("trk_iHit", iTrk, 1);
+	         i3 = I("trk_iHit", iTrk, 2);
+	         i4 = I("trk_iHit", iTrk, 3);
+         }
 	       
-	 if (emtf_mode < 0) {
-		 std::cout << "Rare case: EMTF mode < 0 "<< std::endl; 
+	 if(verbose) {      
+	 std::cout << "hit id at(1): "<<i1<< std::endl;
+	 std::cout << "hit id at(2): "<<i2<< std::endl;
+	 std::cout << "hit id at(3): "<<i3<< std::endl;
+	 std::cout << "hit id at(4): "<<i4<< std::endl;
 	 }
-	   int i1 = trk_hits.at(0);//change to EMTF trk hits index
-	   int i2 = trk_hits.at(1);
-	   int i3 = trk_hits.at(2);
-	   int i4 = trk_hits.at(3);
+	 
+	 int mode     = I("trk_mode", iTrk);
+	 int mode_CSC = I("trk_mode_CSC", iTrk);
+	 int mode_RPC = I("trk_mode_RPC", iTrk);
+	 assert(mode == MODE);
 
-	   int mode     = trk_modes.at(0);
-	   int mode_CSC = trk_modes.at(1);
-	   int mode_RPC = trk_modes.at(2);
-	   assert(mode == MODE);
-
-	   // Properties of hits
-	   int ph1 = (i1 >= 0 ? I("hit_phi_int", i1 ) : -99); //make sure it's EMTF trk hits index
-	   int ph2 = (i2 >= 0 ? I("hit_phi_int", i2 ) : -99);
-	   int ph3 = (i3 >= 0 ? I("hit_phi_int", i3 ) : -99);
-	   int ph4 = (i4 >= 0 ? I("hit_phi_int", i4 ) : -99);
+	 emtf_dt.at(ii) = ( I("hit_isRPC", emtf_id.at(ii) ) == 1 ? 2 : 1);
+	 
+	 int ph1 = (i1 >= 0 ? I("hit_phi_int", i1 ) : -99); 
+	 int ph2 = (i2 >= 0 ? I("hit_phi_int", i2 ) : -99);
+	 int ph3 = (i3 >= 0 ? I("hit_phi_int", i3 ) : -99);
+	 int ph4 = (i4 >= 0 ? I("hit_phi_int", i4 ) : -99);
 	   
-	   int th1 = (i1 >= 0 ? I("hit_theta_int", i1 ) : -99);
-	   int th2 = (i2 >= 0 ? I("hit_theta_int", i2 ) : -99);
-	   int th3 = (i3 >= 0 ? I("hit_theta_int", i3 ) : -99);
-	   int th4 = (i4 >= 0 ? I("hit_theta_int", i4 ) : -99);
+	 int th1 = (i1 >= 0 ? I("hit_theta_int", i1 ) : -99);
+	 int th2 = (i2 >= 0 ? I("hit_theta_int", i2 ) : -99);
+	 int th3 = (i3 >= 0 ? I("hit_theta_int", i3 ) : -99);
+	 int th4 = (i4 >= 0 ? I("hit_theta_int", i4 ) : -99);
 
-	   int pat1 = (i1 >= 0 ? I("hit_pattern", i1 ) : -99);
-	   int pat2 = (i2 >= 0 ? I("hit_pattern", i2 ) : -99);
-	   int pat3 = (i3 >= 0 ? I("hit_pattern", i3 ) : -99);
-	   int pat4 = (i4 >= 0 ? I("hit_pattern", i4 ) : -99); 
+	 int pat1 = (i1 >= 0 ? I("hit_pattern", i1 ) : -99);
+	 int pat2 = (i2 >= 0 ? I("hit_pattern", i2 ) : -99);
+	 int pat3 = (i3 >= 0 ? I("hit_pattern", i3 ) : -99);
+	 int pat4 = (i4 >= 0 ? I("hit_pattern", i4 ) : -99); 
 
-	   int st1_ring2 = (i1 >= 0 ? ( I("hit_ring", i1 ) == 2 || I("hit_ring", i1 ) == 3 ) : 0);
-
-	   double eta;
-	   double phi;
-	   int endcap;
-	   if      (i2 >= 0) { eta = F("hit_eta", i2 ); phi = F("hit_phi", i2 ); }
-	   else if (i3 >= 0) { eta = F("hit_eta", i3 ); phi = F("hit_phi", i3 ); }
-	   else if (i4 >= 0) { eta = F("hit_eta", i4 ); phi = F("hit_phi", i4 ); }
-	   else if (i1 >= 0) { eta = F("hit_eta", i1 ); phi = F("hit_phi", i1 ); }
-	   endcap = (eta > 0 ? +1 : -1);
+	 int st1_ring2 = (i1 >= 0 ? ( I("hit_ring", i1 ) == 2 || I("hit_ring", i1 ) == 3 ) : 0);
+         
+	 //===========
+	 //track info
+	 //===========
+	 double eta;
+	 double phi;
+	 int endcap;
+	 if      (i2 >= 0) { eta = F("hit_eta", i2 ); phi = F("hit_phi", i2 ); }
+	 else if (i3 >= 0) { eta = F("hit_eta", i3 ); phi = F("hit_phi", i3 ); }
+	 else if (i4 >= 0) { eta = F("hit_eta", i4 ); phi = F("hit_phi", i4 ); }
+	 else if (i1 >= 0) { eta = F("hit_eta", i1 ); phi = F("hit_phi", i1 ); }
+	 endcap = (eta > 0 ? +1 : -1);
 		 
-	   // Variables to go into BDT
-	   int theta;
-	   int dPh12, dPh13, dPh14, dPh23, dPh24, dPh34, dPhSign;
-	   int dPhSum4, dPhSum4A, dPhSum3, dPhSum3A, outStPh;
-	   int dTh12, dTh13, dTh14, dTh23, dTh24, dTh34;
-	   int FR1, FR2, FR3, FR4;
-	   int bend1, bend2, bend3, bend4;
-	   int RPC1, RPC2, RPC3, RPC4;
+	 //========================
+	 //Variables to go into BDT
+	 //========================
+	 int theta;
+	 int dPh12, dPh13, dPh14, dPh23, dPh24, dPh34, dPhSign;
+	 int dPhSum4, dPhSum4A, dPhSum3, dPhSum3A, outStPh;
+	 int dTh12, dTh13, dTh14, dTh23, dTh24, dTh34;
+	 int FR1, FR2, FR3, FR4;
+	 int bend1, bend2, bend3, bend4;
+	 int RPC1, RPC2, RPC3, RPC4;
 
-	   // Extra variables for FR computation
-	   int ring1, cham1, cham2, cham3, cham4;
+	 // Extra variables for FR computation
+	 int ring1, cham1, cham2, cham3, cham4;
 
-	   if (MODE == 0) {
-	     theta = emtf_eta_int;
-	     goto EMTF_ONLY;
-	   }
+	 if (MODE == 0) {
+		 theta = emtf_eta_int;
+		 goto EMTF_ONLY;
+	 }
 
-	   theta = CalcTrackTheta( th1, th2, th3, th4, st1_ring2, mode, BIT_COMP );
+	 theta = CalcTrackTheta( th1, th2, th3, th4, st1_ring2, mode, BIT_COMP );
 	   
-	   CalcDeltaPhis( dPh12, dPh13, dPh14, dPh23, dPh24, dPh34, dPhSign,
+	 CalcDeltaPhis( dPh12, dPh13, dPh14, dPh23, dPh24, dPh34, dPhSign,
 			  dPhSum4, dPhSum4A, dPhSum3, dPhSum3A, outStPh,
 			  ph1, ph2, ph3, ph4, mode, BIT_COMP );
 	  
-	   CalcDeltaThetas( dTh12, dTh13, dTh14, dTh23, dTh24, dTh34,
+	 CalcDeltaThetas( dTh12, dTh13, dTh14, dTh23, dTh24, dTh34,
 			    th1, th2, th3, th4, mode, BIT_COMP );
 
-	   // In firmware, RPC 'FR' bit set according to FR of corresponding CSC chamber
-	   ring1 = (i1 >= 0 ? I("hit_ring", i1 ) : -99);
-	   cham1 = (i1 >= 0 ? I("hit_chamber", i1 ) : -99);
-	   cham2 = (i2 >= 0 ? I("hit_chamber", i2 ) : -99);
-	   cham3 = (i3 >= 0 ? I("hit_chamber", i3 ) : -99);
-	   cham4 = (i4 >= 0 ? I("hit_chamber", i4 ) : -99);
+	 // In firmware, RPC 'FR' bit set according to FR of corresponding CSC chamber
+	 ring1 = (i1 >= 0 ? I("hit_ring", i1 ) : -99);
+	 cham1 = (i1 >= 0 ? I("hit_chamber", i1 ) : -99);
+	 cham2 = (i2 >= 0 ? I("hit_chamber", i2 ) : -99);
+	 cham3 = (i3 >= 0 ? I("hit_chamber", i3 ) : -99);
+	 cham4 = (i4 >= 0 ? I("hit_chamber", i4 ) : -99);
 
-	   FR1 = (i1 >= 0 ? (cham1 % 2 == 0) : -99);  // Odd chambers are bolted to the iron,
-	   FR2 = (i2 >= 0 ? (cham2 % 2 == 0) : -99);  // which faces forwared in stations 1 & 2,
-	   FR3 = (i3 >= 0 ? (cham3 % 2 == 1) : -99);  // backwards in 3 & 4
-	   FR4 = (i4 >= 0 ? (cham4 % 2 == 1) : -99);
-	   if (ring1 == 3) FR1 = 0;                   // In ME1/3 chambers are non-overlapping
+	 FR1 = (i1 >= 0 ? (cham1 % 2 == 0) : -99);  // Odd chambers are bolted to the iron,
+	 FR2 = (i2 >= 0 ? (cham2 % 2 == 0) : -99);  // which faces forwared in stations 1 & 2,
+	 FR3 = (i3 >= 0 ? (cham3 % 2 == 1) : -99);  // backwards in 3 & 4
+	 FR4 = (i4 >= 0 ? (cham4 % 2 == 1) : -99);
+	 if (ring1 == 3) FR1 = 0;                   // In ME1/3 chambers are non-overlapping
 
-	   CalcBends( bend1, bend2, bend3, bend4,
-		      pat1, pat2, pat3, pat4, 
-		      dPhSign, endcap, mode, BIT_COMP );
+	 CalcBends( bend1, bend2, bend3, bend4,
+		   pat1, pat2, pat3, pat4, 
+		   dPhSign, endcap, mode, BIT_COMP );
 
-	   RPC1 = (i1 >= 0 ? ( I("hit_isRPC", i1 ) == 1 ? 1 : 0) : -99);
-	   RPC2 = (i2 >= 0 ? ( I("hit_isRPC", i2 ) == 1 ? 1 : 0) : -99);
-	   RPC3 = (i3 >= 0 ? ( I("hit_isRPC", i3 ) == 1 ? 1 : 0) : -99);
-	   RPC4 = (i4 >= 0 ? ( I("hit_isRPC", i4 ) == 1 ? 1 : 0) : -99);
+	 RPC1 = (i1 >= 0 ? ( I("hit_isRPC", i1 ) == 1 ? 1 : 0) : -99);
+	 RPC2 = (i2 >= 0 ? ( I("hit_isRPC", i2 ) == 1 ? 1 : 0) : -99);
+	 RPC3 = (i3 >= 0 ? ( I("hit_isRPC", i3 ) == 1 ? 1 : 0) : -99);
+	 RPC4 = (i4 >= 0 ? ( I("hit_isRPC", i4 ) == 1 ? 1 : 0) : -99);
 
-	   CalcRPCs( RPC1, RPC2, RPC3, RPC4, mode, st1_ring2, theta, BIT_COMP );
+	 CalcRPCs( RPC1, RPC2, RPC3, RPC4, mode, st1_ring2, theta, BIT_COMP );
 	   
-	   // Clean out showering muons with outlier station 1, or >= 2 outlier stations
-	   if (log2(mu_pt) > 6 && CLEAN_HI_PT && MODE == 15)
-	     if ( dPhSum4A >= fmax(40., 332. - 40*log2(mu_pt)) )
-	       if ( outStPh < 2 || dPhSum3A >= fmax(24., 174. - 20*log2(mu_pt)) )
-		 mu_train = false;
+	 // Clean out showering muons with outlier station 1, or >= 2 outlier stations
+	 if (log2(mu_pt) > 6 && CLEAN_HI_PT && MODE == 15)
+		 if ( dPhSum4A >= fmax(40., 332. - 40*log2(mu_pt)) )
+			 if ( outStPh < 2 || dPhSum3A >= fmax(24., 174. - 20*log2(mu_pt)) )
+				 mu_train = false;
 
 	 EMTF_ONLY: // Skip track building, just store EMTF info
 
