@@ -399,9 +399,8 @@ void PtRegression2018 ( TString myMethodList = "" ) {
        UInt_t nHits  = I("nHits");//hit_* branches are unpacked hits 
        UInt_t nTrks  = I("nTracks");//trk_* branches are EMTF tracks
        	     
-       if ( (NonZBEvt % REPORT_EVT) == 0 ||
-	    (ZBEvt % REPORT_EVT) == 0 )
-	 std::cout << "Looking at Non-ZB event " << NonZBEvt << "; ZB event " << ZBEvt << std::endl;
+       if ( (NonZBEvt % REPORT_EVT) == 0 || (ZBEvt > 0 && (ZBEvt % REPORT_EVT) == 0 ) )
+	       std::cout << "Looking at Non-ZB event " << NonZBEvt << "; ZB event " << ZBEvt << std::endl;
        
        //============================================
        //EMTF biased events can't be used in training
