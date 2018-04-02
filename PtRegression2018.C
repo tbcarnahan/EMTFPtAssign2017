@@ -507,9 +507,10 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	 std::cout << "hit id at(4): "<<i4<< std::endl;
 	 }
 	 
-	 int mode     = I("trk_mode", iTrk);
-	 int mode_CSC = I("trk_mode_CSC", iTrk);
-	 int mode_RPC = I("trk_mode_RPC", iTrk);
+	 //Assign built trk properties the same as emtf track 
+	 int mode     = emtf_mode;
+	 int mode_CSC = emtf_mode_CSC;
+	 int mode_RPC = emtf_mode_RPC;
 	 assert(mode == MODE);
 
 	 int ph1 = (i1 >= 0 ? I("hit_phi_int", i1 ) : -99); 
