@@ -537,7 +537,7 @@ void LoopOverEvents( PtAlgo& algo, const TString tr_te ) {
     }
     //TRG_pt *= algo.trg_pt_scale;
     if ( isEMTF ) {
-	    TRG_pt *= (1 - 0.015*fmin(20., pt) ) / 1.2;
+	    TRG_pt = TRG_pt * (1 - 0.015*fmin(20., TRG_pt) ) / 1.2;
     }    
     TRG_pt += BIT; // Small value to offset EMTF trigger pT right on 0.0/0.5 GeV boundaries 
 
