@@ -40,15 +40,6 @@ namespace RateVsEff_cfg {
       EMTF15.modes_RPC    = {0};  // No RPC hits allowed
       EMTF15.trg_pt_scale = 1.2 / (1 - 0.015*fmin(20., pt) );  // 2017 pT scale 
       EMTF15.color        = 1;  // kBlack 
-
-      PtAlgo EMTF = EMTF15;
-      ID_str.Form("EMTF%d", MODE);
-      alias_str.Form("EMTF mode %d", MODE);
-      EMTF.unique_ID    = ID_str;
-      EMTF.alias        = alias_str;
-      EMTF.modes        = {MODE};
-      EMTF.modes_CSC    = {MODE};
-      EMTF.color        = 880;  // kViolet
       
       // Mode 15, invPt pT target, invPt weight
       PtAlgo BDT15_invPt_invPt_Sq;
@@ -63,7 +54,6 @@ namespace RateVsEff_cfg {
       BDT15_invPt_invPt_Sq.color        = 840;  // kTeal
 
       ALGOS.push_back(EMTF15);  // First algo is always the standard comparison algo
-      ALGOS.push_back(EMTF);
       ALGOS.push_back(BDT15_invPt_invPt_Sq);
     } // End conditional: if (USER == "WEI")
     
