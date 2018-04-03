@@ -38,7 +38,7 @@ namespace RateVsEff_cfg {
       EMTF15.modes        = {15};
       EMTF15.modes_CSC    = {15};
       EMTF15.modes_RPC    = {0};  // No RPC hits allowed
-      EMTF15.trg_pt_scale = 1.2 / (1 - 0.015*fmin(20., pt) );  // 2017 pT scale 
+      //EMTF15.trg_pt_scale = 1.2 / (1 - 0.015*fmin(20., pt) );  // 2017 pT scale 
       EMTF15.color        = 1;  // kBlack 
       
       // Mode 15, invPt pT target, invPt weight
