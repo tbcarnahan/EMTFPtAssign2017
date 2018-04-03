@@ -38,7 +38,7 @@ namespace RateVsEff_cfg {
       EMTF15.modes        = {15};
       EMTF15.modes_CSC    = {15};
       EMTF15.modes_RPC    = {0};  // No RPC hits allowed
-      EMTF15.trg_pt_scale = 1./1.4;  // Had been scaled up by 1.4 from original regression 
+      EMTF15.trg_pt_scale = 1.2 / (1 - 0.015*fmin(20., pt) );  // 2017 pT scale 
       EMTF15.color        = 1;  // kBlack 
 
       PtAlgo EMTF = EMTF15;
