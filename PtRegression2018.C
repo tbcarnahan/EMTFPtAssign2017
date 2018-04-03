@@ -443,17 +443,20 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	 Bool_t mu_train = true;  // Can use the reco muon for training 
 	       
 	 //if can't find unique match, assign 1 GeV true pT for training
-	 if( emtf_unique_match == 1 ){//not matched is -999 in 2018 NTuple
+	 if( emtf_unique_match == 1 ){//note matched is -999 in 2018 NTuple
 		 mu_pt = F("reco_pt", emtf_unique_iMu);
 		 mu_eta = F("reco_eta", emtf_unique_iMu);
 		 mu_phi = F("reco_phi", emtf_unique_iMu);
 	         mu_charge = I("reco_charge", emtf_unique_iMu);
 	 }
 	 else {
+		 continue;
+		 /*
 		 mu_pt = 1;
 		 mu_eta = (ETAMIN+ETAMAX)/2;
 		 mu_phi = emtf_phi;
 	         mu_charge = emtf_charge;
+		 */
 	 }
 	       
 	 if(verbose) std::cout << "RECO kinematics ... "<< std::endl;   
