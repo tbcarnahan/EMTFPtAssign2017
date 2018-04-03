@@ -3,7 +3,7 @@ const TString USER = "Wei";  // Settings applied in User.h
 
 // *** Events to process *** //
 const int MAX_TR = 50000000;  // Number of events for training 
-const int REPORT_EVT = 10000;  // Report every Nth event during processing
+const int REPORT_EVT = 100000;  // Report every Nth event during processing
 
 // *** Remove EMTF Bias settings *** //
 const int Bias_Pt = 26;//SingleMu is collected with IsoMu24
