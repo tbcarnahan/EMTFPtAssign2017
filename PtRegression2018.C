@@ -388,7 +388,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
      std::cout << "\n******* About to enter the event loop for chain " << iCh+1 << " *******" << std::endl;
      
      for (UInt_t jEvt = 0; jEvt < in_chain->GetEntries(); jEvt++) {
-       if (NonZBEvt > MAX_TR) break;
+       if (nTrain > MAX_TR) break;
        if (jEvt < nSMEvents) {
 	       isZB = false;
 	       isTEST = false;
