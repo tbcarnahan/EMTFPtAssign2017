@@ -427,7 +427,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 		 }
 	 }//end if 
        }//end Remove bias  
-       if (!isZB && BarrelRecoMu==0 && EndcapRecoMu<=1 ) isTEST = true;//Don't use EMTF biased event in training
+       if (!isZB && BarrelRecoMu==0 && EndcapRecoMu<=1 ) isTEST = true;
        
        if(verbose) std::cout << "End removing bias ... "<< std::endl;    
 	     
