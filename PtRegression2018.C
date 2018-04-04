@@ -376,6 +376,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
    UInt_t ZBEvt = 0;
    UInt_t nTrain = 0;
    UInt_t nTest  = 0;
+   Bool_t isZB = false;
    Bool_t isTEST = false;
 	
    //================================
@@ -388,8 +389,14 @@ void PtRegression2018 ( TString myMethodList = "" ) {
      
      for (UInt_t jEvt = 0; jEvt < in_chain->GetEntries(); jEvt++) {
        if (NonZBEvt > MAX_TR) break;
-       if (jEvt < nSMEvents) isTEST = false;
-       if (jEvt >= nSMEvents) isTEST = true;
+       if (jEvt < nSMEvents) {
+	       isZB = false;
+	       isTEST = false;
+       }
+       if (jEvt >= nSMEvents) {
+	       isZB = true;
+	       isTEST = true;
+       }
 
        in_chain->GetEntry(jEvt);
 	     
