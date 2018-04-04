@@ -451,15 +451,11 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	 int mu_charge = -999;
 	 Bool_t mu_train = true;  // tag muon for training 
 	       
-	 //if can't find unique match, assign 1 GeV true pT for training
 	 if( emtf_unique_match == 1 && !isTEST){//not uniquely matched is -999 in 2018 NTuple
 		 mu_pt = F("reco_pt", emtf_unique_iMu);
 		 mu_eta = F("reco_eta", emtf_unique_iMu);
 		 mu_phi = F("reco_phi", emtf_unique_iMu);
 	         mu_charge = I("reco_charge", emtf_unique_iMu);
-	 }
-	 else {
-		 continue;
 	 }
 	       
 	 if(verbose) std::cout << "RECO kinematics ... "<< std::endl;   
@@ -467,8 +463,8 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	 //===============================    
          //RECO mu kinematics requirements
 	 //===============================
-	 if ( mu_pt < PTMIN || mu_pt > PTMAX ) continue;
-	 if ( fabs( mu_eta ) < ETAMIN || fabs( mu_eta ) > ETAMAX ) continue;
+	 if ( !isTEST && (mu_pt < PTMIN || mu_pt > PTMAX) ) continue;
+	 if ( !isTEST && (fabs( mu_eta ) < ETAMIN || fabs( mu_eta ) > ETAMAX) ) continue;
 	 if ( mu_pt < PTMIN_TR || mu_pt > PTMAX_TR || isTEST) mu_train = false;
          
 	 //==================
