@@ -445,19 +445,22 @@ void PtRegression2018 ( TString myMethodList = "" ) {
          int emtf_mode_RPC = I("trk_mode_RPC", iTrk);      
 	 int emtf_unique_match = I("trk_dR_match_unique", iTrk);
 	 int emtf_unique_iMu = I("trk_dR_match_iReco", iTrk);       
-	 double mu_pt = -999.;
+	 double mu_pt = -999.;//Default for muons in ZB 
 	 double mu_eta = -999.;
 	 double mu_phi = -999.;
 	 int mu_charge = -999;
 	 Bool_t mu_train = false;  // tag muon for training 
 	 
-	 //Get muon candiates with unique match     
-	 if( emtf_unique_match == 1){//not uniquely matched is -999 in 2018 NTuple
+	 //Get muon candiates with unique match from nonZB events   
+	 if( emtf_unique_match == 1 && !isZB){
 		 mu_train = true;
 		 mu_pt = F("reco_pt", emtf_unique_iMu);
 		 mu_eta = F("reco_eta", emtf_unique_iMu);
 		 mu_phi = F("reco_phi", emtf_unique_iMu);
 	         mu_charge = I("reco_charge", emtf_unique_iMu);
+	 }
+	 else{
+		 continue;//discard nonZB trk without unique match
 	 }
 	       
 	 if(verbose) std::cout << "RECO kinematics ... "<< std::endl;   
