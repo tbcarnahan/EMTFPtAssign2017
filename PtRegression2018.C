@@ -376,8 +376,8 @@ void PtRegression2018 ( TString myMethodList = "" ) {
    UInt_t ZBEvt = 0;
    UInt_t nTrain = 0;
    UInt_t nTest  = 0;
-   Bool_t isZB = false;
-   Bool_t isTEST = false;
+   Bool_t isZB = false;//tag event
+   Bool_t isTEST = false;//tag event
 	
    //================================
    //Register events: loop over chains
@@ -447,7 +447,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	 double mu_eta = -999.;
 	 double mu_phi = -999.;
 	 int mu_charge = -999;
-	 Bool_t mu_train = true;  // Can use the reco muon for training 
+	 Bool_t mu_train = true;  // tag muon for training 
 	       
 	 //if can't find unique match, assign 1 GeV true pT for training
 	 if( emtf_unique_match == 1 ){//note matched is -999 in 2018 NTuple
