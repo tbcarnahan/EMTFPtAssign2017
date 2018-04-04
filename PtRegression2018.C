@@ -450,8 +450,9 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	 double mu_phi = -999.;
 	 int mu_charge = -999;
 	 Bool_t mu_train = false;  // tag muon for training 
-	       
-	 if( emtf_unique_match == 1 && !isTEST){//not uniquely matched is -999 in 2018 NTuple
+	 
+	 //Get muon candiates with unique match     
+	 if( emtf_unique_match == 1){//not uniquely matched is -999 in 2018 NTuple
 		 mu_train = true;
 		 mu_pt = F("reco_pt", emtf_unique_iMu);
 		 mu_eta = F("reco_eta", emtf_unique_iMu);
