@@ -42,19 +42,19 @@ namespace RateVsEff_cfg {
       EMTF15.color        = 1;  // kBlack 
       
       // Mode 15, invPt pT target, invPt weight
-      PtAlgo BDT15_invPt_invPt_Sq;
-      BDT15_invPt_invPt_Sq.in_file_name = "PtRegression2018_MODE_15_bitCompr_CSC.root";
-      BDT15_invPt_invPt_Sq.fact_name    = "f_MODE_15_ptTarg_noWgt_bitCompr_RPC";
-      BDT15_invPt_invPt_Sq.MVA_name     = "BDTG_AWB_Sq";
-      BDT15_invPt_invPt_Sq.unique_ID    = "BDT_15_invPt_Sq";
-      BDT15_invPt_invPt_Sq.alias        = "invPt target, LeastSq loss";
-      BDT15_invPt_invPt_Sq.modes        = {15};
-      BDT15_invPt_invPt_Sq.modes_CSC    = {15};
-      BDT15_invPt_invPt_Sq.modes_RPC    = {0};
-      BDT15_invPt_invPt_Sq.color        = 840;  // kTeal
+      PtAlgo BDT15_pt_no_AbsDev;
+      BDT15_pt_no_AbsDev.in_file_name = "PtRegression2018_MODE_15_bitCompr_CSC.root";
+      BDT15_pt_no_AbsDev.fact_name    = "f_MODE_15_ptTarg_noWgt_bitCompr_RPC";
+      BDT15_pt_no_AbsDev.MVA_name     = "BDTG_AWB";
+      BDT15_pt_no_AbsDev.unique_ID    = "BDT_15_PtTarg_noWgt";
+      BDT15_pt_no_AbsDev.alias        = "pt target, AbsDev loss";
+      BDT15_pt_no_AbsDev.modes        = {15};
+      BDT15_pt_no_AbsDev.modes_CSC    = {15};
+      BDT15_pt_no_AbsDev.modes_RPC    = {0};
+      BDT15_pt_no_AbsDev.color        = 840;  // kTeal
 
       ALGOS.push_back(EMTF15);  // First algo is always the standard comparison algo
-      ALGOS.push_back(BDT15_invPt_invPt_Sq);
+      ALGOS.push_back(BDT15_pt_no_AbsDev);
     } // End conditional: if (USER == "WEI")
     
   } // End function: inline void ConfigureUser()    
