@@ -392,10 +392,12 @@ void PtRegression2018 ( TString myMethodList = "" ) {
        if (jEvt < nSMEvents) {
 	       isZB = false;
 	       isTEST = false;
+	       NonZBEvt += 1;
        }
-       if (jEvt >= nSMEvents) {
+       else{
 	       isZB = true;
 	       isTEST = true;
+	       ZBEvt += 1;
        }
 
        in_chain->GetEntry(jEvt);
@@ -825,13 +827,6 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	 } // End loop: for (UInt_t iFact = 0; iFact < factories.size(); iFact++) 
 	       
        } // End loop: for emtf trks
-	     
-       if(jEvt < nZBEvents){
-	       NonZBEvt += 1;
-       }
-       else{
-	       ZBEvt += 1;
-       }
        
      } // End loop: for jEvt 
    } // End loop: for iCh
