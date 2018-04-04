@@ -31,7 +31,7 @@ namespace RateVsEff_cfg {
 
       PtAlgo EMTF15;  // 2017 EMTF pT algorithm, mode 15
       EMTF15.in_file_name = "PtRegression2018_MODE_15_bitCompr_CSC.root";
-      EMTF15.fact_name    = "f_MODE_15_invPtTarg_invPtWgt_bitCompr_RPC";
+      EMTF15.fact_name    = "f_MODE_15_ptTarg_noWgt_bitCompr_RPC";
       EMTF15.MVA_name     = "EMTF_pt";
       EMTF15.unique_ID    = "EMTF15";
       EMTF15.alias        = "EMTF mode 15";
@@ -44,7 +44,7 @@ namespace RateVsEff_cfg {
       // Mode 15, invPt pT target, invPt weight
       PtAlgo BDT15_invPt_invPt_Sq;
       BDT15_invPt_invPt_Sq.in_file_name = "PtRegression2018_MODE_15_bitCompr_CSC.root";
-      BDT15_invPt_invPt_Sq.fact_name    = "f_MODE_15_invPtTarg_invPtWgt_bitCompr_RPC";
+      BDT15_invPt_invPt_Sq.fact_name    = "f_MODE_15_ptTarg_noWgt_bitCompr_RPC";
       BDT15_invPt_invPt_Sq.MVA_name     = "BDTG_AWB_Sq";
       BDT15_invPt_invPt_Sq.unique_ID    = "BDT_15_invPt_Sq";
       BDT15_invPt_invPt_Sq.alias        = "invPt target, LeastSq loss";
