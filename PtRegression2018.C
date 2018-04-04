@@ -376,7 +376,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
    UInt_t ZBEvt = 0;
    UInt_t nTrain = 0;
    UInt_t nTest  = 0;
-   Bool_t isZB = false;
+   Bool_t isTEST = false;
 	
    //================================
    //Register events: loop over chains
@@ -388,8 +388,8 @@ void PtRegression2018 ( TString myMethodList = "" ) {
      
      for (UInt_t jEvt = 0; jEvt < in_chain->GetEntries(); jEvt++) {
        if (NonZBEvt > MAX_TR) break;
-       if (jEvt < nSMEvents) isZB = false;
-       if (jEvt >= nSMEvents) isZB = true;
+       if (jEvt < nSMEvents) isTEST = false;
+       if (jEvt >= nSMEvents) isTEST = true;
 
        in_chain->GetEntry(jEvt);
 	     
@@ -418,7 +418,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 		 }
 	 }//end if 
        }//end Remove bias  
-       if (!isZB && BarrelRecoMu==0 && EndcapRecoMu<=1 ) isZB = true;//Don't use EMTF biased event in training
+       if (!isTEST && BarrelRecoMu==0 && EndcapRecoMu<=1 ) isTEST = true;//Don't use EMTF biased event in training
        
        if(verbose) std::cout << "End removing bias ... "<< std::endl;    
 	     
@@ -466,7 +466,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	 //===============================
 	 if ( mu_pt < PTMIN || mu_pt > PTMAX ) continue;
 	 if ( fabs( mu_eta ) < ETAMIN || fabs( mu_eta ) > ETAMAX ) continue;
-	 if ( mu_pt < PTMIN_TR || mu_pt > PTMAX_TR || isZB) mu_train = false;
+	 if ( mu_pt < PTMIN_TR || mu_pt > PTMAX_TR || isTEST) mu_train = false;
          
 	 //==================
 	 //Require valid mode
