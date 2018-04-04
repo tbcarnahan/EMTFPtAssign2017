@@ -20,9 +20,9 @@ const std::vector<int> RPC_MASK = {};  // Mask RPC hits in these stations
 // *** Target and event weights      ***//
 // *** Can put multiple choices here ***// 
 // Choose "pt", "invPt", "logPt", and/or "charge"
-const std::vector<TString> TARG_VARS = {"invPt"}; // Default "invPt"
+const std::vector<TString> TARG_VARS = {"pt"}; // Default "invPt"
 // Choose "no", "invPt", and/or "invPtSq"
-const std::vector<TString> EVT_WGTS  = {"invPt"}; // Default "invPt" 
+const std::vector<TString> EVT_WGTS  = {"no"}; // Default "invPt" 
 
 // *** EMTF tracks *** //
 const bool USE_EMTF_CSC = true;  // Only use CSC LCTs from the original EMTF track
