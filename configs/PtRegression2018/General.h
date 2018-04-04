@@ -12,7 +12,7 @@ const float Bias_Iso = 0.25;//reco mu iso
 
 // *** Track-building settings *** //
 const int MODE      = 15;     // Track mode to build - settings applied in Modes.h
-const bool USE_RPC  = true;   // Use RPC hits in track-building       
+const bool USE_RPC  = false;   // Use RPC hits in track-building       
 const bool BIT_COMP = true;   // Use bit-compressed versions of input variables
 const std::vector<int> CSC_MASK = {};  // Mask CSC LCTs in these stations
 const std::vector<int> RPC_MASK = {};  // Mask RPC hits in these stations
