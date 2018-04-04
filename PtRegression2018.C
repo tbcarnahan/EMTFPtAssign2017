@@ -470,8 +470,8 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	 //===============================    
          //RECO mu kinematics requirements
 	 //===============================
-	 if ( !isTEST && (mu_pt < PTMIN || mu_pt > PTMAX) ) continue;
-	 if ( !isTEST && (fabs( mu_eta ) < ETAMIN || fabs( mu_eta ) > ETAMAX) ) continue;
+	 if ( !isZB && (mu_pt < PTMIN || mu_pt > PTMAX) ) continue;
+	 if ( !isZB && (fabs( mu_eta ) < ETAMIN || fabs( mu_eta ) > ETAMAX) ) continue;
 	 if ( mu_pt < PTMIN_TR || mu_pt > PTMAX_TR || isTEST) mu_train = false;
          
 	 //==================
