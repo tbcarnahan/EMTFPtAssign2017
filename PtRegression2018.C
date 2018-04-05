@@ -388,10 +388,15 @@ void PtRegression2018 ( TString myMethodList = "" ) {
      std::cout << "\n******* About to enter the event loop for chain " << iCh+1 << " *******" << std::endl;
      
      for (UInt_t jEvt = 0; jEvt < in_chain->GetEntries(); jEvt++) {
+	     
+       //@@@ Debug
+       std::cout << "* Flag 1 *" << nTest << std::endl;
+       //@@@ End 
+	     
        if (nTrain > MAX_TR) break;
 	     
        //@@@ Debug
-       //if (nTest > 100) break;
+       std::cout << "* Flag 2 *" << nTest << std::endl;
        //@@@ End   
 	     
        if (jEvt < nSMEvents) {
@@ -406,7 +411,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
        }
 
        //@@@ Debug: only check ZB events
-       if (jEvt < nSMEvents-1000) continue;
+       if (jEvt < nSMEvents-400) continue;
        //@@@ End
 	     
        in_chain->GetEntry(jEvt);
