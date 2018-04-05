@@ -391,6 +391,10 @@ void PtRegression2018 ( TString myMethodList = "" ) {
      TChain *in_chain = in_chains.at(iCh);
      
      std::cout << "\n******* About to enter the event loop for chain " << iCh+1 << " *******" << std::endl;
+	   
+       //@@@ Debug
+       std::cout << "Entries in chain: "<<in_chain->GetEntries() << std::endl;
+       //@@@ End
      
      for (UInt_t jEvt = 0; jEvt < in_chain->GetEntries(); jEvt++) {
 	     
