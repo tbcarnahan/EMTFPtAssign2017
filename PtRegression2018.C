@@ -390,13 +390,13 @@ void PtRegression2018 ( TString myMethodList = "" ) {
      for (UInt_t jEvt = 0; jEvt < in_chain->GetEntries(); jEvt++) {
 	     
        //@@@ Debug
-       std::cout << "* Flag 1 *" << nTest << std::endl;
+       if (jEvt > nSMEvents-400) std::cout << "* Flag 1 *" << std::endl;
        //@@@ End 
 	     
        if (nTrain > MAX_TR) break;
 	     
        //@@@ Debug
-       std::cout << "* Flag 2 *" << nTest << std::endl;
+       if (jEvt > nSMEvents-400) std::cout << "* Flag 2 *" << std::endl;
        //@@@ End   
 	     
        if (jEvt < nSMEvents) {
