@@ -391,7 +391,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
        if (nTrain > MAX_TR) break;
 	     
        //@@@ Debug
-       //if (nTest > 10) break;
+       //if (nTest > 100) break;
        //@@@ End   
 	     
        if (jEvt < nSMEvents) {
@@ -406,7 +406,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
        }
 
        //@@@ Debug: only check ZB events
-       if (jEvt < nSMEvents) continue;
+       //if (jEvt < nSMEvents) continue;
        //@@@ End
 	     
        in_chain->GetEntry(jEvt);
@@ -818,11 +818,19 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	       
 	     } // End loop: for (UInt_t iVar = 0; iVar < var_names.size(); iVar++)
 	     
+             //@@@ Debug
+	     std::cout << "jEvent: " <<jEvt<<", isZB: "<<isZB<< std::endl;
+	     std::cout << "GEN mu pt: " << mu_pt << ", eta: " << mu_eta<<", phi: "<< mu_phi <<", charge: "<< mu_charge << std::endl;
+	     //@@@ End
+		 
 	     // Load values into event
 	     if ( (NonZBEvt % 2)==0 && mu_train && MODE > 0 ) { 
 	       std::get<1>(factories.at(iFact))->AddTrainingEvent( "Regression", var_vals, evt_weight );
 	       if (iFact == 0) nTrain += 1;
-	       // std::cout << "Added train mu " << nTrain << std::endl;
+	       //@@@ Debug
+	       std::cout << "* Added train mu *" << nTest << std::endl;
+	       std::cout << "GEN mu pt: " << mu_pt << ", eta: " << mu_eta<<", phi: "<< mu_phi <<", charge: "<< mu_charge << std::endl;
+	       //@@@ End
 	     }
 	     else {
 	       std::get<1>(factories.at(iFact))->AddTestEvent( "Regression", var_vals, evt_weight );
