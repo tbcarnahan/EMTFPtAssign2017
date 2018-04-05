@@ -390,11 +390,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
      for (UInt_t jEvt = 0; jEvt < in_chain->GetEntries(); jEvt++) {//!!! NOTE: jEvt restarts from 0 in new chain
 	     
        if (nTrain > MAX_TR) break;  
-       
-       //@@@ DEBUG
-       if (nTest > 1000) break; 
-       if (iCh ==0 && jEvt<nSMEvents-400) continue;
-       //@@@ END
+       if (nTest > MAX_TE) break; 
 	     
        if (iCh<1) {//SingleMu, need to modify if have more samples added
 	       isZB = false;
@@ -815,28 +811,15 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 		 var_vals.at(iVar) = evt_weight;
 	       
 	     } // End loop: for (UInt_t iVar = 0; iVar < var_names.size(); iVar++)
-	     
-             //@@@ Debug
-	     std::cout << "jEvent: " <<jEvt<<", isZB: "<<isZB<< std::endl;
-	     std::cout << "GEN mu pt: " << mu_pt << ", eta: " << mu_eta<<", phi: "<< mu_phi <<", charge: "<< mu_charge << std::endl;
-	     //@@@ End
 		 
 	     // Load values into event
 	     if ( (NonZBEvt % 2)==0 && mu_train && MODE > 0 ) { 
 	       std::get<1>(factories.at(iFact))->AddTrainingEvent( "Regression", var_vals, evt_weight );
 	       if (iFact == 0) nTrain += 1;
-	       //@@@ Debug
-	       std::cout << "* Added train mu *" << nTest << std::endl;
-	       std::cout << "GEN mu pt: " << mu_pt << ", eta: " << mu_eta<<", phi: "<< mu_phi <<", charge: "<< mu_charge << std::endl;
-	       //@@@ End
 	     }
 	     else {
 	       std::get<1>(factories.at(iFact))->AddTestEvent( "Regression", var_vals, evt_weight );
 	       if (iFact == 0) nTest += 1;
-	       //@@@ Debug
-	       std::cout << "* Added test mu *" << nTest << std::endl;
-	       std::cout << "GEN mu pt: " << mu_pt << ", eta: " << mu_eta<<", phi: "<< mu_phi <<", charge: "<< mu_charge << std::endl;
-	       //@@@ End
 	     }
 	 } // End loop: for (UInt_t iFact = 0; iFact < factories.size(); iFact++) 
 	       
