@@ -379,9 +379,14 @@ void PtRegression2018 ( TString myMethodList = "" ) {
    Bool_t isZB = false;//tag event
    Bool_t isTEST = false;//tag event
 	
-   //================================
+   //=================================
    //Register events: loop over chains
-   //================================
+   //=================================
+	
+   //@@@ Debug
+   std::cout << "in_chains size: "<< in_chains.size() << std::endl;
+   //@@@ End
+	
    for (int iCh = 0; iCh < in_chains.size(); iCh++) {
      TChain *in_chain = in_chains.at(iCh);
      
