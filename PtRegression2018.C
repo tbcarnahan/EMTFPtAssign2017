@@ -390,8 +390,13 @@ void PtRegression2018 ( TString myMethodList = "" ) {
      for (UInt_t jEvt = 0; jEvt < in_chain->GetEntries(); jEvt++) {//!!! NOTE: jEvt restarts from 0 in new chain
 	     
        if (nTrain > MAX_TR) break;  
+       
+       //@@@ DEBUG
+       if (nTest > 1000) break; 
+       if (iCh ==0 && jEvt<nSMEvents-400) continue;
+       //@@@ END
 	     
-       if (jEvt < nSMEvents) {
+       if (iCh<1) {//SingleMu, need to modify if have more samples added
 	       isZB = false;
 	       isTEST = false;
 	       NonZBEvt += 1;
