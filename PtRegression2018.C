@@ -445,10 +445,10 @@ void PtRegression2018 ( TString myMethodList = "" ) {
          int emtf_mode_RPC = I("trk_mode_RPC", iTrk);      
 	 int emtf_unique_match = I("trk_dR_match_unique", iTrk);
 	 int emtf_unique_iMu = I("trk_dR_match_iReco", iTrk);       
-	 double mu_pt = -999.;//Default for muons in ZB 
-	 double mu_eta = -999.;
-	 double mu_phi = -999.;
-	 int mu_charge = -999;
+	 double mu_pt = 999.;//Default for muons in ZB 
+	 double mu_eta = -99.;
+	 double mu_phi = -99.;
+	 int mu_charge = -99;
 	 Bool_t mu_train = false;  // tag muon for training 
 	 
 	 //Get RECO mu(i.e. GEN mu) with unique match from nonZB events
@@ -612,7 +612,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	 CalcRPCs( RPC1, RPC2, RPC3, RPC4, mode, st1_ring2, theta, BIT_COMP );
 	   
 	 // Clean out showering muons with outlier station 1, or >= 2 outlier stations
-	 if (log2(mu_pt) > 6 && CLEAN_HI_PT && MODE == 15)
+	 if (!isTEST && log2(mu_pt) > 6 && CLEAN_HI_PT && MODE == 15)
 		 if ( dPhSum4A >= fmax(40., 332. - 40*log2(mu_pt)) )
 			 if ( outStPh < 2 || dPhSum3A >= fmax(24., 174. - 20*log2(mu_pt)) )
 				 mu_train = false;
