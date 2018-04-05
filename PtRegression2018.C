@@ -382,31 +382,14 @@ void PtRegression2018 ( TString myMethodList = "" ) {
    //=================================
    //Register events: loop over chains
    //=================================
-	
-   //@@@ Debug
-   std::cout << "in_chains size: "<< in_chains.size() << std::endl;
-   //@@@ End
-	
    for (int iCh = 0; iCh < in_chains.size(); iCh++) {
      TChain *in_chain = in_chains.at(iCh);
      
      std::cout << "\n******* About to enter the event loop for chain " << iCh+1 << " *******" << std::endl;
-	   
-       //@@@ Debug
-       std::cout << "Entries in chain: "<<in_chain->GetEntries() << std::endl;
-       //@@@ End
      
-     for (UInt_t jEvt = 0; jEvt < in_chain->GetEntries(); jEvt++) {
+     for (UInt_t jEvt = 0; jEvt < in_chain->GetEntries(); jEvt++) {//!!! NOTE: jEvt restarts from 0 in new chain
 	     
-       //@@@ Debug
-       if (jEvt > nSMEvents-400) std::cout << "* Flag 1 *" << std::endl;
-       //@@@ End 
-	     
-       if (nTrain > MAX_TR) break;
-	     
-       //@@@ Debug
-       if (jEvt > nSMEvents-400) std::cout << "* Flag 2 *" << std::endl;
-       //@@@ End   
+       if (nTrain > MAX_TR) break;  
 	     
        if (jEvt < nSMEvents) {
 	       isZB = false;
@@ -418,10 +401,6 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	       isTEST = true;
 	       ZBEvt += 1;
        }
-
-       //@@@ Debug: only check ZB events
-       if (jEvt < nSMEvents-400) continue;
-       //@@@ End
 	     
        in_chain->GetEntry(jEvt);
 	     
