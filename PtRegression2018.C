@@ -406,7 +406,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
        }
 
        //@@@ Debug: only check ZB events
-       //if (jEvt < nSMEvents) continue;
+       if (jEvt < nSMEvents-1000) continue;
        //@@@ End
 	     
        in_chain->GetEntry(jEvt);
