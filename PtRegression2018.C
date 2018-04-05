@@ -400,6 +400,10 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	       ZBEvt += 1;
        }
 
+       //@@@ Debug: only check ZB events
+       if (jEvt < nSMEvents) continue;
+       //@@@ End
+	     
        in_chain->GetEntry(jEvt);
 	     
        UInt_t nMuons = I("nRecoMuons");//reco_* branches are true info reference
@@ -813,12 +817,15 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	     if ( (NonZBEvt % 2)==0 && mu_train && MODE > 0 ) { 
 	       std::get<1>(factories.at(iFact))->AddTrainingEvent( "Regression", var_vals, evt_weight );
 	       if (iFact == 0) nTrain += 1;
-	       // std::cout << "Added train event " << nTrain << std::endl;
+	       // std::cout << "Added train mu " << nTrain << std::endl;
 	     }
 	     else {
 	       std::get<1>(factories.at(iFact))->AddTestEvent( "Regression", var_vals, evt_weight );
 	       if (iFact == 0) nTest += 1;
-	       // std::cout << "Added test event " << nTest << std::endl;
+	       //@@@ Debug
+	       std::cout << "* Added test mu *" << nTest << std::endl;
+	       std::cout << "GEN mu pt: " << mu_pt << ", eta: " << mu_eta<<", phi: "<< mu_phi <<", charge: "<< mu_charge << std::endl;
+	       //@@@ End
 	     }
 	 } // End loop: for (UInt_t iFact = 0; iFact < factories.size(); iFact++) 
 	       
