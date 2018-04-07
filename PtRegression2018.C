@@ -64,9 +64,9 @@ void PtRegression2018 ( TString myMethodList = "" ) {
    Use["SVM"]             = 0;
    
    // Boosted Decision Trees
-   Use["BDTG_AWB"]                = 1;
+   Use["BDTG_AWB"]                = 0;
    Use["BDTG_AWB_Hub"]            = 0;
-   Use["BDTG_AWB_Sq"]             = 0;
+   Use["BDTG_AWB_Sq"]             = 1;
    //==================================
    bool verbose = false;//for debug
 
