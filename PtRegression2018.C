@@ -465,13 +465,13 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 		 mu_charge = I("reco_charge", emtf_unique_iMu);
 	 }
 	       
-	 /*
+	 
 	 //===============================================
 	 //Option1: Discard nonZB trk without unique match
 	 //===============================================
 	 if( !isZB && emtf_unique_match != 1 ) continue;
-	 */
-	       
+	 
+	 /*
 	 //=================================================================
 	 //Option2: Assign 1GeV to RECO mu if nonZB trk without unique match
 	 //=================================================================
@@ -482,7 +482,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 		 mu_phi = emtf_phi;
 		 mu_charge = emtf_charge;
 	 }
-	       
+	 */     
 	 if(verbose) std::cout << "RECO kinematics ... "<< std::endl;   
 	       
 	 //===============================    
