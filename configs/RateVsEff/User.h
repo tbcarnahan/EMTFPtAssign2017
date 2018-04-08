@@ -41,20 +41,20 @@ namespace RateVsEff_cfg {
       //EMTF15.trg_pt_scale = 1.2 / (1 - 0.015*fmin(20., pt) );  // 2017 pT scale 
       EMTF15.color        = 1;  // kBlack 
       
-      // Mode 15, invPt pT target, invPt weight
-      PtAlgo BDT15_pt_no_AbsDev;
-      BDT15_pt_no_AbsDev.in_file_name = "PtRegression2018_MODE_15_bitCompr_noRPC.root";
-      BDT15_pt_no_AbsDev.fact_name    = "f_MODE_15_logPtTarg_invPtWgt_bitCompr_noRPC";
-      BDT15_pt_no_AbsDev.MVA_name     = "BDTG_AWB_Sq";
-      BDT15_pt_no_AbsDev.unique_ID    = "BDT_15_logPtTarg_invPtWgt";
-      BDT15_pt_no_AbsDev.alias        = "logPt target, Least Sq loss";
-      BDT15_pt_no_AbsDev.modes        = {15};
-      BDT15_pt_no_AbsDev.modes_CSC    = {15};
-      BDT15_pt_no_AbsDev.modes_RPC    = {0};
-      BDT15_pt_no_AbsDev.color        = 840;  // kTeal
+      // Mode 15 BDT
+      PtAlgo BDT15;
+      BDT15.in_file_name = "PtRegression2018_MODE_15_bitCompr_noRPC.root";
+      BDT15.fact_name    = "f_MODE_15_logPtTarg_invPtWgt_bitCompr_noRPC";
+      BDT15.MVA_name     = "BDTG_AWB_Sq";
+      BDT15.unique_ID    = "BDT_15_logPtTarg_invPtWgt";
+      BDT15.alias        = "logPt target, Least Sq loss";
+      BDT15.modes        = {15};
+      BDT15.modes_CSC    = {15};
+      BDT15.modes_RPC    = {0};
+      BDT15.color        = 840;  // kTeal
 
       ALGOS.push_back(EMTF15);  // First algo is always the standard comparison algo
-      ALGOS.push_back(BDT15_pt_no_AbsDev);
+      ALGOS.push_back(BDT15);
     } // End conditional: if (USER == "WEI")
     
   } // End function: inline void ConfigureUser()    
