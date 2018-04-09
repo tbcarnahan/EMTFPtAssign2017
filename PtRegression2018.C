@@ -454,7 +454,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	 double mu_eta = -99.;
 	 double mu_phi = -99.;
 	 int mu_charge = -99;
-	 double gmt_pt = 999.;
+	 int gmt_pt = 999;
 	 Bool_t mu_train = false;  // tag muon for training 
 	 
 	 //Get RECO mu(i.e. GEN mu) with unique match from nonZB events
@@ -494,7 +494,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 		 mu_eta = emtf_eta_int*0.010875;
 		 mu_phi = emtf_phi;
 		 mu_charge = emtf_charge;
-		 gmt_pt = 10 - (abs(emtf_eta_int) * 1.0 / 32);
+		 gmt_pt = 10 - (abs(emtf_eta_int) / 32);
 		 mu_pt = (gmt_pt <= 0) ?  0 : (gmt_pt-1) * 0.5; // Decode integer pT (result is in 0.5 GeV step)
 	 }
 	 
