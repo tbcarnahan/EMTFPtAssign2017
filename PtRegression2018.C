@@ -454,7 +454,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	 double mu_eta = -99.;
 	 double mu_phi = -99.;
 	 int mu_charge = -99;
-	 int gmt_pt = 999;
+	 double gmt_pt = 999.;
 	 Bool_t mu_train = false;  // tag muon for training 
 	 
 	 //Get RECO mu(i.e. GEN mu) with unique match from nonZB events
