@@ -449,7 +449,9 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	 int emtf_mode_CSC = I("trk_mode_CSC", iTrk); 
          int emtf_mode_RPC = I("trk_mode_RPC", iTrk);      
 	 int emtf_unique_match = I("trk_dR_match_unique", iTrk);
-	 int emtf_unique_iMu = I("trk_dR_match_iReco", iTrk);       
+	 int emtf_unique_iMu = I("trk_dR_match_iReco", iTrk); 
+	 int emtf_dR_match_nReco = I("trk_dR_match_nReco", iTrk);
+	 int emtf_dR_match_nRecoSoft = I("trk_dR_match_nRecoSoft", iTrk);
 	 double mu_pt = 999.;//Default for muons in ZB 
 	 double mu_eta = -99.;
 	 double mu_phi = -99.;
@@ -485,11 +487,11 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	 }
 	 */ 
 	      
-	 
 	 //===========================================================
 	 //Option3: Assign uGMT pT(eta) to RECO mu if no unique match
 	 //===========================================================
-	 if( !isZB && emtf_unique_match != 1 ) {
+	 //if( !isZB && emtf_unique_match != 1 ) {
+	 if( !isZB && (emtf_dR_match_nReco+emtf_dR_match_nRecoSoft == 0) ) {//reject tracks without any match
 		 mu_train = true;
 		 mu_eta = emtf_eta_int*0.010875;
 		 mu_phi = emtf_phi;
