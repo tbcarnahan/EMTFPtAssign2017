@@ -494,7 +494,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 		 mu_eta = emtf_eta_int*0.010875;
 		 mu_phi = emtf_phi;
 		 mu_charge = emtf_charge;
-		 gmt_pt = 10 - (abs(emtf_eta_int) / 32);
+		 gmt_pt = 10 - (abs(emtf_eta_int) * 1.0 / 32);
 		 mu_pt = (gmt_pt <= 0) ?  0 : (gmt_pt-1) * 0.5; // Decode integer pT (result is in 0.5 GeV step)
 	 }
 	 
