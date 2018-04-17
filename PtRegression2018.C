@@ -58,7 +58,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
    /////////////////////////
    //=================================
    // Neural Network
-   Use["MLP"]             = 0;
+   Use["MLP"]             = 1;
    
    // Support Vector Machine
    Use["SVM"]             = 0;
@@ -66,7 +66,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
    // Boosted Decision Trees
    Use["BDTG_AWB"]                = 0;
    Use["BDTG_AWB_Hub"]            = 0;
-   Use["BDTG_AWB_Sq"]             = 1;
+   Use["BDTG_AWB_Sq"]             = 0;
    //==================================
    bool verbose = false;//for debug
 
