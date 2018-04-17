@@ -468,12 +468,12 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 		 mu_charge = I("reco_charge", emtf_unique_iMu);
 	 }
 	       
-	 /*
+	
 	 //===============================================
 	 //Option1: Discard nonZB trk without unique match
 	 //===============================================
 	 if( !isZB && emtf_unique_match != 1 ) continue;
-	 */
+	
 	 /*
 	 //===================================================
 	 //Option2: Assign 1GeV to RECO mu if no unique match
@@ -486,7 +486,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 		 mu_charge = emtf_charge;
 	 }
 	 */ 
-	      
+	 /*     
 	 //===========================================================
 	 //Option3: Assign uGMT pT(eta) to RECO mu if no unique match
 	 //===========================================================
@@ -499,7 +499,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 		 gmt_pt = 10 - (abs(emtf_eta_int) / 32);
 		 mu_pt = (gmt_pt <= 0) ?  0 : (gmt_pt-1) * 0.5; // Decode integer pT (result is in 0.5 GeV step)
 	 }
-	 
+	 */
 	 if(verbose) std::cout << "RECO kinematics ... "<< std::endl;   
 	       
 	 //===============================    
