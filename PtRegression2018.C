@@ -191,7 +191,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
        // 4-station tracks
        if        (MODE == 15) {
 	 // BASELINE mode 15 - dPhi12/23/34 + combos, theta, FR1, St1 ring, dTh14, bend1, RPC 1/2/3/4
-	 factories.push_back( std::make_tuple( nullF, nullL, factName, var_names, var_vals, 0x041f11ff) );
+	 factories.push_back( std::make_tuple( nullF, nullL, factName, var_names, var_vals, 0x0001041f11ff) );
        }
        // 3-station tracks
        else if   (MODE == 14) {
