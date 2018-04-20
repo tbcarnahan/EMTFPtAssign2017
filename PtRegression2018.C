@@ -290,7 +290,9 @@ void PtRegression2018 ( TString myMethodList = "" ) {
      in_vars.push_back( MVA_var( "RPC_3",   "St 3 hit is RPC",       "int", 'I', -88 ) ); // 0x4000 0000
      in_vars.push_back( MVA_var( "RPC_4",   "St 4 hit is RPC",       "int", 'I', -88 ) ); // 0x8000 0000
    }
-
+   //add 2017 EMTF pT as input variable to accelerate training
+   in_vars.push_back( MVA_var( "EMTF_pt",       "EMTF p_{T}",        "GeV", 'F', -88 ) ); // 0x0001 0000 0000
+	
    ////////////////////////////////////////////////////////////
    //  Target variable: true muon pT, or 1/pT, or log2(pT)  ///
    ////////////////////////////////////////////////////////////
