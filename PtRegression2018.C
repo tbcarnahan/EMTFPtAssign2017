@@ -191,7 +191,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
        // 4-station tracks
        if        (MODE == 15) {
 	 // BASELINE mode 15 - dPhi12/23/34 + combos, theta, FR1, St1 ring, dTh14, bend1, 2017 pT
-	 factories.push_back( std::make_tuple( nullF, nullL, factName, var_names, var_vals, 0x0001041f11ff) );
+	 factories.push_back( std::make_tuple( nullF, nullL, factName, var_names, var_vals, 0x141f11ff) );
        }
        // 3-station tracks
        else if   (MODE == 14) {
@@ -283,15 +283,17 @@ void PtRegression2018 ( TString myMethodList = "" ) {
    in_vars.push_back( MVA_var( "dTh_13",    "#theta(3) - #theta(1)", "int", 'I', -88 ) ); // 0x0200 0000
    in_vars.push_back( MVA_var( "dTh_14",    "#theta(4) - #theta(1)", "int", 'I', -88 ) ); // 0x0400 0000
    in_vars.push_back( MVA_var( "dTh_24",    "#theta(4) - #theta(2)", "int", 'I', -88 ) ); // 0x0800 0000
-
+   
+   //add 2017 EMTF pT as input variable to accelerate training
+   in_vars.push_back( MVA_var( "EMTF_pt",       "EMTF p_{T}",        "",    'F', -88 ) ); // 0x1000 0000
+   /*
    if (USE_RPC) {
      in_vars.push_back( MVA_var( "RPC_1",   "St 1 hit is RPC",       "int", 'I', -88 ) ); // 0x1000 0000
      in_vars.push_back( MVA_var( "RPC_2",   "St 2 hit is RPC",       "int", 'I', -88 ) ); // 0x2000 0000
      in_vars.push_back( MVA_var( "RPC_3",   "St 3 hit is RPC",       "int", 'I', -88 ) ); // 0x4000 0000
      in_vars.push_back( MVA_var( "RPC_4",   "St 4 hit is RPC",       "int", 'I', -88 ) ); // 0x8000 0000
    }
-   //add 2017 EMTF pT as input variable to accelerate training
-   in_vars.push_back( MVA_var( "EMTF_pt",       "EMTF p_{T}",        "GeV", 'F', -88 ) ); // 0x0001 0000 0000
+   */
 	
    ////////////////////////////////////////////////////////////
    //  Target variable: true muon pT, or 1/pT, or log2(pT)  ///
