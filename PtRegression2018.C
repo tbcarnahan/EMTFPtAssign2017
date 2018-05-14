@@ -396,7 +396,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
        if (nTrain > MAX_TR) break;  
        if (nTest > MAX_TE) break; 
 	     
-       if (iCh<1) {//SingleMu, need to modify if have more samples added
+       if (iCh<1) {//SingleMu, need to modify if have more types of samples added, such as Muonia, etc
 	       isZB = false;
 	       isTEST = false;
 	       NonZBEvt += 1;
