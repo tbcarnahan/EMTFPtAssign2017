@@ -419,23 +419,11 @@ void PtRegression2018 ( TString myMethodList = "" ) {
        //============================================
        //EMTF biased events can't be used in training
        //============================================
-       int BarrelRecoMu=0;
-       int EndcapRecoMu=0;
        if (!isZB){
-	       for (UInt_t iMu = 0; iMu < nMuons; iMu++) {
-		       //RECO mu pT >  Bias pT, Iso < Bias_Iso, match St1 segment, medium ID
-		       if( F("reco_pt", iMu) >= Bias_Pt && F("reco_iso", iMu) < Bias_Iso && I("reco_ID_station", iMu) == 1 && I("reco_ID_medium", iMu) == 1){
-			       //Barrel Reco mu
-			       if( fabs(F("reco_eta",iMu) ) < Bias_Eta){
-				       BarrelRecoMu++;
-			       }
-			       //Endcap Reco mu
-			       if( fabs(F("reco_eta",iMu) ) >= Bias_Eta){
-				       EndcapRecoMu++;
-			       }
-		       }//end if 
-	       }//end Remove bias  
-	       if (BarrelRecoMu==0 && EndcapRecoMu<=1 ) isTEST = true;
+	       
+	       if( I("nRecoMuonsTrig")==1 && I("nRecoMuonsTrigCen")==0 ) {
+		       isTEST = true;
+	       }
        }
        
        if(verbose) std::cout << "End removing bias ... "<< std::endl;    
@@ -470,8 +458,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 		 mu_eta = F("reco_eta", emtf_unique_iMu);
 		 mu_phi = F("reco_phi", emtf_unique_iMu);
 		 mu_charge = I("reco_charge", emtf_unique_iMu);
-	 }
-	       
+	 }	       
 	
 	 //===============================================
 	 //Option1: Discard nonZB trk without unique match
