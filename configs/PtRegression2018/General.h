@@ -6,11 +6,6 @@ const int MAX_TR = 50000000;  // MAX # of events for training
 const int MAX_TE = 50000000;  // MAX # of events for test
 const int REPORT_EVT = 100000;  // Report every Nth event during processing
 
-// *** Remove EMTF Bias settings *** //
-const int Bias_Pt = 26;//SingleMu is collected with IsoMu24
-const float Bias_Eta = 1.0;//barrel/endcap distinction
-const float Bias_Iso = 0.25;//reco mu iso
-
 // *** Track-building settings *** //
 const int MODE      = 15;     // Track mode to build - settings applied in Modes.h
 const bool USE_RPC  = false;   // Use RPC hits in track-building       
