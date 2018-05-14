@@ -419,12 +419,11 @@ void PtRegression2018 ( TString myMethodList = "" ) {
        //============================================
        //EMTF biased events can't be used in training
        //============================================
-       if (!isZB){
-	       
+       if (!isZB){	       
 	       if( I("nRecoMuonsTrig")==1 && I("nRecoMuonsTrigCen")==0 ) {
 		       isTEST = true;
-	       }
-       }
+	       }//end remove bias
+       }//end if
        
        if(verbose) std::cout << "End removing bias ... "<< std::endl;    
 	     
