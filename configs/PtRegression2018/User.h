@@ -2,10 +2,12 @@
 TString EOS_DIR_NAME  = "root://eoscms.cern.ch//store/user/abrinke1/EMTF/Emulator/ntuples";  // Input directory in 
 TString in_dir = "Ntuples/"; 
 TString SingleMu_files[1] = { 
-   			    "NTuple_SingleMuon_FlatNtuple_Run_306154_2018_05_07_SingleMu_2018_emul_dTh4.root"
+   			    //"NTuple_SingleMuon_FlatNtuple_Run_306154_2018_05_07_SingleMu_2018_emul_dTh4.root"
+			    "NTuple_SingleMuon_FlatNtuple_Run_306154_2018_05_07_SingleMu_2017_emul.root"
 };   
 TString ZeroBias_files[1] = {  
-		 	    "NTuple_ZeroBias1_FlatNtuple_Run_306091_2018_05_07_ZB1_2018_emul_dTh4.root"
+		 	    //"NTuple_ZeroBias1_FlatNtuple_Run_306091_2018_05_07_ZB1_2018_emul_dTh4.root"
+		            "NTuple_ZeroBias1_FlatNtuple_Run_306091_2018_05_07_ZB1_2017_emul.root"
 };
 const int USESingleMu = 1;//# of SM files to use
 const int USEZerobias = 1;//# of ZB files to use
