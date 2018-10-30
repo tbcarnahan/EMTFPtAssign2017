@@ -420,11 +420,12 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	       std::cout << "Looking at Non-ZB event " << NonZBEvt << "; ZB event " << ZBEvt << std::endl;
 
        //============================================
-       //EMTF biased events can't be used in training
+       //EMTF biased events can't be used for training or test
        //============================================
        if (!isZB){
 	       if( I("nRecoMuonsTrig")<2 && I("nRecoMuonsTrigCen")==0 ) {
-		       isTEST = true;
+		       //isTEST = true;
+           continue;
 	       }//end remove bias
        }//end if
 
