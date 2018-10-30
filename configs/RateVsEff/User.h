@@ -18,7 +18,7 @@ namespace RateVsEff_cfg {
 
       IN_DIR_NAME   = "/home/ws13/TMVA/TMVA/EMTFPtAssign2018";
       TString out_str;
-      out_str.Form("RateVsEff_mode_%d_eta_1p2_2p5", MODE);
+      out_str.Form("RateVsEff_mode_%d", MODE);
       OUT_FILE_NAME = out_str;
 
       EFF_CUTS    = {90};
