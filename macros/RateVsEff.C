@@ -535,12 +535,8 @@ void LoopOverEvents( PtAlgo& algo, const TString tr_te ) {
       if ( algo.fact_name.Contains("sqrtPtTarg") )
 	TRG_pt = pow(TRG_pt, 2);
     }
-    if ( isEMTF ) {
-	    TRG_pt = TRG_pt * (1 - 0.015*fmin(20., TRG_pt) ) / 1.2;
-    }    
-    else{
-	    TRG_pt *= algo.trg_pt_scale;//default is 1.
-    }
+    //Once we fixed the pT scale in firmware, uncomment this to plot the turn on curve
+    //TRG_pt *= algo.trg_pt_scale;
     TRG_pt += BIT; // Small value to offset EMTF trigger pT right on 0.0/0.5 GeV boundaries 
 
     double GEN_pt     = double(GEN_pt_br);
