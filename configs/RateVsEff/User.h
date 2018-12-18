@@ -21,7 +21,7 @@ namespace RateVsEff_cfg {
       out_str.Form("RateVsEff_mode_%d", MODE);
       OUT_FILE_NAME = out_str;
 
-      EFF_CUTS    = {90};
+      EFF_CUTS    = {1};
       TURN_ONS    = {8, 16, 24};
 
       TString in_str;
