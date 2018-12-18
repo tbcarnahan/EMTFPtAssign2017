@@ -63,10 +63,9 @@ void ReadMVAOut_v1_BDT() {
 
     //choose special trigger cuts to evaluate how scale factor change
     double trigger_Cut_special[3] = {8,16,24};
-
+    const Int_t special_cuts=3;
+    
     //Not scaled to 90%
-    double pass_count_special[3][50]={0};//BDT predict
-    double EMTF_pass_count_special[3][50]={0};//current EMTF
     double efficiency_special[3][50]={0};//BDT efficiency
     double EMTF_efficiency_special[3][50]={0};//EMTF efficiency
 
@@ -117,17 +116,6 @@ void ReadMVAOut_v1_BDT() {
                   }//end if EMTF
               }//end trigger cuts
 
-              //deal with special selected cuts to compare efficiency
-              for(int Cut_special_bin=0;Cut_special_bin<3;Cut_special_bin++){
-                  //BDT is targeting 1/pT, need to convert
-                  if (pow(2, BDT_test_br) > trigger_Cut_special[Cut_special_bin]) {
-                      pass_count_special[Cut_special_bin][Gen_bin]++;
-                  }//end if BDT
-                  if (EMTF_pt_test_br > trigger_Cut_special[Cut_special_bin]){
-                      EMTF_pass_count_special[Cut_special_bin][Gen_bin]++;
-                  }//end if EMTF
-             }//end for special cuts
-
           }//end if GEN_pt
       }//end for Gen_bin
 
@@ -151,11 +139,6 @@ void ReadMVAOut_v1_BDT() {
             EMTF_trigger_Gen_efficiency->Fill(GEN_pT[Gen_bin],trigger_Cut[Cut_bin],EMTF_efficiency[Cut_bin][Gen_bin]);
         }//end Cut bin
 
-        for(int Cut_special_bin=0;Cut_special_bin<3;Cut_special_bin++){
-            efficiency_special[Cut_special_bin][Gen_bin]=pass_count_special[Cut_special_bin][Gen_bin]/count[Gen_bin];
-            EMTF_efficiency_special[Cut_special_bin][Gen_bin]=EMTF_pass_count_special[Cut_special_bin][Gen_bin]/count[Gen_bin];
-        }//end Cut bin special
-
     }//end Gen bin
 
     //write to output file
@@ -166,19 +149,24 @@ void ReadMVAOut_v1_BDT() {
     EMTF_trigger_Gen_efficiency->Write();
 
     //book graph for special trigger efficiency,EMTF not scaled
-    //initialization
-    const Int_t special_cuts=3;
     TGraph *BDT_eff[special_cuts];
     TGraph *EMTF_eff[special_cuts];
     TCanvas *C[special_cuts];
     TMultiGraph *mg[special_cuts];
+    for(Int_t i=0; i<special_cuts;i++){
+      for (int Gen_bin=0;Gen_bin<50;Gen_bin++) {
+        //1D projection from 2D scaled eff plot
+        efficiency_special[i][Gen_bin]=efficiency[Int_t(trigger_Cut_special[i])-1][Gen_bin];//minus one because of the index; 8GeV is from index 7.
+        EMTF_efficiency_special[i][Gen_bin]=EMTF_efficiency[Int_t(trigger_Cut_special[i])-1][Gen_bin];
+      }
+    }
     for(Int_t i=0; i<special_cuts;i++){
         BDT_eff[i] = new TGraph(50,trigger_Cut,efficiency_special[i]); BDT_eff[i]->SetMarkerStyle(21); BDT_eff[i]->SetMarkerColor(2);//red
         EMTF_eff[i] = new TGraph(50,trigger_Cut,EMTF_efficiency_special[i]); EMTF_eff[i]->SetMarkerStyle(21); EMTF_eff[i]->SetMarkerColor(1);//black
         C[i] = new TCanvas(Form("C%d",i),Form("Efficiency_%d",i),700,500);
         mg[i] = new TMultiGraph();
         C[i]->cd();
-        mg[i]->SetTitle(Form("Mode 15 trigger efficiency pT > %.3f GeV",trigger_Cut_special[i]));
+        mg[i]->SetTitle(Form("Mode 15 trigger efficiency pT > %.0f GeV",trigger_Cut_special[i]));
         mg[i]->Add(BDT_eff[i]);
         mg[i]->Add(EMTF_eff[i]);
         mg[i]->Draw();
@@ -197,14 +185,14 @@ void ReadMVAOut_v1_BDT() {
     //scale factor of threshold of BDT assigned pT to achieve 90% efficiency,
     //it's between 0 and 1. It will be used in rate plot
 
-    double EMTF_scale_Max=2.0;//2017 EMTF is mostly scaled to 90%
-    double EMTF_scale_Min=0.0;
+    double EMTF_scale_Max=1.5;//2017 EMTF is mostly scaled to 90%
+    double EMTF_scale_Min=0.5;
     double EMTF_scale[50]={0};
     double EMTF_pass_count_scaled[50][50]={0};
     double EMTF_efficiency_scaled[50][50]={0};
     double EMTF_efficiency_scale=0.90;
     double EMTF_scale_consistency[50]={0};
-    EMTF_scale_plot = new TProfile("EMTF_scale_plot","EMTF scale versus thresholds",49,1,50,0,1);
+    EMTF_scale_plot = new TProfile("EMTF_scale_plot","EMTF scale versus thresholds",49,1,50,0,2);
     EMTF_scale_consistency_plot = new TProfile("EMTF_scale_consistency_plot","EMTF scale factor to 90% at thresholds",49,1,50,0,1);
 
     double BDT_scale_Max=1.0;
@@ -409,12 +397,12 @@ void ReadMVAOut_v1_BDT() {
     TGraph *EMTF_eff_scaled[special_cuts];
     TCanvas *CScaled[special_cuts];
     TMultiGraph *mgScaled[special_cuts];
-    double efficiency_special_scaled[3][50]={0};//BDT efficiency scaled to 90%, 1D projection from 2D scaled eff plot
+    double efficiency_special_scaled[3][50]={0};//BDT efficiency scaled to 90%
     double EMTF_efficiency_special_scaled[3][50]={0};//EMTF efficiency scaled to 90%
     for(Int_t i=0; i<special_cuts;i++){
       for (int Gen_bin=0;Gen_bin<50;Gen_bin++) {
-        efficiency_special_scaled[i][Gen_bin]=efficiency_scaled[Int_t(trigger_Cut_special[i])][Gen_bin];
-        EMTF_efficiency_special_scaled[i][Gen_bin]=EMTF_efficiency_scaled[Int_t(trigger_Cut_special[i])][Gen_bin];
+        efficiency_special_scaled[i][Gen_bin]=efficiency_scaled[Int_t(trigger_Cut_special[i])-1][Gen_bin];
+        EMTF_efficiency_special_scaled[i][Gen_bin]=EMTF_efficiency_scaled[Int_t(trigger_Cut_special[i])-1][Gen_bin];
       }
     }
     for(Int_t i=0; i<special_cuts;i++){
@@ -423,7 +411,7 @@ void ReadMVAOut_v1_BDT() {
         CScaled[i] = new TCanvas(Form("CScaled%d",i),Form("Efficiency_%d",i),700,500);
         mgScaled[i] = new TMultiGraph();
         CScaled[i]->cd();
-        mgScaled[i]->SetTitle(Form("Mode 15 trigger efficiency(scaled) pT > %.3f GeV",trigger_Cut_special[i]));
+        mgScaled[i]->SetTitle(Form("Mode 15 trigger efficiency(scaled) pT > %.0f GeV",trigger_Cut_special[i]));
         mgScaled[i]->Add(BDT_eff_scaled[i]);
         mgScaled[i]->Add(EMTF_eff_scaled[i]);
         mgScaled[i]->Draw();
@@ -473,7 +461,7 @@ void ReadMVAOut_v1_BDT() {
     TCanvas *C_rate = new TCanvas("C_rate","Mode 15 rate",700,500);
     TMultiGraph *mg_rate = new TMultiGraph();
     C_rate->cd();
-    mg_rate->SetTitle(Form("Mode 15 rate vs %.3f efficiency cut",efficiency_threshold));
+    mg_rate->SetTitle(Form("Mode 15 rate vs %.2f efficiency cut",efficiency_threshold));
     mg_rate->Add(BDT_rate);
     mg_rate->Add(EMTF_rate);
     mg_rate->Draw();
@@ -493,7 +481,7 @@ void ReadMVAOut_v1_BDT() {
     TCanvas *C_rate_log = new TCanvas("C_rate_log","Mode 15 log rate",700,500);
     TMultiGraph *mg_rate_log = new TMultiGraph();
     C_rate_log->cd();
-    mg_rate_log->SetTitle(Form("Mode 15 log(rate)vs %.3f efficiency cut",efficiency_threshold));
+    mg_rate_log->SetTitle(Form("Mode 15 log(rate)vs %.2f efficiency cut",efficiency_threshold));
     mg_rate_log->Add(BDT_rate_log);
     mg_rate_log->Add(EMTF_rate_log);
     mg_rate_log->Draw();
