@@ -39,6 +39,7 @@ namespace RateVsEff_cfg {
       EMTF15.modes_CSC    = {15};
       EMTF15.modes_RPC    = {0};  // No RPC hits allowed
       //EMTF15.trg_pt_scale = 1.2 / (1 - 0.015*fmin(20., pt) );  // 2017 pT scale
+      EMTF15.trg_pt_scale = 1.0;  // No scale
       EMTF15.color        = 1;  // kBlack
 
       // Mode 15 BDT
@@ -51,6 +52,7 @@ namespace RateVsEff_cfg {
       BDT15.modes        = {15};
       BDT15.modes_CSC    = {15};
       BDT15.modes_RPC    = {0};
+      BDT15.trg_pt_scale = 1.0;  // No scale
       BDT15.color        = 840;  // kTeal
 
       ALGOS.push_back(EMTF15);  // First algo is always the standard comparison algo
