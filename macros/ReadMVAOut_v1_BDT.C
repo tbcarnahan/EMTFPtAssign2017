@@ -409,10 +409,17 @@ void ReadMVAOut_v1_BDT() {
     TGraph *EMTF_eff_scaled[special_cuts];
     TCanvas *CScaled[special_cuts];
     TMultiGraph *mgScaled[special_cuts];
+    double efficiency_special_scaled[3][50]={0};//BDT efficiency scaled to 90%, 1D projection from 2D scaled eff plot
+    double EMTF_efficiency_special_scaled[3][50]={0};//EMTF efficiency scaled to 90%
     for(Int_t i=0; i<special_cuts;i++){
       for (int Gen_bin=0;Gen_bin<50;Gen_bin++) {
-        BDT_eff_scaled[i] = new TGraph(50,trigger_Cut,efficiency_scaled[Int_t(trigger_Cut_special[i])][Gen_bin]); BDT_eff_scaled[i]->SetMarkerStyle(21); BDT_eff_scaled[i]->SetMarkerColor(2);//red
-        EMTF_eff_scaled[i] = new TGraph(50,trigger_Cut,EMTF_efficiency_scaled[Int_t(trigger_Cut_special[i])][Gen_bin]); EMTF_eff_scaled[i]->SetMarkerStyle(21); EMTF_eff_scaled[i]->SetMarkerColor(1);//black
+        efficiency_special_scaled[i][Gen_bin]=efficiency_scaled[Int_t(trigger_Cut_special[i])][Gen_bin];
+        EMTF_efficiency_special_scaled[i][Gen_bin]=EMTF_efficiency_scaled[Int_t(trigger_Cut_special[i])][Gen_bin];
+      }
+    }
+    for(Int_t i=0; i<special_cuts;i++){
+        BDT_eff_scaled[i] = new TGraph(50,trigger_Cut,efficiency_special_scaled[i]); BDT_eff_scaled[i]->SetMarkerStyle(21); BDT_eff_scaled[i]->SetMarkerColor(2);//red
+        EMTF_eff_scaled[i] = new TGraph(50,trigger_Cut,EMTF_efficiency_special_scaled[i]); EMTF_eff_scaled[i]->SetMarkerStyle(21); EMTF_eff_scaled[i]->SetMarkerColor(1);//black
         CScaled[i] = new TCanvas(Form("CScaled%d",i),Form("Efficiency_%d",i),700,500);
         mgScaled[i] = new TMultiGraph();
         CScaled[i]->cd();
@@ -421,7 +428,6 @@ void ReadMVAOut_v1_BDT() {
         mgScaled[i]->Add(EMTF_eff_scaled[i]);
         mgScaled[i]->Draw();
         mgScaled[i]->Write();
-      }
     }
 
     BDT_efficiency_cuts_consistency->Write();
@@ -497,7 +503,7 @@ void ReadMVAOut_v1_BDT() {
     //rate ratio plot
     //==============
     double rate_ratio[50]={0};
-    for (i=0;i<50;i++){rate_ratio[i] = rate_count[i]/EMTF_rate_count[i];};
+    for (Int_t i=0;i<50;i++){rate_ratio[i] = rate_count[i]/EMTF_rate_count[i];};
     TGraph *rate_ratio_plot = new TGraph(50,trigger_Cut,rate_ratio); rate_ratio_plot->SetMarkerStyle(21); rate_ratio_plot->SetMarkerColor(1);//black
     TCanvas *C_rate_ratio = new TCanvas("C_rate_ratio","Mode 15 rate ratio: BDT/EMTF",700,500);
     C_rate_ratio->cd();
