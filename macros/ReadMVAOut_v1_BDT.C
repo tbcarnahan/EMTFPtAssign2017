@@ -411,8 +411,8 @@ void ReadMVAOut_v1_BDT() {
     TMultiGraph *mgScaled[special_cuts];
     for(Int_t i=0; i<special_cuts;i++){
       for (int Gen_bin=0;Gen_bin<50;Gen_bin++) {
-        BDT_eff_scaled[i] = new TGraph(50,trigger_Cut,efficiency_scaled[trigger_Cut_special[i]][Gen_bin]); BDT_eff_scaled[i]->SetMarkerStyle(21); BDT_eff_scaled[i]->SetMarkerColor(2);//red
-        EMTF_eff_scaled[i] = new TGraph(50,trigger_Cut,EMTF_efficiency_scaled[trigger_Cut_special[i]][Gen_bin]); EMTF_eff_scaled[i]->SetMarkerStyle(21); EMTF_eff_scaled[i]->SetMarkerColor(1);//black
+        BDT_eff_scaled[i] = new TGraph(50,trigger_Cut,efficiency_scaled[Int_t(trigger_Cut_special[i])][Gen_bin]); BDT_eff_scaled[i]->SetMarkerStyle(21); BDT_eff_scaled[i]->SetMarkerColor(2);//red
+        EMTF_eff_scaled[i] = new TGraph(50,trigger_Cut,EMTF_efficiency_scaled[Int_t(trigger_Cut_special[i])][Gen_bin]); EMTF_eff_scaled[i]->SetMarkerStyle(21); EMTF_eff_scaled[i]->SetMarkerColor(1);//black
         CScaled[i] = new TCanvas(Form("CScaled%d",i),Form("Efficiency_%d",i),700,500);
         mgScaled[i] = new TMultiGraph();
         CScaled[i]->cd();
@@ -479,8 +479,8 @@ void ReadMVAOut_v1_BDT() {
     double rate_count_log[50]={0};
     double EMTF_rate_count_log[50]={0};
 
-    for (i=0;i<50;i++){rate_count_log[i] = log(rate_count[i])/log(10);};
-    for (i=0;i<50;i++){EMTF_rate_count_log[i] = log(EMTF_rate_count[i])/log(10);};
+    for (Int_t i=0;i<50;i++){rate_count_log[i] = log(rate_count[i])/log(10);};
+    for (Int_t i=0;i<50;i++){EMTF_rate_count_log[i] = log(EMTF_rate_count[i])/log(10);};
 
     TGraph *BDT_rate_log = new TGraph(50,trigger_Cut,rate_count_log); BDT_rate_log->SetMarkerStyle(21); BDT_rate_log->SetMarkerColor(2);//red
     TGraph *EMTF_rate_log = new TGraph(50,trigger_Cut,EMTF_rate_count_log); EMTF_rate_log->SetMarkerStyle(21); EMTF_rate_log->SetMarkerColor(1);//black
