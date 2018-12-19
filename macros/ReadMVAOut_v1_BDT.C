@@ -64,7 +64,7 @@ void ReadMVAOut_v1_BDT() {
     //choose special trigger cuts to evaluate how scale factor change
     double trigger_Cut_special[3] = {8,16,24};
     const Int_t special_cuts=3;
-    
+
     //Not scaled to 90%
     double efficiency_special[3][50]={0};//BDT efficiency
     double EMTF_efficiency_special[3][50]={0};//EMTF efficiency
@@ -185,8 +185,8 @@ void ReadMVAOut_v1_BDT() {
     //scale factor of threshold of BDT assigned pT to achieve 90% efficiency,
     //it's between 0 and 1. It will be used in rate plot
 
-    double EMTF_scale_Max=1.5;//2017 EMTF is mostly scaled to 90%
-    double EMTF_scale_Min=0.5;
+    double EMTF_scale_Max=1.0;//2017 EMTF is mostly scaled to 90%
+    double EMTF_scale_Min=0.0;
     double EMTF_scale[50]={0};
     double EMTF_pass_count_scaled[50][50]={0};
     double EMTF_efficiency_scaled[50][50]={0};
