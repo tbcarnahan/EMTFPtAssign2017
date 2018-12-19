@@ -185,8 +185,8 @@ void ReadMVAOut_v1_BDT() {
     //scale factor of threshold of BDT assigned pT to achieve 90% efficiency,
     //it's between 0 and 1. It will be used in rate plot
 
-    double EMTF_scale_Max=1.0;//2017 EMTF is mostly scaled to 90%
-    double EMTF_scale_Min=0.0;
+    double EMTF_scale_Max=1.6;//2017 EMTF is mostly scaled to 90%
+    double EMTF_scale_Min=0.6;
     double EMTF_scale[50]={0};
     double EMTF_pass_count_scaled[50][50]={0};
     double EMTF_efficiency_scaled[50][50]={0};
@@ -260,21 +260,19 @@ void ReadMVAOut_v1_BDT() {
                 BDT_min = fabs(efficiency_tmp-efficiency_scale);
                 BDT_scale[Cut_bin] = BDT_scale_tmp;
                 BDT_scale_consistency[Cut_bin] = efficiency_tmp;
-                //if goes past the scale, stop loop over efficiency scale
-                if(efficiency_tmp >= efficiency_scale){
-                    flag=1;
-                }//end if flag
             }//end if
+            else{
+              flag=1;
+            }
 
             if (fabs(EMTF_efficiency_tmp-EMTF_efficiency_scale) < EMTF_min) {
                 EMTF_min = fabs(EMTF_efficiency_tmp-EMTF_efficiency_scale);
                 EMTF_scale[Cut_bin] = EMTF_scale_tmp;
                 EMTF_scale_consistency[Cut_bin] = EMTF_efficiency_tmp;
-                //if goes past the scale, stop loop over efficiency scale
-                if(EMTF_efficiency_tmp >= EMTF_efficiency_scale){
-                    EMTF_flag=1;
-                }//end if EMTF flag
             }//end if
+            else{
+              EMTF_flag=1;
+            }
 
         }//end varying scale fac
         std::cout << "\n******* Leave the test event loop for Cut bin: "<<Cut_bin<< "; BDT scale: "<<BDT_scale[Cut_bin]<<"; EMTF scale: "<<EMTF_scale[Cut_bin]<<" *******" << std::endl;
