@@ -527,15 +527,17 @@ void PtRegression2018 ( TString myMethodList = "" ) {
          //Trk hits from stations
          //======================
          int i1=-99;
-	       int i2=-99;
-	       int i3=-99;
-	       int i4=-99;
+	 int i2=-99;
+	 int i3=-99;
+	 int i4=-99;
          for (int jhit = 0; jhit < I("trk_nHits", iTrk); jhit++) {
-           int iHit = I("trk_iHit", iTrk, jhit);  // Access the index of each hit in the emtf track
-	         if( I("hit_station", iHit) == 1 ){ i1 = iHit; }
-	         else if ( I("hit_station", iHit) == 2 ){ i2 = iHit; }
-	         else if ( I("hit_station", iHit) == 3 ){ i3 = iHit; }
-           else if ( I("hit_station", iHit) == 4 ){ i4 = iHit; }
+		 int iHit = I("trk_iHit", iTrk, jhit);  // Access the index of each hit in the emtf track
+		 if( iHit < nHits){//Avoid the case when iHit index larger than the total number of hits in the event, this happens sometimes
+			 if( I("hit_station", iHit) == 1 ){ i1 = iHit; }
+			 else if ( I("hit_station", iHit) == 2 ){ i2 = iHit; }
+			 else if ( I("hit_station", iHit) == 3 ){ i3 = iHit; }
+			 else if ( I("hit_station", iHit) == 4 ){ i4 = iHit; }
+		 }
          }//end loop over hits in selected emtf track
 
          if(verbose) {
