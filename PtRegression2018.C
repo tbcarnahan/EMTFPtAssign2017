@@ -415,6 +415,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
        UInt_t nMuons = I("nRecoMuons");//reco_* branches are true info reference
        UInt_t nHits  = I("nHits");//hit_* branches are unpacked hits
        UInt_t nTrks  = I("nTracks");//trk_* branches are EMTF tracks
+       UInt_t nSegs  = I("nSegs");//csc segments number     
 
        if ( (NonZBEvt % REPORT_EVT) == 0 || (ZBEvt > 0 && (ZBEvt % REPORT_EVT) == 0 ) )
 	       std::cout << "Looking at Non-ZB event " << NonZBEvt << "; ZB event " << ZBEvt << std::endl;
@@ -578,7 +579,9 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 
          //Don't use the track if there is LCT without a offline CSC segment match
          if ( iSeg1 < 0 || iSeg2 < 0 || iSeg3 < 0 || iSeg4 < 0) continue;
-
+	 //Restrict the segment index less than nSegs
+         if ( iSeg1 >= nSegs || iSeg2 >= nSegs || iSeg3 >= nSegs || iSeg4 >= nSegs) continue;
+	       
          double phi1 = F("seg_phi", iSeg1);
          double phi2 = F("seg_phi", iSeg2);
          double phi3 = F("seg_phi", iSeg3);
@@ -617,12 +620,13 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 
          int st1_ring2 = (i1 >= 0 ? ( I("hit_ring", i1 ) == 2 || I("hit_ring", i1 ) == 3 ) : 0);
 
-	       //===========
-	       //track info: need to use offline CSC segments as well?
-	       //===========
-	       double eta;
-	       double phi;
-	       int endcap;
+	 //===========
+	 //track info: need to use offline CSC segments as well?
+	 //===========
+	 double eta;
+	 double phi;
+	 int endcap;
+	       
          if      (i2 >= 0) { eta = F("hit_eta", i2 ); phi = F("hit_phi", i2 ); }
          else if (i3 >= 0) { eta = F("hit_eta", i3 ); phi = F("hit_phi", i3 ); }
          else if (i4 >= 0) { eta = F("hit_eta", i4 ); phi = F("hit_phi", i4 ); }
@@ -633,15 +637,15 @@ void PtRegression2018 ( TString myMethodList = "" ) {
          //Variables to go into BDT
          //========================
          int theta;
-	       int dPh12, dPh13, dPh14, dPh23, dPh24, dPh34, dPhSign;
-	       int dPhSum4, dPhSum4A, dPhSum3, dPhSum3A, outStPh;
-	       int dTh12, dTh13, dTh14, dTh23, dTh24, dTh34;
-	       int FR1, FR2, FR3, FR4;
-	       int bend1, bend2, bend3, bend4;
-	       int RPC1, RPC2, RPC3, RPC4;
+	 int dPh12, dPh13, dPh14, dPh23, dPh24, dPh34, dPhSign;
+	 int dPhSum4, dPhSum4A, dPhSum3, dPhSum3A, outStPh;
+	 int dTh12, dTh13, dTh14, dTh23, dTh24, dTh34;
+	 int FR1, FR2, FR3, FR4;
+	 int bend1, bend2, bend3, bend4;
+	 int RPC1, RPC2, RPC3, RPC4;
 
-	       // Extra variables for FR computation
-	       int ring1, cham1, cham2, cham3, cham4;
+	 // Extra variables for FR computation
+	 int ring1, cham1, cham2, cham3, cham4;
 
          if (MODE == 0) {
            theta = emtf_eta_int;
@@ -652,12 +656,12 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 
          CalcDeltaPhis( dPh12, dPh13, dPh14, dPh23, dPh24, dPh34, dPhSign,
                         dPhSum4, dPhSum4A, dPhSum3, dPhSum3A, outStPh,
-			                  ph1, ph2, ph3, ph4, mode, BIT_COMP );
+			ph1, ph2, ph3, ph4, mode, BIT_COMP );
          CalcDeltaThetas( dTh12, dTh13, dTh14, dTh23, dTh24, dTh34,
-			                    th1, th2, th3, th4, mode, BIT_COMP );
+			  th1, th2, th3, th4, mode, BIT_COMP );
 
          // In firmware, RPC 'FR' bit set according to FR of corresponding CSC chamber
-	       ring1 = (i1 >= 0 ? I("hit_ring", i1 ) : -99);
+	 ring1 = (i1 >= 0 ? I("hit_ring", i1 ) : -99);
          cham1 = (i1 >= 0 ? I("hit_chamber", i1 ) : -99);
          cham2 = (i2 >= 0 ? I("hit_chamber", i2 ) : -99);
          cham3 = (i3 >= 0 ? I("hit_chamber", i3 ) : -99);
@@ -669,9 +673,9 @@ void PtRegression2018 ( TString myMethodList = "" ) {
          FR4 = (i4 >= 0 ? (cham4 % 2 == 1) : -99);
          if (ring1 == 3) FR1 = 0;                   // In ME1/3 chambers are non-overlapping
 
-	       CalcBends( bend1, bend2, bend3, bend4,
-		                pat1, pat2, pat3, pat4,
-		                dPhSign, endcap, mode, BIT_COMP );
+	 CalcBends( bend1, bend2, bend3, bend4,
+		    pat1, pat2, pat3, pat4,
+		    dPhSign, endcap, mode, BIT_COMP );
 
          //Recompute bend1/2/3/4 with offline segment bending
          bend1 = int( F("seg_bend_phi", iSeg1)*1000*dPhSign );
@@ -679,12 +683,12 @@ void PtRegression2018 ( TString myMethodList = "" ) {
          bend3 = int( F("seg_bend_phi", iSeg3)*1000*dPhSign );
          bend4 = int( F("seg_bend_phi", iSeg4)*1000*dPhSign );
 
-	       RPC1 = (i1 >= 0 ? ( I("hit_isRPC", i1 ) == 1 ? 1 : 0) : -99);
-	       RPC2 = (i2 >= 0 ? ( I("hit_isRPC", i2 ) == 1 ? 1 : 0) : -99);
-	       RPC3 = (i3 >= 0 ? ( I("hit_isRPC", i3 ) == 1 ? 1 : 0) : -99);
-	       RPC4 = (i4 >= 0 ? ( I("hit_isRPC", i4 ) == 1 ? 1 : 0) : -99);
+	 RPC1 = (i1 >= 0 ? ( I("hit_isRPC", i1 ) == 1 ? 1 : 0) : -99);
+	 RPC2 = (i2 >= 0 ? ( I("hit_isRPC", i2 ) == 1 ? 1 : 0) : -99);
+	 RPC3 = (i3 >= 0 ? ( I("hit_isRPC", i3 ) == 1 ? 1 : 0) : -99);
+	 RPC4 = (i4 >= 0 ? ( I("hit_isRPC", i4 ) == 1 ? 1 : 0) : -99);
 
-	       CalcRPCs( RPC1, RPC2, RPC3, RPC4, mode, st1_ring2, theta, BIT_COMP );
+	 CalcRPCs( RPC1, RPC2, RPC3, RPC4, mode, st1_ring2, theta, BIT_COMP );
 
          // Clean out showering muons with outlier station 1, or >= 2 outlier stations
          if (!isTEST && log2(mu_pt) > 6 && CLEAN_HI_PT && MODE == 15)
