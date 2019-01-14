@@ -439,42 +439,45 @@ void PtRegression2018 ( TString myMethodList = "" ) {
          double emtf_pt    = F("trk_pt",iTrk);
          double emtf_eta   = F("trk_eta",iTrk);
          double emtf_phi   = F("trk_phi",iTrk);
-	       int emtf_eta_int  = I("trk_eta_int", iTrk);
-	       int emtf_charge   = I("trk_charge", iTrk);
-	       int emtf_mode     = I("trk_mode", iTrk);
-	       int emtf_mode_CSC = I("trk_mode_CSC", iTrk);
+	 int emtf_eta_int  = I("trk_eta_int", iTrk);
+	 int emtf_charge   = I("trk_charge", iTrk);
+	 int emtf_mode     = I("trk_mode", iTrk);
+	 int emtf_mode_CSC = I("trk_mode_CSC", iTrk);
          int emtf_mode_RPC = I("trk_mode_RPC", iTrk);
-	       int emtf_unique_match = I("trk_dR_match_unique", iTrk);
-	       int emtf_unique_iMu = I("trk_dR_match_iReco", iTrk);
-	       int emtf_dR_match_nReco = I("trk_dR_match_nReco", iTrk);
-	       int emtf_dR_match_nRecoSoft = I("trk_dR_match_nRecoSoft", iTrk);
-	       double mu_pt = 999.;//Default for muons in ZB
-	       double mu_eta = -99.;
-	       double mu_phi = -99.;
-	       int mu_charge = -99;
-	       int gmt_pt = 999;
-	       Bool_t mu_train = false;  // tag muon for training
+	 int emtf_unique_match = I("trk_dR_match_unique", iTrk);
+	 int emtf_unique_iMu = I("trk_dR_match_iReco", iTrk);
+	 int emtf_dR_match_nReco = I("trk_dR_match_nReco", iTrk);
+	 int emtf_dR_match_nRecoSoft = I("trk_dR_match_nRecoSoft", iTrk);
+	 double mu_pt = 999.;//Default for muons in ZB
+	 double mu_eta = -99.;
+	 double mu_phi = -99.;
+	 int mu_charge = -99;
+	 int gmt_pt = 999;
+	 Bool_t mu_train = false;  // tag muon for training
 
          //Get RECO mu(i.e. GEN mu) with unique match from nonZB events
          if( !isZB && emtf_unique_match == 1 ){
+           
+           if (emtf_unique_iMu >= nMuons) continue;//Restrict number iMu index in the range of nMuons
+		 
            mu_train = true;
-           mu_pt = F("reco_pt", emtf_unique_iMu);
+           mu_pt =  F("reco_pt", emtf_unique_iMu);
            mu_eta = F("reco_eta", emtf_unique_iMu);
            mu_phi = F("reco_phi", emtf_unique_iMu);
            mu_charge = I("reco_charge", emtf_unique_iMu);
          }
 
          //===============================================
-	       //Option1: Discard nonZB trk without unique match
-	       //===============================================
+	 //Option1: Discard nonZB trk without unique match
+	 //===============================================
          if( !isZB && emtf_unique_match != 1 ) continue;
 
-	       /*
-	       //===================================================
-	       //Option2: Assign 1GeV to RECO mu if no unique match
-	       //===================================================
-	       if( !isZB && emtf_unique_match != 1 ) {
-           mu_train = true;
+	 /*
+	 //===================================================
+	 //Option2: Assign 1GeV to RECO mu if no unique match
+	 //===================================================
+	 if( !isZB && emtf_unique_match != 1 ) {
+	               mu_train = true;
 		       mu_pt = 1.0;
 		       mu_eta = emtf_eta;
 		       mu_phi = emtf_phi;
@@ -482,11 +485,11 @@ void PtRegression2018 ( TString myMethodList = "" ) {
          }
          */
 
-	       /*
+	 /*
          //===========================================================
          //Option3: Assign uGMT pT(eta) to RECO mu if no unique match
          //===========================================================
-         //if( !isZB && emtf_unique_match != 1 ) {
+         //if( !isZB && emtf_unique_match != 1 ) {}
          if( !isZB && (emtf_dR_match_nReco+emtf_dR_match_nRecoSoft == 0) ) {//reject tracks without any match
 		       mu_train = true;
 		       mu_eta = emtf_eta_int*0.010875;
@@ -494,21 +497,21 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 		       mu_charge = emtf_charge;
 		       gmt_pt = 10 - (abs(emtf_eta_int) / 32);
 		       mu_pt = (gmt_pt <= 0) ?  0 : (gmt_pt-1) * 0.5; // Decode integer pT (result is in 0.5 GeV step)
-	       }
+	 }
          */
 
          if(verbose) std::cout << "RECO kinematics ... "<< std::endl;
 
-	       //===============================
+	 //===============================
          //RECO mu kinematics requirements
-	       //===============================
+	 //===============================
          if ( !isZB && (mu_pt < PTMIN || mu_pt > PTMAX) ) continue;
-	       if ( !isZB && (fabs( mu_eta ) < ETAMIN || fabs( mu_eta ) > ETAMAX) ) continue;
-	       if ( mu_pt < PTMIN_TR || mu_pt > PTMAX_TR || isTEST) mu_train = false;
+	 if ( !isZB && (fabs( mu_eta ) < ETAMIN || fabs( mu_eta ) > ETAMAX) ) continue;
+	 if ( mu_pt < PTMIN_TR || mu_pt > PTMAX_TR || isTEST) mu_train = false;
 
          //==================
-	       //Require valid mode
-	       //==================
+	 //Require valid mode
+	 //==================
          if(verbose) std::cout << "Valid modes ... "<< std::endl;
          bool good_emtf_mode = false;
 
@@ -578,9 +581,9 @@ void PtRegression2018 ( TString myMethodList = "" ) {
          int iSeg4 = (i4 >= 0 ? I("hit_match_iSeg", i4 ) : -99);
 
          //Don't use the track if there is LCT without a offline CSC segment match
-         if ( iSeg1 < 0 || iSeg2 < 0 || iSeg3 < 0 || iSeg4 < 0) continue;
 	 //Restrict the segment index less than nSegs
-         if ( iSeg1 >= nSegs || iSeg2 >= nSegs || iSeg3 >= nSegs || iSeg4 >= nSegs) continue;
+         if ( iSeg1 < 0      || iSeg2 < 0      || iSeg3 < 0      || iSeg4 < 0     ||
+	      iSeg1 >= nSegs || iSeg2 >= nSegs || iSeg3 >= nSegs || iSeg4 >= nSegs) continue;
 	       
          double phi1 = F("seg_phi", iSeg1);
          double phi2 = F("seg_phi", iSeg2);
@@ -698,57 +701,57 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 
          EMTF_ONLY: // Skip track building, just store EMTF info
 
-	       /////////////////////////////////////////////////////
-	       ///  Loop over factories and set variable values  ///
-	       /////////////////////////////////////////////////////
-	       for (UInt_t iFact = 0; iFact < factories.size(); iFact++) {
+	 /////////////////////////////////////////////////////
+	 ///  Loop over factories and set variable values  ///
+	 /////////////////////////////////////////////////////
+	 for (UInt_t iFact = 0; iFact < factories.size(); iFact++) {
 
-           // Set vars equal to default vector of variables for this factory
-           var_names = std::get<3>(factories.at(iFact));
+                 // Set vars equal to default vector of variables for this factory
+                 var_names = std::get<3>(factories.at(iFact));
 	         var_vals = std::get<4>(factories.at(iFact));
 
 	         // Unweighted distribution: flat in eta and 1/pT
 	         Double_t evt_weight = 1.0;
 
 	         // Weight by 1/pT or (1/pT)^2 so overall distribution is (1/pT)^2 or (1/pT)^3
-           if      ( std::get<2>(factories.at(iFact)).Contains("_Pt0p5Wgt") )
-           evt_weight = pow(mu_pt,0.5);
-           else if ( std::get<2>(factories.at(iFact)).Contains("_log2PtWgt") )
-           evt_weight = log2(mu_pt + BIT);
-           else if ( std::get<2>(factories.at(iFact)).Contains("_PtWgt") )
-           evt_weight = mu_pt;
-           else if ( std::get<2>(factories.at(iFact)).Contains("_PtSqWgt") )
-           evt_weight = pow(mu_pt, 2);
-           else if ( std::get<2>(factories.at(iFact)).Contains("_invPt0p5Wgt") )
-           evt_weight = 1. / pow(mu_pt, 0.5);
-           else if ( std::get<2>(factories.at(iFact)).Contains("_invlog2PtWgt") )
-           evt_weight = 1. / log2(mu_pt + BIT); //mu_pt+ BIT offset in case of zero weight
-           else if ( std::get<2>(factories.at(iFact)).Contains("_invPtWgt") )
-           evt_weight = 1. / mu_pt;
+                 if      ( std::get<2>(factories.at(iFact)).Contains("_Pt0p5Wgt") )
+                 evt_weight = pow(mu_pt,0.5);
+                 else if ( std::get<2>(factories.at(iFact)).Contains("_log2PtWgt") )
+                 evt_weight = log2(mu_pt + BIT);
+                 else if ( std::get<2>(factories.at(iFact)).Contains("_PtWgt") )
+                 evt_weight = mu_pt;
+                 else if ( std::get<2>(factories.at(iFact)).Contains("_PtSqWgt") )
+                 evt_weight = pow(mu_pt, 2);
+                 else if ( std::get<2>(factories.at(iFact)).Contains("_invPt0p5Wgt") )
+                 evt_weight = 1. / pow(mu_pt, 0.5);
+                 else if ( std::get<2>(factories.at(iFact)).Contains("_invlog2PtWgt") )
+                 evt_weight = 1. / log2(mu_pt + BIT); //mu_pt+ BIT offset in case of zero weight
+                 else if ( std::get<2>(factories.at(iFact)).Contains("_invPtWgt") )
+                 evt_weight = 1. / mu_pt;
 	         else if ( std::get<2>(factories.at(iFact)).Contains("_invPt1p5Wgt") )
 	         evt_weight = 1. / pow(mu_pt, 1.5);
 	         else if ( std::get<2>(factories.at(iFact)).Contains("_invPtSqWgt") )
 	         evt_weight = 1. / pow(mu_pt, 2);
 	         else if ( std::get<2>(factories.at(iFact)).Contains("_invPt2p5Wgt") )
 	         evt_weight = 1. / pow(mu_pt, 2.5);
-           else if ( std::get<2>(factories.at(iFact)).Contains("_invPtCubWgt") )
+                 else if ( std::get<2>(factories.at(iFact)).Contains("_invPtCubWgt") )
 	         evt_weight = 1. / pow(mu_pt, 3);
 	         else if ( std::get<2>(factories.at(iFact)).Contains("_invPtQuadWgt") )
 	         evt_weight = 1. / pow(mu_pt, 4);
-           else
-           assert( std::get<2>(factories.at(iFact)).Contains("_noWgt") );
+                 else
+                 assert( std::get<2>(factories.at(iFact)).Contains("_noWgt") );
 
 	         // De-weight tracks with one or more RPC hits
 	         evt_weight *= (1. / pow( 4, ((RPC1 == 1) + (RPC2 == 1) + (RPC3 == 1) + (RPC4 == 1)) ) );
 
 	         // Fill all variables
 	         for (UInt_t iVar = 0; iVar < var_names.size(); iVar++) {
-             TString vName = var_names.at(iVar);
+                   TString vName = var_names.at(iVar);
 
-             /////////////////////////
+                   /////////////////////////
 	           ///  Input variables  ///
 	           /////////////////////////
-             if ( vName == "theta" ) var_vals.at(iVar) = theta;
+                   if ( vName == "theta" ) var_vals.at(iVar) = theta;
 	           if ( vName == "St1_ring2" ) var_vals.at(iVar) = st1_ring2;
 	           if ( vName == "dPhi_12" ) var_vals.at(iVar) = dPh12;
 	           if ( vName == "dPhi_13" ) var_vals.at(iVar) = dPh13;
@@ -756,15 +759,15 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	           if ( vName == "dPhi_23" ) var_vals.at(iVar) = dPh23;
 	           if ( vName == "dPhi_24" ) var_vals.at(iVar) = dPh24;
 	           if ( vName == "dPhi_34" ) var_vals.at(iVar) = dPh34;
-             if ( vName == "FR_1" ) var_vals.at(iVar) = FR1;
-             if ( vName == "FR_2" ) var_vals.at(iVar) = FR2;
+                   if ( vName == "FR_1" ) var_vals.at(iVar) = FR1;
+                   if ( vName == "FR_2" ) var_vals.at(iVar) = FR2;
 	           if ( vName == "FR_3" ) var_vals.at(iVar) = FR3;
 	           if ( vName == "FR_4" ) var_vals.at(iVar) = FR4;
 	           if ( vName == "bend_1" ) var_vals.at(iVar) = bend1;
 	           if ( vName == "bend_2" ) var_vals.at(iVar) = bend2;
 	           if ( vName == "bend_3" ) var_vals.at(iVar) = bend3;
 	           if ( vName == "bend_4" ) var_vals.at(iVar) = bend4;
-             if ( vName == "dPhiSum4" ) var_vals.at(iVar) = dPhSum4;
+                   if ( vName == "dPhiSum4" ) var_vals.at(iVar) = dPhSum4;
 	           if ( vName == "dPhiSum4A" ) var_vals.at(iVar) = dPhSum4A;
 	           if ( vName == "dPhiSum3" ) var_vals.at(iVar) = dPhSum3;
 	           if ( vName == "dPhiSum3A" ) var_vals.at(iVar) = dPhSum3A;
@@ -782,9 +785,9 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	           if ( vName == "RPC_3" ) var_vals.at(iVar) = RPC3;
 	           if ( vName == "RPC_4" ) var_vals.at(iVar) = RPC4;
 
-             //////////////////////////////
-             ///  Target and variables  ///
-             //////////////////////////////
+                   //////////////////////////////
+                   ///  Target and variables  ///
+                   //////////////////////////////
 
 	           if ( vName == "GEN_pt_trg" ) var_vals.at(iVar) = fmin(mu_pt, PTMAX_TRG);
 	           if ( vName == "inv_GEN_pt_trg" ) var_vals.at(iVar) = 1. / fmin(mu_pt, PTMAX_TRG);
@@ -796,7 +799,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	           ///  Spectator variables  ///
 	           /////////////////////////////
 
-             if ( vName == "GEN_pt" ) var_vals.at(iVar) = mu_pt;
+                   if ( vName == "GEN_pt" ) var_vals.at(iVar) = mu_pt;
 	           if ( vName == "EMTF_pt" ) var_vals.at(iVar) = emtf_pt;
 	           if ( vName == "inv_GEN_pt" ) var_vals.at(iVar) = 1. / mu_pt;
 	           if ( vName == "inv_EMTF_pt" ) var_vals.at(iVar) = 1. / emtf_pt;
@@ -806,9 +809,9 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	           if ( vName == "GEN_eta" ) var_vals.at(iVar) = mu_eta;
 	           if ( vName == "EMTF_eta" ) var_vals.at(iVar) = emtf_eta;
 	           if ( vName == "TRK_eta" ) var_vals.at(iVar) = eta;
-             if ( vName == "GEN_phi" ) var_vals.at(iVar) = mu_phi;
-             if ( vName == "EMTF_phi" ) var_vals.at(iVar) = emtf_phi;
-             if ( vName == "TRK_phi" ) var_vals.at(iVar) = phi;
+                   if ( vName == "GEN_phi" ) var_vals.at(iVar) = mu_phi;
+                   if ( vName == "EMTF_phi" ) var_vals.at(iVar) = emtf_phi;
+                   if ( vName == "TRK_phi" ) var_vals.at(iVar) = phi;
 	           if ( vName == "GEN_charge" ) var_vals.at(iVar) = mu_charge;
 	           if ( vName == "EMTF_charge" ) var_vals.at(iVar) = emtf_charge;
 
