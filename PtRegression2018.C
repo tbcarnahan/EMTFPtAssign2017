@@ -660,11 +660,13 @@ void PtRegression2018 ( TString myMethodList = "" ) {
          CalcDeltaPhis( dPh12, dPh13, dPh14, dPh23, dPh24, dPh34, dPhSign,
                         dPhSum4, dPhSum4A, dPhSum3, dPhSum3A, outStPh,
 			ph1, ph2, ph3, ph4, mode, BIT_COMP );
+	 //Avoid too large dPhis due to neighbouring chamber effects.
+	 if ( abs(dPh12) > 1000 || abs(dPh13) > 1000 || abs(dPh14) > 1000 ||
+	      abs(dPh23) > 1000 || abs(dPh24) > 1000 || abs(dPh34) > 1000 ) continue;
+
          CalcDeltaThetas( dTh12, dTh13, dTh14, dTh23, dTh24, dTh34,
 			  th1, th2, th3, th4, mode, BIT_COMP );
-	 //Avoid too large dPhis due to neighbouring chamber effects.
-	 if (dPh12>1000) continue;
-
+	 
          // In firmware, RPC 'FR' bit set according to FR of corresponding CSC chamber
 	 ring1 = (i1 >= 0 ? I("hit_ring", i1 ) : -99);
          cham1 = (i1 >= 0 ? I("hit_chamber", i1 ) : -99);
