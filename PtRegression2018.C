@@ -376,6 +376,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
    int nSMEvents = SM_in_chain->GetEntries();
    int nZBEvents = ZB_in_chain->GetEntries();
    std::cout << "\n******* About to loop over chains *******" << std::endl;
+   std::cout << "\n in_chains size: "<< in_chains.size() << std::endl;
    UInt_t NonZBEvt = 0;
    UInt_t ZBEvt = 0;
    UInt_t nTrain = 0;
@@ -394,7 +395,10 @@ void PtRegression2018 ( TString myMethodList = "" ) {
      for (UInt_t jEvt = 0; jEvt < in_chain->GetEntries(); jEvt++) {
        //!!! jEvt restarts from 0 in new chain
 
-       if (nTrain > MAX_TR) break;
+       //!!! iCh<1 important here: Protect against small MAX_TR setting
+       //When iCh = 1, it start to load ZB events, the first break from MAX_TR shouldn't affect the following ZB loading process
+       //Otherwise no ZB events will be loaded, cause trouble when calculating rate
+       if (NonZBEvt > MAX_TR && iCh<1) break;
        if (nTest > MAX_TE) break;
 
        //iCh=0 means SingleMu dataset,
@@ -415,7 +419,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
        UInt_t nMuons = I("nRecoMuons");//reco_* branches are true info reference
        UInt_t nHits  = I("nHits");//hit_* branches are unpacked hits
        UInt_t nTrks  = I("nTracks");//trk_* branches are EMTF tracks
-       UInt_t nSegs  = I("nSegs");//csc segments number     
+       UInt_t nSegs  = I("nSegs");//csc segments number
 
        if ( (NonZBEvt % REPORT_EVT) == 0 || (ZBEvt > 0 && (ZBEvt % REPORT_EVT) == 0 ) )
 	       std::cout << "Looking at Non-ZB event " << NonZBEvt << "; ZB event " << ZBEvt << std::endl;
@@ -457,9 +461,9 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 
          //Get RECO mu(i.e. GEN mu) with unique match from nonZB events
          if( !isZB && emtf_unique_match == 1 ){
-           
+
            if (emtf_unique_iMu >= nMuons) continue;//Restrict number iMu index in the range of nMuons
-		 
+
            mu_train = true;
            mu_pt =  F("reco_pt", emtf_unique_iMu);
            mu_eta = F("reco_eta", emtf_unique_iMu);
@@ -584,7 +588,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	 //Restrict the segment index less than nSegs
          if ( iSeg1 < 0      || iSeg2 < 0      || iSeg3 < 0      || iSeg4 < 0     ||
 	      iSeg1 >= nSegs || iSeg2 >= nSegs || iSeg3 >= nSegs || iSeg4 >= nSegs) continue;
-	       
+
          double phi1 = F("seg_phi", iSeg1);
          double phi2 = F("seg_phi", iSeg2);
          double phi3 = F("seg_phi", iSeg3);
@@ -629,7 +633,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 	 double eta;
 	 double phi;
 	 int endcap;
-	       
+
          if      (i2 >= 0) { eta = F("hit_eta", i2 ); phi = F("hit_phi", i2 ); }
          else if (i3 >= 0) { eta = F("hit_eta", i3 ); phi = F("hit_phi", i3 ); }
          else if (i4 >= 0) { eta = F("hit_eta", i4 ); phi = F("hit_phi", i4 ); }
@@ -666,7 +670,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 
          CalcDeltaThetas( dTh12, dTh13, dTh14, dTh23, dTh24, dTh34,
 			  th1, th2, th3, th4, mode, BIT_COMP );
-	 
+
          // In firmware, RPC 'FR' bit set according to FR of corresponding CSC chamber
 	 ring1 = (i1 >= 0 ? I("hit_ring", i1 ) : -99);
          cham1 = (i1 >= 0 ? I("hit_chamber", i1 ) : -99);

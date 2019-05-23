@@ -432,13 +432,9 @@ void ReadMVAOut_v1_BDT() {
     std::cout << "\n******* Enter Zerobias test event to calculate rate *******" << std::endl;
     for (UInt_t iEvt = 0; iEvt < test_chain->GetEntries(); iEvt++) {
 
-        //  if (iEvt > 10) break;
-        //  if ( (iEvt % 1) == 0 )
-        //std::cout << "\n*** Looking at event " << iEvt << " ***" <<  std::endl;
-
         test_chain->GetEntry(iEvt);
 
-        //rate reduction using ZeroBias data in test sample, useful: eta==-99(623817),pt==999
+        //rate reduction using ZeroBias data in test sample: eta==-99,pt==999
         for (int Gen_bin =0;Gen_bin<50;Gen_bin++){
             if (GEN_pt_test_br == 999 && GEN_eta_test_br == -99){//both in zero bias
                 if(pow(2, BDT_test_br) > BDT_cuts[Gen_bin]){
