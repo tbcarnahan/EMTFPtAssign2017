@@ -398,7 +398,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
        //!!! iCh<1 important here: Protect against small MAX_TR setting
        //When iCh = 1, it start to load ZB events, the first break from MAX_TR shouldn't affect the following ZB loading process
        //Otherwise no ZB events will be loaded, cause trouble when calculating rate
-       if (NonZBEvt > MAX_TR && iCh<1) break;
+       if (nTrain > MAX_TR && iCh<1) break;
        if (nTest > MAX_TE) break;
 
        //iCh=0 means SingleMu dataset,
