@@ -468,31 +468,36 @@ void ReadMVAOut_v1_BDT() {
     //==================
     double rate_count_log[50]={0};
     double EMTF_rate_count_log[50]={0};
+    bool make_log_rate_plot = true;
 
-    for (Int_t i=0;i<50;i++){rate_count_log[i] = log(rate_count[i])/log(10);};
-    for (Int_t i=0;i<50;i++){EMTF_rate_count_log[i] = log(EMTF_rate_count[i])/log(10);};
+    for (Int_t i=0;i<50;i++){
+      if(rate_count[i]==0 || EMTF_rate_count[i]==0) make_log_rate_plot=false;
+    };
+    if(make_log_rate_plot){
+      for (Int_t i=0;i<50;i++){rate_count_log[i] = log(rate_count[i])/log(10);};
+      for (Int_t i=0;i<50;i++){EMTF_rate_count_log[i] = log(EMTF_rate_count[i])/log(10);};
 
-    TGraph *BDT_rate_log = new TGraph(50,trigger_Cut,rate_count_log); BDT_rate_log->SetMarkerStyle(21); BDT_rate_log->SetMarkerColor(2);//red
-    TGraph *EMTF_rate_log = new TGraph(50,trigger_Cut,EMTF_rate_count_log); EMTF_rate_log->SetMarkerStyle(21); EMTF_rate_log->SetMarkerColor(1);//black
-    TCanvas *C_rate_log = new TCanvas("C_rate_log","Mode 15 log rate",700,500);
-    TMultiGraph *mg_rate_log = new TMultiGraph();
-    C_rate_log->cd();
-    mg_rate_log->SetTitle(Form("Mode 15 log(rate)vs %.2f efficiency cut",efficiency_threshold));
-    mg_rate_log->Add(BDT_rate_log);
-    mg_rate_log->Add(EMTF_rate_log);
-    mg_rate_log->Draw();
-    mg_rate_log->Write();
+      TGraph *BDT_rate_log = new TGraph(50,trigger_Cut,rate_count_log); BDT_rate_log->SetMarkerStyle(21); BDT_rate_log->SetMarkerColor(2);//red
+      TGraph *EMTF_rate_log = new TGraph(50,trigger_Cut,EMTF_rate_count_log); EMTF_rate_log->SetMarkerStyle(21); EMTF_rate_log->SetMarkerColor(1);//black
+      TCanvas *C_rate_log = new TCanvas("C_rate_log","Mode 15 log rate",700,500);
+      TMultiGraph *mg_rate_log = new TMultiGraph();
+      C_rate_log->cd();
+      mg_rate_log->SetTitle(Form("Mode 15 log(rate)vs %.2f efficiency cut",efficiency_threshold));
+      mg_rate_log->Add(BDT_rate_log);
+      mg_rate_log->Add(EMTF_rate_log);
+      mg_rate_log->Draw();
+      mg_rate_log->Write();
 
-    //==============
-    //rate ratio plot
-    //==============
-    double rate_ratio[50]={0};
-    for (Int_t i=0;i<50;i++){rate_ratio[i] = rate_count[i]/EMTF_rate_count[i];};
-    TGraph *rate_ratio_plot = new TGraph(50,trigger_Cut,rate_ratio); rate_ratio_plot->SetMarkerStyle(21); rate_ratio_plot->SetMarkerColor(1);//black
-    TCanvas *C_rate_ratio = new TCanvas("C_rate_ratio","Mode 15 rate ratio: BDT/EMTF",700,500);
-    C_rate_ratio->cd();
-    rate_ratio_plot->Draw();
-    rate_ratio_plot->Write();
-  //std::cout << "\nExiting Macro\n";
+      //==============
+      //rate ratio plot
+      //==============
+      double rate_ratio[50]={0};
+      for (Int_t i=0;i<50;i++){rate_ratio[i] = rate_count[i]/EMTF_rate_count[i];};
+      TGraph *rate_ratio_plot = new TGraph(50,trigger_Cut,rate_ratio); rate_ratio_plot->SetMarkerStyle(21); rate_ratio_plot->SetMarkerColor(1);//black
+      TCanvas *C_rate_ratio = new TCanvas("C_rate_ratio","Mode 15 rate ratio: BDT/EMTF",700,500);
+      C_rate_ratio->cd();
+      rate_ratio_plot->Draw();
+      rate_ratio_plot->Write();
+    }
 
 } // End Macro
