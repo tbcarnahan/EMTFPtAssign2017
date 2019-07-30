@@ -1,6 +1,6 @@
 
 // *** User *** ///
-const TString USER = "AWB";  // Settings applied in User.h
+const TString USER = "WEI";  // Settings applied in User.h
 
 // *** Events to process *** //
 const int MAX_EVT    =       -1;  // Number of events to process

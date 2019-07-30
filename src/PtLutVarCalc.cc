@@ -1,12 +1,37 @@
-
 #include "../interface/PtLutVarCalc.h"
 #include "../src/PtAssignmentEngineAux2017.cc"
 
 // From here down, exact copy of code used in emulator: L1Trigger/L1TMuonEndCap/src/PtLutVarCalc.cc
 
-
 PtAssignmentEngineAux2017 ENG;
 
+//From L1Trigger/L1TMuonEndCap/interface/TrackTools.h
+double range_phi_deg(double deg) {
+	while (deg <  -180.) deg += 360.;
+	while (deg >= +180.) deg -= 360.;
+	return deg;
+}
+
+double calc_phi_loc_deg_from_glob(double glob, int sector) {  // glob phi in deg, sector [1-6]
+	glob = range_phi_deg(glob);  // put phi in [-180,180] range
+	double loc = glob - 15. - (60. * (sector-1));
+	return loc;
+}
+
+int calc_phi_loc_int(double glob, int sector) {  // glob phi in deg, sector [1-6]
+	double loc = calc_phi_loc_deg_from_glob(glob, sector);
+	loc = ((loc + 22.) < 0.) ? loc + 360. : loc;
+	loc = (loc + 22.) * 60.;
+	int phi_int = static_cast<int>(std::round(loc));
+	return phi_int;
+}
+
+int calc_theta_int(double theta, int endcap) {  // theta in deg, endcap [-1,+1]
+	theta = (endcap == -1) ? (180. - theta) : theta;
+	theta = (theta - 8.5) * 128./(45.0-8.5);
+	int theta_int = static_cast<int>(std::round(theta));
+	return theta_int;
+}
 
 int CalcTrackTheta( const int th1, const int th2, const int th3, const int th4,
 		    const int st1_ring2, const int mode, const bool BIT_COMP ) {
@@ -121,7 +146,7 @@ void CalcDeltaPhis( int& dPh12, int& dPh13, int& dPh14, int& dPh23, int& dPh24, 
 
 void CalcDeltaThetas( int& dTh12, int& dTh13, int& dTh14, int& dTh23, int& dTh24, int& dTh34,
 		      const int th1, const int th2, const int th3, const int th4, const int mode, const bool BIT_COMP ) {
-  
+
   dTh12 = th2 - th1;
   dTh13 = th3 - th1;
   dTh14 = th4 - th1;
@@ -152,7 +177,7 @@ void CalcBends( int& bend1, int& bend2, int& bend3, int& bend4,
   bend2 = CalcBendFromPattern( pat2, endcap );
   bend3 = CalcBendFromPattern( pat3, endcap );
   bend4 = CalcBendFromPattern( pat4, endcap );
-  
+
   if (BIT_COMP) {
     int nBits = 3;
     if (mode == 7 || mode == 11 || mode > 12)
@@ -167,7 +192,7 @@ void CalcBends( int& bend1, int& bend2, int& bend3, int& bend4,
     if ( (mode % 2)     > 0 ) // Has station 4 hit
       bend4 = ENG.getCLCT( pat4, endcap, dPhSign, nBits );
   } // End conditional: if (BIT_COMP)
-  
+
 } // End function: CalcBends()
 
 void CalcRPCs( int& RPC1, int& RPC2, int& RPC3, int& RPC4, const int mode,
@@ -187,7 +212,7 @@ void CalcRPCs( int& RPC1, int& RPC2, int& RPC3, int& RPC4, const int mode,
     }
 
     int nRPC = (RPC1 == 1) + (RPC2 == 1) + (RPC3 == 1) + (RPC4 == 1);
-    
+
     // In 3- and 4-station modes, only specify some combinations of RPCs
     if (nRPC >= 2) {
 
@@ -269,13 +294,13 @@ void CalcDeltaPhiSums( int& dPhSum4, int& dPhSum4A, int& dPhSum3, int& dPhSum3A,
     int devSt2 = abs(dPh12) + abs(dPh23) + abs(dPh24);
     int devSt3 = abs(dPh13) + abs(dPh23) + abs(dPh34);
     int devSt4 = abs(dPh14) + abs(dPh24) + abs(dPh34);
-    
+
     if      (devSt4 > devSt3 && devSt4 > devSt2 && devSt4 > devSt1)  outStPh = 4;
     else if (devSt3 > devSt4 && devSt3 > devSt2 && devSt3 > devSt1)  outStPh = 3;
     else if (devSt2 > devSt4 && devSt2 > devSt3 && devSt2 > devSt1)  outStPh = 2;
     else if (devSt1 > devSt4 && devSt1 > devSt3 && devSt1 > devSt2)  outStPh = 1;
     else                                                             outStPh = 0;
-    
+
     if      (outStPh == 4) {
       dPhSum3  = dPh12 + dPh13 + dPh23;
       dPhSum3A = abs(dPh12) + abs(dPh13) + abs(dPh23);
