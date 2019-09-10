@@ -289,8 +289,8 @@ void PtRegression2018 ( TString myMethodList = "" ) {
    in_vars.push_back( MVA_var( "EMTF_pt",       "EMTF p_{T}",        "",    'F', -88 ) ); // 0x1000 0000
 
    // new GEM-CSC bending angle
-   in_vars.push_back( MVA_var( "dPhi_GE11_ME11",       "#phi(GE11) - #phi(ME11)",        "",    'F', -88 ) ); // 0x1000 0000
-   in_vars.push_back( MVA_var( "GEM_1",   "St 1 hit is GEM",       "int", 'I', -88 ) ); // 0x1000 0000
+   in_vars.push_back( MVA_var( "dPhi_GE11_ME11", "#phi(GE11) - #phi(ME11)", "", 'F', -88 ) ); // 0x1000 0001
+   in_vars.push_back( MVA_var( "GEM_1",   "St 1 hit is GEM",       "int", 'I', -88 ) ); // 0x1000 0002
 
    /*
    if (USE_RPC) {
@@ -633,12 +633,14 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 
          int st1_ring2 = (i1 >= 0 ? ( I("hit_ring", i1 ) == 2 || I("hit_ring", i1 ) == 3 ) : 0);
 
-	 //===========
-	 //track info: need to use offline CSC segments as well?
-	 //===========
-	 double eta;
-	 double phi;
-	 int endcap;
+         int phGE11;
+
+         //===========
+         //track info: need to use offline CSC segments as well?
+         //===========
+         double eta;
+         double phi;
+         int endcap;
 
          if      (i2 >= 0) { eta = F("hit_eta", i2 ); phi = F("hit_phi", i2 ); }
          else if (i3 >= 0) { eta = F("hit_eta", i3 ); phi = F("hit_phi", i3 ); }
@@ -657,30 +659,32 @@ void PtRegression2018 ( TString myMethodList = "" ) {
          int bend1, bend2, bend3, bend4;
          int RPC1, RPC2, RPC3, RPC4;
          int dPhGE11ME11;
-         int GEM1;
+         int GE11;
 
-	 // Extra variables for FR computation
-	 int ring1, cham1, cham2, cham3, cham4;
+         // Extra variables for FR computation
+         int ring1, cham1, cham2, cham3, cham4;
 
          if (MODE == 0) {
            theta = emtf_eta_int;
            goto EMTF_ONLY;
          }
 
+         // GEM does not enter the theta calculation
          theta = CalcTrackTheta( th1, th2, th3, th4, st1_ring2, mode, BIT_COMP );
 
-         CalcDeltaPhis( dPh12, dPh13, dPh14, dPh23, dPh24, dPh34, dPhSign,
-                        dPhSum4, dPhSum4A, dPhSum3, dPhSum3A, outStPh,
-                        ph1, ph2, ph3, ph4, mode, BIT_COMP );
-	 //Avoid too large dPhis due to neighbouring chamber effects.
-	 if ( abs(dPh12) > 1000 || abs(dPh13) > 1000 || abs(dPh14) > 1000 ||
-	      abs(dPh23) > 1000 || abs(dPh24) > 1000 || abs(dPh34) > 1000 ) continue;
+
+         CalcDeltaPhis_2019GEM( dPh12, dPh13, dPh14, dPh23, dPh24, dPh34, dPhSign,
+                                dPhSum4, dPhSum4A, dPhSum3, dPhSum3A, outStPh, dPhGE11ME11,
+                                ph1, ph2, ph3, ph4, phGE11, mode, BIT_COMP );
+         //Avoid too large dPhis due to neighbouring chamber effects.
+         if ( abs(dPh12) > 1000 || abs(dPh13) > 1000 || abs(dPh14) > 1000 ||
+              abs(dPh23) > 1000 || abs(dPh24) > 1000 || abs(dPh34) > 1000 ) continue;
 
          CalcDeltaThetas( dTh12, dTh13, dTh14, dTh23, dTh24, dTh34,
-			  th1, th2, th3, th4, mode, BIT_COMP );
+                          th1, th2, th3, th4, mode, BIT_COMP );
 
          // In firmware, RPC 'FR' bit set according to FR of corresponding CSC chamber
-	 ring1 = (i1 >= 0 ? I("hit_ring", i1 ) : -99);
+         ring1 = (i1 >= 0 ? I("hit_ring", i1 ) : -99);
          cham1 = (i1 >= 0 ? I("hit_chamber", i1 ) : -99);
          cham2 = (i2 >= 0 ? I("hit_chamber", i2 ) : -99);
          cham3 = (i3 >= 0 ? I("hit_chamber", i3 ) : -99);
@@ -692,9 +696,9 @@ void PtRegression2018 ( TString myMethodList = "" ) {
          FR4 = (i4 >= 0 ? (cham4 % 2 == 1) : -99);
          if (ring1 == 3) FR1 = 0;                   // In ME1/3 chambers are non-overlapping
 
-	 CalcBends( bend1, bend2, bend3, bend4,
-		    pat1, pat2, pat3, pat4,
-		    dPhSign, endcap, mode, BIT_COMP );
+         CalcBends( bend1, bend2, bend3, bend4,
+                    pat1, pat2, pat3, pat4,
+                    dPhSign, endcap, mode, BIT_COMP );
 
          //Recompute bend1/2/3/4 with offline segment bending
          bend1 = int( F("seg_bend_phi", iSeg1)*1000*dPhSign );
@@ -707,7 +711,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
          RPC3 = (i3 >= 0 ? ( I("hit_isRPC", i3 ) == 1 ? 1 : 0) : -99);
          RPC4 = (i4 >= 0 ? ( I("hit_isRPC", i4 ) == 1 ? 1 : 0) : -99);
 
-         GEM1 = (i1 >= 0 ? ( I("hit_isGEM", i1 ) == 1 ? 1 : 0) : -99);
+         GE11 = (i1 >= 0 ? ( I("hit_isGEM", i1 ) == 1 ? 1 : 0) : -99);
 
          CalcRPCs( RPC1, RPC2, RPC3, RPC4, mode, st1_ring2, theta, BIT_COMP );
 
@@ -767,43 +771,43 @@ void PtRegression2018 ( TString myMethodList = "" ) {
                    TString vName = var_names.at(iVar);
 
                    /////////////////////////
-	           ///  Input variables  ///
-	           /////////////////////////
+                   ///  Input variables  ///
+                   /////////////////////////
                    if ( vName == "theta" ) var_vals.at(iVar) = theta;
-	           if ( vName == "St1_ring2" ) var_vals.at(iVar) = st1_ring2;
-	           if ( vName == "dPhi_12" ) var_vals.at(iVar) = dPh12;
-	           if ( vName == "dPhi_13" ) var_vals.at(iVar) = dPh13;
-	           if ( vName == "dPhi_14" ) var_vals.at(iVar) = dPh14;
-	           if ( vName == "dPhi_23" ) var_vals.at(iVar) = dPh23;
-	           if ( vName == "dPhi_24" ) var_vals.at(iVar) = dPh24;
-	           if ( vName == "dPhi_34" ) var_vals.at(iVar) = dPh34;
+                   if ( vName == "St1_ring2" ) var_vals.at(iVar) = st1_ring2;
+                   if ( vName == "dPhi_12" ) var_vals.at(iVar) = dPh12;
+                   if ( vName == "dPhi_13" ) var_vals.at(iVar) = dPh13;
+                   if ( vName == "dPhi_14" ) var_vals.at(iVar) = dPh14;
+                   if ( vName == "dPhi_23" ) var_vals.at(iVar) = dPh23;
+                   if ( vName == "dPhi_24" ) var_vals.at(iVar) = dPh24;
+                   if ( vName == "dPhi_34" ) var_vals.at(iVar) = dPh34;
                    if ( vName == "FR_1" ) var_vals.at(iVar) = FR1;
                    if ( vName == "FR_2" ) var_vals.at(iVar) = FR2;
-	           if ( vName == "FR_3" ) var_vals.at(iVar) = FR3;
-	           if ( vName == "FR_4" ) var_vals.at(iVar) = FR4;
-	           if ( vName == "bend_1" ) var_vals.at(iVar) = bend1;
-	           if ( vName == "bend_2" ) var_vals.at(iVar) = bend2;
-	           if ( vName == "bend_3" ) var_vals.at(iVar) = bend3;
-	           if ( vName == "bend_4" ) var_vals.at(iVar) = bend4;
+                   if ( vName == "FR_3" ) var_vals.at(iVar) = FR3;
+                   if ( vName == "FR_4" ) var_vals.at(iVar) = FR4;
+                   if ( vName == "bend_1" ) var_vals.at(iVar) = bend1;
+                   if ( vName == "bend_2" ) var_vals.at(iVar) = bend2;
+                   if ( vName == "bend_3" ) var_vals.at(iVar) = bend3;
+                   if ( vName == "bend_4" ) var_vals.at(iVar) = bend4;
                    if ( vName == "dPhiSum4" ) var_vals.at(iVar) = dPhSum4;
-	           if ( vName == "dPhiSum4A" ) var_vals.at(iVar) = dPhSum4A;
-	           if ( vName == "dPhiSum3" ) var_vals.at(iVar) = dPhSum3;
-	           if ( vName == "dPhiSum3A" ) var_vals.at(iVar) = dPhSum3A;
-	           if ( vName == "outStPhi" ) var_vals.at(iVar) = outStPh;
+                   if ( vName == "dPhiSum4A" ) var_vals.at(iVar) = dPhSum4A;
+                   if ( vName == "dPhiSum3" ) var_vals.at(iVar) = dPhSum3;
+                   if ( vName == "dPhiSum3A" ) var_vals.at(iVar) = dPhSum3A;
+                   if ( vName == "outStPhi" ) var_vals.at(iVar) = outStPh;
 
-	           if ( vName == "dTh_12" ) var_vals.at(iVar) = dTh12;
-	           if ( vName == "dTh_13" ) var_vals.at(iVar) = dTh13;
-	           if ( vName == "dTh_14" ) var_vals.at(iVar) = dTh14;
-	           if ( vName == "dTh_23" ) var_vals.at(iVar) = dTh23;
-	           if ( vName == "dTh_24" ) var_vals.at(iVar) = dTh24;
-	           if ( vName == "dTh_34" ) var_vals.at(iVar) = dTh34;
+                   if ( vName == "dTh_12" ) var_vals.at(iVar) = dTh12;
+                   if ( vName == "dTh_13" ) var_vals.at(iVar) = dTh13;
+                   if ( vName == "dTh_14" ) var_vals.at(iVar) = dTh14;
+                   if ( vName == "dTh_23" ) var_vals.at(iVar) = dTh23;
+                   if ( vName == "dTh_24" ) var_vals.at(iVar) = dTh24;
+                   if ( vName == "dTh_34" ) var_vals.at(iVar) = dTh34;
 
-	           if ( vName == "RPC_1" ) var_vals.at(iVar) = RPC1;
-	           if ( vName == "RPC_2" ) var_vals.at(iVar) = RPC2;
-	           if ( vName == "RPC_3" ) var_vals.at(iVar) = RPC3;
-	           if ( vName == "RPC_4" ) var_vals.at(iVar) = RPC4;
+                   if ( vName == "RPC_1" ) var_vals.at(iVar) = RPC1;
+                   if ( vName == "RPC_2" ) var_vals.at(iVar) = RPC2;
+                   if ( vName == "RPC_3" ) var_vals.at(iVar) = RPC3;
+                   if ( vName == "RPC_4" ) var_vals.at(iVar) = RPC4;
 
-	           if ( vName == "GEM_1" ) var_vals.at(iVar) = GEM4;
+                   if ( vName == "GEM_1" ) var_vals.at(iVar) = GE11;
 
                    //////////////////////////////
                    ///  Target and variables  ///

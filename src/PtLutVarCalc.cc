@@ -56,9 +56,22 @@ int CalcTrackTheta( const int th1, const int th2, const int th3, const int th4,
 }
 
 
+void CalcDeltaPhis_2019GEM( int& dPh12, int& dPh13, int& dPh14, int& dPh23, int& dPh24, int& dPh34, int& dPhSign,
+                            int& dPhSum4, int& dPhSum4A, int& dPhSum3, int& dPhSum3A, int& outStPh, int& dPhGE11ME11,
+                            const int ph1, const int ph2, const int ph3, const int ph4, const int phGEM, const int mode, const bool BIT_COMP ) {
+
+  CalcDeltaPhis(dPh12,dPh13,dPh14,dPh23,dPh24,dPh34,dPhSign,
+                dPhSum4,dPhSum4A,dPhSum3,dPhSum3A,outStPh,
+                ph1,  ph2,  ph3,  ph4,  mode,BIT_COMP );
+
+  dPhGE11ME11 = phGEM - ph1;
+
+  // probably best not to change the EMTF track mode at this point
+}
+
 void CalcDeltaPhis( int& dPh12, int& dPh13, int& dPh14, int& dPh23, int& dPh24, int& dPh34, int& dPhSign,
-		    int& dPhSum4, int& dPhSum4A, int& dPhSum3, int& dPhSum3A, int& outStPh,
-		    const int ph1, const int ph2, const int ph3, const int ph4, const int mode, const bool BIT_COMP ) {
+                    int& dPhSum4, int& dPhSum4A, int& dPhSum3, int& dPhSum3A, int& outStPh,
+                    const int ph1, const int ph2, const int ph3, const int ph4, const int mode, const bool BIT_COMP ) {
 
   dPh12 = ph2 - ph1;
   dPh13 = ph3 - ph1;
@@ -170,8 +183,8 @@ void CalcDeltaThetas( int& dTh12, int& dTh13, int& dTh14, int& dTh23, int& dTh24
 
 
 void CalcBends( int& bend1, int& bend2, int& bend3, int& bend4,
-		const int pat1, const int pat2, const int pat3, const int pat4,
-		const int dPhSign, const int endcap, const int mode, const bool BIT_COMP ) {
+                const int pat1, const int pat2, const int pat3, const int pat4,
+                const int dPhSign, const int endcap, const int mode, const bool BIT_COMP ) {
 
   bend1 = CalcBendFromPattern( pat1, endcap );
   bend2 = CalcBendFromPattern( pat2, endcap );
