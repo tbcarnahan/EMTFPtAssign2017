@@ -409,20 +409,20 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 
        //iCh=0 means SingleMu dataset,
        //need to modify in the future if have more types of samples added for training, such as Muonia, etc
-       if (iCh<1) {
-	       isZB = false;
-	       isTEST = false;
-	       NonZBEvt += 1;
-       }
-       else{
-	       isZB = true;
-	       isTEST = true;
-	       ZBEvt += 1;
-       }
+       // if (iCh<1) {
+	     //   isZB = false;
+	     //   isTEST = false;
+	     //   NonZBEvt += 1;
+       // }
+       // else{
+	     //   isZB = true;
+	     //   isTEST = true;
+	     //   ZBEvt += 1;
+       // }
 
        in_chain->GetEntry(jEvt);
 
-       UInt_t nMuons = I("nRecoMuons");//reco_* branches are true info reference
+       UInt_t nMuons = I("nGenMuons");//reco_* branches are true info reference
        UInt_t nHits  = I("nHits");//hit_* branches are unpacked hits
        UInt_t nTrks  = I("nTracks");//trk_* branches are EMTF tracks
        UInt_t nSegs  = I("nSegs");//csc segments number
@@ -430,15 +430,16 @@ void PtRegression2018 ( TString myMethodList = "" ) {
        if ( (NonZBEvt % REPORT_EVT) == 0 || (ZBEvt > 0 && (ZBEvt % REPORT_EVT) == 0 ) )
 	       std::cout << "Looking at Non-ZB event " << NonZBEvt << "; ZB event " << ZBEvt << std::endl;
 
-       //============================================
-       //EMTF biased events can't be used for training or test
-       //============================================
-       if (!isZB){
-	       if( I("nRecoMuonsTrig")<2 && I("nRecoMuonsTrigCen")==0 ) {
-		       //isTEST = true;
-           continue;
-	       }//end remove bias
-       }//end if
+       // commented out 2019-10-10
+       // //============================================
+       // //EMTF biased events can't be used for training or test
+       // //============================================
+       // if (!isZB){
+	     //   if( I("nRecoMuonsTrig")<2 && I("nRecoMuonsTrigCen")==0 ) {
+		   //     //isTEST = true;
+       //     continue;
+	     //   }//end remove bias
+       // }//end if
 
        if(verbose) std::cout << "End removing bias ... "<< std::endl;
 
@@ -449,53 +450,57 @@ void PtRegression2018 ( TString myMethodList = "" ) {
          double emtf_pt    = F("trk_pt",iTrk);
          double emtf_eta   = F("trk_eta",iTrk);
          double emtf_phi   = F("trk_phi",iTrk);
-	 int emtf_eta_int  = I("trk_eta_int", iTrk);
-	 int emtf_charge   = I("trk_charge", iTrk);
-	 int emtf_mode     = I("trk_mode", iTrk);
-	 int emtf_mode_CSC = I("trk_mode_CSC", iTrk);
+         int emtf_eta_int  = I("trk_eta_int", iTrk);
+         int emtf_charge   = I("trk_charge", iTrk);
+         int emtf_mode     = I("trk_mode", iTrk);
+         int emtf_mode_CSC = I("trk_mode_CSC", iTrk);
          int emtf_mode_RPC = I("trk_mode_RPC", iTrk);
-	 int emtf_unique_match = I("trk_dR_match_unique", iTrk);
-	 int emtf_unique_iMu = I("trk_dR_match_iReco", iTrk);
-	 int emtf_dR_match_nReco = I("trk_dR_match_nReco", iTrk);
-	 int emtf_dR_match_nRecoSoft = I("trk_dR_match_nRecoSoft", iTrk);
-	 double mu_pt = 999.;//Default for muons in ZB
-	 double mu_eta = -99.;
-	 double mu_phi = -99.;
-	 int mu_charge = -99;
-	 int gmt_pt = 999;
-	 Bool_t mu_train = false;  // tag muon for training
+         int emtf_unique_match = I("trk_dR_match_unique", iTrk);
+         int emtf_unique_iMu = I("trk_dR_match_iReco", iTrk);
+         int emtf_dR_match_nReco = I("trk_dR_match_nReco", iTrk);
+         int emtf_dR_match_nRecoSoft = I("trk_dR_match_nRecoSoft", iTrk);
+         double mu_pt = 999.;//Default for muons in ZB
+         double mu_eta = -99.;
+         double mu_phi = -99.;
+         int mu_charge = -99;
+         int gmt_pt = 999;
+         Bool_t mu_train = false;  // tag muon for training
 
-         //Get RECO mu(i.e. GEN mu) with unique match from nonZB events
-         if( !isZB && emtf_unique_match == 1 ){
+         // commented out 2019-10-10
+         // //Get RECO mu(i.e. GEN mu) with unique match from nonZB events
+         // if( !isZB && emtf_unique_match == 1 ){
 
-           if (emtf_unique_iMu >= nMuons) continue;//Restrict number iMu index in the range of nMuons
+         //   if (emtf_unique_iMu >= nMuons) continue;//Restrict number iMu index in the range of nMuons
 
-           mu_train = true;
-           mu_pt =  F("reco_pt", emtf_unique_iMu);
-           mu_eta = F("reco_eta", emtf_unique_iMu);
-           mu_phi = F("reco_phi", emtf_unique_iMu);
-           mu_charge = I("reco_charge", emtf_unique_iMu);
-         }
+         // index of emtf_unique_iMu is 0 or 1
+         mu_train = true;
+         mu_pt =  F("mu_pt", emtf_unique_iMu);
+         mu_eta = F("mu_eta", emtf_unique_iMu);
+         mu_phi = F("mu_phi", emtf_unique_iMu);
+         mu_charge = I("mu_charge", emtf_unique_iMu);
+         // }
 
+         // commented out 2019-10-10
          //===============================================
-	 //Option1: Discard nonZB trk without unique match
-	 //===============================================
-         if( !isZB && emtf_unique_match != 1 ) continue;
+         //Option1: Discard nonZB trk without unique match
+         //===============================================
+         // if( !isZB && emtf_unique_match != 1 ) continue;
 
-	 /*
-	 //===================================================
-	 //Option2: Assign 1GeV to RECO mu if no unique match
-	 //===================================================
-	 if( !isZB && emtf_unique_match != 1 ) {
-	               mu_train = true;
-		       mu_pt = 1.0;
+         // commented out 2019-10-10
+         /*
+         //===================================================
+         //Option2: Assign 1GeV to RECO mu if no unique match
+         //===================================================
+         if( !isZB && emtf_unique_match != 1 ) {
+         mu_train = true;
+         mu_pt = 1.0;
 		       mu_eta = emtf_eta;
 		       mu_phi = emtf_phi;
 		       mu_charge = emtf_charge;
          }
          */
 
-	 /*
+         /*
          //===========================================================
          //Option3: Assign uGMT pT(eta) to RECO mu if no unique match
          //===========================================================
@@ -507,21 +512,21 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 		       mu_charge = emtf_charge;
 		       gmt_pt = 10 - (abs(emtf_eta_int) / 32);
 		       mu_pt = (gmt_pt <= 0) ?  0 : (gmt_pt-1) * 0.5; // Decode integer pT (result is in 0.5 GeV step)
-	 }
+         }
          */
 
          if(verbose) std::cout << "RECO kinematics ... "<< std::endl;
 
-	 //===============================
+         //===============================
          //RECO mu kinematics requirements
-	 //===============================
+         //===============================
          if ( !isZB && (mu_pt < PTMIN || mu_pt > PTMAX) ) continue;
-	 if ( !isZB && (fabs( mu_eta ) < ETAMIN || fabs( mu_eta ) > ETAMAX) ) continue;
-	 if ( mu_pt < PTMIN_TR || mu_pt > PTMAX_TR || isTEST) mu_train = false;
+         if ( !isZB && (fabs( mu_eta ) < ETAMIN || fabs( mu_eta ) > ETAMAX) ) continue;
+         if ( mu_pt < PTMIN_TR || mu_pt > PTMAX_TR || isTEST) mu_train = false;
 
          //==================
-	 //Require valid mode
-	 //==================
+         //Require valid mode
+         //==================
          if(verbose) std::cout << "Valid modes ... "<< std::endl;
          bool good_emtf_mode = false;
 
@@ -540,18 +545,20 @@ void PtRegression2018 ( TString myMethodList = "" ) {
          //======================
          //Trk hits from stations
          //======================
-         int i1=-99;
-	 int i2=-99;
-	 int i3=-99;
-	 int i4=-99;
+         int i1GEM=-99; // separate index for GEM
+         int i1CSC=-99; // separate index for CSC%
+         int i2=-99;
+         int i3=-99;
+         int i4=-99;
          for (int jhit = 0; jhit < I("trk_nHits", iTrk); jhit++) {
-		 int iHit = I("trk_iHit", iTrk, jhit);  // Access the index of each hit in the emtf track
-		 if( iHit < nHits){//Avoid the case when iHit index larger than the total number of hits in the event, this happens sometimes
-			 if( I("hit_station", iHit) == 1 ){ i1 = iHit; }
-			 else if ( I("hit_station", iHit) == 2 ){ i2 = iHit; }
-			 else if ( I("hit_station", iHit) == 3 ){ i3 = iHit; }
-			 else if ( I("hit_station", iHit) == 4 ){ i4 = iHit; }
-		 }
+           int iHit = I("trk_iHit", iTrk, jhit);  // Access the index of each hit in the emtf track
+           if( iHit < nHits){//Avoid the case when iHit index larger than the total number of hits in the event, this happens sometimes
+             if( I("hit_station", iHit) == 1 && I("hit_isCSC",iHit)==1 ){i1CSC = iHit; }
+             else if( I("hit_station", iHit) == 1 && I("hit_isGEM",iHit)==1 ){i1GEM = iHit; }
+             else if ( I("hit_station", iHit) == 2 && I("hit_isCSC",iHit)==1 ){ i2 = iHit; }
+             else if ( I("hit_station", iHit) == 3 && I("hit_isCSC",iHit)==1 ){ i3 = iHit; }
+             else if ( I("hit_station", iHit) == 4 && I("hit_isCSC",iHit)==1 ){ i4 = iHit; }
+           }
          }//end loop over hits in selected emtf track
 
          if(verbose) {
@@ -572,28 +579,30 @@ void PtRegression2018 ( TString myMethodList = "" ) {
            continue;
          }
 
-         /*
-         int ph1 = (i1 >= 0 ? I("hit_phi_int", i1 ) : -99);
+         int ph1 = (i1 >= 0 ? I("hit_phi_int",i1CSC ) : -99);
+         int ph1GEM = (i1 >= 0 ? I("hit_phi_int",i1GEM ) : -99);
          int ph2 = (i2 >= 0 ? I("hit_phi_int", i2 ) : -99);
          int ph3 = (i3 >= 0 ? I("hit_phi_int", i3 ) : -99);
          int ph4 = (i4 >= 0 ? I("hit_phi_int", i4 ) : -99);
 
-         int th1 = (i1 >= 0 ? I("hit_theta_int", i1 ) : -99);
+         int th1 = (i1 >= 0 ? I("hit_theta_int",i1CSC ) : -99);
+         int th1GEM = (i1 >= 0 ? I("hit_theta_int",i1GEM ) : -99);
          int th2 = (i2 >= 0 ? I("hit_theta_int", i2 ) : -99);
          int th3 = (i3 >= 0 ? I("hit_theta_int", i3 ) : -99);
          int th4 = (i4 >= 0 ? I("hit_theta_int", i4 ) : -99);
-         */
 
+         // commented out on 2019-10-10
+         /*
          //Use phi and theta info from offline CSC segments that are matched to the LCT
-         int iSeg1 = (i1 >= 0 ? I("hit_match_iSeg", i1 ) : -99);
+         int iSeg1 = (i1 >= 0 ? I("hit_match_iSeg",i1CSC ) : -99);
          int iSeg2 = (i2 >= 0 ? I("hit_match_iSeg", i2 ) : -99);
          int iSeg3 = (i3 >= 0 ? I("hit_match_iSeg", i3 ) : -99);
          int iSeg4 = (i4 >= 0 ? I("hit_match_iSeg", i4 ) : -99);
 
          //Don't use the track if there is LCT without a offline CSC segment match
-	 //Restrict the segment index less than nSegs
+         //Restrict the segment index less than nSegs
          if ( iSeg1 < 0      || iSeg2 < 0      || iSeg3 < 0      || iSeg4 < 0     ||
-	      iSeg1 >= nSegs || iSeg2 >= nSegs || iSeg3 >= nSegs || iSeg4 >= nSegs) continue;
+              iSeg1 >= nSegs || iSeg2 >= nSegs || iSeg3 >= nSegs || iSeg4 >= nSegs) continue;
 
          double phi1 = F("seg_phi", iSeg1);
          double phi2 = F("seg_phi", iSeg2);
@@ -625,15 +634,14 @@ void PtRegression2018 ( TString myMethodList = "" ) {
          int th2 = calc_theta_int(theta2, endcap2);
          int th3 = calc_theta_int(theta3, endcap3);
          int th4 = calc_theta_int(theta4, endcap4);
+         */
 
-         int pat1 = (i1 >= 0 ? I("hit_pattern", i1 ) : -99);
+         int pat1 = (i1 >= 0 ? I("hit_pattern",i1CSC ) : -99);
          int pat2 = (i2 >= 0 ? I("hit_pattern", i2 ) : -99);
          int pat3 = (i3 >= 0 ? I("hit_pattern", i3 ) : -99);
          int pat4 = (i4 >= 0 ? I("hit_pattern", i4 ) : -99);
 
-         int st1_ring2 = (i1 >= 0 ? ( I("hit_ring", i1 ) == 2 || I("hit_ring", i1 ) == 3 ) : 0);
-
-         int phGE11;
+         int st1_ring2 = (i1 >= 0 ? ( I("hit_ring",i1CSC ) == 2 || I("hit_ring",i1CSC ) == 3 ) : 0);
 
          //===========
          //track info: need to use offline CSC segments as well?
@@ -645,7 +653,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
          if      (i2 >= 0) { eta = F("hit_eta", i2 ); phi = F("hit_phi", i2 ); }
          else if (i3 >= 0) { eta = F("hit_eta", i3 ); phi = F("hit_phi", i3 ); }
          else if (i4 >= 0) { eta = F("hit_eta", i4 ); phi = F("hit_phi", i4 ); }
-         else if (i1 >= 0) { eta = F("hit_eta", i1 ); phi = F("hit_phi", i1 ); }
+         else if (i1 >= 0) { eta = F("hit_eta",i1CSC ); phi = F("hit_phi",i1CSC ); }
          endcap = (eta > 0 ? +1 : -1);
 
          //========================
@@ -675,7 +683,8 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 
          CalcDeltaPhis_2019GEM( dPh12, dPh13, dPh14, dPh23, dPh24, dPh34, dPhSign,
                                 dPhSum4, dPhSum4A, dPhSum3, dPhSum3A, outStPh, dPhGE11ME11,
-                                ph1, ph2, ph3, ph4, phGE11, mode, BIT_COMP );
+                                ph1, ph2, ph3, ph4, ph1GEM, mode, BIT_COMP );
+
          //Avoid too large dPhis due to neighbouring chamber effects.
          if ( abs(dPh12) > 1000 || abs(dPh13) > 1000 || abs(dPh14) > 1000 ||
               abs(dPh23) > 1000 || abs(dPh24) > 1000 || abs(dPh34) > 1000 ) continue;
@@ -684,8 +693,8 @@ void PtRegression2018 ( TString myMethodList = "" ) {
                           th1, th2, th3, th4, mode, BIT_COMP );
 
          // In firmware, RPC 'FR' bit set according to FR of corresponding CSC chamber
-         ring1 = (i1 >= 0 ? I("hit_ring", i1 ) : -99);
-         cham1 = (i1 >= 0 ? I("hit_chamber", i1 ) : -99);
+         ring1 = (i1 >= 0 ? I("hit_ring",i1CSC ) : -99);
+         cham1 = (i1 >= 0 ? I("hit_chamber",i1CSC ) : -99);
          cham2 = (i2 >= 0 ? I("hit_chamber", i2 ) : -99);
          cham3 = (i3 >= 0 ? I("hit_chamber", i3 ) : -99);
          cham4 = (i4 >= 0 ? I("hit_chamber", i4 ) : -99);
@@ -706,62 +715,63 @@ void PtRegression2018 ( TString myMethodList = "" ) {
          bend3 = int( F("seg_bend_phi", iSeg3)*1000*dPhSign );
          bend4 = int( F("seg_bend_phi", iSeg4)*1000*dPhSign );
 
-         RPC1 = (i1 >= 0 ? ( I("hit_isRPC", i1 ) == 1 ? 1 : 0) : -99);
+         RPC1 = (i1 >= 0 ? ( I("hit_isRPC",i1CSC ) == 1 ? 1 : 0) : -99);
          RPC2 = (i2 >= 0 ? ( I("hit_isRPC", i2 ) == 1 ? 1 : 0) : -99);
          RPC3 = (i3 >= 0 ? ( I("hit_isRPC", i3 ) == 1 ? 1 : 0) : -99);
          RPC4 = (i4 >= 0 ? ( I("hit_isRPC", i4 ) == 1 ? 1 : 0) : -99);
 
-         GE11 = (i1 >= 0 ? ( I("hit_isGEM", i1 ) == 1 ? 1 : 0) : -99);
+         GE11 = (i1 >= 0 ? ( I("hit_isGEM",i1CSC ) == 1 ? 1 : 0) : -99);
 
          CalcRPCs( RPC1, RPC2, RPC3, RPC4, mode, st1_ring2, theta, BIT_COMP );
 
+         // Uncommented on 2019-10-10
          // Clean out showering muons with outlier station 1, or >= 2 outlier stations
-         if (!isTEST && log2(mu_pt) > 6 && CLEAN_HI_PT && MODE == 15)
-         if ( dPhSum4A >= fmax(40., 332. - 40*log2(mu_pt)) )
-         if ( outStPh < 2 || dPhSum3A >= fmax(24., 174. - 20*log2(mu_pt)) )
-         mu_train = false;
+         // if (!isTEST && log2(mu_pt) > 6 && CLEAN_HI_PT && MODE == 15)
+         // if ( dPhSum4A >= fmax(40., 332. - 40*log2(mu_pt)) )
+         // if ( outStPh < 2 || dPhSum3A >= fmax(24., 174. - 20*log2(mu_pt)) )
+         // mu_train = false;
 
          EMTF_ONLY: // Skip track building, just store EMTF info
 
-	 /////////////////////////////////////////////////////
-	 ///  Loop over factories and set variable values  ///
-	 /////////////////////////////////////////////////////
-	 for (UInt_t iFact = 0; iFact < factories.size(); iFact++) {
+         /////////////////////////////////////////////////////
+         ///  Loop over factories and set variable values  ///
+         /////////////////////////////////////////////////////
+         for (UInt_t iFact = 0; iFact < factories.size(); iFact++) {
 
-                 // Set vars equal to default vector of variables for this factory
-                 var_names = std::get<3>(factories.at(iFact));
+           // Set vars equal to default vector of variables for this factory
+           var_names = std::get<3>(factories.at(iFact));
 	         var_vals = std::get<4>(factories.at(iFact));
 
 	         // Unweighted distribution: flat in eta and 1/pT
 	         Double_t evt_weight = 1.0;
 
 	         // Weight by 1/pT or (1/pT)^2 so overall distribution is (1/pT)^2 or (1/pT)^3
-                 if      ( std::get<2>(factories.at(iFact)).Contains("_Pt0p5Wgt") )
-                 evt_weight = pow(mu_pt,0.5);
-                 else if ( std::get<2>(factories.at(iFact)).Contains("_log2PtWgt") )
-                 evt_weight = log2(mu_pt + BIT);
-                 else if ( std::get<2>(factories.at(iFact)).Contains("_PtWgt") )
-                 evt_weight = mu_pt;
-                 else if ( std::get<2>(factories.at(iFact)).Contains("_PtSqWgt") )
-                 evt_weight = pow(mu_pt, 2);
-                 else if ( std::get<2>(factories.at(iFact)).Contains("_invPt0p5Wgt") )
-                 evt_weight = 1. / pow(mu_pt, 0.5);
-                 else if ( std::get<2>(factories.at(iFact)).Contains("_invlog2PtWgt") )
-                 evt_weight = 1. / log2(mu_pt + BIT); //mu_pt+ BIT offset in case of zero weight
-                 else if ( std::get<2>(factories.at(iFact)).Contains("_invPtWgt") )
-                 evt_weight = 1. / mu_pt;
+           if      ( std::get<2>(factories.at(iFact)).Contains("_Pt0p5Wgt") )
+             evt_weight = pow(mu_pt,0.5);
+           else if ( std::get<2>(factories.at(iFact)).Contains("_log2PtWgt") )
+             evt_weight = log2(mu_pt + BIT);
+           else if ( std::get<2>(factories.at(iFact)).Contains("_PtWgt") )
+             evt_weight = mu_pt;
+           else if ( std::get<2>(factories.at(iFact)).Contains("_PtSqWgt") )
+             evt_weight = pow(mu_pt, 2);
+           else if ( std::get<2>(factories.at(iFact)).Contains("_invPt0p5Wgt") )
+             evt_weight = 1. / pow(mu_pt, 0.5);
+           else if ( std::get<2>(factories.at(iFact)).Contains("_invlog2PtWgt") )
+             evt_weight = 1. / log2(mu_pt + BIT); //mu_pt+ BIT offset in case of zero weight
+           else if ( std::get<2>(factories.at(iFact)).Contains("_invPtWgt") )
+             evt_weight = 1. / mu_pt;
 	         else if ( std::get<2>(factories.at(iFact)).Contains("_invPt1p5Wgt") )
-	         evt_weight = 1. / pow(mu_pt, 1.5);
+             evt_weight = 1. / pow(mu_pt, 1.5);
 	         else if ( std::get<2>(factories.at(iFact)).Contains("_invPtSqWgt") )
-	         evt_weight = 1. / pow(mu_pt, 2);
+             evt_weight = 1. / pow(mu_pt, 2);
 	         else if ( std::get<2>(factories.at(iFact)).Contains("_invPt2p5Wgt") )
-	         evt_weight = 1. / pow(mu_pt, 2.5);
-                 else if ( std::get<2>(factories.at(iFact)).Contains("_invPtCubWgt") )
-	         evt_weight = 1. / pow(mu_pt, 3);
+             evt_weight = 1. / pow(mu_pt, 2.5);
+           else if ( std::get<2>(factories.at(iFact)).Contains("_invPtCubWgt") )
+             evt_weight = 1. / pow(mu_pt, 3);
 	         else if ( std::get<2>(factories.at(iFact)).Contains("_invPtQuadWgt") )
-	         evt_weight = 1. / pow(mu_pt, 4);
-                 else
-                 assert( std::get<2>(factories.at(iFact)).Contains("_noWgt") );
+             evt_weight = 1. / pow(mu_pt, 4);
+           else
+             assert( std::get<2>(factories.at(iFact)).Contains("_noWgt") );
 
 	         // De-weight tracks with one or more RPC hits
 	         evt_weight *= (1. / pow( 4, ((RPC1 == 1) + (RPC2 == 1) + (RPC3 == 1) + (RPC4 == 1)) ) );
@@ -808,6 +818,8 @@ void PtRegression2018 ( TString myMethodList = "" ) {
                    if ( vName == "RPC_4" ) var_vals.at(iVar) = RPC4;
 
                    if ( vName == "GEM_1" ) var_vals.at(iVar) = GE11;
+                   if ( vName == "dPhi_GE11_ME11" ) var_vals.at(iVar) = dPhGE11ME11;
+                   if ( vName == "ph_GE11" ) var_vals.at(iVar) = phGE11;
 
                    //////////////////////////////
                    ///  Target and variables  ///
