@@ -2,7 +2,8 @@
 TString EOS_DIR_NAME  = "root://eoscms.cern.ch//store/user/abrinke1/EMTF/Emulator/ntuples";  // Input directory in
 TString in_dir = "Ntuples/";
 TString SingleMu_files[655] = {
-  /*
+"EMTF_MC_NTuple_SingleMu_20200219.root"
+/*
 "EMTF_MC_NTuple_SingleMu_2019_09_04_1.root",
 "EMTF_MC_NTuple_SingleMu_2019_09_04_10.root",
 "EMTF_MC_NTuple_SingleMu_2019_09_04_100.root",
@@ -658,9 +659,9 @@ TString SingleMu_files[655] = {
 "EMTF_MC_NTuple_SingleMu_2019_09_04_97.root",
 "EMTF_MC_NTuple_SingleMu_2019_09_04_98.root",
 "EMTF_MC_NTuple_SingleMu_2019_09_04_99.root"
-  */
-	"EMTF_MC_NTuple_SingleMu.root"
+//	"EMTF_MC_NTuple_SingleMu.root"
   //"EMTF_MC_NTuple_SingleMu_2019_09_04.root"
+  */
 };
 TString ZeroBias_files[1] = {
 	"NTuple_ZeroBias_FlatNtuple_2019_01_09_ZeroBias_PU50_Sep24_FW.root"

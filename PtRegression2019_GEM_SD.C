@@ -414,11 +414,11 @@ void PtRegression2019_GEM_SD ( TString myMethodList = "" ) {
 
        //iCh=0 means SingleMu dataset,
        //need to modify in the future if have more types of samples added for training, such as Muonia, etc
-       // if (iCh<1) {
-	     //   isZB = false;
-	     //   isTEST = false;
-	     //   NonZBEvt += 1;
-       // }
+       if (iCh<1) {
+	        // isZB = false;
+	        // isTEST = false;
+          NonZBEvt += 1;
+       }
        // else{
 	     //   isZB = true;
 	     //   isTEST = true;
