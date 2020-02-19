@@ -45,7 +45,7 @@
 
 using namespace TMVA;
 
-void PtRegression2018 ( TString myMethodList = "" ) {
+void PtRegression2019_GEM_SD ( TString myMethodList = "" ) {
 
    // This loads the library
    TMVA::Tools::Instance();
@@ -121,14 +121,14 @@ void PtRegression2018 ( TString myMethodList = "" ) {
    TString ZB_file_name;
 
    for (int i = 0; i < USESingleMu; i++) {
-	  SM_file_name.Form( "%s/%s/%s", EOS_DIR_NAME.Data(), in_dir.Data(), SingleMu_files[i].Data() );
-  	  std::cout << "Adding file " << SM_file_name.Data() << std::endl;
-          SM_in_file_names.push_back(SM_file_name.Data());
+     SM_file_name.Form( "%s/%s/%s", EOS_DIR_NAME.Data(), in_dir.Data(), SingleMu_files[i].Data() );
+     std::cout << "Adding file " << SM_file_name.Data() << std::endl;
+     SM_in_file_names.push_back(SM_file_name.Data());
    }
    for (int i = 0; i < USEZerobias; i++) {
-	  ZB_file_name.Form( "%s/%s/%s", EOS_DIR_NAME.Data(), in_dir.Data(), ZeroBias_files[i].Data() );
-  	  std::cout << "Adding file " << ZB_file_name.Data() << std::endl;
-          ZB_in_file_names.push_back(ZB_file_name.Data());
+     ZB_file_name.Form( "%s/%s/%s", EOS_DIR_NAME.Data(), in_dir.Data(), ZeroBias_files[i].Data() );
+     std::cout << "Adding file " << ZB_file_name.Data() << std::endl;
+     ZB_in_file_names.push_back(ZB_file_name.Data());
    }
 
    // Open all input files
@@ -152,19 +152,24 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 
    // Add tree from the input files to the TChain
    std::vector<TChain*> in_chains;
-   TChain *SM_in_chain = new TChain("FlatNtupleData/tree");
-   TChain *ZB_in_chain = new TChain("FlatNtupleData/tree");
+   TChain *SM_in_chain = new TChain("FlatNtupleMC/tree");
+   TChain *ZB_in_chain = new TChain("FlatNtupleMC/tree");
    for (int i = 0; i < SM_in_file_names.size(); i++) {
 	   SM_in_chain->Add( SM_in_file_names.at(i) );
    }
    for (int i = 0; i < ZB_in_file_names.size(); i++) {
 	   ZB_in_chain->Add( ZB_in_file_names.at(i) );
    }
+
+
+   std::cout << "SM_in_chain entries " << SM_in_chain->GetEntries() << std::endl;
+   std::cout << "ZB_in_chain entries " << ZB_in_chain->GetEntries() << std::endl;
    InitializeMaps();
    SetBranchAddresses(SM_in_chain);
    SetBranchAddresses(ZB_in_chain);
    in_chains.push_back(SM_in_chain);
    in_chains.push_back(ZB_in_chain);
+
 
    //////////////////////////////////////////////////////////////////////////
    ///  Factories: Use different sets of variables, target, weights, etc. ///
@@ -191,8 +196,8 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 
        // 4-station tracks
        if        (MODE == 15) {
-         // BASELINE mode 15 - dPhi12/23/34 + combos, theta, FR1, St1 ring, dTh14, bend1, 2017 pT
-         factories.push_back( std::make_tuple( nullF, nullL, factName, var_names, var_vals, 0x141f11ff) );
+         // BASELINE mode 15 - dPhi12/23/34 + combos, theta, FR1, St1 ring, dTh14, bend1, 2017 pT, GEM
+         factories.push_back( std::make_tuple( nullF, nullL, factName, var_names, var_vals, 0x741f11ff) ); // changed 1 to 7
        }
        // 3-station tracks
        else if   (MODE == 14) {
@@ -289,8 +294,8 @@ void PtRegression2018 ( TString myMethodList = "" ) {
    in_vars.push_back( MVA_var( "EMTF_pt",       "EMTF p_{T}",        "",    'F', -88 ) ); // 0x1000 0000
 
    // new GEM-CSC bending angle
-   in_vars.push_back( MVA_var( "dPhi_GE11_ME11", "#phi(GE11) - #phi(ME11)", "", 'F', -88 ) ); // 0x1000 0001
-   in_vars.push_back( MVA_var( "GEM_1",   "St 1 hit is GEM",       "int", 'I', -88 ) ); // 0x1000 0002
+   in_vars.push_back( MVA_var( "dPhi_GE11_ME11", "#phi(GE11) - #phi(ME11)", "", 'F', -88 ) ); // 0x1 0000 0000
+   in_vars.push_back( MVA_var( "GEM_1",   "St 1 hit is GEM",       "int", 'I', -88 ) ); // 0x1 0000 0000
 
    /*
    if (USE_RPC) {
@@ -382,7 +387,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
    int nSMEvents = SM_in_chain->GetEntries();
    int nZBEvents = ZB_in_chain->GetEntries();
    std::cout << "\n******* About to loop over chains *******" << std::endl;
-   std::cout << "\n in_chains size: "<< in_chains.size() << std::endl;
+   std::cout << "\n in_chains size: "<< in_chains.size() << " " << nSMEvents << " " << nZBEvents << std::endl;
    UInt_t NonZBEvt = 0;
    UInt_t ZBEvt = 0;
    UInt_t nTrain = 0;
@@ -427,8 +432,10 @@ void PtRegression2018 ( TString myMethodList = "" ) {
        UInt_t nTrks  = I("nTracks");//trk_* branches are EMTF tracks
        UInt_t nSegs  = I("nSegs");//csc segments number
 
+       /*
        if ( (NonZBEvt % REPORT_EVT) == 0 || (ZBEvt > 0 && (ZBEvt % REPORT_EVT) == 0 ) )
 	       std::cout << "Looking at Non-ZB event " << NonZBEvt << "; ZB event " << ZBEvt << std::endl;
+       */
 
        // commented out 2019-10-10
        // //============================================
@@ -456,7 +463,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
          int emtf_mode_CSC = I("trk_mode_CSC", iTrk);
          int emtf_mode_RPC = I("trk_mode_RPC", iTrk);
          int emtf_unique_match = I("trk_dR_match_unique", iTrk);
-         int emtf_unique_iMu = I("trk_dR_match_iReco", iTrk);
+         int emtf_unique_iMu = 0;//I("trk_dR_match_iReco", iTrk);
          int emtf_dR_match_nReco = I("trk_dR_match_nReco", iTrk);
          int emtf_dR_match_nRecoSoft = I("trk_dR_match_nRecoSoft", iTrk);
          double mu_pt = 999.;//Default for muons in ZB
@@ -550,11 +557,34 @@ void PtRegression2018 ( TString myMethodList = "" ) {
          int i2=-99;
          int i3=-99;
          int i4=-99;
+
+         std::cout << "Checking number of Track hits " << I("trk_nHits", iTrk) << std::endl;
+
+         // added on 2019-11-05 per Andrew's suggestions
+         if ( I("trk_nHits", iTrk) != VI("trk_iHit", iTrk).size() ) {
+
+           std::cout << "\tnHits " << I("trk_nHits", iTrk) << std::endl;
+           std::cout << "\tnHits2 " << VI("trk_iHit", iTrk).size() << std::endl;
+           std::cout << "\tmode_RPC " << I("trk_mode_RPC", iTrk)  << std::endl;
+           std::cout << "\tmode_CSC " << I("trk_mode_CSC", iTrk)  << std::endl;
+
+           continue;
+         }
+
          for (int jhit = 0; jhit < I("trk_nHits", iTrk); jhit++) {
+
            int iHit = I("trk_iHit", iTrk, jhit);  // Access the index of each hit in the emtf track
+
+           std::cout << "Checking track hit " << iHit << " " << jhit
+                     << " isCSC " << I("hit_isCSC",iHit) << " "
+                     << " isGEM " << I("hit_isGEM",iHit) << std::endl;
+
+
+           // trk_nHits, VI("trk_iHit", iTrk).size(), trk_nRPC, and trk_mode_CSC
+
            if( iHit < nHits){//Avoid the case when iHit index larger than the total number of hits in the event, this happens sometimes
-             if( I("hit_station", iHit) == 1 && I("hit_isCSC",iHit)==1 ){i1CSC = iHit; }
-             else if( I("hit_station", iHit) == 1 && I("hit_isGEM",iHit)==1 ){i1GEM = iHit; }
+             if(       I("hit_station", iHit) == 1 && I("hit_isCSC",iHit)==1 ){ i1CSC = iHit; }
+             else if(  I("hit_station", iHit) == 1 && I("hit_isGEM",iHit)==1 ){ i1GEM = iHit; }
              else if ( I("hit_station", iHit) == 2 && I("hit_isCSC",iHit)==1 ){ i2 = iHit; }
              else if ( I("hit_station", iHit) == 3 && I("hit_isCSC",iHit)==1 ){ i3 = iHit; }
              else if ( I("hit_station", iHit) == 4 && I("hit_isCSC",iHit)==1 ){ i4 = iHit; }
@@ -562,7 +592,8 @@ void PtRegression2018 ( TString myMethodList = "" ) {
          }//end loop over hits in selected emtf track
 
          if(verbose) {
-           std::cout << "hit id at 1: "<<i1<< std::endl;
+           std::cout << "hit id at 1: "<<i1GEM<< std::endl;
+           std::cout << "hit id at 1: "<<i1CSC<< std::endl;
            std::cout << "hit id at 2: "<<i2<< std::endl;
            std::cout << "hit id at 3: "<<i3<< std::endl;
            std::cout << "hit id at 4: "<<i4<< std::endl;
@@ -579,14 +610,14 @@ void PtRegression2018 ( TString myMethodList = "" ) {
            continue;
          }
 
-         int ph1 = (i1 >= 0 ? I("hit_phi_int",i1CSC ) : -99);
-         int ph1GEM = (i1 >= 0 ? I("hit_phi_int",i1GEM ) : -99);
+         int ph1 = (i1CSC >= 0 ? I("hit_phi_int",i1CSC ) : -99);
+         int ph1GEM = (i1GEM >= 0 ? I("hit_phi_int",i1GEM ) : -99);
          int ph2 = (i2 >= 0 ? I("hit_phi_int", i2 ) : -99);
          int ph3 = (i3 >= 0 ? I("hit_phi_int", i3 ) : -99);
          int ph4 = (i4 >= 0 ? I("hit_phi_int", i4 ) : -99);
 
-         int th1 = (i1 >= 0 ? I("hit_theta_int",i1CSC ) : -99);
-         int th1GEM = (i1 >= 0 ? I("hit_theta_int",i1GEM ) : -99);
+         int th1 = (i1CSC >= 0 ? I("hit_theta_int",i1CSC ) : -99);
+         int th1GEM = (i1GEM >= 0 ? I("hit_theta_int",i1GEM ) : -99);
          int th2 = (i2 >= 0 ? I("hit_theta_int", i2 ) : -99);
          int th3 = (i3 >= 0 ? I("hit_theta_int", i3 ) : -99);
          int th4 = (i4 >= 0 ? I("hit_theta_int", i4 ) : -99);
@@ -636,12 +667,12 @@ void PtRegression2018 ( TString myMethodList = "" ) {
          int th4 = calc_theta_int(theta4, endcap4);
          */
 
-         int pat1 = (i1 >= 0 ? I("hit_pattern",i1CSC ) : -99);
+         int pat1 = (i1CSC >= 0 ? I("hit_pattern",i1CSC ) : -99);
          int pat2 = (i2 >= 0 ? I("hit_pattern", i2 ) : -99);
          int pat3 = (i3 >= 0 ? I("hit_pattern", i3 ) : -99);
          int pat4 = (i4 >= 0 ? I("hit_pattern", i4 ) : -99);
 
-         int st1_ring2 = (i1 >= 0 ? ( I("hit_ring",i1CSC ) == 2 || I("hit_ring",i1CSC ) == 3 ) : 0);
+         int st1_ring2 = (i1CSC >= 0 ? ( I("hit_ring",i1CSC ) == 2 || I("hit_ring",i1CSC ) == 3 ) : 0);
 
          //===========
          //track info: need to use offline CSC segments as well?
@@ -653,7 +684,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
          if      (i2 >= 0) { eta = F("hit_eta", i2 ); phi = F("hit_phi", i2 ); }
          else if (i3 >= 0) { eta = F("hit_eta", i3 ); phi = F("hit_phi", i3 ); }
          else if (i4 >= 0) { eta = F("hit_eta", i4 ); phi = F("hit_phi", i4 ); }
-         else if (i1 >= 0) { eta = F("hit_eta",i1CSC ); phi = F("hit_phi",i1CSC ); }
+         else if (i1CSC >= 0) { eta = F("hit_eta",i1CSC ); phi = F("hit_phi",i1CSC ); }
          endcap = (eta > 0 ? +1 : -1);
 
          //========================
@@ -693,13 +724,13 @@ void PtRegression2018 ( TString myMethodList = "" ) {
                           th1, th2, th3, th4, mode, BIT_COMP );
 
          // In firmware, RPC 'FR' bit set according to FR of corresponding CSC chamber
-         ring1 = (i1 >= 0 ? I("hit_ring",i1CSC ) : -99);
-         cham1 = (i1 >= 0 ? I("hit_chamber",i1CSC ) : -99);
+         ring1 = (i1CSC >= 0 ? I("hit_ring",i1CSC ) : -99);
+         cham1 = (i1CSC >= 0 ? I("hit_chamber",i1CSC ) : -99);
          cham2 = (i2 >= 0 ? I("hit_chamber", i2 ) : -99);
          cham3 = (i3 >= 0 ? I("hit_chamber", i3 ) : -99);
          cham4 = (i4 >= 0 ? I("hit_chamber", i4 ) : -99);
 
-         FR1 = (i1 >= 0 ? (cham1 % 2 == 0) : -99);  // Odd chambers are bolted to the iron,
+         FR1 = (i1CSC >= 0 ? (cham1 % 2 == 0) : -99);  // Odd chambers are bolted to the iron,
          FR2 = (i2 >= 0 ? (cham2 % 2 == 0) : -99);  // which faces forwared in stations 1 & 2,
          FR3 = (i3 >= 0 ? (cham3 % 2 == 1) : -99);  // backwards in 3 & 4
          FR4 = (i4 >= 0 ? (cham4 % 2 == 1) : -99);
@@ -710,17 +741,19 @@ void PtRegression2018 ( TString myMethodList = "" ) {
                     dPhSign, endcap, mode, BIT_COMP );
 
          //Recompute bend1/2/3/4 with offline segment bending
-         bend1 = int( F("seg_bend_phi", iSeg1)*1000*dPhSign );
-         bend2 = int( F("seg_bend_phi", iSeg2)*1000*dPhSign );
-         bend3 = int( F("seg_bend_phi", iSeg3)*1000*dPhSign );
-         bend4 = int( F("seg_bend_phi", iSeg4)*1000*dPhSign );
+         /*
+         bend1 = int( F("seg_bend_phi", i1CSC)*1000*dPhSign );
+         bend2 = int( F("seg_bend_phi", i2)*1000*dPhSign );
+         bend3 = int( F("seg_bend_phi", i3)*1000*dPhSign );
+         bend4 = int( F("seg_bend_phi", i4)*1000*dPhSign );
+         */
 
-         RPC1 = (i1 >= 0 ? ( I("hit_isRPC",i1CSC ) == 1 ? 1 : 0) : -99);
+         RPC1 = (i1CSC >= 0 ? ( I("hit_isRPC",i1CSC ) == 1 ? 1 : 0) : -99);
          RPC2 = (i2 >= 0 ? ( I("hit_isRPC", i2 ) == 1 ? 1 : 0) : -99);
          RPC3 = (i3 >= 0 ? ( I("hit_isRPC", i3 ) == 1 ? 1 : 0) : -99);
          RPC4 = (i4 >= 0 ? ( I("hit_isRPC", i4 ) == 1 ? 1 : 0) : -99);
 
-         GE11 = (i1 >= 0 ? ( I("hit_isGEM",i1CSC ) == 1 ? 1 : 0) : -99);
+         GE11 = (i1GEM >= 0 ? ( I("hit_isGEM",i1GEM ) == 1 ? 1 : 0) : -99);
 
          CalcRPCs( RPC1, RPC2, RPC3, RPC4, mode, st1_ring2, theta, BIT_COMP );
 
@@ -819,7 +852,7 @@ void PtRegression2018 ( TString myMethodList = "" ) {
 
                    if ( vName == "GEM_1" ) var_vals.at(iVar) = GE11;
                    if ( vName == "dPhi_GE11_ME11" ) var_vals.at(iVar) = dPhGE11ME11;
-                   if ( vName == "ph_GE11" ) var_vals.at(iVar) = phGE11;
+                   // if ( vName == "ph_GE11" ) var_vals.at(iVar) = phGE11;
 
                    //////////////////////////////
                    ///  Target and variables  ///
@@ -866,10 +899,12 @@ void PtRegression2018 ( TString myMethodList = "" ) {
            if ( (NonZBEvt % 2)==0 && mu_train && MODE > 0 ) {
              std::get<1>(factories.at(iFact))->AddTrainingEvent( "Regression", var_vals, evt_weight );
              if (iFact == 0) nTrain += 1;
+             std::cout << "Total events in training sample " << nTrain << std::endl;
            }
            else {
              std::get<1>(factories.at(iFact))->AddTestEvent( "Regression", var_vals, evt_weight );
              if (iFact == 0) nTest += 1;
+             std::cout << "Total events in testing sample " << nTest << std::endl;
            }
          } // End loop: for (UInt_t iFact = 0; iFact < factories.size(); iFact++)
 
@@ -1007,6 +1042,6 @@ int main( int argc, char** argv )
       if (!methodList.IsNull()) methodList += TString(",");
       methodList += regMethod;
    }
-   PtRegression2018(methodList);
+   PtRegression2019_GEM_SD(methodList);
    return 0;
 }

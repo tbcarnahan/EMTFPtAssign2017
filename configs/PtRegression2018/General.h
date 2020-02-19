@@ -1,5 +1,5 @@
 // *** User *** ///
-const TString USER = "Wei";  // Settings applied in User.h
+const TString USER = "Sven";  // Settings applied in User.h
 
 // *** Events to process *** //
 const int MAX_TR = 5000;  // MAX # of events for training
@@ -9,6 +9,7 @@ const int REPORT_EVT = 100000;  // Report every Nth event during processing
 // *** Track-building settings *** //
 const int MODE      = 15;     // Track mode to build - settings applied in Modes.h
 const bool USE_RPC  = false;   // Use RPC hits in track-building
+const bool USE_GEM  = true;   // Use RPC hits in track-building
 const bool BIT_COMP = false;   // Use bit-compressed versions of input variables
 const std::vector<int> CSC_MASK = {};  // Mask CSC LCTs in these stations
 const std::vector<int> RPC_MASK = {};  // Mask RPC hits in these stations
