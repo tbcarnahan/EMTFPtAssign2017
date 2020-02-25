@@ -1,8 +1,8 @@
 
 /////////////////////////////////////////////////////////
 ///          Macro to compute rate and efficiency     ///
-///            Wei Shi         12.18.18               ///
-///          For Run 3 training on data using BDT     ///
+///            Matthew Decaro   2.25.20               ///
+///          Run 3 training using GEM-CSC bending     ///
 /////////////////////////////////////////////////////////
 
 #include "TFile.h"
