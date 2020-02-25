@@ -680,7 +680,7 @@ namespace PtRegression2018_cfg {
     if (USER == "Sven") {//root://cmsxrootd-site.fnal.gov
       EOS_DIR_NAME = "/eos/uscms/store/user/dildick/SingleMu/crab_Ntuples-2019-11-03/191104_003713/0000";  // Input directory in eos
       in_dir = "";
-      OUT_DIR_NAME = "~/nobackup/work/Rice_EMTF_Summer2019/CMSSW_10_6_1_patch2/src/EMTFPtAssign2017/";
+      OUT_DIR_NAME = "~/nobackup/BDTGEM/CMSSW_10_6_1_patch2/src/EMTFPtAssign2017/";
       OUT_FILE_NAME = "PtRegression2018";
     }
 
