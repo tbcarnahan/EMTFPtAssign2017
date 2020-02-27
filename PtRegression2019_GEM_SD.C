@@ -563,10 +563,10 @@ void PtRegression2019_GEM_SD ( TString myMethodList = "" ) {
          // added on 2019-11-05 per Andrew's suggestions
          if ( I("trk_nHits", iTrk) != VI("trk_iHit", iTrk).size() ) {
 
-           std::cout << "\tnHits " << I("trk_nHits", iTrk) << std::endl;
-           std::cout << "\tnHits2 " << VI("trk_iHit", iTrk).size() << std::endl;
-           std::cout << "\tmode_RPC " << I("trk_mode_RPC", iTrk)  << std::endl;
-           std::cout << "\tmode_CSC " << I("trk_mode_CSC", iTrk)  << std::endl;
+           std::cout << ">>>nHits " << I("trk_nHits", iTrk) << std::endl;
+           std::cout << ">>>tnHits2 " << VI("trk_iHit", iTrk).size() << std::endl;
+           std::cout << ">>>mode_RPC " << I("trk_mode_RPC", iTrk)  << std::endl;
+           std::cout << ">>>mode_CSC " << I("trk_mode_CSC", iTrk)  << std::endl;
 
            continue;
          }
@@ -575,7 +575,7 @@ void PtRegression2019_GEM_SD ( TString myMethodList = "" ) {
 
            int iHit = I("trk_iHit", iTrk, jhit);  // Access the index of each hit in the emtf track
 
-           std::cout << "Checking track hit " << iHit << " " << jhit
+           std::cout << "\tChecking track hit " << iHit << " " << jhit
                      << " isCSC " << I("hit_isCSC",iHit) << " "
                      << " isGEM " << I("hit_isGEM",iHit) << std::endl;
 
