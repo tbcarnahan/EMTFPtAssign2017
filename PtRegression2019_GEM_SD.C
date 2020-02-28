@@ -290,8 +290,13 @@ void PtRegression2019_GEM_SD ( TString myMethodList = "" ) {
    in_vars.push_back( MVA_var( "dTh_14",    "#theta(4) - #theta(1)", "int", 'I', -88 ) ); // 0x0400 0000
    in_vars.push_back( MVA_var( "dTh_24",    "#theta(4) - #theta(2)", "int", 'I', -88 ) ); // 0x0800 0000
 
-   //add 2017 EMTF pT as input variable to accelerate training
-   in_vars.push_back( MVA_var( "EMTF_pt",       "EMTF p_{T}",        "",    'F', -88 ) ); // 0x1000 0000
+
+   // add 2017 EMTF pT as input variable to accelerate training
+
+   // Stuff commented on Feb 27 2020
+   // For the initial tests, we probably want to drop "EMTF_pt" as an input variable
+   // in_vars.push_back( MVA_var( "EMTF_pt",       "EMTF p_{T}",        "",    'F', -88 ) ); // 0x1000 0000
+   // Later on, it will probably make sense to match this variable with the GEN-level "target" variable, in this case change to "log2_EMTF_pt"
 
    // new GEM-CSC bending angle
    in_vars.push_back( MVA_var( "dPhi_GE11_ME11", "#phi(GE11) - #phi(ME11)", "", 'F', -88 ) ); // 0x1 0000 0000
@@ -415,9 +420,9 @@ void PtRegression2019_GEM_SD ( TString myMethodList = "" ) {
        //iCh=0 means SingleMu dataset,
        //need to modify in the future if have more types of samples added for training, such as Muonia, etc
        if (iCh<1) {
-	        // isZB = false;
-	        // isTEST = false;
-          NonZBEvt += 1;
+         isZB = false;
+         isTEST = false;
+         NonZBEvt += 1;
        }
        // else{
 	     //   isZB = true;
@@ -850,7 +855,8 @@ void PtRegression2019_GEM_SD ( TString myMethodList = "" ) {
                    if ( vName == "RPC_3" ) var_vals.at(iVar) = RPC3;
                    if ( vName == "RPC_4" ) var_vals.at(iVar) = RPC4;
 
-                   if ( vName == "GEM_1" ) var_vals.at(iVar) = GE11;
+                   // Makes output values [0, 1] instead of [-99, 1] which is easier to see in the output histogram.
+                   if ( vName == "GEM_1" ) var_vals.at(iVar) = max(0, GE11);
                    if ( vName == "dPhi_GE11_ME11" ) var_vals.at(iVar) = dPhGE11ME11;
                    // if ( vName == "ph_GE11" ) var_vals.at(iVar) = phGE11;
 
