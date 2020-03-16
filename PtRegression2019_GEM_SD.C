@@ -392,7 +392,7 @@ void PtRegression2019_GEM_SD ( TString myMethodList = "" ) {
    int nSMEvents = SM_in_chain->GetEntries();
    int nZBEvents = ZB_in_chain->GetEntries();
    std::cout << "\n******* About to loop over chains *******" << std::endl;
-   std::cout << "\n in_chains size: "<< in_chains.size() << " " << nSMEvents << " " << nZBEvents << std::endl;
+   std::cout << "\n in_chains size: "<< in_chains.size() << " N(SingleMu) = " << nSMEvents << " N(ZeroBias) = " << nZBEvents << std::endl;
    UInt_t NonZBEvt = 0;
    UInt_t ZBEvt = 0;
    UInt_t nTrain = 0;
@@ -400,15 +400,18 @@ void PtRegression2019_GEM_SD ( TString myMethodList = "" ) {
    Bool_t isZB = false;//tag per event
    Bool_t isTEST = false;//tag per event
 
+
    //=================================
    //Register events: loop over chains
    //=================================
    for (int iCh = 0; iCh < in_chains.size(); iCh++) {
      TChain *in_chain = in_chains.at(iCh);
 
-     std::cout << "\n******* About to enter the event loop for chain " << iCh+1 << " *******" << std::endl;
+     std::cout << "******* About to enter the event loop for chain " << iCh+1 << " " << in_chain->GetEntries() << " *******" << std::endl;
 
      for (UInt_t jEvt = 0; jEvt < in_chain->GetEntries(); jEvt++) {
+
+       if (jEvt%1000==0) std::cout << "******* About to loop on event " << jEvt << " *******" << std::endl;
        //!!! jEvt restarts from 0 in new chain
 
        //!!! iCh<1 important here: Protect against small MAX_TR setting
@@ -563,13 +566,12 @@ void PtRegression2019_GEM_SD ( TString myMethodList = "" ) {
          int i3=-99;
          int i4=-99;
 
-         std::cout << "Checking number of Track hits " << I("trk_nHits", iTrk) << std::endl;
-
          // added on 2019-11-05 per Andrew's suggestions
-         if ( I("trk_nHits", iTrk) != VI("trk_iHit", iTrk).size() ) {
+         if ( I("trk_nHits", iTrk) != VI("trk_iHit", iTrk).size() and false) {
 
-           std::cout << ">>>nHits " << I("trk_nHits", iTrk) << std::endl;
-           std::cout << ">>>tnHits2 " << VI("trk_iHit", iTrk).size() << std::endl;
+           std::cout << "Checking number of Track hits " << std::endl;
+           std::cout << ">>>trk_nHits " << I("trk_nHits", iTrk) << std::endl;
+           std::cout << ">>>trk_iHit.size " << VI("trk_iHit", iTrk).size() << std::endl;
            std::cout << ">>>mode_RPC " << I("trk_mode_RPC", iTrk)  << std::endl;
            std::cout << ">>>mode_CSC " << I("trk_mode_CSC", iTrk)  << std::endl;
 
@@ -580,10 +582,9 @@ void PtRegression2019_GEM_SD ( TString myMethodList = "" ) {
 
            int iHit = I("trk_iHit", iTrk, jhit);  // Access the index of each hit in the emtf track
 
-           std::cout << "\tChecking track hit " << iHit << " " << jhit
-                     << " isCSC " << I("hit_isCSC",iHit) << " "
-                     << " isGEM " << I("hit_isGEM",iHit) << std::endl;
-
+           // std::cout << "\tChecking track hit " << iHit << " " << jhit
+           //           << " isCSC " << I("hit_isCSC",iHit) << " "
+           //           << " isGEM " << I("hit_isGEM",iHit) << std::endl;
 
            // trk_nHits, VI("trk_iHit", iTrk).size(), trk_nRPC, and trk_mode_CSC
 
@@ -905,12 +906,12 @@ void PtRegression2019_GEM_SD ( TString myMethodList = "" ) {
            if ( (NonZBEvt % 2)==0 && mu_train && MODE > 0 ) {
              std::get<1>(factories.at(iFact))->AddTrainingEvent( "Regression", var_vals, evt_weight );
              if (iFact == 0) nTrain += 1;
-             std::cout << "Total events in training sample " << nTrain << std::endl;
+             // std::cout << "Total events in training sample " << nTrain << std::endl;
            }
            else {
              std::get<1>(factories.at(iFact))->AddTestEvent( "Regression", var_vals, evt_weight );
              if (iFact == 0) nTest += 1;
-             std::cout << "Total events in testing sample " << nTest << std::endl;
+             // std::cout << "Total events in testing sample " << nTest << std::endl;
            }
          } // End loop: for (UInt_t iFact = 0; iFact < factories.size(); iFact++)
 
