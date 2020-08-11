@@ -23,7 +23,6 @@ out_file  = TFile('Histograms.root','recreate')
 ## ================ Read input files, define Output file ======================
 dir1 = '/uscms/home/mdecaro/nobackup/BDTGEM/CMSSW_10_6_1_patch2/src/EMTFPtAssign2017/'
 
-print colored('Loading file: L1Ntuple.root', 'green')
 file_name = dir1+"EMTF_MC_NTuple_SingleMu_20200522.root" 
 evt_tree.Add(file_name)
 
@@ -41,18 +40,18 @@ h_1D_GE11ME11_pt5 = TH1D('h_1D_GE11ME11_pt5', '', 128, -0.17, 0.17) #pt < 5 GeV
 h_1D_GE11ME11_pt20to30 = TH1D('h_1D_GE11ME11_pt20to30', '', 128, -0.17, 0.17) #20 < pt < 30 GeV
 
 
-for iEvt in range(20000):
-#for iEvt in range(evt_tree.GetEntries()):
+for iEvt in range(2000000):
+#for iEvt in range(evt_tree.GetEntries()): #Full dataset is roughly 8 million events 
   if MAX_EVT > 0 and iEvt > MAX_EVT: break
   if iEvt % PRT_EVT is 0: print 'Event #', iEvt
   
   evt_tree.GetEntry(iEvt)
-  #if len(evt_tree.mu_pt) != 2: continue
 
   ME1p = 0 ; ME2p = 0 ; ME3p = 0 ; ME11p = 0 ; GE11p = 0 #Phi for hit in positive endcap
   ME1n = 0 ; ME2n = 0 ; ME3n = 0 ; ME11n = 0 ; GE11n = 0 #Phi for hit in negative endcap
 
   for i in range(len(evt_tree.hit_station)):
+
     '''
     #if evt_tree.hit_subsector[i] == 1 or evt_tree.hit_subsector[i] == 2:  #hit in ME1
     if evt_tree.hit_isCSC[i] == 1 and evt_tree.hit_station[i] == 1:
@@ -75,7 +74,7 @@ for iEvt in range(20000):
       if evt_tree.hit_eta[i]>0: ME11p = evt_tree.hit_phi[i] #Save ME11 hit in positive endcap
       if evt_tree.hit_eta[i]<0: ME11n = evt_tree.hit_phi[i] #Save ME11 hit in negative endcap
 
-    if evt_tree.hit_isGEM[i] == 1 and evt_tree.hit_station[i] == 1 and evt_tree.hit_ring[i] == 1:      #hit in GE1/1
+    if evt_tree.hit_isGEM[i] == 1 and evt_tree.hit_station[i] == 1 and evt_tree.hit_ring[i] == 1: #hit in GE11
       if evt_tree.hit_eta[i]>0: GE11p = evt_tree.hit_phi[i] #Save GE11 hit in positive endcap
       if evt_tree.hit_eta[i]<0: GE11n = evt_tree.hit_phi[i] #Save GE11 hit in negative endcap
 
