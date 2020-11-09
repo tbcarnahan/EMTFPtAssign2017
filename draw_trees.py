@@ -39,8 +39,7 @@ c1.SaveAs('plots/mu_pt.png')  #Save your plot into a folder named 'plots' (mkdir
 
 
 #If you want to draw and save -every- branch in the tree:
-#Note that this might not be a good idea if you want to apply
-#  selections to certain branches.
+#Note that this might not be a good idea if you want to apply selections to certain branches.
 '''
 for b in evt_tree.GetListOfBranches():
   c1 = TCanvas("c1")
@@ -50,7 +49,7 @@ for b in evt_tree.GetListOfBranches():
 
 
 '''
-#We can also apply selections to our plot. Some simple examples:
+#You can apply simple selections to whatever you plot. The selection is the second argument in tree.Draw()
 #Our muons go up to 1000 GeV, but let's try only plotting up to 100 GeV
 c1 = TCanvas("c1")
 evt_tree.Draw("mu_pt", "(mu_pt < 100)")
@@ -70,9 +69,7 @@ raw_input("Press Enter to continue")
 
 '''
 #If you don't like the default draw options (title, x-title, y-title,...)
-#Here is a way to adjust them. There isn't a simple option to do this,
-#   but you can define a 'dummy' histogram over your canvas that has 
-#   a different title or axes.
+#Here is a way to adjust them. There isn't a simple option to do this, but you can define a 'dummy' histogram over your canvas that has a different title or axes.
 c1 = TCanvas("c1")
 evt_tree.Draw("mu_pt")
 htemp = gPad.GetPrimitive("htemp")
