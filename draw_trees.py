@@ -66,6 +66,9 @@ evt_tree.Draw("hit_eta", "(hit_isCSC==1 && hit_station==1 && hit_ring==1)")
 raw_input("Press Enter to continue")
 '''
 
+h = TH1D("h","",32, -1,1)
+h.Fill(evt_tree.mu_eta)
+
 
 '''
 #If you don't like the default draw options (title, x-title, y-title,...)
