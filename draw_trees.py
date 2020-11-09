@@ -24,13 +24,13 @@ evt_tree.Add(file_name)
 
 ## ============== Plotting macro ==================
 '''
-#Print out the list of all branches in the TTree
+#Print out the list of all leaves in the TTree
 for b in evt_tree.GetListOfBranches():
   print ("branch:",b.GetName())
 '''
 
 
-#If you want to draw a single branch, for example the true muon pT:
+#If you want to draw a single leaf, for example the true muon pT:
 '''
 c1 = TCanvas("c1")
 evt_tree.Draw("mu_pt")
@@ -38,7 +38,7 @@ c1.SaveAs('plots/mu_pt.png')  #Save your plot into a folder named 'plots' (mkdir
 '''
 
 
-#If you want to draw and save -every- branch in the tree:
+#If you want to draw and save -every- leaf in the tree:
 #Note that this might not be a good idea if you want to apply selections to certain branches.
 '''
 for b in evt_tree.GetListOfBranches():
@@ -66,8 +66,6 @@ evt_tree.Draw("hit_eta", "(hit_isCSC==1 && hit_station==1 && hit_ring==1)")
 raw_input("Press Enter to continue")
 '''
 
-h = TH1D("h","",32, -1,1)
-h.Fill(evt_tree.mu_eta)
 
 
 '''
