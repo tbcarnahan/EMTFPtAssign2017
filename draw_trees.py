@@ -38,15 +38,6 @@ c1.SaveAs('plots/mu_pt.png')  #Save your plot into a folder named 'plots' (mkdir
 '''
 
 
-#If you want to draw and save -every- leaf in the tree:
-#Note that this might not be a good idea if you want to apply selections to certain branches.
-'''
-for b in evt_tree.GetListOfBranches():
-  c1 = TCanvas("c1")
-  evt_tree.Draw(b.GetName())
-  c1.SaveAs('plots/'+b.GetName()+'.png')
-'''
-
 
 '''
 #You can apply simple selections to whatever you plot. The selection is the second argument in tree.Draw()
@@ -66,6 +57,15 @@ evt_tree.Draw("hit_eta", "(hit_isCSC==1 && hit_station==1 && hit_ring==1)")
 raw_input("Press Enter to continue")
 '''
 
+
+#If you wanted to draw and save -every- leaf in the tree:
+#Note that this might not be a good idea if you want to apply selections to certain branches.
+'''
+for b in evt_tree.GetListOfBranches():
+  c1 = TCanvas("c1")
+  evt_tree.Draw(b.GetName())
+  c1.SaveAs('plots/'+b.GetName()+'.png')
+'''
 
 
 '''
