@@ -59,7 +59,7 @@ raw_input("Press Enter to continue")
 
 
 #If you wanted to draw and save -every- leaf in the tree:
-#Note that this might not be a good idea if you want to apply selections to certain branches.
+#Note that this might not be a good idea if you want to apply selections to certain plots.
 '''
 for b in evt_tree.GetListOfBranches():
   c1 = TCanvas("c1")
