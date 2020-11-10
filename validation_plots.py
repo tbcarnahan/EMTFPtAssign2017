@@ -11,25 +11,22 @@ from ROOT import gROOT
 
 ## ================ Settings=======================
 printouts_Run2=False
-printouts_Run3=False
 
 
 ## ================ Read input files ==============
 print '------> Importing Root File'
 dir1 = '/uscms/home/mdecaro/nobackup/BDTGEM/CMSSW_10_6_1_patch2/src/EMTFPtAssign2017/'
-#file_name = dir1+"PtRegression2018_MODE_15_noBitCompr_noRPC_noGEM.root" #BDT output file
-file_name = dir1+"EMTF_MC_NTuple_Run2stubs.root" #Input file w/ Run2 stubs
-file_name2 = dir1+"EMTF_MC_NTuple_20201106.root" #Input file w/ Run3 stubs
+file_name = dir1+"PtRegression2018_MODE_15_noBitCompr_noRPC_noGEM.root" #BDT output file
+#file_name = dir1+"EMTF_MC_NTuple_Run2stubs.root" #Input file w/ Run2 stubs
+#file_name2 = dir1+"EMTF_MC_NTuple_20201106.root" #Input file w/ Run3 stubs
 print colored('Loading file: '+file_name, 'green')
-print colored('Loading file: '+file_name2, 'green')
+#print colored('Loading file: '+file_name2, 'green')
 
 
 ## ============= Read in the TTrees ===============
-#evt_tree = TChain('f_MODE_15_logPtTarg_invPtWgt_noBitCompr_noRPC_noGEM/TestTree')
-evt_tree = TChain('FlatNtupleMC/tree') #Input NTuple tree
-evt_tree.Add(file_name)
-evt_tree2 = TChain('FlatNtupleMC/tree') #Input NTuple tree
-evt_tree2.Add(file_name2)
+evt_tree = TChain('f_MODE_15_logPtTarg_invPtWgt_noBitCompr_noRPC_noGEM/TestTree') ; evt_tree.Add(file_name)
+#evt_tree = TChain('FlatNtupleMC/tree') ;evt_tree.Add(file_name)
+#evt_tree2 = TChain('FlatNtupleMC/tree') ; evt_tree2.Add(file_name2)
 
 
 ## ========= Printouts for debugging ==============
@@ -46,6 +43,7 @@ if printouts_Run2==True:
     
 ## ============== Plotting macro ==================
 
+'''
 #Trigger efficiencies (How often do you trigger on a muon with pT > X)
 c1 = TCanvas("c1")
 
@@ -86,6 +84,7 @@ c1.Close()
 #graph.SetMaximum(1)
 ##c57.SaveAs("validation_november/eff_pt_csc.png")
 #raw_input("Enter")
+'''
 
 
 '''
@@ -131,8 +130,26 @@ c1.SaveAs("validation_november/ptres1D_log2genpt_minus_bdtpt_cutpt10.png")
 '''
 
 
-#An example of filling a branch to TH1D object.
+#BDT efficiency
+c1 = TCanvas("c1")
+evt_tree.Draw("GEN_pt>>h_denom(64,1.,50.)")
+h_denom=gROOT.FindObject("h_denom")
+c1.Update()
+evt_tree.Draw("GEN_pt>>h_numer(64,1.,50.)", "2**(BDTG_AWB_Sq)>5.")
+h_numer=gROOT.FindObject("h_numer")
+c1.Update()
+h_numer.Divide(h_denom)
+h_numer.SetTitle("BDT efficiency (p_{T}^{BDT} > 5 GeV)")
+h_numer.GetXaxis().SetTitle("p_{T} (GeV)")
+h_numer.Draw()
+c1.SaveAs("validation_november/BDTefficiency_pt5.png")
+raw_input("Enter")
+
+
+
+
 '''
+#An example of filling a branch to TH1D object.
 c1 = TCanvas("c1")
 evt_tree.Draw("hit_phi>>h1(64,-180.,180.)", "hit_station==1 && hit_isCSC==1 && hit_endcap>0" && hit_neighbor==0")
 h1=gROOT.FindObject("h1")
