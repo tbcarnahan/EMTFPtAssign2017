@@ -46,15 +46,14 @@ if printouts_Run2==True:
     
 ## ============== Plotting macro ==================
 
-
-#Trigger efficiency
+#Trigger efficiencies (How often do you trigger on a muon with pT > X)
 c1 = TCanvas("c1")
 
 #Using Run-2 stubs
 evt_tree.Draw("mu_pt>>h_denom(64,0.,50.)")
 h_denom=gROOT.FindObject("h_denom")
 c1.Update()
-evt_tree.Draw("mu_pt>>h_numer(64,0.,50.)", "trk_pt>30. && (mu_eta[0]*trk_eta>0 || mu_eta[1]*trk_eta>0) && trk_nNeighbor==0")
+evt_tree.Draw("mu_pt>>h_numer(64,0.,50.)", "trk_pt>20. && (mu_eta[0]*trk_eta>0 || mu_eta[1]*trk_eta>0) && trk_nNeighbor==0")
 h_numer=gROOT.FindObject("h_numer")
 c1.Update()
 
@@ -62,25 +61,25 @@ c1.Update()
 evt_tree2.Draw("mu_pt>>h_denom2(64,0.,50.)")
 h_denom2=gROOT.FindObject("h_denom2")
 c1.Update()
-evt_tree2.Draw("mu_pt>>h_numer2(64,0.,50.)", "trk_pt>10. && mu_pt>10. && (mu_eta[0]*trk_eta>0 || mu_eta[1]*trk_eta>0) && trk_nNeighbor==0")
+evt_tree2.Draw("mu_pt>>h_numer2(64,0.,50.)", "trk_pt>20. && (mu_eta[0]*trk_eta>0 || mu_eta[1]*trk_eta>0) && trk_nNeighbor==0")
 h_numer2=gROOT.FindObject("h_numer2")
 c1.Update()
 
 #Divide numer/denom histograms and plot efficiencies on the same canvas.
 h_numer.Divide(h_denom)
 h_numer2.Divide(h_denom2)
-h_numer.SetTitle("Trigger efficiency (p_{T}^{L1} > 30 GeV)")
+h_numer.SetTitle("Trigger efficiency (p_{T}^{L1} > 20 GeV)")
 h_numer.GetXaxis().SetTitle("p_{T} (GeV)")
 gStyle.SetOptStat(0)
 h_numer.Draw()
 h_numer2.SetLineColor(2)
 h_numer2.Draw("same")
-c1.SaveAs("validation_november/efficiency_pt30.png")
+c1.SaveAs("validation_november/efficiency_pt20.png")
 raw_input("Enter")
 c1.Close()
 
 
-#Using TEfficiency instead:
+##Using TEfficiency instead:
 #eff = TEfficiency(h_numer, h_denom)
 #eff.Draw()
 ##eff.SetTitle('ME1/1 Trigger Efficiency vs p_{T}^{GEN} (1.6 < |#eta^{GEN}| < 2.1)')
