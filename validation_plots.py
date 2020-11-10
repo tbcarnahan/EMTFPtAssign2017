@@ -25,7 +25,7 @@ print colored('Loading file: '+file_name2, 'green')
 
 
 ## ============= Read in the TTrees ===============
-#evt_tree = TChain('f_MODE_15_logPtTarg_invPtWgt_noBitCompr_noRPC_noGEM/TrainTree')
+#evt_tree = TChain('f_MODE_15_logPtTarg_invPtWgt_noBitCompr_noRPC_noGEM/TestTree')
 evt_tree = TChain('FlatNtupleMC/tree') #Input NTuple tree
 evt_tree.Add(file_name)
 evt_tree2 = TChain('FlatNtupleMC/tree') #Input NTuple tree
@@ -46,6 +46,7 @@ if printouts_Run2==True:
     
 ## ============== Plotting macro ==================
 
+
 #Trigger efficiency
 c1 = TCanvas("c1")
 
@@ -57,18 +58,18 @@ evt_tree.Draw("mu_pt>>h_numer(64,0.,50.)", "trk_pt>30. && (mu_eta[0]*trk_eta>0 |
 h_numer=gROOT.FindObject("h_numer")
 c1.Update()
 
-#Using Run-3 stubs
+##Using Run-3 stubs
 evt_tree2.Draw("mu_pt>>h_denom2(64,0.,50.)")
 h_denom2=gROOT.FindObject("h_denom2")
 c1.Update()
-evt_tree2.Draw("mu_pt>>h_numer2(64,0.,50.)", "trk_pt>30. && (mu_eta[0]*trk_eta>0 || mu_eta[1]*trk_eta>0) && trk_nNeighbor==0")
+evt_tree2.Draw("mu_pt>>h_numer2(64,0.,50.)", "trk_pt>10. && mu_pt>10. && (mu_eta[0]*trk_eta>0 || mu_eta[1]*trk_eta>0) && trk_nNeighbor==0")
 h_numer2=gROOT.FindObject("h_numer2")
 c1.Update()
 
 #Divide numer/denom histograms and plot efficiencies on the same canvas.
 h_numer.Divide(h_denom)
 h_numer2.Divide(h_denom2)
-h_numer.SetTitle("Trigger efficiency (L1 p_{T} > 30 GeV)")
+h_numer.SetTitle("Trigger efficiency (p_{T}^{L1} > 30 GeV)")
 h_numer.GetXaxis().SetTitle("p_{T} (GeV)")
 gStyle.SetOptStat(0)
 h_numer.Draw()
@@ -76,6 +77,19 @@ h_numer2.SetLineColor(2)
 h_numer2.Draw("same")
 c1.SaveAs("validation_november/efficiency_pt30.png")
 raw_input("Enter")
+c1.Close()
+
+
+#Using TEfficiency instead:
+#eff = TEfficiency(h_numer, h_denom)
+#eff.Draw()
+##eff.SetTitle('ME1/1 Trigger Efficiency vs p_{T}^{GEN} (1.6 < |#eta^{GEN}| < 2.1)')
+#gPad.Update()
+#graph = eff.GetPaintedGraph()
+#graph.SetMinimum(0)
+#graph.SetMaximum(1)
+##c57.SaveAs("validation_november/eff_pt_csc.png")
+#raw_input("Enter")
 
 
 '''
@@ -87,17 +101,16 @@ htemp.SetTitle("p_{T} resolution: log2(p_{T}^{BDT}) vs log2(p_{T}^{GEN})")
 htemp.GetXaxis().SetTitle("log2(p_{T}^{GEN})") ; htemp.GetYaxis().SetTitle("log2(p_{T}^{BDT})")
 htemp.SetAxisRange(0.,11., "Y")
 gPad.Update()
-c1.SaveAs("validation_november/ptres1D_log2gen_bdt.png")
-raw_input("Enter")
+c1.SaveAs("validation_november/ptres2D_log2gen_bdt.png")
 
 #Plot the difference of log2(gen_pt) - BDT pt
 c1 = TCanvas("c1")
-evt_tree.Draw("log(GEN_pt) - BDTG_AWB_Sq", "GEN_pt<10")
+evt_tree.Draw("log(GEN_pt) - BDTG_AWB_Sq", "")
 htemp = gPad.GetPrimitive("htemp")
 htemp.SetTitle("p_{T} resolution: log2(p_{T}^{GEN}) - log2(p_{T}^{BDT})")
 htemp.GetXaxis().SetTitle("log2(p_{T}^{GEN}) - log2(p_{T}^{BDT}))")
 gPad.Update()
-c1.SaveAs("validation_november/ptres1D_log2gen_bdt.png")
+c1.SaveAs("validation_november/ptres1D_log2genpt_minus_bdtpt.png")
 
 
 #With pt cuts
@@ -109,8 +122,7 @@ htemp.SetTitle("p_{T} resolution: log2(p_{T}^{BDT}) vs log2(p_{T}^{GEN}) (p_{T}^
 htemp.GetXaxis().SetTitle("log2(p_{T}^{GEN})") ; htemp.GetYaxis().SetTitle("log2(p_{T}^{BDT})")
 htemp.SetAxisRange(0.,11., "Y")
 gPad.Update()
-c1.SaveAs("validation_november/ptres1D_log2gen_bdt_genpt10.png")
-raw_input("Enter")
+c1.SaveAs("validation_november/ptres2D_log2gen_bdt_cutpt10.png")
 
 #Plot the difference of log2(gen_pt) - BDT pt
 c1 = TCanvas("c1")
@@ -119,7 +131,7 @@ htemp = gPad.GetPrimitive("htemp")
 htemp.SetTitle("p_{T} resolution: log2(p_{T}^{GEN}) - log2(p_{T}^{BDT}) (p_{T}^{GEN} < 10)")
 htemp.GetXaxis().SetTitle("log2(p_{T}^{GEN}) - log2(p_{T}^{BDT}))")
 gPad.Update()
-c1.SaveAs("validation_november/ptres1D_log2gen_bdt_genpt10.png")
+c1.SaveAs("validation_november/ptres1D_log2genpt_minus_bdtpt_cutpt10.png")
 '''
 
 
