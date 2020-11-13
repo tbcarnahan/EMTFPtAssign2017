@@ -1,5 +1,6 @@
 // *** User *** ///
-const TString USER = "Sven";  // Settings applied in User.h
+//const TString USER = "Sven";  // Settings applied in User.h
+const TString USER = "Matthew";
 
 // *** Events to process *** //
 const int MAX_TR = 6000000;  // MAX # of events for training

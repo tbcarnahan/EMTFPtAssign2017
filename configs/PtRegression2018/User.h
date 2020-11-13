@@ -1,9 +1,10 @@
 // *** Default user settings *** //
-TString EOS_DIR_NAME  = "root://eoscms.cern.ch//store/user/abrinke1/EMTF/Emulator/ntuples";  // Input directory in
-TString in_dir = "Ntuples/";
+TString EOS_DIR_NAME  = "/uscms/home/mdecaro/nobackup/BDTGEM/CMSSW_10_6_1_patch2/src/EMTFPtAssign2017";  // Input directory in
+TString in_dir = "";
 TString SingleMu_files[1] = {
-"EMTF_MC_NTtuple_Run3stubs.root"
+"EMTF_MC_NTuple_Run3stubs.root"
 };
+
 TString ZeroBias_files[1] = {
 	"NTuple_ZeroBias_FlatNtuple_2019_01_09_ZeroBias_PU50_Sep24_FW.root"
 };
