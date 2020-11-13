@@ -294,8 +294,8 @@ void PtRegression2019_GEM_SD ( TString myMethodList = "" ) {
    in_vars.push_back( MVA_var( "EMTF_pt",       "EMTF p_{T}",        "",    'F', -88 ) ); // 0x1000 0000
 
    // new GEM-CSC bending angle
-   in_vars.push_back( MVA_var( "dPhi_GE11_ME11", "#phi(GE11) - #phi(ME11)", "", 'F', -88 ) ); // 0x1 0000 0000
-   in_vars.push_back( MVA_var( "GEM_1",   "St 1 hit is GEM",       "int", 'I', -88 ) ); // 0x1 0000 0000
+   //in_vars.push_back( MVA_var( "dPhi_GE11_ME11", "#phi(GE11) - #phi(ME11)", "", 'F', -88 ) ); // 0x1 0000 0000
+   //in_vars.push_back( MVA_var( "GEM_1",   "St 1 hit is GEM",       "int", 'I', -88 ) ); // 0x1 0000 0000
 
    /*
    if (USE_RPC) {
@@ -850,8 +850,8 @@ void PtRegression2019_GEM_SD ( TString myMethodList = "" ) {
                    if ( vName == "RPC_3" ) var_vals.at(iVar) = RPC3;
                    if ( vName == "RPC_4" ) var_vals.at(iVar) = RPC4;
 
-                   if ( vName == "GEM_1" ) var_vals.at(iVar) = GE11;
-                   if ( vName == "dPhi_GE11_ME11" ) var_vals.at(iVar) = dPhGE11ME11;
+                   //if ( vName == "GEM_1" ) var_vals.at(iVar) = GE11;
+                   //if ( vName == "dPhi_GE11_ME11" ) var_vals.at(iVar) = dPhGE11ME11;
                    // if ( vName == "ph_GE11" ) var_vals.at(iVar) = phGE11;
 
                    //////////////////////////////
