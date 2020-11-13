@@ -16,13 +16,12 @@ printouts=False
 ## ================ Read input files ====
 print '------> Importing Root File'
 dir1 = '/uscms/home/mdecaro/nobackup/BDTGEM/CMSSW_10_6_1_patch2/src/EMTFPtAssign2017/'
-file_name = dir1+"EMTF_MC_NTuple_Run3stubs_2.root" #Input file w/ Run3 stubs
+file_name = dir1+"EMTF_MC_NTuple_Run3stubs_2.root"
 print colored('Loading file: '+file_name, 'green')
 
 
 ## ============= Read in the TTrees ======
 evt_tree = TChain('FlatNtupleMC/tree') ; evt_tree.Add(file_name)
-#evt_tree2 = TChain('tree') ; evt_tree2.Add(file_name)
 
 ## ============= Printouts ===============
 if printouts==True:
@@ -37,13 +36,13 @@ if printouts==True:
       if evt_tree.hit_station[i]==3: print evt_tree.hit_phi[i], evt_tree.hit_neighbor[i], evt_tree.hit_quality[i]
     print '------Next event------'
 
-## ============== Add branch macro ================
+
+## ============== Macro to add a branch ================
 
 outfile = TFile(file_name, "update")
 
 hit_phi_St1 = array( 'f', [0.,0.]) ; hit_phi_St2 = array( 'f', [0.,0.]) ; hit_phi_St3 = array( 'f', [0.,0.]) ; hit_phi_St4 = array( 'f', [0.,0.])
-mytree = TTree('tree', 'tree')
-#mytree.SetEntries(evt_tree.GetEntries())
+mytree = TTree('FlatNtupleMC', 'tree')
 mytree.SetEntries(500000)
 
 hit_St1_br = mytree.Branch("hit_phi_St1", hit_phi_St1, 'hit_phi_St1/F')
@@ -55,6 +54,7 @@ hit_St4_br = mytree.Branch("hit_phi_St4", hit_phi_St4, 'hit_phi_St4/F')
 for iEvt in range(500000):
   evt_tree.GetEntry(iEvt)
 
+  #hit_phi_St1 = array( 'f', [0.,0.]) ; hit_phi_St2 = array( 'f', [0.,0.]) ; hit_phi_St3 = array( 'f', [0.,0.]) ; hit_phi_St4 = array( 'f', [0.,0.])
   for i in range(len(evt_tree.hit_phi)):
     if evt_tree.hit_station[i]==1 and evt_tree.hit_endcap[i]>0: hit_phi_St1[0] = evt_tree.hit_phi[i]
     if evt_tree.hit_station[i]==1 and evt_tree.hit_endcap[i]<0: hit_phi_St1[1] = evt_tree.hit_phi[i]
