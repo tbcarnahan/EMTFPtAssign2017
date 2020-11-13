@@ -55,6 +55,7 @@ for iEvt in range(500000):
   evt_tree.GetEntry(iEvt)
 
   #hit_phi_St1 = array( 'f', [0.,0.]) ; hit_phi_St2 = array( 'f', [0.,0.]) ; hit_phi_St3 = array( 'f', [0.,0.]) ; hit_phi_St4 = array( 'f', [0.,0.])
+  #If there is a hit in the +endcap, fill it to the first element of the array. If -endcap, fill second element.
   for i in range(len(evt_tree.hit_phi)):
     if evt_tree.hit_station[i]==1 and evt_tree.hit_endcap[i]>0: hit_phi_St1[0] = evt_tree.hit_phi[i]
     if evt_tree.hit_station[i]==1 and evt_tree.hit_endcap[i]<0: hit_phi_St1[1] = evt_tree.hit_phi[i]
@@ -66,6 +67,7 @@ for iEvt in range(500000):
     if evt_tree.hit_station[i]==4 and evt_tree.hit_endcap[i]<0: hit_phi_St4[1] = evt_tree.hit_phi[i]
   
 
+  #Fill the branches.
   hit_St1_br.Fill() ; hit_St2_br.Fill() ; hit_St3_br.Fill() ; hit_St4_br.Fill() ;
 
 outfile.Write() ; outfile.Close()
