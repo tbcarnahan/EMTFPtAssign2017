@@ -16,7 +16,7 @@ printouts=False
 ## ================ Read input files ====
 print '------> Importing Root File'
 dir1 = '/uscms/home/mdecaro/nobackup/BDTGEM/CMSSW_10_6_1_patch2/src/EMTFPtAssign2017/'
-file_name = dir1+"EMTF_MC_NTuple_Run3stubs_2.root"
+file_name = dir1+"EMTF_MC_NTuple_Run3stubs_backup.root"
 print colored('Loading file: '+file_name, 'green')
 
 
@@ -43,32 +43,33 @@ outfile = TFile(file_name, "update")
 
 hit_phi_St1 = array( 'f', [0.,0.]) ; hit_phi_St2 = array( 'f', [0.,0.]) ; hit_phi_St3 = array( 'f', [0.,0.]) ; hit_phi_St4 = array( 'f', [0.,0.])
 mytree = TTree('FlatNtupleMC', 'tree')
-mytree.SetEntries(500000)
+mytree.SetEntries(10000)
 
 hit_St1_br = mytree.Branch("hit_phi_St1", hit_phi_St1, 'hit_phi_St1/F')
-hit_St2_br = mytree.Branch("hit_phi_St2", hit_phi_St2, 'hit_phi_St2/F')
-hit_St3_br = mytree.Branch("hit_phi_St3", hit_phi_St3, 'hit_phi_St3/F')
-hit_St4_br = mytree.Branch("hit_phi_St4", hit_phi_St4, 'hit_phi_St4/F')
+#hit_St2_br = mytree.Branch("hit_phi_St2", hit_phi_St2, 'hit_phi_St2/F')
+#hit_St3_br = mytree.Branch("hit_phi_St3", hit_phi_St3, 'hit_phi_St3/F')
+#hit_St4_br = mytree.Branch("hit_phi_St4", hit_phi_St4, 'hit_phi_St4/F')
 
 #for iEvt in range(evt_tree.GetEntries()):
-for iEvt in range(500000):
+for iEvt in range(10000):
   evt_tree.GetEntry(iEvt)
 
-  #hit_phi_St1 = array( 'f', [0.,0.]) ; hit_phi_St2 = array( 'f', [0.,0.]) ; hit_phi_St3 = array( 'f', [0.,0.]) ; hit_phi_St4 = array( 'f', [0.,0.])
+  hit_phi_St1 = array( 'f', [0.,0.]) ; hit_phi_St2 = array( 'f', [0.,0.]) ; hit_phi_St3 = array( 'f', [0.,0.]) ; hit_phi_St4 = array( 'f', [0.,0.])
+  hit_St1_br = mytree.Branch("hit_phi_St1", hit_phi_St1, 'hit_phi_St1/F')
   #If there is a hit in the +endcap, fill it to the first element of the array. If -endcap, fill second element.
   for i in range(len(evt_tree.hit_phi)):
     if evt_tree.hit_station[i]==1 and evt_tree.hit_endcap[i]>0: hit_phi_St1[0] = evt_tree.hit_phi[i]
     if evt_tree.hit_station[i]==1 and evt_tree.hit_endcap[i]<0: hit_phi_St1[1] = evt_tree.hit_phi[i]
-    if evt_tree.hit_station[i]==2 and evt_tree.hit_endcap[i]>0: hit_phi_St2[0] = evt_tree.hit_phi[i]
-    if evt_tree.hit_station[i]==2 and evt_tree.hit_endcap[i]<0: hit_phi_St2[1] = evt_tree.hit_phi[i]
-    if evt_tree.hit_station[i]==3 and evt_tree.hit_endcap[i]>0: hit_phi_St3[0] = evt_tree.hit_phi[i]
-    if evt_tree.hit_station[i]==3 and evt_tree.hit_endcap[i]<0: hit_phi_St3[1] = evt_tree.hit_phi[i]
-    if evt_tree.hit_station[i]==4 and evt_tree.hit_endcap[i]>0: hit_phi_St4[0] = evt_tree.hit_phi[i]
-    if evt_tree.hit_station[i]==4 and evt_tree.hit_endcap[i]<0: hit_phi_St4[1] = evt_tree.hit_phi[i]
+    #if evt_tree.hit_station[i]==2 and evt_tree.hit_endcap[i]>0: hit_phi_St2[0] = evt_tree.hit_phi[i]
+    #if evt_tree.hit_station[i]==2 and evt_tree.hit_endcap[i]<0: hit_phi_St2[1] = evt_tree.hit_phi[i]
+    #if evt_tree.hit_station[i]==3 and evt_tree.hit_endcap[i]>0: hit_phi_St3[0] = evt_tree.hit_phi[i]
+    #if evt_tree.hit_station[i]==3 and evt_tree.hit_endcap[i]<0: hit_phi_St3[1] = evt_tree.hit_phi[i]
+    #if evt_tree.hit_station[i]==4 and evt_tree.hit_endcap[i]>0: hit_phi_St4[0] = evt_tree.hit_phi[i]
+    #if evt_tree.hit_station[i]==4 and evt_tree.hit_endcap[i]<0: hit_phi_St4[1] = evt_tree.hit_phi[i]
   
 
   #Fill the branches.
-  hit_St1_br.Fill() ; hit_St2_br.Fill() ; hit_St3_br.Fill() ; hit_St4_br.Fill() ;
+  hit_St1_br.Fill()# ; hit_St2_br.Fill() ; hit_St3_br.Fill() ; hit_St4_br.Fill() ;
 
 outfile.Write() ; outfile.Close()
 
