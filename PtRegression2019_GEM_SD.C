@@ -558,8 +558,9 @@ void PtRegression2019_GEM_SD ( TString myMethodList = "" ) {
          int i3=-99;
          int i4=-99;
 
-         std::cout << "Checking number of Track hits " << I("trk_nHits", iTrk) << std::endl;
+         //std::cout << "Checking number of Track hits " << I("trk_nHits", iTrk) << std::endl;
 
+	 /*
          // added on 2019-11-05 per Andrew's suggestions
          if ( I("trk_nHits", iTrk) != VI("trk_iHit", iTrk).size() ) {
 
@@ -570,15 +571,18 @@ void PtRegression2019_GEM_SD ( TString myMethodList = "" ) {
 
            continue;
          }
+	 */
+
 
          for (int jhit = 0; jhit < I("trk_nHits", iTrk); jhit++) {
 
            int iHit = I("trk_iHit", iTrk, jhit);  // Access the index of each hit in the emtf track
 
+	   /*
            std::cout << "Checking track hit " << iHit << " " << jhit
                      << " isCSC " << I("hit_isCSC",iHit) << " "
                      << " isGEM " << I("hit_isGEM",iHit) << std::endl;
-
+	   */
 
            // trk_nHits, VI("trk_iHit", iTrk).size(), trk_nRPC, and trk_mode_CSC
 
@@ -899,12 +903,12 @@ void PtRegression2019_GEM_SD ( TString myMethodList = "" ) {
            if ( (NonZBEvt % 2)==0 && mu_train && MODE > 0 ) {
              std::get<1>(factories.at(iFact))->AddTrainingEvent( "Regression", var_vals, evt_weight );
              if (iFact == 0) nTrain += 1;
-             std::cout << "Total events in training sample " << nTrain << std::endl;
+             //std::cout << "Total events in training sample " << nTrain << std::endl;
            }
            else {
              std::get<1>(factories.at(iFact))->AddTestEvent( "Regression", var_vals, evt_weight );
              if (iFact == 0) nTest += 1;
-             std::cout << "Total events in testing sample " << nTest << std::endl;
+             //std::cout << "Total events in testing sample " << nTest << std::endl;
            }
          } // End loop: for (UInt_t iFact = 0; iFact < factories.size(); iFact++)
 
