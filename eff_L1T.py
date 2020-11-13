@@ -63,7 +63,7 @@ for iEvt in range(500000):
     
     for j in range(len(evt_tree.trk_pt)):
 
-      #Fill histogram numerators by looking for a Level-1 match (Same endcap, ignore duplicated L1 muons using nNeighbor)
+      #Fill histogram numerators by looking for a Level-1 match (Same endcap as true muon, ignore duplicated L1 muons using nNeighbor)
       if evt_tree.mu_eta[i]*evt_tree.trk_eta[j]>0 and abs(evt_tree.mu_eta[i])>1.0 and abs(evt_tree.mu_eta[i])<2.5:
 	if evt_tree.trk_pt[j]>20. and evt_tree.trk_nNeighbor[j]==0: h_pt_numer.Fill(evt_tree.mu_pt[i])
 	if evt_tree.trk_pt[j]>20. and evt_tree.mu_pt[i]>20. and evt_tree.trk_nNeighbor[j]==0: h_eta_numer.Fill(evt_tree.mu_eta[i])
