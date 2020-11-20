@@ -67,11 +67,9 @@ for iEvt in range(50000):
   #Write a short code that picks out specific station LCTs and subtract to get position bending.
   for j in range(len(evt_tree.mu_pt)):
     ME1_phi=0 ; ME2_phi=0 ; ME3_phi=0 ; ME4_phi=0
-    '''
-    pattern_ME1=0 ; pattern_ME2=0 ; pattern_ME3=0 ; pattern_ME4=0
-    ME1_theta=0 ; ME2_theta=0 ; ME3heta_p=0 ; ME4heta_p=0
-    '''
-
+    #pattern_ME1=0 ; pattern_ME2=0 ; pattern_ME3=0 ; pattern_ME4=0
+    #ME1_theta=0 ; ME2_theta=0 ; ME3heta_p=0 ; ME4heta_p=0
+    
     for i in range(len(evt_tree.hit_station)):
       #If running over low pT muons, uncomment pT cut.
       if evt_tree.hit_neighbor[i]==0 and evt_tree.hit_isCSC[i]==1 and evt_tree.hit_eta[i]*evt_tree.mu_eta[j]>0:# and evt_tree.mu_pt[j]<=15:
@@ -110,18 +108,15 @@ for iEvt in range(50000):
     if (ME3_phi * ME4_phi * pattern_ME3)!=0: h_dPhi34_patternME3.Fill(pattern_ME3, (ME3_phi - ME4_phi)*np.pi/180.)
     if (ME3_phi * ME4_phi * pattern_ME4)!=0: h_dPhi34_patternME4.Fill(pattern_ME4, (ME3_phi - ME4_phi)*np.pi/180.)
 
-
     #Fill dPhi bendings into 1D histograms.
     if (ME1_phi * ME2_phi)!=0: h_dPhi12.Fill((ME1_phi - ME2_phi)*np.pi/180.)
     if (ME2_phi * ME3_phi)!=0: h_dPhi23.Fill((ME2_phi - ME3_phi)*np.pi/180.)
     if (ME3_phi_* ME4_phi)!=0: h_dPhi34.Fill((ME3_phi - ME4_phi)*np.pi/180.)
 
-  
     #dTheta bendings 1D histograms.
     if (ME1_theta * ME2_theta)!=0: h_dTheta12.Fill((ME1_theta - ME2_theta)*np.pi/180.)
     if (ME2_theta * ME3_theta)!=0: h_dTheta23.Fill((ME2_theta - ME3_theta)*np.pi/180.)
     if (ME3_theta * ME4_theta)!=0: h_dTheta34.Fill((ME3_theta - ME4_theta)*np.pi/180.)
-
 
     #Phi-position bending vs pT 2D histograms.
     if (ME1_phi * ME2_phi)!=0: h_dPhi12_pt.Fill(evt_tree.mu_pt[j], (ME1_phi - ME2_phi)*np.pi/180.)
@@ -174,7 +169,7 @@ c1.Close()
 
 '''
 #-------------------------------------
-#2D correlations of phi-position bending and pattern
+#2D correlation of phi-position bending and pattern
 #-------------------------------------
 c1 = TCanvas( 'c1', '', 200, 10, 700, 500)
 h_dPhi12_patternME1.Draw("colz")
@@ -187,60 +182,6 @@ c1.SaveAs('validation_november/dPhi12_patternME1_pt15.png')
 #raw_input("Enter")
 c1.Close()
 
-c1 = TCanvas( 'c1', '', 200, 10, 700, 500)
-h_dPhi12_patternME2.Draw("colz")
-gStyle.SetOptStat(0)
-gPad.SetLogz()
-h_dPhi12_patternME2.SetTitle('dPhi_{12} vs ME2 CLCT Pattern')
-h_dPhi12_patternME2.GetXaxis().SetTitle('Pattern') ; h_dPhi12_patternME2.GetYaxis().SetTitle('dPhi_{12} (radians)')
-h_dPhi12_patternME2.Write()
-c1.SaveAs('validation_november/dPhi12_patternME2_pt15.png')
-#raw_input("Enter")
-c1.Close()
-
-c1 = TCanvas( 'c1', '', 200, 10, 700, 500)
-h_dPhi23_patternME2.Draw("colz")
-gStyle.SetOptStat(0)
-gPad.SetLogz()
-h_dPhi23_patternME2.SetTitle('dPhi_{23} vs ME2 CLCT Pattern')
-h_dPhi23_patternME2.GetXaxis().SetTitle('Pattern') ; h_dPhi23_patternME2.GetYaxis().SetTitle('dPhi_{23} (radians)')
-h_dPhi23_patternME2.Write()
-c1.SaveAs('validation_november/dPhi23_patternME2_pt15.png')
-#raw_input("Enter")
-c1.Close()
-
-c1 = TCanvas( 'c1', '', 200, 10, 700, 500)
-h_dPhi23_patternME3.Draw("colz")
-gStyle.SetOptStat(0)
-gPad.SetLogz()
-h_dPhi23_patternME3.SetTitle('dPhi_{23} vs ME3 CLCT Pattern')
-h_dPhi23_patternME3.GetXaxis().SetTitle('Pattern') ; h_dPhi23_patternME3.GetYaxis().SetTitle('dPhi_{23} (radians)')
-h_dPhi23_patternME3.Write()
-c1.SaveAs('validation_november/dPhi23_patternME3_pt15.png')
-#raw_input("Enter")
-c1.Close()
-
-c1 = TCanvas( 'c1', '', 200, 10, 700, 500)
-h_dPhi34_patternME3.Draw("colz")
-gStyle.SetOptStat(0)
-gPad.SetLogz()
-h_dPhi34_patternME3.SetTitle('dPhi_{34} vs ME3 CLCT Pattern')
-h_dPhi34_patternME3.GetXaxis().SetTitle('Pattern') ; h_dPhi34_patternME3.GetYaxis().SetTitle('dPhi_{34} (radians)')
-h_dPhi34_patternME3.Write()
-c1.SaveAs('validation_november/dPhi34_patternME3_pt15.png')
-#raw_input("Enter")
-c1.Close()
-
-c1 = TCanvas( 'c1', '', 200, 10, 700, 500)
-h_dPhi34_patternME4.Draw("colz")
-gStyle.SetOptStat(0)
-gPad.SetLogz()
-h_dPhi34_patternME4.SetTitle('dPhi_{34} vs ME4 CLCT Pattern')
-h_dPhi34_patternME4.GetXaxis().SetTitle('Pattern') ; h_dPhi34_patternME4.GetYaxis().SetTitle('dPhi_{34} (radians)')
-h_dPhi34_patternME4.Write()
-c1.SaveAs('validation_november/dPhi34_patternME4_pt15.png')
-#raw_input("Enter")
-c1.Close()
 
 #-------------------------------------
 #2D Correlations of dPhi position bend and pT.
@@ -255,29 +196,10 @@ h_dPhi12_pt.Write()
 c1.SaveAs('validation_november/dPhi12_pt.png')
 #raw_input("Enter")
 
-c1 = TCanvas( 'c1', '', 200, 10, 700, 500)
-h_dPhi23_pt.Draw("colz")
-gStyle.SetOptStat(0)
-h_dPhi23_pt.SetTitle('dPhi_{23} vs p_{T}^{GEN}')
-h_dPhi23_pt.GetXaxis().SetTitle('p_{T} (GeV)') ; h_dPhi23_pt.GetYaxis().SetTitle('dPhi_{23} (radians)')
-h_dPhi23_pt.SetOption("colz")
-h_dPhi23_pt.Write()
-c1.SaveAs('validation_november/dPhi23_pt.png')
-#raw_input("Enter")
-
-c1 = TCanvas( 'c1', '', 200, 10, 700, 500)
-h_dPhi34_pt.Draw("colz")
-gStyle.SetOptStat(0)
-h_dPhi34_pt.SetTitle('dPhi_{34} vs p_{T}^{GEN}')
-h_dPhi34_pt.GetXaxis().SetTitle('p_{T} (GeV)') ; h_dPhi34_pt.GetYaxis().SetTitle('dPhi_{34} (radians)')
-h_dPhi34_pt.SetOption("colz")
-h_dPhi34_pt.Write()
-c1.SaveAs('validation_november/dPhi34_pt.png')
-#raw_input("Enter")
 
 
 #-------------------------------------
-#2D Correlations of dTheta and pT.
+#2D Correlation of dTheta and pT.
 #-------------------------------------
 c1 = TCanvas( 'c1', '', 200, 10, 700, 500)
 h_dTheta12_pt.Draw("colz")
@@ -289,26 +211,6 @@ h_dTheta12_pt.Write()
 c1.SaveAs('validation_november/dTheta12_pt.png')
 #raw_input("Enter")
 
-c1 = TCanvas( 'c1', '', 200, 10, 700, 500)
-h_dTheta23_pt.Draw("colz")
-gStyle.SetOptStat(0)
-h_dTheta23_pt.SetTitle('dTheta_{23} vs p_{T}^{GEN}')
-h_dTheta23_pt.GetXaxis().SetTitle('p_{T} (GeV)') ; h_dTheta23_pt.GetYaxis().SetTitle('dTheta_{23} (radians)')
-h_dTheta23_pt.SetOption("colz")
-h_dTheta23_pt.Write()
-c1.SaveAs('validation_november/dTheta23_pt.png')
-#raw_input("Enter")
-
-c1 = TCanvas( 'c1', '', 200, 10, 700, 500)
-h_dTheta34_pt.Draw("colz")
-gStyle.SetOptStat(0)
-h_dTheta34_pt.SetTitle('dTheta_{34} vs p_{T}^{GEN}')
-h_dTheta34_pt.GetXaxis().SetTitle('p_{T} (GeV)') ; h_dTheta34_pt.GetYaxis().SetTitle('dTheta_{34} (radians)')
-h_dTheta34_pt.SetOption("colz")
-h_dTheta34_pt.Write()
-c1.SaveAs('validation_november/dTheta34_pt.png')
-#raw_input("Enter")
-
 
 
 #-------------------------------------
@@ -318,24 +220,8 @@ c1.SaveAs('validation_november/dTheta34_pt.png')
 #h_dTheta12.Draw()
 #h_dTheta12.SetTitle('dTheta_{12} (radians)')
 #c1.SaveAs('validation_november/dTheta12.png')
-##raw_input("Enter")
+#raw_input("Enter")
 
-#c1 = TCanvas( 'c1', '', 200, 10, 700, 500)
-#h_dTheta23.Draw()
-#h_dTheta23.SetTitle('dTheta_{23} (radians)')
-#c1.SaveAs('validation_november/dTheta23.png')
-##raw_input("Enter")
-
-#c1 = TCanvas( 'c1', '', 200, 10, 700, 500)
-#h_dTheta34.Draw()
-#h_dTheta34.SetTitle('dTheta_{34} (radians)')
-#c1.SaveAs('validation_november/dTheta34.png')
-##raw_input("Enter")
-
-c1 = TCanvas( 'c1', '', 200, 10, 700, 500)
-h_mode.Draw()
-h_mode.SetTitle('Track mode occupancy (p_{T}^{GEN} < 5 GeV)')
-c1.SaveAs('validation_november/mode_pt5.png')
 
 #Plots for CLCT patterns per ME station
 c1 = TCanvas( 'c1', '', 200, 10, 700, 500)
@@ -344,21 +230,4 @@ h_patterns_ME1.SetTitle('ME1 CLCT pattern occupany (p_{T}^{GEN} < 5 GeV)')
 c1.SaveAs('validation_november/patterns_ME1_pt5.png')
 #raw_input("Enter")
 
-c1 = TCanvas( 'c1', '', 200, 10, 700, 500)
-h_patterns_ME2.Draw()
-h_patterns_ME2.SetTitle('ME2 CLCT pattern occupany (p_{T}^{GEN} < 5 GeV)')
-c1.SaveAs('validation_november/patterns_ME2_pt5.png')
-#raw_input("Enter")
-
-c1 = TCanvas( 'c1', '', 200, 10, 700, 500)
-h_patterns_ME3.Draw()
-h_patterns_ME3.SetTitle('ME3 CLCT pattern occupany (p_{T}^{GEN} < 5 GeV)')
-c1.SaveAs('validation_november/patterns_ME3_pt5.png')
-#raw_input("Enter")
-
-c1 = TCanvas( 'c1', '', 200, 10, 700, 500)
-h_patterns_ME4.Draw()
-h_patterns_ME4.SetTitle('ME4 CLCT pattern occupany (p_{T}^{GEN} < 5 GeV)')
-c1.SaveAs('validation_november/patterns_ME4_pt5.png')
-#raw_input("Enter")
 '''
