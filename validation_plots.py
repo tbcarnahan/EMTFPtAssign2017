@@ -16,17 +16,18 @@ printouts_Run2=False
 ## ================ Read input files ==============
 print '------> Importing Root File'
 dir1 = '/uscms/home/mdecaro/nobackup/BDTGEM/CMSSW_10_6_1_patch2/src/EMTFPtAssign2017/'
-file_name = dir1+"PtRegression2018_MODE_15_noBitCompr_noRPC_noGEM.root" #BDT output file
+#file_name = dir1+"PtRegression2018_MODE_15_noBitCompr_noRPC_noGEM.root" #BDT output file
 #file_name = dir1+"EMTF_MC_NTuple_Run2stubs.root" #Input file w/ Run2 stubs
-#file_name2 = dir1+"EMTF_MC_NTuple_20201106.root" #Input file w/ Run3 stubs
+file_name = dir1+"EMTF_MC_NTuple_Run3stubs.root" #Input file w/ Run3 stubs
 print colored('Loading file: '+file_name, 'green')
 #print colored('Loading file: '+file_name2, 'green')
 
 
 ## ============= Read in the TTrees ===============
-evt_tree = TChain('f_MODE_15_logPtTarg_invPtWgt_noBitCompr_noRPC_noGEM/TestTree') ; evt_tree.Add(file_name)
-#evt_tree = TChain('FlatNtupleMC/tree') ;evt_tree.Add(file_name)
+#evt_tree = TChain('f_MODE_15_logPtTarg_invPtWgt_noBitCompr_noRPC_noGEM/TestTree') ; evt_tree.Add(file_name)
+evt_tree = TChain('FlatNtupleMC/tree') ;evt_tree.Add(file_name)
 #evt_tree2 = TChain('FlatNtupleMC/tree') ; evt_tree2.Add(file_name2)
+#evt_tree3 = TChain('tree') ; evt_tree3.Add(file_name2)
 
 
 ## ========= Printouts for debugging ==============
@@ -34,45 +35,105 @@ evt_tree = TChain('f_MODE_15_logPtTarg_invPtWgt_noBitCompr_noRPC_noGEM/TestTree'
 if printouts_Run2==True:
   for iEvt in range(10000):
     evt_tree.GetEntry(iEvt)
-    for i in range(len(evt_tree.mu_pt)):
-      print "Gen muon",i, " pt, eta, phi: ", evt_tree.mu_pt[i], evt_tree.mu_eta[i], evt_tree.mu_phi[i]
+    #for i in range(len(evt_tree.mu_pt)):
+      #print "Gen muon",i, " pt, eta, phi: ", evt_tree.mu_pt[i], evt_tree.mu_eta[i], evt_tree.mu_phi[i]
     print '--------'
-    for i in range(len(evt_tree.trk_pt)):
-      print "L1 muon",i, " pt, eta, phi, nNeighbor: ", evt_tree.trk_pt[i], evt_tree.trk_eta[i], evt_tree.trk_phi[i], evt_tree.trk_nNeighbor[i]
+    #for i in range(len(evt_tree.trk_pt)):
+      #print "L1 muon",i, " pt, eta, phi, nNeighbor: ", evt_tree.trk_pt[i], evt_tree.trk_eta[i], evt_tree.trk_phi[i], evt_tree.trk_nNeighbor[i]
+    for i in range(len(evt_tree.hit_phi)):
+      if evt_tree.hit_station[i]==1: print evt_tree.hit_phi[i], evt_tree.hit_neighbor[i]
     print '------Next event------'
     
 ## ============== Plotting macro ==================
 
+#Plot the difference of log2(gen_pt) - BDT pt
+c1 = TCanvas("c1")
+evt_tree.Draw("hit_BX", "hit_isCSC==1")
+htemp = gPad.GetPrimitive("htemp")
+htemp.SetTitle("hit_BX (CSC hits only)")
+htemp.GetXaxis().SetTitle("BX")
+gPad.SetLogy()
+gPad.Update()
+c1.SaveAs("validation_november/hit_BX_isCSC.png")
+c1.Close()
+
+#c1 = TCanvas("c1")
+#evt_tree.Draw("hit_eta", "")
+#htemp = gPad.GetPrimitive("htemp")
+#htemp.SetTitle("hit #eta")
+#htemp.GetXaxis().SetTitle("#eta")
+#gPad.Update()
+#c1.SaveAs("validation_november/hit_eta.png")
+#c1.Close()
+
+#c1 = TCanvas("c1")
+#evt_tree.Draw("hit_phi", "hit_neighbor==0")
+#htemp = gPad.GetPrimitive("htemp")
+#htemp.SetTitle("hit #phi")
+#htemp.GetXaxis().SetTitle("#phi")
+#gPad.Update()
+#c1.SaveAs("validation_november/hit_phi.png")
+#c1.Close()
+
 '''
 #Trigger efficiencies (How often do you trigger on a muon with pT > X)
 c1 = TCanvas("c1")
-
-#Using Run-2 stubs
-evt_tree.Draw("mu_pt>>h_denom(64,0.,50.)")
+evt_tree.Draw("mu_eta>>h_denom(128,-3.,3.)", "mu_pt>20.")
 h_denom=gROOT.FindObject("h_denom")
 c1.Update()
-evt_tree.Draw("mu_pt>>h_numer(64,0.,50.)", "trk_pt>20. && (mu_eta[0]*trk_eta>0 || mu_eta[1]*trk_eta>0) && trk_nNeighbor==0")
+evt_tree.Draw("mu_eta>>h_numer(128,-3.,3.)", "trk_pt>20. && mu_pt>20. && (mu_eta[0]*trk_eta>0 || mu_eta[1]*trk_eta>0) && trk_nNeighbor==0")
 h_numer=gROOT.FindObject("h_numer")
 c1.Update()
+eff = TEfficiency(h_numer, h_denom)
+eff.Draw()
+eff.SetTitle('EMTF Trigger Efficiency vs p_{T}^{GEN} (p_{T}^{L1}, p_{T}^{GEN} > 20 GeV)')
+#eff.GetXaxis().SetTitle('#eta')
+gPad.Update()
+graph = eff.GetPaintedGraph() ; graph.SetMinimum(0) ; graph.SetMaximum(1)
+c1.SaveAs("validation_november/eff_eta_pt20.png")
+raw_input("Enter")
+c1.Close()
 
+
+#Trigger efficiencies (How often do you trigger on a muon with pT > X)
+c1 = TCanvas("c1")
+evt_tree.Draw("mu_pt>>h_denom(128,0.,50.)")
+h_denom=gROOT.FindObject("h_denom")
+c1.Update()
+evt_tree.Draw("mu_pt>>h_numer(128,0.,50.)", "trk_pt>20. && mu_pt>20. && (mu_eta[0]*trk_eta>0 || mu_eta[1]*trk_eta>0) && trk_nNeighbor==0")
+h_numer=gROOT.FindObject("h_numer")
+c1.Update()
+eff = TEfficiency(h_numer, h_denom)
+eff.Draw()
+eff.SetTitle('EMTF Trigger Efficiency vs p_{T}^{GEN} (p_{T}^{L1}, p_{T}^{GEN} > 20 GeV)')
+#eff.GetXaxis().SetTitle('#eta')
+gPad.Update()
+graph = eff.GetPaintedGraph() ; graph.SetMinimum(0) ; graph.SetMaximum(1)
+c1.SaveAs("validation_november/eff_pt20.png")
+raw_input("Enter")
+c1.Close()
+'''
+
+
+'''
 ##Using Run-3 stubs
-evt_tree2.Draw("mu_pt>>h_denom2(64,0.,50.)")
+evt_tree2.Draw("mu_eta>>h_denom2(256,-180.,180.)")
 h_denom2=gROOT.FindObject("h_denom2")
 c1.Update()
-evt_tree2.Draw("mu_pt>>h_numer2(64,0.,50.)", "trk_pt>20. && (mu_eta[0]*trk_eta>0 || mu_eta[1]*trk_eta>0) && trk_nNeighbor==0")
+evt_tree2.Draw("mu_eta>>h_numer2(256,-180.,180.)", "trk_pt>20. && gen_pt>20. && (mu_eta[0]*trk_eta>0 || mu_eta[1]*trk_eta>0) && trk_nNeighbor==0")
 h_numer2=gROOT.FindObject("h_numer2")
 c1.Update()
 
 #Divide numer/denom histograms and plot efficiencies on the same canvas.
 h_numer.Divide(h_denom) ; h_numer2.Divide(h_denom2)
 h_numer.SetTitle("Trigger efficiency (p_{T}^{L1} > 20 GeV)")
-h_numer.GetXaxis().SetTitle("p_{T} (GeV)")
+h_numer.GetXaxis().SetTitle("#phi")
 gStyle.SetOptStat(0)
 h_numer.Draw() ; h_numer2.SetLineColor(2) ; h_numer2.Draw("same")
-c1.SaveAs("validation_november/efficiency_pt20.png")
+c1.SaveAs("validation_november/efficiency_eta_pt20.png")
 raw_input("Enter")
 c1.Close()
-
+''
 
 ##Using TEfficiency instead:
 #eff = TEfficiency(h_numer, h_denom)
@@ -85,6 +146,37 @@ c1.Close()
 ##c57.SaveAs("validation_november/eff_pt_csc.png")
 #raw_input("Enter")
 '''
+
+'''
+c1 = TCanvas("c1")
+evt_tree.Draw("hit_phi*(hit_station==1 && hit_neighbor==0)>>h1(256,-180.,180.)")
+h1=gROOT.FindObject("h1")
+c1.Update()
+evt_tree.Draw("hit_phi>>h2(256,-180.,180.)", "hit_station==1 && hit_neighbor==0")
+h2=gROOT.FindObject("h2")
+c1.Update()
+h1.Draw() ; h2.SetLineColor(2) ; h2.Draw("same")
+raw_input("Enter")
+'''
+
+
+'''
+#BDT efficiency
+c1 = TCanvas("c1")
+evt_tree.Draw("GEN_pt>>h_denom(64,1.,50.)")
+h_denom=gROOT.FindObject("h_denom")
+c1.Update()
+evt_tree.Draw("GEN_pt>>h_numer(64,1.,50.)", "2**(BDTG_AWB_Sq)>20.")
+h_numer=gROOT.FindObject("h_numer")
+c1.Update()
+h_numer.Divide(h_denom)
+h_numer.SetTitle("BDT efficiency (p_{T}^{BDT} > 20 GeV)")
+h_numer.GetXaxis().SetTitle("p_{T} (GeV)")
+h_numer.Draw()
+c1.SaveAs("validation_november/BDTefficiency_pt20.png")
+raw_input("Enter")
+'''
+
 
 
 '''
@@ -130,23 +222,6 @@ c1.SaveAs("validation_november/ptres1D_log2genpt_minus_bdtpt_cutpt10.png")
 '''
 
 
-#BDT efficiency
-c1 = TCanvas("c1")
-evt_tree.Draw("GEN_pt>>h_denom(64,1.,50.)")
-h_denom=gROOT.FindObject("h_denom")
-c1.Update()
-evt_tree.Draw("GEN_pt>>h_numer(64,1.,50.)", "2**(BDTG_AWB_Sq)>5.")
-h_numer=gROOT.FindObject("h_numer")
-c1.Update()
-h_numer.Divide(h_denom)
-h_numer.SetTitle("BDT efficiency (p_{T}^{BDT} > 5 GeV)")
-h_numer.GetXaxis().SetTitle("p_{T} (GeV)")
-h_numer.Draw()
-c1.SaveAs("validation_november/BDTefficiency_pt5.png")
-raw_input("Enter")
-
-
-
 
 '''
 #An example of filling a branch to TH1D object.
@@ -155,3 +230,42 @@ evt_tree.Draw("hit_phi>>h1(64,-180.,180.)", "hit_station==1 && hit_isCSC==1 && h
 h1=gROOT.FindObject("h1")
 c1.Update()
 '''
+
+
+#1D Histograms of inpul variables
+'''
+c1 = TCanvas("c1")
+evt_tree.Draw("hit_theta", "hit_station==2 && hit_isCSC==1")
+htemp = gPad.GetPrimitive("htemp")
+htemp.SetTitle("#theta position (CSC hit, Station 2)")
+htemp.GetXaxis().SetTitle("#theta")
+gPad.Update()
+c1.SaveAs('validation_november/theta_St2.png')
+raw_input("Enter")
+c1.Close()
+'''
+
+#c1 = TCanvas("c1")
+#evt_tree.Draw("trk_mode", "trk_nNeighbor==0")
+#htemp = gPad.GetPrimitive("htemp")
+#htemp.SetTitle("EMTF track mode occupancy")
+#htemp.GetXaxis().SetTitle("Mode")
+#htemp.GetYaxis().SetTitle("Events")
+#gPad.SetLogy()
+#gStyle.SetOptStat(0)
+#gPad.Update()
+#c1.SaveAs('validation_november/trk_mode.png')
+#raw_input("Enter")
+#c1.Close()
+
+#c1 = TCanvas("c1")
+#evt_tree.Draw("hit_pattern", "hit_station==4 && hit_isCSC==1 && hit_neighbor==0")
+#htemp = gPad.GetPrimitive("htemp")
+#htemp.SetTitle("Run-2 Stub pattern (CSC hit, Station 4)")
+#htemp.GetXaxis().SetTitle("Pattern")
+#htemp.GetYaxis().SetTitle("Events")
+#gPad.SetLogy()
+#gStyle.SetOptStat(0)
+#gPad.Update()
+#c1.SaveAs('validation_november/pattern_St4.png')
+#c1.Close()
