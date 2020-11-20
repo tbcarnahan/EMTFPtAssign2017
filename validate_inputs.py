@@ -15,10 +15,10 @@ print '------> Importing Root File'
 MAX_EVT  = -1 ## Maximum number of events to process
 PRT_EVT  = 10000 ## Print every Nth event
 
-## ============== Event branches================
+## ============== Event Tree ================
 evt_tree  = TChain('FlatNtupleMC/tree')
 
-## ================ Read input files, define Output file ======================
+## ================ Read input file ======================
 dir1 = '/uscms/home/mdecaro/nobackup/BDTGEM/CMSSW_10_6_1_patch2/src/EMTFPtAssign2017/' 
 file_name = dir1+"EMTF_MC_NTuple_Run3stubs.root"
 evt_tree.Add(file_name)
@@ -56,15 +56,14 @@ h_dPhi34_patternME4 = TH2D('h_dPhi34_patternME4', '', 11, 0, 11, 32, -0.15, 0.15
 
 ## ============== Event loop ================
 
-#for iEvt in range(2000000):
-for iEvt in range(50000):
+for iEvt in range(2000000):
 #for iEvt in range(evt_tree.GetEntries()):
   if MAX_EVT > 0 and iEvt > MAX_EVT: break
   if iEvt % PRT_EVT is 0: print 'Event #', iEvt
   
   evt_tree.GetEntry(iEvt)
 
-  #Write a short code that picks out specific station LCTs and subtract to get position bending.
+  #A macro that picks out specific station LCT info and fill histograms.
   for j in range(len(evt_tree.mu_pt)):
     ME1_phi=0 ; ME2_phi=0 ; ME3_phi=0 ; ME4_phi=0
     #pattern_ME1=0 ; pattern_ME2=0 ; pattern_ME3=0 ; pattern_ME4=0
