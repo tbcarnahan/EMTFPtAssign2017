@@ -698,10 +698,28 @@ void PtRegression2019_GEM_SD ( TString myMethodList = "" ) {
          int pat3_run3 = (i3 >= 0 ? I("hit_pattern_run3", i3 ) : -99);
          int pat4_run3 = (i4 >= 0 ? I("hit_pattern_run3", i4 ) : -99);
 
+         // 4-bit value
          int slope1 = (i1CSC >= 0 ? I("hit_slope",i1CSC ) : -99);
          int slope2 = (i2 >= 0 ? I("hit_slope", i2 ) : -99);
          int slope3 = (i3 >= 0 ? I("hit_slope", i3 ) : -99);
          int slope4 = (i4 >= 0 ? I("hit_slope", i4 ) : -99);
+
+         // 1-bit sign
+         int bend1 = (i1CSC >= 0 ? I("hit_bend",i1CSC ) : -99);
+         int bend2 = (i2 >= 0 ? I("hit_bend", i2 ) : -99);
+         int bend3 = (i3 >= 0 ? I("hit_bend", i3 ) : -99);
+         int bend4 = (i4 >= 0 ? I("hit_bend", i4 ) : -99);
+
+         // 5-bit slope: 1-bit sign + 4-bit value
+         int slopeshift1 = (bend1 == 0) ? 0 : 15;
+         int slopeshift2 = (bend2 == 0) ? 0 : 15;
+         int slopeshift3 = (bend3 == 0) ? 0 : 15;
+         int slopeshift4 = (bend4 == 0) ? 0 : 15;
+
+         slope1 += slopeshift1;
+         slope2 += slopeshift2;
+         slope3 += slopeshift3;
+         slope4 += slopeshift4;
 
          int strip_quart_bit1 = (i1CSC >= 0 ? I("hit_strip_quart_bit",i1CSC ) : -99);
          int strip_quart_bit2 = (i2 >= 0 ? I("hit_strip_quart_bit", i2 ) : -99);
