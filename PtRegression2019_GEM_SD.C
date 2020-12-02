@@ -711,10 +711,10 @@ void PtRegression2019_GEM_SD ( TString myMethodList = "" ) {
          int bend4 = (i4 >= 0 ? I("hit_bend", i4 ) : -99);
 
          // 5-bit slope: 1-bit sign + 4-bit value
-         int slopeshift1 = (bend1 == 0) ? 0 : 15;
-         int slopeshift2 = (bend2 == 0) ? 0 : 15;
-         int slopeshift3 = (bend3 == 0) ? 0 : 15;
-         int slopeshift4 = (bend4 == 0) ? 0 : 15;
+         int slopeshift1 = (bend1 == 0) ? 0 : 16;
+         int slopeshift2 = (bend2 == 0) ? 0 : 16;
+         int slopeshift3 = (bend3 == 0) ? 0 : 16;
+         int slopeshift4 = (bend4 == 0) ? 0 : 16;
 
          slope1 += slopeshift1;
          slope2 += slopeshift2;
