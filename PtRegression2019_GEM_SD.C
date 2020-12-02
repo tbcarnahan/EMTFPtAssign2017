@@ -270,10 +270,15 @@ void PtRegression2019_GEM_SD ( TString myMethodList = "" ) {
    in_vars.push_back( MVA_var( "FR_3",      "St 3 LCT F/R",          "int", 'I', -88 ) ); // 0x0000 0400
    in_vars.push_back( MVA_var( "FR_4",      "St 4 LCT F/R",          "int", 'I', -88 ) ); // 0x0000 0800
 
-   in_vars.push_back( MVA_var( "bend_1",    "St 1 LCT bending",      "int", 'I', -88 ) ); // 0x0000 1000
-   in_vars.push_back( MVA_var( "bend_2",    "St 2 LCT bending",      "int", 'I', -88 ) ); // 0x0000 2000
-   in_vars.push_back( MVA_var( "bend_3",    "St 3 LCT bending",      "int", 'I', -88 ) ); // 0x0000 4000
-   in_vars.push_back( MVA_var( "bend_4",    "St 4 LCT bending",      "int", 'I', -88 ) ); // 0x0000 8000
+   // in_vars.push_back( MVA_var( "bend_1",    "St 1 LCT bending",      "int", 'I', -88 ) ); // 0x0000 1000
+   // in_vars.push_back( MVA_var( "bend_2",    "St 2 LCT bending",      "int", 'I', -88 ) ); // 0x0000 2000
+   // in_vars.push_back( MVA_var( "bend_3",    "St 3 LCT bending",      "int", 'I', -88 ) ); // 0x0000 4000
+   // in_vars.push_back( MVA_var( "bend_4",    "St 4 LCT bending",      "int", 'I', -88 ) ); // 0x0000 8000
+
+   in_vars.push_back( MVA_var( "slope_1",    "St 1 LCT slope",      "int", 'I', -88 ) ); // 0x0000 1000
+   in_vars.push_back( MVA_var( "slope_2",    "St 2 LCT slope",      "int", 'I', -88 ) ); // 0x0000 2000
+   in_vars.push_back( MVA_var( "slope_3",    "St 3 LCT slope",      "int", 'I', -88 ) ); // 0x0000 4000
+   in_vars.push_back( MVA_var( "slope_4",    "St 4 LCT slope",      "int", 'I', -88 ) ); // 0x0000 8000
 
    in_vars.push_back( MVA_var( "dPhiSum4",  "#Sigmad#phi (6)",       "int", 'I', -88 ) ); // 0x0001 0000
    in_vars.push_back( MVA_var( "dPhiSum4A", "#Sigma|d#phi| (6)",     "int", 'I', -88 ) ); // 0x0002 0000
@@ -290,6 +295,15 @@ void PtRegression2019_GEM_SD ( TString myMethodList = "" ) {
    in_vars.push_back( MVA_var( "dTh_14",    "#theta(4) - #theta(1)", "int", 'I', -88 ) ); // 0x0400 0000
    in_vars.push_back( MVA_var( "dTh_24",    "#theta(4) - #theta(2)", "int", 'I', -88 ) ); // 0x0800 0000
 
+   in_vars.push_back( MVA_var( "strip_quart_bit_1",    "St 1 QS",      "int", 'I', -88 ) );
+   in_vars.push_back( MVA_var( "strip_quart_bit_2",    "St 2 QS",      "int", 'I', -88 ) );
+   in_vars.push_back( MVA_var( "strip_quart_bit_3",    "St 3 QS",      "int", 'I', -88 ) );
+   in_vars.push_back( MVA_var( "strip_quart_bit_4",    "St 4 QS",      "int", 'I', -88 ) );
+
+   in_vars.push_back( MVA_var( "strip_eight_bit_1",    "St 1 ES",      "int", 'I', -88 ) );
+   in_vars.push_back( MVA_var( "strip_eight_bit_2",    "St 2 ES",      "int", 'I', -88 ) );
+   in_vars.push_back( MVA_var( "strip_eight_bit_3",    "St 3 ES",      "int", 'I', -88 ) );
+   in_vars.push_back( MVA_var( "strip_eight_bit_4",    "St 4 ES",      "int", 'I', -88 ) );
 
    // add 2017 EMTF pT as input variable to accelerate training
 
@@ -299,8 +313,9 @@ void PtRegression2019_GEM_SD ( TString myMethodList = "" ) {
    // Later on, it will probably make sense to match this variable with the GEN-level "target" variable, in this case change to "log2_EMTF_pt"
 
    // new GEM-CSC bending angle
-   in_vars.push_back( MVA_var( "dPhi_GE11_ME11", "#phi(GE11) - #phi(ME11)", "", 'F', -88 ) ); // 0x1 0000 0000
-   in_vars.push_back( MVA_var( "GEM_1",   "St 1 hit is GEM",       "int", 'I', -88 ) ); // 0x1 0000 0000
+
+   // in_vars.push_back( MVA_var( "dPhi_GE11_ME11", "#phi(GE11) - #phi(ME11)", "", 'F', -88 ) ); // 0x1 0000 0000
+   // in_vars.push_back( MVA_var( "GEM_1",   "St 1 hit is GEM",       "int", 'I', -88 ) ); // 0x1 0000 0000
 
    /*
    if (USE_RPC) {
@@ -678,6 +693,26 @@ void PtRegression2019_GEM_SD ( TString myMethodList = "" ) {
          int pat3 = (i3 >= 0 ? I("hit_pattern", i3 ) : -99);
          int pat4 = (i4 >= 0 ? I("hit_pattern", i4 ) : -99);
 
+         int pat1_run3 = (i1CSC >= 0 ? I("hit_pattern_run3",i1CSC ) : -99);
+         int pat2_run3 = (i2 >= 0 ? I("hit_pattern_run3", i2 ) : -99);
+         int pat3_run3 = (i3 >= 0 ? I("hit_pattern_run3", i3 ) : -99);
+         int pat4_run3 = (i4 >= 0 ? I("hit_pattern_run3", i4 ) : -99);
+
+         int slope1 = (i1CSC >= 0 ? I("hit_slope",i1CSC ) : -99);
+         int slope2 = (i2 >= 0 ? I("hit_slope", i2 ) : -99);
+         int slope3 = (i3 >= 0 ? I("hit_slope", i3 ) : -99);
+         int slope4 = (i4 >= 0 ? I("hit_slope", i4 ) : -99);
+
+         int strip_quart_bit1 = (i1CSC >= 0 ? I("hit_strip_quart_bit",i1CSC ) : -99);
+         int strip_quart_bit2 = (i2 >= 0 ? I("hit_strip_quart_bit", i2 ) : -99);
+         int strip_quart_bit3 = (i3 >= 0 ? I("hit_strip_quart_bit", i3 ) : -99);
+         int strip_quart_bit4 = (i4 >= 0 ? I("hit_strip_quart_bit", i4 ) : -99);
+
+         int strip_eight_bit1 = (i1CSC >= 0 ? I("hit_strip_eight_bit",i1CSC ) : -99);
+         int strip_eight_bit2 = (i2 >= 0 ? I("hit_strip_eight_bit", i2 ) : -99);
+         int strip_eight_bit3 = (i3 >= 0 ? I("hit_strip_eight_bit", i3 ) : -99);
+         int strip_eight_bit4 = (i4 >= 0 ? I("hit_strip_eight_bit", i4 ) : -99);
+
          int st1_ring2 = (i1CSC >= 0 ? ( I("hit_ring",i1CSC ) == 2 || I("hit_ring",i1CSC ) == 3 ) : 0);
 
          //===========
@@ -834,10 +869,27 @@ void PtRegression2019_GEM_SD ( TString myMethodList = "" ) {
                    if ( vName == "FR_2" ) var_vals.at(iVar) = FR2;
                    if ( vName == "FR_3" ) var_vals.at(iVar) = FR3;
                    if ( vName == "FR_4" ) var_vals.at(iVar) = FR4;
+                   /*
                    if ( vName == "bend_1" ) var_vals.at(iVar) = bend1;
                    if ( vName == "bend_2" ) var_vals.at(iVar) = bend2;
                    if ( vName == "bend_3" ) var_vals.at(iVar) = bend3;
                    if ( vName == "bend_4" ) var_vals.at(iVar) = bend4;
+                   */
+                   if ( vName == "slope_1" ) var_vals.at(iVar) = slope1;
+                   if ( vName == "slope_2" ) var_vals.at(iVar) = slope2;
+                   if ( vName == "slope_3" ) var_vals.at(iVar) = slope3;
+                   if ( vName == "slope_4" ) var_vals.at(iVar) = slope4;
+
+                   if ( vName == "strip_quart_bit_1" ) var_vals.at(iVar) = strip_quart_bit1;
+                   if ( vName == "strip_quart_bit_2" ) var_vals.at(iVar) = strip_quart_bit2;
+                   if ( vName == "strip_quart_bit_3" ) var_vals.at(iVar) = strip_quart_bit3;
+                   if ( vName == "strip_quart_bit_4" ) var_vals.at(iVar) = strip_quart_bit4;
+
+                   if ( vName == "strip_eight_bit_1" ) var_vals.at(iVar) = strip_eight_bit1;
+                   if ( vName == "strip_eight_bit_2" ) var_vals.at(iVar) = strip_eight_bit2;
+                   if ( vName == "strip_eight_bit_3" ) var_vals.at(iVar) = strip_eight_bit3;
+                   if ( vName == "strip_eight_bit_4" ) var_vals.at(iVar) = strip_eight_bit4;
+
                    if ( vName == "dPhiSum4" ) var_vals.at(iVar) = dPhSum4;
                    if ( vName == "dPhiSum4A" ) var_vals.at(iVar) = dPhSum4A;
                    if ( vName == "dPhiSum3" ) var_vals.at(iVar) = dPhSum3;
