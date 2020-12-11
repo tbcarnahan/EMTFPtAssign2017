@@ -9,7 +9,7 @@ std::vector<TString> ints = {{
     "nUnpTracks", "nUnpTracksBX0",
     "nRecoMuons", "nRecoMuonsFwd", "nRecoMuonsTrig", "nRecoMuonsTrigCen",
     "nRecoPairs", "nRecoPairsFwd",
-    // "nGenMuons",
+    "nGenMuons",
   }};
 
 std::vector<TString> longs = {{
@@ -32,7 +32,7 @@ std::vector<TString> vFlt = {{
     "unp_trk_dR_match_dEta", "unp_trk_dR_match_dPhi", "unp_trk_dR_match_dR",
     "unp_trk_emu_match_dEta", "unp_trk_emu_match_dPhi", "unp_trk_emu_match_dR",
 
-    "reco_pt", "reco_eta", "reco_eta_St1", "reco_eta_St2", 
+    "reco_pt", "reco_eta", "reco_eta_St1", "reco_eta_St2",
     "reco_theta", "reco_theta_St1", "reco_theta_St2",
     "reco_phi", "reco_phi_St1", "reco_phi_St2",
     "reco_dR_match_emu_dEta", "reco_dR_match_emu_dPhi", "reco_dR_match_emu_dR",
@@ -46,25 +46,26 @@ std::vector<TString> vFlt = {{
     "recoPair_dR_St1", "recoPair_dEta_St1", "recoPair_dTheta_St1", "recoPair_dPhi_St1",
     "recoPair_dR_St2", "recoPair_dEta_St2", "recoPair_dTheta_St2", "recoPair_dPhi_St2",
 
-    // "mu_pt", "mu_eta", "mu_theta", "mu_phi",
+    "mu_pt", "mu_eta", "mu_theta", "mu_phi",
   }};
 
 std::vector<TString> vInt = {{
     "hit_eta_int", "hit_theta_int", "hit_phi_int", "hit_endcap", "hit_sector", "hit_sector_index", "hit_station",
-    "hit_ring", "hit_CSC_ID", "hit_chamber", "hit_FR", "hit_pattern", "hit_quality", "hit_roll", "hit_subsector",
+    "hit_ring", "hit_CSC_ID", "hit_chamber", "hit_FR", "hit_pattern", "hit_quality", "hit_roll", "hit_subsector", "hit_isGEM",
     "hit_isCSC", "hit_isRPC", "hit_valid", "hit_BX", "hit_strip", "hit_strip_hi", "hit_strip_low", "hit_wire", "hit_neighbor",
     "hit_match_iSimHit", "hit_sim_match_exact", "hit_match_iSeg", "hit_match_iSeg2", "hit_match_nSegs", "hit_seg_match_unique",
+    "hit_pattern_run3", "hit_slope", "hit_strip_eight", "hit_strip_quart", "hit_strip_eight_bit", "hit_strip_quart_bit", "hit_bend",
 
     "sim_hit_eta_int", "sim_hit_theta_int", "sim_hit_phi_int", "sim_hit_endcap", "sim_hit_sector", "sim_hit_sector_index",
     "sim_hit_station", "sim_hit_ring", "sim_hit_CSC_ID", "sim_hit_chamber", "sim_hit_FR", "sim_hit_pattern", "sim_hit_quality",
-    "sim_hit_alct_quality", "sim_hit_clct_quality", "sim_hit_roll", "sim_hit_subsector", "sim_hit_isCSC", "sim_hit_isRPC",
+    "sim_hit_alct_quality", "sim_hit_clct_quality", "sim_hit_roll", "sim_hit_subsector", "sim_hit_isCSC", "sim_hit_isRPC", "sim_hit_isGEM"
     "sim_hit_valid", "sim_hit_BX", "sim_hit_strip", "sim_hit_strip_hi", "sim_hit_strip_low", "sim_hit_wire", "sim_hit_neighbor",
     "sim_hit_match_iHit", "sim_hit_match_exact",
 
     "seg_endcap", "seg_ring", "seg_station", "seg_chamber", "seg_sector", "seg_CSC_ID",
     "seg_nRecHits", "seg_wire_max", "seg_wire_min", "seg_strip_max", "seg_strip_min",
     "seg_match_iHit", "seg_match_iHit2", "seg_match_nHits", "seg_hit_match_unique",
-	
+
     "trk_pt_int", "trk_eta_int", "trk_theta_int", "trk_phi_int", "trk_BX", "trk_endcap",
     "trk_sector", "trk_sector_index", "trk_mode", "trk_mode_CSC", "trk_mode_RPC", "trk_mode_neighbor",
     "trk_qual", "trk_charge", "trk_nHits", "trk_nRPC", "trk_nNeighbor", "trk_dBX", "trk_dPhi_int", "trk_dTheta_int",
@@ -87,7 +88,7 @@ std::vector<TString> vInt = {{
 
     "recoPair_iReco1", "recoPair_iReco2",
 
-    // "mu_charge"
+    "mu_charge"
   }};
 
 std::vector<TString> vvInt = {{
@@ -133,25 +134,25 @@ inline long long I(TString str) {
     return (long long) mInts.at(str);
   else if ( mLongs.find(str) != mLongs.end() )
     return mLongs.at(str);
-  else { std::cout << "\nString '" << str << "' not found in mInts ('ints') or mLongs ('longs')." << std::endl; 
+  else { std::cout << "\nString '" << str << "' not found in mInts ('ints') or mLongs ('longs')." << std::endl;
     throw std::invalid_argument(""); }
 };
 inline float F(TString str, int idx) {
   if ( mVFlt.find(str) != mVFlt.end() )
     if ( mVFlt.at(str)->size() > idx )
       return mVFlt.at(str)->at(idx);
-    else { std::cout << "\nVector '" << str << "' has " << mVFlt.at(str)->size() << " elements, not " << idx+1 << "." << std::endl; 
+    else { std::cout << "\nVector '" << str << "' has " << mVFlt.at(str)->size() << " elements, not " << idx+1 << "." << std::endl;
       throw std::invalid_argument(""); }
-  else { std::cout << "\nString '" << str << "' not found in mVFlt ('vFlt')." << std::endl; 
+  else { std::cout << "\nString '" << str << "' not found in mVFlt ('vFlt')." << std::endl;
     throw std::invalid_argument(""); }
 };
 inline int I(TString str, int idx) {
   if ( mVInt.find(str) != mVInt.end() )
     if ( mVInt.at(str)->size() > idx )
       return mVInt.at(str)->at(idx);
-    else { std::cout << "\nVector '" << str << "' has " << mVInt.at(str)->size() << " elements, not " << idx+1 << "." << std::endl; 
+    else { std::cout << "\nVector '" << str << "' has " << mVInt.at(str)->size() << " elements, not " << idx+1 << "." << std::endl;
       throw std::invalid_argument(""); }
-  else { std::cout << "\nString '" << str << "' not found in mVInt ('vInt')." << std::endl; 
+  else { std::cout << "\nString '" << str << "' not found in mVInt ('vInt')." << std::endl;
     throw std::invalid_argument(""); }
 };
 inline int I(TString str, int idx, int jdx) {
@@ -159,37 +160,37 @@ inline int I(TString str, int idx, int jdx) {
     if ( mVVInt.at(str)->size() > idx )
       if ( mVVInt.at(str)->at(idx).size() > jdx )
 	return mVVInt.at(str)->at(idx).at(jdx);
-      else { std::cout << "\nVector '" << str << "' at " << idx << " has " << mVVInt.at(str)->at(idx).size() << " elements, not " << jdx+1 << "." << std::endl; 
+      else { std::cout << "\nVector '" << str << "' at " << idx << " has " << mVVInt.at(str)->at(idx).size() << " elements, not " << jdx+1 << "." << std::endl;
 	throw std::invalid_argument(""); }
-    else { std::cout << "\nVector '" << str << "' has " << mVVInt.at(str)->size() << " elements, not " << idx+1 << "." << std::endl; 
+    else { std::cout << "\nVector '" << str << "' has " << mVVInt.at(str)->size() << " elements, not " << idx+1 << "." << std::endl;
       throw std::invalid_argument(""); }
-  else { std::cout << "\nString '" << str << "' not found in mVVInt ('vvInt')." << std::endl; 
+  else { std::cout << "\nString '" << str << "' not found in mVVInt ('vvInt')." << std::endl;
     throw std::invalid_argument(""); }
 };
 inline std::vector<float>* VF(TString str) {
   if ( mVFlt.find(str) != mVFlt.end() )
     return mVFlt.at(str);
-  else { std::cout << "\nString '" << str << "' not found in mVFlt ('vFlt')." << std::endl; 
+  else { std::cout << "\nString '" << str << "' not found in mVFlt ('vFlt')." << std::endl;
     throw std::invalid_argument(""); }
 };
 inline std::vector<int>* VI(TString str) {
   if ( mVInt.find(str) != mVInt.end() )
     return mVInt.at(str);
-  else { std::cout << "\nString '" << str << "' not found in mVInt ('vInt')." << std::endl; 
+  else { std::cout << "\nString '" << str << "' not found in mVInt ('vInt')." << std::endl;
     throw std::invalid_argument(""); }
 };
 inline std::vector<int> VI(TString str, int idx) {
   if ( mVVInt.find(str) != mVVInt.end() )
     if ( mVVInt.at(str)->size() > idx )
       return mVVInt.at(str)->at(idx);
-    else { std::cout << "\nVector '" << str << "' has " << mVVInt.at(str)->size() << " elements, not " << idx+1 << "." << std::endl; 
+    else { std::cout << "\nVector '" << str << "' has " << mVVInt.at(str)->size() << " elements, not " << idx+1 << "." << std::endl;
       throw std::invalid_argument(""); }
-  else { std::cout << "\nString '" << str << "' not found in mVVInt ('vvInt')." << std::endl; 
+  else { std::cout << "\nString '" << str << "' not found in mVVInt ('vvInt')." << std::endl;
     throw std::invalid_argument(""); }
 };
 inline std::vector< std::vector<int> >* VVI(TString str) {
   if ( mVVInt.find(str) != mVVInt.end() )
     return mVVInt.at(str);
-  else { std::cout << "\nString '" << str << "' not found in mVVInt ('vvInt')." << std::endl; 
+  else { std::cout << "\nString '" << str << "' not found in mVVInt ('vvInt')." << std::endl;
     throw std::invalid_argument(""); }
 };
