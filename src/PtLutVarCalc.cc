@@ -64,7 +64,11 @@ void CalcDeltaPhis_2019GEM( int& dPh12, int& dPh13, int& dPh14, int& dPh23, int&
                 dPhSum4,dPhSum4A,dPhSum3,dPhSum3A,outStPh,
                 ph1,  ph2,  ph3,  ph4,  mode,BIT_COMP );
 
-  dPhGE11ME11 = phGEM - ph1;
+  dPhGE11ME11 = (phGEM - ph1)*dPhSign;
+
+  // cases when ME11 is missing
+  if (ph1 < 0)
+    dPhGE11ME11 = phGEM;
 
   // probably best not to change the EMTF track mode at this point
 }

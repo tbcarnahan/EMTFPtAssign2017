@@ -1,8 +1,8 @@
 
 /////////////////////////////////////////////////////////
 ///          Macro to compute rate and efficiency     ///
-///            Wei Shi         12.18.18               ///
-///          For Run 3 training on data using BDT     ///
+///            Matthew Decaro   2.25.20               ///
+///          Run 3 training using GEM-CSC bending     ///
 /////////////////////////////////////////////////////////
 
 #include "TFile.h"
@@ -28,7 +28,7 @@ void ReadMVAOut_v1_BDT() {
 
   // List of input files
   std::vector<TString> in_file_names;
-  in_file_names.push_back("/home/ws13/TMVA/TMVA/EMTFPtAssign2018/PtRegression2018_MODE_15_noBitCompr_noRPC.root");
+  in_file_names.push_back("/uscms/home/mdecaro/nobackup/BDTGEM/CMSSW_10_6_1_patch2/src/EMTFPtAssign2017/PtRegression2018_MODE_15_noBitCompr_noRPC_GEM.root");
 
   // Open all input files
   for (UInt_t i = 0; i < in_file_names.size(); i++) {
@@ -41,8 +41,8 @@ void ReadMVAOut_v1_BDT() {
   }
 
   // Add trees from the input files to the TChain
-  TChain *train_chain = new TChain("f_MODE_15_logPtTarg_invPtWgt_noBitCompr_noRPC/TrainTree");
-  TChain *test_chain = new TChain("f_MODE_15_logPtTarg_invPtWgt_noBitCompr_noRPC/TestTree");
+  TChain *train_chain = new TChain("f_MODE_15_logPtTarg_invPtWgt_noBitCompr_noRPC_GEM/TrainTree");
+  TChain *test_chain = new TChain("f_MODE_15_logPtTarg_invPtWgt_noBitCompr_noRPC_GEM/TestTree");
   for (UInt_t i = 0; i < in_file_names.size(); i++) {
     train_chain->Add( in_file_names.at(i) );
     test_chain->Add( in_file_names.at(i) );
@@ -142,7 +142,7 @@ void ReadMVAOut_v1_BDT() {
     }//end Gen bin
 
     //write to output file
-    TFile myPlot("/home/ws13/TMVA/TMVA/EMTFPtAssign2018/RateVsEff_mode_15.root","RECREATE");
+    TFile myPlot("/uscms/home/mdecaro/nobackup/BDTGEM/CMSSW_10_6_1_patch2/src/EMTFPtAssign2018/RateVsEff_mode_15.root","RECREATE");
 
     //write 2D non scaled efficiency plot
     BDT_trigger_Gen_efficiency->Write();
