@@ -754,7 +754,7 @@ void PtRegression2019_GEM_SD ( TString myMethodList = "" ) {
          int dPhSum4, dPhSum4A, dPhSum3, dPhSum3A, outStPh;
          int dTh12, dTh13, dTh14, dTh23, dTh24, dTh34;
          int FR1, FR2, FR3, FR4;
-         int bend1, bend2, bend3, bend4;
+         //uncommented on 19/1/2021 int bend1, bend2, bend3, bend4;
          int RPC1, RPC2, RPC3, RPC4;
          int dPhGE11ME11;
          int GE11;
@@ -795,9 +795,12 @@ void PtRegression2019_GEM_SD ( TString myMethodList = "" ) {
          FR4 = (i4 >= 0 ? (cham4 % 2 == 1) : -99);
          if (ring1 == 3) FR1 = 0;                   // In ME1/3 chambers are non-overlapping
 
+         /*
+           uncommented on 19/1/2021
          CalcBends( bend1, bend2, bend3, bend4,
                     pat1, pat2, pat3, pat4,
                     dPhSign, endcap, mode, BIT_COMP );
+         */
 
          //Recompute bend1/2/3/4 with offline segment bending
          /*
