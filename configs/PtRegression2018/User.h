@@ -20,7 +20,8 @@ namespace PtRegression2018_cfg {
     std::cout << "\nConfiguring PtRegression2018 code for user " << USER << std::endl;
 
     if (USER == "Sven") {//root://cmsxrootd-site.fnal.gov
-      EOS_DIR_NAME = "/uscms/home/mdecaro/nobackup/BDTGEM/CMSSW_10_6_1_patch2/src/EMTFPtAssign2017";  // Input directory
+
+      EOS_DIR_NAME = "root://cmsxrootd-site.fnal.gov///store/user/mdecaro/Ntuples/";  // Input directory in eos
       in_dir = "";
       OUT_DIR_NAME = "~/nobackup/BDTGEM/CMSSW_10_6_1_patch2/src/EMTFPtAssign2017/";
       OUT_FILE_NAME = "PtRegression2018";

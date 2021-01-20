@@ -122,8 +122,8 @@ void ReadMVAOut_v1_BDT() {
   } // End loop: for (UInt_t iEvt = 0; iEvt < test_chain->GetEntries(); iEvt++)
   //std::cout << "\n******* Leaving the test event loop *******" << std::endl;
 
-    BDT_trigger_Gen_efficiency = new TProfile2D("BDT_trigger_Gen_efficiency","BDT trigger efficiency versus thresholds and GEN pT",49,1,50,49,1,50,0,1);
-    EMTF_trigger_Gen_efficiency = new TProfile2D("EMTF_trigger_Gen_efficiency","EMTF trigger efficiency versus thresholds and GEN pT",49,1,50,49,1,50,0,1);
+    TProfile2D* BDT_trigger_Gen_efficiency = new TProfile2D("BDT_trigger_Gen_efficiency","BDT trigger efficiency versus thresholds and GEN pT",49,1,50,49,1,50,0,1);
+    TProfile2D*EMTF_trigger_Gen_efficiency = new TProfile2D("EMTF_trigger_Gen_efficiency","EMTF trigger efficiency versus thresholds and GEN pT",49,1,50,49,1,50,0,1);
 
     //======================================================
     //calculate trigger efficiency BDT not scaled to 90% yet
@@ -192,8 +192,8 @@ void ReadMVAOut_v1_BDT() {
     double EMTF_efficiency_scaled[50][50]={0};
     double EMTF_efficiency_scale=0.90;
     double EMTF_scale_consistency[50]={0};
-    EMTF_scale_plot = new TProfile("EMTF_scale_plot","EMTF scale versus thresholds",49,1,50,0,2);
-    EMTF_scale_consistency_plot = new TProfile("EMTF_scale_consistency_plot","EMTF scale factor to 90% at thresholds",49,1,50,0,1);
+    TProfile* EMTF_scale_plot = new TProfile("EMTF_scale_plot","EMTF scale versus thresholds",49,1,50,0,2);
+    TProfile* EMTF_scale_consistency_plot = new TProfile("EMTF_scale_consistency_plot","EMTF scale factor to 90% at thresholds",49,1,50,0,1);
 
     double BDT_scale_Max=1.0;
     double BDT_scale_Min=0.0;
@@ -202,8 +202,8 @@ void ReadMVAOut_v1_BDT() {
     double efficiency_scaled[50][50]={0};
     double efficiency_scale=0.90;
     double BDT_scale_consistency[50]={0};
-    BDT_scale_plot = new TProfile("BDT_scale_plot","BDT scale versus thresholds",49,1,50,0,1);
-    BDT_scale_consistency_plot = new TProfile("BDT_scale_consistency_plot","BDT scale factor to 90% at thresholds",49,1,50,0,1);
+    TProfile* BDT_scale_plot = new TProfile("BDT_scale_plot","BDT scale versus thresholds",49,1,50,0,1);
+    TProfile* BDT_scale_consistency_plot = new TProfile("BDT_scale_consistency_plot","BDT scale factor to 90% at thresholds",49,1,50,0,1);
 
     for(int Cut_bin=0;Cut_bin<50;Cut_bin++){
 
@@ -332,8 +332,8 @@ void ReadMVAOut_v1_BDT() {
     //=========================================
     //calculate trigger efficiency after rescale
     //=========================================
-    BDT_trigger_Gen_efficiency_scaled = new TProfile2D("BDT_trigger_Gen_efficiency_scaled","BDT trigger efficiency versus thresholds and GEN pT SCALED",49,1,50,49,1,50,0,1);
-    EMTF_trigger_Gen_efficiency_scaled = new TProfile2D("EMTF_trigger_Gen_efficiency_scaled","EMTF trigger efficiency versus thresholds and GEN pT SCALED",49,1,50,49,1,50,0,1);
+    TProfile2D* BDT_trigger_Gen_efficiency_scaled = new TProfile2D("BDT_trigger_Gen_efficiency_scaled","BDT trigger efficiency versus thresholds and GEN pT SCALED",49,1,50,49,1,50,0,1);
+    TProfile2D* EMTF_trigger_Gen_efficiency_scaled = new TProfile2D("EMTF_trigger_Gen_efficiency_scaled","EMTF trigger efficiency versus thresholds and GEN pT SCALED",49,1,50,49,1,50,0,1);
 
     //====================================================
     //check efficiency consistent for rate plot
@@ -343,10 +343,10 @@ void ReadMVAOut_v1_BDT() {
     double EMTF_cuts[50]={0};
     double BDT_efficiency_cuts[50]={0};
     double EMTF_efficiency_cuts[50]={0};
-    BDT_efficiency_cuts_consistency = new TProfile("BDT_efficiency_cuts_consistency","BDT cut efficiency versus GEN pT",49,1,50,0,1);
-    EMTF_efficiency_cuts_consistency = new TProfile("EMTF_efficiency_cuts_consistency","EMTF cut efficiency versus GEN pT",49,1,50,0,1);
-    BDT_cuts_vs_Gen_pT = new TProfile("BDT_cuts_vs_Gen_pT","BDT cuts versus GEN pT",49,1,50,0,50);
-    EMTF_cuts_vs_Gen_pT = new TProfile("EMTF_cuts_vs_Gen_pT","EMTF cuts versus GEN pT",49,1,50,0,50);
+    TProfile* BDT_efficiency_cuts_consistency = new TProfile("BDT_efficiency_cuts_consistency","BDT cut efficiency versus GEN pT",49,1,50,0,1);
+    TProfile* EMTF_efficiency_cuts_consistency = new TProfile("EMTF_efficiency_cuts_consistency","EMTF cut efficiency versus GEN pT",49,1,50,0,1);
+    TProfile* BDT_cuts_vs_Gen_pT = new TProfile("BDT_cuts_vs_Gen_pT","BDT cuts versus GEN pT",49,1,50,0,50);
+    TProfile* EMTF_cuts_vs_Gen_pT = new TProfile("EMTF_cuts_vs_Gen_pT","EMTF cuts versus GEN pT",49,1,50,0,50);
 
 
     for (int Gen_bin=0;Gen_bin<50;Gen_bin++) {

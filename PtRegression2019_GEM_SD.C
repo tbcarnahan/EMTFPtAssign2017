@@ -270,10 +270,15 @@ void PtRegression2019_GEM_SD ( TString myMethodList = "" ) {
    in_vars.push_back( MVA_var( "FR_3",      "St 3 LCT F/R",          "int", 'I', -88 ) ); // 0x0000 0400
    in_vars.push_back( MVA_var( "FR_4",      "St 4 LCT F/R",          "int", 'I', -88 ) ); // 0x0000 0800
 
-   in_vars.push_back( MVA_var( "bend_1",    "St 1 LCT bending",      "int", 'I', -88 ) ); // 0x0000 1000
-   in_vars.push_back( MVA_var( "bend_2",    "St 2 LCT bending",      "int", 'I', -88 ) ); // 0x0000 2000
-   in_vars.push_back( MVA_var( "bend_3",    "St 3 LCT bending",      "int", 'I', -88 ) ); // 0x0000 4000
-   in_vars.push_back( MVA_var( "bend_4",    "St 4 LCT bending",      "int", 'I', -88 ) ); // 0x0000 8000
+   // in_vars.push_back( MVA_var( "bend_1",    "St 1 LCT bending",      "int", 'I', -88 ) ); // 0x0000 1000
+   // in_vars.push_back( MVA_var( "bend_2",    "St 2 LCT bending",      "int", 'I', -88 ) ); // 0x0000 2000
+   // in_vars.push_back( MVA_var( "bend_3",    "St 3 LCT bending",      "int", 'I', -88 ) ); // 0x0000 4000
+   // in_vars.push_back( MVA_var( "bend_4",    "St 4 LCT bending",      "int", 'I', -88 ) ); // 0x0000 8000
+
+   in_vars.push_back( MVA_var( "slope_1",    "St 1 LCT slope",      "int", 'I', -88 ) ); // 0x0000 1000
+   in_vars.push_back( MVA_var( "slope_2",    "St 2 LCT slope",      "int", 'I', -88 ) ); // 0x0000 2000
+   in_vars.push_back( MVA_var( "slope_3",    "St 3 LCT slope",      "int", 'I', -88 ) ); // 0x0000 4000
+   in_vars.push_back( MVA_var( "slope_4",    "St 4 LCT slope",      "int", 'I', -88 ) ); // 0x0000 8000
 
    in_vars.push_back( MVA_var( "dPhiSum4",  "#Sigmad#phi (6)",       "int", 'I', -88 ) ); // 0x0001 0000
    in_vars.push_back( MVA_var( "dPhiSum4A", "#Sigma|d#phi| (6)",     "int", 'I', -88 ) ); // 0x0002 0000
@@ -290,12 +295,27 @@ void PtRegression2019_GEM_SD ( TString myMethodList = "" ) {
    in_vars.push_back( MVA_var( "dTh_14",    "#theta(4) - #theta(1)", "int", 'I', -88 ) ); // 0x0400 0000
    in_vars.push_back( MVA_var( "dTh_24",    "#theta(4) - #theta(2)", "int", 'I', -88 ) ); // 0x0800 0000
 
-   //add 2017 EMTF pT as input variable to accelerate training
-   in_vars.push_back( MVA_var( "EMTF_pt",       "EMTF p_{T}",        "",    'F', -88 ) ); // 0x1000 0000
+   in_vars.push_back( MVA_var( "strip_quart_bit_1",    "St 1 QS",      "int", 'I', -88 ) );
+   in_vars.push_back( MVA_var( "strip_quart_bit_2",    "St 2 QS",      "int", 'I', -88 ) );
+   in_vars.push_back( MVA_var( "strip_quart_bit_3",    "St 3 QS",      "int", 'I', -88 ) );
+   in_vars.push_back( MVA_var( "strip_quart_bit_4",    "St 4 QS",      "int", 'I', -88 ) );
+
+   in_vars.push_back( MVA_var( "strip_eight_bit_1",    "St 1 ES",      "int", 'I', -88 ) );
+   in_vars.push_back( MVA_var( "strip_eight_bit_2",    "St 2 ES",      "int", 'I', -88 ) );
+   in_vars.push_back( MVA_var( "strip_eight_bit_3",    "St 3 ES",      "int", 'I', -88 ) );
+   in_vars.push_back( MVA_var( "strip_eight_bit_4",    "St 4 ES",      "int", 'I', -88 ) );
+
+   // add 2017 EMTF pT as input variable to accelerate training
+
+   // Stuff commented on Feb 27 2020
+   // For the initial tests, we probably want to drop "EMTF_pt" as an input variable
+   // in_vars.push_back( MVA_var( "EMTF_pt",       "EMTF p_{T}",        "",    'F', -88 ) ); // 0x1000 0000
+   // Later on, it will probably make sense to match this variable with the GEN-level "target" variable, in this case change to "log2_EMTF_pt"
 
    // new GEM-CSC bending angle
-   //in_vars.push_back( MVA_var( "dPhi_GE11_ME11", "#phi(GE11) - #phi(ME11)", "", 'F', -88 ) ); // 0x1 0000 0000
-   //in_vars.push_back( MVA_var( "GEM_1",   "St 1 hit is GEM",       "int", 'I', -88 ) ); // 0x1 0000 0000
+
+   // in_vars.push_back( MVA_var( "dPhi_GE11_ME11", "#phi(GE11) - #phi(ME11)", "", 'F', -88 ) ); // 0x1 0000 0000
+   // in_vars.push_back( MVA_var( "GEM_1",   "St 1 hit is GEM",       "int", 'I', -88 ) ); // 0x1 0000 0000
 
    /*
    if (USE_RPC) {
@@ -387,7 +407,7 @@ void PtRegression2019_GEM_SD ( TString myMethodList = "" ) {
    int nSMEvents = SM_in_chain->GetEntries();
    int nZBEvents = ZB_in_chain->GetEntries();
    std::cout << "\n******* About to loop over chains *******" << std::endl;
-   std::cout << "\n in_chains size: "<< in_chains.size() << " " << nSMEvents << " " << nZBEvents << std::endl;
+   std::cout << "\n in_chains size: "<< in_chains.size() << " N(SingleMu) = " << nSMEvents << " N(ZeroBias) = " << nZBEvents << std::endl;
    UInt_t NonZBEvt = 0;
    UInt_t ZBEvt = 0;
    UInt_t nTrain = 0;
@@ -395,15 +415,18 @@ void PtRegression2019_GEM_SD ( TString myMethodList = "" ) {
    Bool_t isZB = false;//tag per event
    Bool_t isTEST = false;//tag per event
 
+
    //=================================
    //Register events: loop over chains
    //=================================
    for (int iCh = 0; iCh < in_chains.size(); iCh++) {
      TChain *in_chain = in_chains.at(iCh);
 
-     std::cout << "\n******* About to enter the event loop for chain " << iCh+1 << " *******" << std::endl;
+     std::cout << "******* About to enter the event loop for chain " << iCh+1 << " " << in_chain->GetEntries() << " *******" << std::endl;
 
      for (UInt_t jEvt = 0; jEvt < in_chain->GetEntries(); jEvt++) {
+
+       if (jEvt%1000==0) std::cout << "******* About to loop on event " << jEvt << " *******" << std::endl;
        //!!! jEvt restarts from 0 in new chain
 
        //!!! iCh<1 important here: Protect against small MAX_TR setting
@@ -415,9 +438,9 @@ void PtRegression2019_GEM_SD ( TString myMethodList = "" ) {
        //iCh=0 means SingleMu dataset,
        //need to modify in the future if have more types of samples added for training, such as Muonia, etc
        if (iCh<1) {
-	        // isZB = false;
-	        // isTEST = false;
-          NonZBEvt += 1;
+         isZB = false;
+         isTEST = false;
+         NonZBEvt += 1;
        }
        // else{
 	     //   isZB = true;
@@ -558,31 +581,26 @@ void PtRegression2019_GEM_SD ( TString myMethodList = "" ) {
          int i3=-99;
          int i4=-99;
 
-         //std::cout << "Checking number of Track hits " << I("trk_nHits", iTrk) << std::endl;
-
-	 /*
          // added on 2019-11-05 per Andrew's suggestions
-         if ( I("trk_nHits", iTrk) != VI("trk_iHit", iTrk).size() ) {
+         if ( I("trk_nHits", iTrk) != VI("trk_iHit", iTrk).size() and false) {
 
-           std::cout << "\tnHits " << I("trk_nHits", iTrk) << std::endl;
-           std::cout << "\tnHits2 " << VI("trk_iHit", iTrk).size() << std::endl;
-           std::cout << "\tmode_RPC " << I("trk_mode_RPC", iTrk)  << std::endl;
-           std::cout << "\tmode_CSC " << I("trk_mode_CSC", iTrk)  << std::endl;
+           std::cout << "Checking number of Track hits " << std::endl;
+           std::cout << ">>>trk_nHits " << I("trk_nHits", iTrk) << std::endl;
+           std::cout << ">>>trk_iHit.size " << VI("trk_iHit", iTrk).size() << std::endl;
+           std::cout << ">>>mode_RPC " << I("trk_mode_RPC", iTrk)  << std::endl;
+           std::cout << ">>>mode_CSC " << I("trk_mode_CSC", iTrk)  << std::endl;
 
            continue;
          }
-	 */
 
 
          for (int jhit = 0; jhit < I("trk_nHits", iTrk); jhit++) {
 
            int iHit = I("trk_iHit", iTrk, jhit);  // Access the index of each hit in the emtf track
 
-	   /*
-           std::cout << "Checking track hit " << iHit << " " << jhit
-                     << " isCSC " << I("hit_isCSC",iHit) << " "
-                     << " isGEM " << I("hit_isGEM",iHit) << std::endl;
-	   */
+           // std::cout << "\tChecking track hit " << iHit << " " << jhit
+           //           << " isCSC " << I("hit_isCSC",iHit) << " "
+           //           << " isGEM " << I("hit_isGEM",iHit) << std::endl;
 
            // trk_nHits, VI("trk_iHit", iTrk).size(), trk_nRPC, and trk_mode_CSC
 
@@ -676,6 +694,44 @@ void PtRegression2019_GEM_SD ( TString myMethodList = "" ) {
          int pat3 = (i3 >= 0 ? I("hit_pattern", i3 ) : -99);
          int pat4 = (i4 >= 0 ? I("hit_pattern", i4 ) : -99);
 
+         int pat1_run3 = (i1CSC >= 0 ? I("hit_pattern_run3",i1CSC ) : -99);
+         int pat2_run3 = (i2 >= 0 ? I("hit_pattern_run3", i2 ) : -99);
+         int pat3_run3 = (i3 >= 0 ? I("hit_pattern_run3", i3 ) : -99);
+         int pat4_run3 = (i4 >= 0 ? I("hit_pattern_run3", i4 ) : -99);
+
+         // 4-bit value
+         int slope1 = (i1CSC >= 0 ? I("hit_slope",i1CSC ) : -99);
+         int slope2 = (i2 >= 0 ? I("hit_slope", i2 ) : -99);
+         int slope3 = (i3 >= 0 ? I("hit_slope", i3 ) : -99);
+         int slope4 = (i4 >= 0 ? I("hit_slope", i4 ) : -99);
+
+         // 1-bit sign
+         int bend1 = (i1CSC >= 0 ? I("hit_bend",i1CSC ) : -99);
+         int bend2 = (i2 >= 0 ? I("hit_bend", i2 ) : -99);
+         int bend3 = (i3 >= 0 ? I("hit_bend", i3 ) : -99);
+         int bend4 = (i4 >= 0 ? I("hit_bend", i4 ) : -99);
+
+         // 5-bit slope: 1-bit sign + 4-bit value
+         int slopeshift1 = (bend1 == 0) ? 0 : 16;
+         int slopeshift2 = (bend2 == 0) ? 0 : 16;
+         int slopeshift3 = (bend3 == 0) ? 0 : 16;
+         int slopeshift4 = (bend4 == 0) ? 0 : 16;
+
+         slope1 += slopeshift1;
+         slope2 += slopeshift2;
+         slope3 += slopeshift3;
+         slope4 += slopeshift4;
+
+         int strip_quart_bit1 = (i1CSC >= 0 ? I("hit_strip_quart_bit",i1CSC ) : -99);
+         int strip_quart_bit2 = (i2 >= 0 ? I("hit_strip_quart_bit", i2 ) : -99);
+         int strip_quart_bit3 = (i3 >= 0 ? I("hit_strip_quart_bit", i3 ) : -99);
+         int strip_quart_bit4 = (i4 >= 0 ? I("hit_strip_quart_bit", i4 ) : -99);
+
+         int strip_eight_bit1 = (i1CSC >= 0 ? I("hit_strip_eight_bit",i1CSC ) : -99);
+         int strip_eight_bit2 = (i2 >= 0 ? I("hit_strip_eight_bit", i2 ) : -99);
+         int strip_eight_bit3 = (i3 >= 0 ? I("hit_strip_eight_bit", i3 ) : -99);
+         int strip_eight_bit4 = (i4 >= 0 ? I("hit_strip_eight_bit", i4 ) : -99);
+
          int st1_ring2 = (i1CSC >= 0 ? ( I("hit_ring",i1CSC ) == 2 || I("hit_ring",i1CSC ) == 3 ) : 0);
 
          //===========
@@ -699,7 +755,7 @@ void PtRegression2019_GEM_SD ( TString myMethodList = "" ) {
          int dPhSum4, dPhSum4A, dPhSum3, dPhSum3A, outStPh;
          int dTh12, dTh13, dTh14, dTh23, dTh24, dTh34;
          int FR1, FR2, FR3, FR4;
-         int bend1, bend2, bend3, bend4;
+         //uncommented on 19/1/2021 int bend1, bend2, bend3, bend4;
          int RPC1, RPC2, RPC3, RPC4;
          int dPhGE11ME11;
          int GE11;
@@ -740,9 +796,12 @@ void PtRegression2019_GEM_SD ( TString myMethodList = "" ) {
          FR4 = (i4 >= 0 ? (cham4 % 2 == 1) : -99);
          if (ring1 == 3) FR1 = 0;                   // In ME1/3 chambers are non-overlapping
 
+         /*
+           uncommented on 19/1/2021
          CalcBends( bend1, bend2, bend3, bend4,
                     pat1, pat2, pat3, pat4,
                     dPhSign, endcap, mode, BIT_COMP );
+         */
 
          //Recompute bend1/2/3/4 with offline segment bending
          /*
@@ -832,10 +891,27 @@ void PtRegression2019_GEM_SD ( TString myMethodList = "" ) {
                    if ( vName == "FR_2" ) var_vals.at(iVar) = FR2;
                    if ( vName == "FR_3" ) var_vals.at(iVar) = FR3;
                    if ( vName == "FR_4" ) var_vals.at(iVar) = FR4;
+                   /*
                    if ( vName == "bend_1" ) var_vals.at(iVar) = bend1;
                    if ( vName == "bend_2" ) var_vals.at(iVar) = bend2;
                    if ( vName == "bend_3" ) var_vals.at(iVar) = bend3;
                    if ( vName == "bend_4" ) var_vals.at(iVar) = bend4;
+                   */
+                   if ( vName == "slope_1" ) var_vals.at(iVar) = slope1;
+                   if ( vName == "slope_2" ) var_vals.at(iVar) = slope2;
+                   if ( vName == "slope_3" ) var_vals.at(iVar) = slope3;
+                   if ( vName == "slope_4" ) var_vals.at(iVar) = slope4;
+
+                   if ( vName == "strip_quart_bit_1" ) var_vals.at(iVar) = strip_quart_bit1;
+                   if ( vName == "strip_quart_bit_2" ) var_vals.at(iVar) = strip_quart_bit2;
+                   if ( vName == "strip_quart_bit_3" ) var_vals.at(iVar) = strip_quart_bit3;
+                   if ( vName == "strip_quart_bit_4" ) var_vals.at(iVar) = strip_quart_bit4;
+
+                   if ( vName == "strip_eight_bit_1" ) var_vals.at(iVar) = strip_eight_bit1;
+                   if ( vName == "strip_eight_bit_2" ) var_vals.at(iVar) = strip_eight_bit2;
+                   if ( vName == "strip_eight_bit_3" ) var_vals.at(iVar) = strip_eight_bit3;
+                   if ( vName == "strip_eight_bit_4" ) var_vals.at(iVar) = strip_eight_bit4;
+
                    if ( vName == "dPhiSum4" ) var_vals.at(iVar) = dPhSum4;
                    if ( vName == "dPhiSum4A" ) var_vals.at(iVar) = dPhSum4A;
                    if ( vName == "dPhiSum3" ) var_vals.at(iVar) = dPhSum3;
@@ -854,8 +930,9 @@ void PtRegression2019_GEM_SD ( TString myMethodList = "" ) {
                    if ( vName == "RPC_3" ) var_vals.at(iVar) = RPC3;
                    if ( vName == "RPC_4" ) var_vals.at(iVar) = RPC4;
 
-                   //if ( vName == "GEM_1" ) var_vals.at(iVar) = GE11;
-                   //if ( vName == "dPhi_GE11_ME11" ) var_vals.at(iVar) = dPhGE11ME11;
+                   // Makes output values [0, 1] instead of [-99, 1] which is easier to see in the output histogram.
+                   if ( vName == "GEM_1" ) var_vals.at(iVar) = max(0, GE11);
+                   if ( vName == "dPhi_GE11_ME11" ) var_vals.at(iVar) = dPhGE11ME11;
                    // if ( vName == "ph_GE11" ) var_vals.at(iVar) = phGE11;
 
                    //////////////////////////////
@@ -903,12 +980,14 @@ void PtRegression2019_GEM_SD ( TString myMethodList = "" ) {
            if ( (NonZBEvt % 2)==0 && mu_train && MODE > 0 ) {
              std::get<1>(factories.at(iFact))->AddTrainingEvent( "Regression", var_vals, evt_weight );
              if (iFact == 0) nTrain += 1;
-             //std::cout << "Total events in training sample " << nTrain << std::endl;
+
+             // std::cout << "Total events in training sample " << nTrain << std::endl;
            }
            else {
              std::get<1>(factories.at(iFact))->AddTestEvent( "Regression", var_vals, evt_weight );
              if (iFact == 0) nTest += 1;
-             //std::cout << "Total events in testing sample " << nTest << std::endl;
+
+             // std::cout << "Total events in testing sample " << nTest << std::endl;
            }
          } // End loop: for (UInt_t iFact = 0; iFact < factories.size(); iFact++)
 

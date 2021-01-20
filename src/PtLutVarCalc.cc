@@ -64,11 +64,21 @@ void CalcDeltaPhis_2019GEM( int& dPh12, int& dPh13, int& dPh14, int& dPh23, int&
                 dPhSum4,dPhSum4A,dPhSum3,dPhSum3A,outStPh,
                 ph1,  ph2,  ph3,  ph4,  mode,BIT_COMP );
 
-  dPhGE11ME11 = (phGEM - ph1)*dPhSign;
+  /*
+    AWB: "One other thing: in PtLutVarCalc.cc, the variable dPhGE11ME11 should be set
+    to some default value if *either* phGEM *or* ph1 is < 0, and that default
+    value should be some constant like -999, rather than being set equal to phGEM (line 71)."
+  */
+  if (ph1 < 0 or phGEM < 0)
+    dPhGE11ME11 = -999;
 
-  // cases when ME11 is missing
-  if (ph1 < 0)
-    dPhGE11ME11 = phGEM;
+  /*
+    AWB: "Also, the quantity dPhGE11ME11 should be multiplied by -1*dPhSign, so use
+    dPhGE11ME11 = (ph1 - phGEM)*dPhSign;  With this convention, when dPhi(GEM-ME1)
+    and dPhi(ME1-ME2) are in line, both will have positive values."
+  */
+
+  dPhGE11ME11 = (ph1 - phGEM)*dPhSign;
 
   // probably best not to change the EMTF track mode at this point
 }
