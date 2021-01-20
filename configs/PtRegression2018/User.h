@@ -26,7 +26,7 @@ namespace PtRegression2018_cfg {
     if (USER == "Sven") {
       OUT_DIR_NAME = "/uscms/home/dildick/nobackup/work/Rice_EMTF_Summer2019/CMSSW_10_6_1_patch2/src/EMTFPtAssign2017/";
     }
-    if (USER = "Matthew") {
+    if (USER == "Matthew") {
       OUT_DIR_NAME = "~/nobackup/BDTGEM/CMSSW_10_6_1_patch2/src/EMTFPtAssign2017/";
     }
   } // End function: inline void ConfigureUser()
