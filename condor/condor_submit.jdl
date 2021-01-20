@@ -1,0 +1,9 @@
+universe = vanilla
+Executable = condor_BDT.sh
+should_transfer_files = YES
+when_to_transfer_output = ON_EXIT
+Output = BDT_$(Cluster)_$(Process).stdout
+Error = BDT_$(Cluster)_$(Process).stderr
+Log = BDT_$(Cluster)_$(Process).log
+request_memory = 10000
+Queue

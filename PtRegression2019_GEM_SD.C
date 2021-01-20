@@ -593,6 +593,7 @@ void PtRegression2019_GEM_SD ( TString myMethodList = "" ) {
            continue;
          }
 
+
          for (int jhit = 0; jhit < I("trk_nHits", iTrk); jhit++) {
 
            int iHit = I("trk_iHit", iTrk, jhit);  // Access the index of each hit in the emtf track
@@ -979,11 +980,13 @@ void PtRegression2019_GEM_SD ( TString myMethodList = "" ) {
            if ( (NonZBEvt % 2)==0 && mu_train && MODE > 0 ) {
              std::get<1>(factories.at(iFact))->AddTrainingEvent( "Regression", var_vals, evt_weight );
              if (iFact == 0) nTrain += 1;
+
              // std::cout << "Total events in training sample " << nTrain << std::endl;
            }
            else {
              std::get<1>(factories.at(iFact))->AddTestEvent( "Regression", var_vals, evt_weight );
              if (iFact == 0) nTest += 1;
+
              // std::cout << "Total events in testing sample " << nTest << std::endl;
            }
          } // End loop: for (UInt_t iFact = 0; iFact < factories.size(); iFact++)
