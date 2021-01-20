@@ -9,6 +9,10 @@ from array import *
 from termcolor import colored
 from ROOT import gROOT
 
+## run quiet mode
+sys.argv.append( '-b' )
+gROOT.SetBatch(1)
+
 ## ================ Read input files ==============
 print '------> Importing Root File'
 #dir1 = '/uscms/home/mdecaro/nobackup/BDTGEM/CMSSW_10_6_1_patch2/src/EMTFPtAssign2017/'
@@ -26,10 +30,10 @@ evt_tree = TChain('f_MODE_15_logPtTarg_logPtWgt_noBitCompr_noRPC_noGEM_Run3Tree_
 
 #BDT efficiency
 c1 = TCanvas("c1")
-evt_tree.Draw("GEN_pt>>h_denom(64,1.,50.)")
+evt_tree.Draw("GEN_pt>>h_denom(64,1.,50.)","abs(GEN_eta) > 1.2 && abs(GEN_eta) < 2.4")
 h_denom=gROOT.FindObject("h_denom")
 c1.Update()
-evt_tree.Draw("GEN_pt>>h_numer(64,1.,50.)", "2**(BDTG_AWB_Sq)>24.")
+evt_tree.Draw("GEN_pt>>h_numer(64,1.,50.)", "2**(BDTG_AWB_Sq)>24 && abs(GEN_eta) > 1.2 && abs(GEN_eta) < 2.4")
 h_numer=gROOT.FindObject("h_numer")
 c1.Update()
 h_numer.Divide(h_denom)
