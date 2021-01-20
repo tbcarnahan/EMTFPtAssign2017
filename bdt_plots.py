@@ -19,7 +19,7 @@ print colored('Loading file: '+file_name, 'green')
 
 
 ## ============= Read in the TTrees ===============
-evt_tree = TChain('f_MODE_15_logPtTarg_logPtWgt_noBitCompr_noRPC_noGEM_Run3Tree/TestTree') ; evt_tree.Add(file_name)
+evt_tree = TChain('f_MODE_15_logPtTarg_logPtWgt_noBitCompr_noRPC_noGEM_Run3Tree_newVarsOn/TestTree') ; evt_tree.Add(file_name)
 
 ## ============== Plotting macro ==================
 
