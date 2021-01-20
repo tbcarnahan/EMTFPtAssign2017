@@ -1,8 +1,8 @@
 // *** Default user settings *** //
-TString EOS_DIR_NAME  = "/uscms/home/mdecaro/nobackup/BDTGEM/CMSSW_10_6_1_patch2/src/EMTFPtAssign2017";  // Input directory in
+TString EOS_DIR_NAME = "";
 TString in_dir = "";
 TString SingleMu_files[1] = {
-"EMTF_MC_NTuple_Run3stubs.root"
+  "EMTF_MC_NTuple_01062021.root"
 };
 
 TString ZeroBias_files[1] = {
