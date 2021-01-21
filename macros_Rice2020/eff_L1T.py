@@ -9,6 +9,10 @@ from array import *
 from termcolor import colored
 from ROOT import gROOT
 
+## run quiet mode
+sys.argv.append( '-b' )
+gROOT.SetBatch(1)
+
 print '------> Importing Root File'
 
 ## Configuration settings
@@ -20,8 +24,9 @@ printouts=False
 evt_tree  = TChain('FlatNtupleMC/tree')
 
 ## ================ Read input files ======================
-dir1 = '/uscms/home/mdecaro/nobackup/BDTGEM/CMSSW_10_6_1_patch2/src/EMTFPtAssign2017/'
-file_name = dir1+"EMTF_MC_NTuple_Run3stubs.root"
+dir1 = 'root://cmsxrootd-site.fnal.gov///store/user/mdecaro/Ntuples/'
+outputdir = "validation_november_nostub"
+file_name = dir1+"EMTF_MC_NTuple_01062021.root"
 print colored('Loading file: '+file_name, 'green')
 evt_tree.Add(file_name)
 
@@ -37,7 +42,7 @@ h_2D_nstubs_eta = TH2D('h_2D_nstubs_eta', '', 64, 1.24, 2.4, 6, 0., 5.)
 h_2D_nstubs_pt = TH2D('h_2D_nstubs_pt', '', 64, 1.24, 2.4, 51, 0., 50.)
 
 ## ================ Printouts for debugging ======================
-if printouts==True:
+if False:
   for iEvt in range(1000000):
     evt_tree.GetEntry(iEvt)
 
@@ -54,11 +59,11 @@ if printouts==True:
 
 
 ## ================ Event loop ======================
-for iEvt in range(300000):
+for iEvt in range(50000):
 #for iEvt in range(evt_tree.GetEntries()):
   if MAX_EVT > 0 and iEvt > MAX_EVT: break
   if iEvt % PRT_EVT is 0: print 'Event #', iEvt
-  
+
   evt_tree.GetEntry(iEvt)
 
   ME1_p=0;ME2_p=0;ME3_p=0;ME4_p=0
@@ -81,7 +86,7 @@ for iEvt in range(300000):
   ##2 stub requirement
   if (ME1_p * ME2_p)!=0 or (ME1_p * ME3_p)!=0 or (ME1_p * ME4_p)!=0 or (ME2_p * ME3_p)!=0 or (ME2_p * ME4_p)!=0 or (ME3_p * ME4_p)!=0: flag_p=1
   if (ME1_n * ME2_n)!=0 or (ME1_n * ME3_n)!=0 or (ME1_n * ME4_n)!=0 or (ME2_n * ME3_n)!=0 or (ME2_n * ME4_n)!=0 or (ME3_n * ME4_n)!=0: flag_n=1
-  
+
   ##3 stub requirement
   #if (ME1_p * ME2_p * ME3_p)!=0 or (ME1_p * ME3_p * ME4_p)!=0 or (ME1_p * ME2_p * ME4_p)!=0 or (ME2_p * ME3_p * ME4_p)!=0: flag_p+=1
   #if (ME1_n * ME2_n * ME3_n)!=0 or (ME1_n * ME3_n * ME4_n)!=0 or (ME1_n * ME2_n * ME4_n)!=0 or (ME2_n * ME3_n * ME4_n)!=0: flag_n+=1
@@ -92,11 +97,11 @@ for iEvt in range(300000):
 
   #Fill Nstubs vs X histograms.
   for i in range(len(evt_tree.mu_eta)):
-    if evt_tree.mu_eta[i]>0: 
+    if evt_tree.mu_eta[i]>0:
       h_2D_nstubs_pt.Fill(evt_tree.mu_pt[i], Nstubs_p)
       h_2D_nstubs_eta.Fill(abs(evt_tree.mu_eta[i]), Nstubs_p)
     if evt_tree.mu_eta[i]<0:
-      h_2D_nstubs_pt.Fill(evt_tree.mu_pt[i], Nstubs_n) 
+      h_2D_nstubs_pt.Fill(evt_tree.mu_pt[i], Nstubs_n)
       h_2D_nstubs_eta.Fill(abs(evt_tree.mu_eta[i]), Nstubs_n)
 
 
@@ -105,11 +110,11 @@ for iEvt in range(300000):
     for i in range(len(evt_tree.mu_eta)):
       if (abs(evt_tree.mu_eta[i])>1.24 and abs(evt_tree.mu_eta[i])<2.4):
 	#if evt_tree.trk_mode[j]==11 or evt_tree.trk_mode[j]==13 or evt_tree.trk_mode[j]==14 or evt_tree.trk_mode[j]==15:
-	if evt_tree.trk_eta[j]*evt_tree.mu_eta[i]>0 and evt_tree.trk_nNeighbor[j]==0 and ((evt_tree.mu_eta[i]>0 and flag_p>0) or (evt_tree.mu_eta[i]<0 and flag_n>0)):
-	  
+	if evt_tree.trk_eta[j]*evt_tree.mu_eta[i]>0 and evt_tree.trk_nNeighbor[j]==0 and ((evt_tree.mu_eta[i]>0) or (evt_tree.mu_eta[i]<0 and flag_n>0)):
+
 	  h_2D_mode_eta.Fill(abs(evt_tree.mu_eta[i]), evt_tree.trk_mode[j])
 
-	  h_pt_denom.Fill(evt_tree.mu_pt[i]) 
+	  h_pt_denom.Fill(evt_tree.mu_pt[i])
 	  h_2D_pt_eta_denom.Fill(evt_tree.mu_eta[i], evt_tree.mu_pt[i])
 	  h_2D_genpt_l1pt.Fill(evt_tree.mu_pt[i], evt_tree.trk_pt[j])
 
@@ -125,7 +130,7 @@ for iEvt in range(300000):
 	      h_eta_numer.Fill(evt_tree.mu_eta[i])
 	      h_phi_numer.Fill(evt_tree.mu_phi[i])
 
-	
+
 ## ================ Plot/save histograms ======================
 
 #-------------------------------------
@@ -139,7 +144,7 @@ gPad.Update()
 graph = eff.GetPaintedGraph()
 graph.SetMinimum(0)
 graph.SetMaximum(1)
-c1.SaveAs('validation_november/eff_phi_pt25.png')
+c1.SaveAs(outputdir + '/eff_phi_pt25.png')
 raw_input("Enter")
 
 c1 = TCanvas("c1")
@@ -150,7 +155,7 @@ gPad.Update()
 graph = eff.GetPaintedGraph()
 graph.SetMinimum(0)
 graph.SetMaximum(1)
-c1.SaveAs('validation_november/eff_pt25.png')
+c1.SaveAs(outputdir + '/eff_pt25.png')
 raw_input("Enter")
 
 
@@ -162,7 +167,7 @@ gPad.Update()
 graph = eff.GetPaintedGraph()
 graph.SetMinimum(0)
 graph.SetMaximum(1)
-c1.SaveAs('validation_november/eff_eta_pt25.png')
+c1.SaveAs(outputdir + '/eff_eta_pt25.png')
 raw_input("Enter")
 
 
@@ -176,7 +181,7 @@ raw_input("Enter")
 #h_2D_genpt_l1pt.SetTitle('p_{T}^{L1} vs p_{T}^{GEN})')
 #h_2D_genpt_l1pt.GetXaxis().SetTitle('p_{T}^{GEN} (GeV)') ; h_2D_genpt_l1pt.GetYaxis().SetTitle('p_{T}^{L1} (GeV)')
 #h_2D_genpt_l1pt.Write()
-#c1.SaveAs('validation_november/ptgen_ptl1.png')
+#c1.SaveAs(outputdir + '/ptgen_ptl1.png')
 ##raw_input("Enter")
 #c1.Close()
 
@@ -205,7 +210,7 @@ gPad.SetLogz()
 h_2D_nstubs_pt.SetTitle('Number of stubs vs p_{T}^{GEN}')
 h_2D_nstubs_pt.GetXaxis().SetTitle('p_{T}^{GEN}') ; h_2D_nstubs_pt.GetYaxis().SetTitle('N_{stubs}')
 h_2D_nstubs_pt.Write()
-c1.SaveAs('validation_november/stubs_pt.png')
+c1.SaveAs(outputdir + '/stubs_pt.png')
 raw_input("Enter")
 c1.Close()
 
@@ -216,7 +221,7 @@ gPad.SetLogz()
 h_2D_nstubs_eta.SetTitle('Number of stubs vs |#eta^{GEN}|')
 h_2D_nstubs_eta.GetXaxis().SetTitle('#eta^{GEN}') ; h_2D_nstubs_eta.GetYaxis().SetTitle('N_{stubs}')
 h_2D_nstubs_eta.Write()
-c1.SaveAs('validation_november/stubs_eta.png')
+c1.SaveAs(outputdir + '/stubs_eta.png')
 raw_input("Enter")
 c1.Close()
 
@@ -227,8 +232,7 @@ gPad.SetLogz()
 h_2D_mode_eta.SetTitle('Mode occupancy vs |#eta^{GEN}|')
 h_2D_mode_eta.GetXaxis().SetTitle('#eta^{GEN}') ; h_2D_mode_eta.GetYaxis().SetTitle('Track mode')
 h_2D_mode_eta.Write()
-c1.SaveAs('validation_november/mode_eta.png')
+c1.SaveAs(outputdir + '/mode_eta.png')
 raw_input("Enter")
 c1.Close()
 '''
-
