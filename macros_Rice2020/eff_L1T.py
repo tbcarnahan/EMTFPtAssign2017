@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 print '------> Setting Environment'
-
 import sys
 import math
 from ROOT import *
@@ -59,7 +58,41 @@ if False:
 
 
 ## ================ Event loop ======================
-for iEvt in range(50000):
+for iEvt in range(1000):
+  evt_tree.GetEntry(iEvt)
+  print("Processing event", iEvt)
+
+  for j in range(0,evt_tree.nGenMuons):
+    print("Processing muon", j)
+    print("Muon pT", evt_tree.mu_pt[j])
+    print("Muon eta", evt_tree.mu_eta[j])
+    print("Muon phi", evt_tree.mu_phi[j])
+    print("Muon charge", evt_tree.mu_charge[j])
+
+  for j in range(0,evt_tree.nTracks):
+    print("Processing track", j)
+    print("Track pT", evt_tree.trk_pt[j])
+    print("Track eta", evt_tree.trk_eta[j])
+    print("Track phi", evt_tree.trk_phi[j])
+    print("Number of hits", evt_tree.trk_nHits[j])
+
+  ## count stubs in positive endcap
+  print len(evt_tree.hit_station)
+  for i in range(len(evt_tree.hit_phi)):
+    if evt_tree.hit_endcap[i]>0 and evt_tree.hit_neighbor[i]==0:
+      if evt_tree.hit_station[i]==1: ME1_p+=1
+      if evt_tree.hit_station[i]==2: ME2_p+=1
+      if evt_tree.hit_station[i]==3: ME3_p+=1
+      if evt_tree.hit_station[i]==4: ME4_p+=1
+
+
+  print()
+
+exit(1)
+
+
+
+
 #for iEvt in range(evt_tree.GetEntries()):
   if MAX_EVT > 0 and iEvt > MAX_EVT: break
   if iEvt % PRT_EVT is 0: print 'Event #', iEvt
@@ -90,6 +123,9 @@ for iEvt in range(50000):
   ##3 stub requirement
   #if (ME1_p * ME2_p * ME3_p)!=0 or (ME1_p * ME3_p * ME4_p)!=0 or (ME1_p * ME2_p * ME4_p)!=0 or (ME2_p * ME3_p * ME4_p)!=0: flag_p+=1
   #if (ME1_n * ME2_n * ME3_n)!=0 or (ME1_n * ME3_n * ME4_n)!=0 or (ME1_n * ME2_n * ME4_n)!=0 or (ME2_n * ME3_n * ME4_n)!=0: flag_n+=1
+
+trk_iHit
+#  eff_L1T.py
 
   #Count number of stubs
   Nstubs_p = ME1_p + ME2_p + ME3_p + ME4_p
