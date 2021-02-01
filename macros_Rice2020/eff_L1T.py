@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 print '------> Setting Environment'
+
 import sys
 import math
 from ROOT import *
@@ -8,267 +9,131 @@ from array import *
 from termcolor import colored
 from ROOT import gROOT
 
-## run quiet mode
-sys.argv.append( '-b' )
-gROOT.SetBatch(1)
-
 print '------> Importing Root File'
 
 ## Configuration settings
 MAX_EVT  = -1 ## Maximum number of events to process
 PRT_EVT  = 10000 ## Print every Nth event
 printouts=False
+plot_EffVsPt=True ; plot_EffVsEta=False
+eta_slices=False ; single_pt=False
 
-## ============== Event branches ================
-evt_tree  = TChain('FlatNtupleMC/tree')
+if single_pt==True:
+  pt_cut = [22]
+  pt_str = ["22"]
+
+else:
+  pt_cut = [3, 5, 7, 10, 12, 15, 20, 22, 24, 27]
+  pt_str = ["3", "5", "7", "10", "12", "15", "20", "22", "24", "27"]
+
+if eta_slices==True:
+  eta_min = [1.2, 1.4, 1.6, 1.8, 2.0, 2.2]
+  eta_max = [1.4, 1.6, 1.8, 2.0, 2.2, 2.4]
+  eta_str_min = ["1pt2", "1pt4", "1pt6", "1pt8", "2pt0", "2pt2"]
+  eta_str_max = ["1pt4", "1pt6", "1pt8", "2pt0", "2pt2", "2pt4"]
+
+else:  #Whole endcap region.
+  eta_min = [1.2]
+  eta_max = [2.4]
+  eta_str_min = ["1pt2"]
+  eta_str_max = ["2pt4"]
+
+
+## ============== Define TTrees ================
+evt_tree = TChain('f_MODE_15_logPtTarg_logPtWgt_noBitCompr_noRPC_noGEM_Run2Tree/TestTree')
+evt_tree2 = TChain('f_MODE_15_logPtTarg_logPtWgt_noBitCompr_noRPC_noGEM_Run3Tree_newVarsOn/TestTree')
+
 
 ## ================ Read input files ======================
-dir1 = 'root://cmsxrootd-site.fnal.gov///store/user/mdecaro/Ntuples/'
-outputdir = "validation_november_nostub"
-file_name = dir1+"EMTF_MC_NTuple_01062021.root"
-print colored('Loading file: '+file_name, 'green')
-evt_tree.Add(file_name)
+dir1 = 'root://cmseos.fnal.gov//store/user/mdecaro/condor_output_BDT/'
+file_name = dir1+"PtRegression2018_MODE_15_noBitCompr_noRPC_noGEM_Run2Tree.root"
+file_name2 = dir1+"PtRegression2018_MODE_15_noBitCompr_noRPC_noGEM_Run3Tree.root"
 
-
-## ================ Define histograms ======================
-h_pt_denom = TH1D('h_pt_denom', '', 100, 1., 100.) ; h_pt_numer = TH1D('h_pt_numer', '', 100, 1., 100.)
-h_eta_denom = TH1D('h_eta_denom', '', 128, -3., 3.) ; h_eta_numer = TH1D('h_eta_numer', '', 128, -3., 3.)
-h_phi_denom = TH1D('h_phi_denom', '', 64, -180., 180.) ; h_phi_numer = TH1D('h_phi_numer', '', 64, -180., 180.)
-h_2D_pt_eta_denom = TH2D('h_2D_pt_eta_denom', '', 128, -3, 3, 80, 1., 80.) ; h_2D_pt_eta_numer = TH2D('h_2D_pt_eta_numer', '', 128, -3, 3, 80, 1., 80.)
-h_2D_genpt_l1pt = TH2D('h_2D_genpt_l1pt', '', 100, 1., 100., 100, 1., 100.)
-h_2D_mode_eta = TH2D('h_2D_mode_eta', '', 64, 1.24, 2.4, 16, 1., 16.)
-h_2D_nstubs_eta = TH2D('h_2D_nstubs_eta', '', 64, 1.24, 2.4, 6, 0., 5.)
-h_2D_nstubs_pt = TH2D('h_2D_nstubs_pt', '', 64, 1.24, 2.4, 51, 0., 50.)
-
-## ================ Printouts for debugging ======================
-if False:
-  for iEvt in range(1000000):
-    evt_tree.GetEntry(iEvt)
-
-    if abs(evt_tree.mu_eta[0])<2.4 and abs(evt_tree.mu_eta[0])>2.3:
-      if evt_tree.mu_pt[0]<30 and evt_tree.mu_pt[0]>25:
-	for i in range(len(evt_tree.mu_pt)):
-	  print "Gen muon",i, " pt, eta, phi: ", evt_tree.mu_pt[i], evt_tree.mu_eta[i], evt_tree.mu_phi[i]
-	print '--------'
-	for i in range(len(evt_tree.trk_pt)):
-	  print "L1 muon",i, " pt, eta, phi, quality, nNeighbor: ", evt_tree.trk_pt[i], evt_tree.trk_eta[i], evt_tree.trk_phi[i], evt_tree.trk_qual[i], evt_tree.trk_nNeighbor[i]
-	#for i in range(len(evt_tree.hit_phi)):
-	  #if evt_tree.hit_station[i]==1: print evt_tree.hit_phi[i], evt_tree.hit_neighbor[i]
-	print '------Next event------'
-
+print colored('Loading file: '+file_name, 'green') ; print colored('Loading file: '+file_name2, 'green')
+evt_tree.Add(file_name) ; evt_tree2.Add(file_name2)
 
 ## ================ Event loop ======================
-for iEvt in range(1000):
-  evt_tree.GetEntry(iEvt)
-  print("Processing event", iEvt)
 
-  for j in range(0,evt_tree.nGenMuons):
-    print("Processing muon", j)
-    print("Muon pT", evt_tree.mu_pt[j])
-    print("Muon eta", evt_tree.mu_eta[j])
-    print("Muon phi", evt_tree.mu_phi[j])
-    print("Muon charge", evt_tree.mu_charge[j])
+for l in range(len(pt_cut)):
+  for k in range(len(eta_min)):
 
-  for j in range(0,evt_tree.nTracks):
-    print("Processing track", j)
-    print("Track pT", evt_tree.trk_pt[j])
-    print("Track eta", evt_tree.trk_eta[j])
-    print("Track phi", evt_tree.trk_phi[j])
-    print("Number of hits", evt_tree.trk_nHits[j])
+    c1 = TCanvas("c1")
 
-  ## count stubs in positive endcap
-  print len(evt_tree.hit_station)
-  for i in range(len(evt_tree.hit_phi)):
-    if evt_tree.hit_endcap[i]>0 and evt_tree.hit_neighbor[i]==0:
-      if evt_tree.hit_station[i]==1: ME1_p+=1
-      if evt_tree.hit_station[i]==2: ME2_p+=1
-      if evt_tree.hit_station[i]==3: ME3_p+=1
-      if evt_tree.hit_station[i]==4: ME4_p+=1
+    if plot_EffVsPt == True:
 
+      #Run2 and Run3 BDT efficiency vs Pt
+      evt_tree2.Draw("GEN_pt>>h_denom(50,1.,50.)", "abs(GEN_eta)>"+str(eta_min[k])+" && abs(GEN_eta)<"+str(eta_max[k]))
+      h_denom=gROOT.FindObject("h_denom")
+      c1.Update()
+      evt_tree2.Draw("GEN_pt>>h_numer(50,1.,50.)", "abs(GEN_eta)>"+str(eta_min[k])+" && abs(GEN_eta)<"+str(eta_max[k])+" && ((1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq)))))>"+str(pt_cut[l]))
+      h_numer=gROOT.FindObject("h_numer")
+      c1.Update()
 
-  print()
+      evt_tree.Draw("GEN_pt>>h_denom2(50,1.,50.)", "abs(GEN_eta)>"+str(eta_min[k])+" && abs(GEN_eta)<"+str(eta_max[k]))
+      h_denom2=gROOT.FindObject("h_denom2")
+      c1.Update()
+      evt_tree.Draw("GEN_pt>>h_numer2(50,1.,50.)", "abs(GEN_eta)>"+str(eta_min[k])+" && abs(GEN_eta)<"+str(eta_max[k])+" && ((1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq)))))>"+str(pt_cut[l]))
+      h_numer2=gROOT.FindObject("h_numer2")
+      c1.Update()
 
-exit(1)
+      eff = TEfficiency(h_numer, h_denom) ; eff2 = TEfficiency(h_numer2, h_denom2)
+      line = TLine(0, 0.9, 50, 0.9)
+      line2 = TLine(pt_cut[l], 0., pt_cut[l], 1.1)
+      line.SetLineStyle(7) ; line2.SetLineStyle(7)
 
+      eff.SetMarkerColor(kBlue) ; eff.SetLineColor(kBlue) ; eff.SetMarkerStyle(8)
+      eff2.SetMarkerColor(kRed) ; eff2.SetLineColor(kRed) ; eff2.SetMarkerStyle(8)
+      eff.Draw("AP") ; eff2.Draw("same")
+      line.Draw("same") ; line2.Draw("same")
 
+      la1 = TLatex() ; la1.SetTextFont(22) ; la1.SetTextColor(1) ; la1.SetTextSize(0.035) ; la1.SetTextAlign(10)
+      la1.DrawLatex( 35., 0.2, "p_{T}^{L1} > "+str(pt_cut[l])+" GeV")
+      la2 = TLatex() ; la2.SetTextFont(22) ; la2.SetTextColor(1) ; la2.SetTextSize(0.035) ; la2.SetTextAlign(10)
+      la2.DrawLatex( 35., 0.1, str(eta_min[k])+" < |#eta^{GEN}| < "+str(eta_max[k]))
 
+      leg = TLegend(0.6, 0.33, 0.9, 0.63) ; leg.AddEntry(eff, "Run-3 BDT scaled") ; leg.AddEntry(eff2, "Run-2 BDT scaled") ; leg.SetBorderSize(0) ; leg.Draw("same")
+    
+      gPad.Update()
+      eff.SetTitle(" ; p_{T}^{GEN} (GeV) ; Trigger Efficiency") 
+      graph = eff.GetPaintedGraph() ; graph.SetMinimum(0) ;  graph.SetMaximum(1.1)
 
-#for iEvt in range(evt_tree.GetEntries()):
-  if MAX_EVT > 0 and iEvt > MAX_EVT: break
-  if iEvt % PRT_EVT is 0: print 'Event #', iEvt
-
-  evt_tree.GetEntry(iEvt)
-
-  ME1_p=0;ME2_p=0;ME3_p=0;ME4_p=0
-  ME1_n=0;ME2_n=0;ME3_n=0;ME4_n=0
-  flag_p=0 ; flag_n=0
-
-  for i in range(len(evt_tree.hit_phi)):
-    if evt_tree.hit_endcap[i]>0 and evt_tree.hit_neighbor[i]==0:
-      if evt_tree.hit_station[i]==1: ME1_p+=1
-      if evt_tree.hit_station[i]==2: ME2_p+=1
-      if evt_tree.hit_station[i]==3: ME3_p+=1
-      if evt_tree.hit_station[i]==4: ME4_p+=1
-
-    if evt_tree.hit_endcap[i]<0 and evt_tree.hit_neighbor[i]==0:
-      if evt_tree.hit_station[i]==1: ME1_n+=1
-      if evt_tree.hit_station[i]==2: ME2_n+=1
-      if evt_tree.hit_station[i]==3: ME3_n+=1
-      if evt_tree.hit_station[i]==4: ME4_n+=1
-
-  ##2 stub requirement
-  if (ME1_p * ME2_p)!=0 or (ME1_p * ME3_p)!=0 or (ME1_p * ME4_p)!=0 or (ME2_p * ME3_p)!=0 or (ME2_p * ME4_p)!=0 or (ME3_p * ME4_p)!=0: flag_p=1
-  if (ME1_n * ME2_n)!=0 or (ME1_n * ME3_n)!=0 or (ME1_n * ME4_n)!=0 or (ME2_n * ME3_n)!=0 or (ME2_n * ME4_n)!=0 or (ME3_n * ME4_n)!=0: flag_n=1
-
-  ##3 stub requirement
-  #if (ME1_p * ME2_p * ME3_p)!=0 or (ME1_p * ME3_p * ME4_p)!=0 or (ME1_p * ME2_p * ME4_p)!=0 or (ME2_p * ME3_p * ME4_p)!=0: flag_p+=1
-  #if (ME1_n * ME2_n * ME3_n)!=0 or (ME1_n * ME3_n * ME4_n)!=0 or (ME1_n * ME2_n * ME4_n)!=0 or (ME2_n * ME3_n * ME4_n)!=0: flag_n+=1
-
-trk_iHit
-#  eff_L1T.py
-
-  #Count number of stubs
-  Nstubs_p = ME1_p + ME2_p + ME3_p + ME4_p
-  Nstubs_n = ME1_n + ME2_n + ME3_n + ME4_n
-
-  #Fill Nstubs vs X histograms.
-  for i in range(len(evt_tree.mu_eta)):
-    if evt_tree.mu_eta[i]>0:
-      h_2D_nstubs_pt.Fill(evt_tree.mu_pt[i], Nstubs_p)
-      h_2D_nstubs_eta.Fill(abs(evt_tree.mu_eta[i]), Nstubs_p)
-    if evt_tree.mu_eta[i]<0:
-      h_2D_nstubs_pt.Fill(evt_tree.mu_pt[i], Nstubs_n)
-      h_2D_nstubs_eta.Fill(abs(evt_tree.mu_eta[i]), Nstubs_n)
+      c1.SaveAs("plots/bdt_eff/eta_slices/BDTeff_pt"+str(pt_str[l])+"_eta"+str(eta_str_min[k])+"to"+str(eta_str_max[k])+".png")
+      c1.SaveAs("plots/bdt_eff/eta_slices/BDTeff_pt"+str(pt_str[l])+"_eta"+str(eta_str_min[k])+"to"+str(eta_str_max[k])+".C")
+      c1.SaveAs("plots/bdt_eff/eta_slices/BDTeff_pt"+str(pt_str[l])+"_eta"+str(eta_str_min[k])+"to"+str(eta_str_max[k])+".pdf")
+      #raw_input("Enter")
+      c1.Close()
 
 
-  #Efficiency plots and other 2D histograms. Can apply mode selection or number of stub selection.
-  for j in range(len(evt_tree.trk_pt)):
-    for i in range(len(evt_tree.mu_eta)):
-      if (abs(evt_tree.mu_eta[i])>1.24 and abs(evt_tree.mu_eta[i])<2.4):
-	#if evt_tree.trk_mode[j]==11 or evt_tree.trk_mode[j]==13 or evt_tree.trk_mode[j]==14 or evt_tree.trk_mode[j]==15:
-	if evt_tree.trk_eta[j]*evt_tree.mu_eta[i]>0 and evt_tree.trk_nNeighbor[j]==0 and ((evt_tree.mu_eta[i]>0) or (evt_tree.mu_eta[i]<0 and flag_n>0)):
+    if plot_EffVsEta == True:
+     
+      #Run2 and Run3 BDT efficiency vs Eta
+      evt_tree2.Draw("GEN_eta>>h_denom(64,-3.,3.)", "GEN_pt>"+str(pt_cut[l]))
+      h_denom=gROOT.FindObject("h_denom")
+      c1.Update()
+      evt_tree2.Draw("GEN_eta>>h_numer(64,-3.,3.)", "GEN_pt>"+str(pt_cut[l])+" && ((1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq)))))>"+str(pt_cut[l]))
+      h_numer=gROOT.FindObject("h_numer")
+      c1.Update()
 
-	  h_2D_mode_eta.Fill(abs(evt_tree.mu_eta[i]), evt_tree.trk_mode[j])
+      evt_tree.Draw("GEN_pt>>h_denom2(50,1.,50.)", "GEN_pt>"+str(pt_cut[l]))
+      h_denom2=gROOT.FindObject("h_denom2")
+      c1.Update()
+      evt_tree.Draw("GEN_pt>>h_numer2(50,1.,50.)", "GEN_pt>"+str(pt_cut[l])+" && ((1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq)))))>"+str(pt_cut[l]))
+      h_numer2=gROOT.FindObject("h_numer2")
+      c1.Update()
 
-	  h_pt_denom.Fill(evt_tree.mu_pt[i])
-	  h_2D_pt_eta_denom.Fill(evt_tree.mu_eta[i], evt_tree.mu_pt[i])
-	  h_2D_genpt_l1pt.Fill(evt_tree.mu_pt[i], evt_tree.trk_pt[j])
+      eff = TEfficiency(h_numer, h_denom) ; eff2 = TEfficiency(h_numer2, h_denom2)
 
-	  if evt_tree.mu_pt[i]>=25:
-	    h_eta_denom.Fill(evt_tree.mu_eta[i])
-	    h_phi_denom.Fill(evt_tree.mu_phi[i])
+      c1 = TCanvas("c1")
+      
+      eff.SetMarkerColor(kBlue) ; eff.SetMarkerStyle(8)
+      eff2.SetMarkerColor(kRed) ; eff2.SetLineColor(kRed) ; eff2.SetMarkerStyle(8)
+      eff.Draw("AP") ; eff2.Draw("same")
+    
+      gPad.Update()
 
-	  if evt_tree.trk_pt[j]>=25.:
-	    h_pt_numer.Fill(evt_tree.mu_pt[i])
-	    h_2D_pt_eta_numer.Fill(evt_tree.mu_eta[i], evt_tree.mu_pt[i])
-
-	    if evt_tree.mu_pt[i]>=25.:
-	      h_eta_numer.Fill(evt_tree.mu_eta[i])
-	      h_phi_numer.Fill(evt_tree.mu_phi[i])
-
-
-## ================ Plot/save histograms ======================
-
-#-------------------------------------
-#Efficiency plots
-#-------------------------------------
-c1 = TCanvas("c1")
-eff = TEfficiency(h_phi_numer, h_phi_denom)
-eff.Draw()
-eff.SetTitle('EMTF Trigger Efficiency vs #phi^{GEN} (p_{T}^{GEN}, p_{T}^{L1} > 25 GeV) (1.24 < #eta^{GEN} < 2.4) ; #phi^{GEN} ; Trigger Effieicny')
-gPad.Update()
-graph = eff.GetPaintedGraph()
-graph.SetMinimum(0)
-graph.SetMaximum(1)
-c1.SaveAs(outputdir + '/eff_phi_pt25.png')
-raw_input("Enter")
-
-c1 = TCanvas("c1")
-eff = TEfficiency(h_pt_numer, h_pt_denom)
-eff.Draw()
-eff.SetTitle('EMTF Trigger Efficiency vs p_{T}^{GEN} (p_{T}^{L1} > 25 GeV) (1.24 < #eta^{GEN} < 2.4) ; p_{T}^{GEN} ; Trigger Effieicny')
-gPad.Update()
-graph = eff.GetPaintedGraph()
-graph.SetMinimum(0)
-graph.SetMaximum(1)
-c1.SaveAs(outputdir + '/eff_pt25.png')
-raw_input("Enter")
-
-
-c1 = TCanvas("c1")
-eff = TEfficiency(h_eta_numer, h_eta_denom)
-eff.Draw()
-eff.SetTitle('EMTF Trigger Efficiency vs #eta^{GEN} (p_{T}^{GEN}, p_{T}^{L1} > 25 GeV) ; #eta^{GEN} ; Trigger Effieicny')
-gPad.Update()
-graph = eff.GetPaintedGraph()
-graph.SetMinimum(0)
-graph.SetMaximum(1)
-c1.SaveAs(outputdir + '/eff_eta_pt25.png')
-raw_input("Enter")
-
-
-#-------------------------------------
-#True and L1 pT correlation
-#-------------------------------------
-#c1 = TCanvas( 'c1', '', 200, 10, 700, 500)
-#h_2D_genpt_l1pt.Draw("colz")
-#gStyle.SetOptStat(0)
-#gPad.SetLogz()
-#h_2D_genpt_l1pt.SetTitle('p_{T}^{L1} vs p_{T}^{GEN})')
-#h_2D_genpt_l1pt.GetXaxis().SetTitle('p_{T}^{GEN} (GeV)') ; h_2D_genpt_l1pt.GetYaxis().SetTitle('p_{T}^{L1} (GeV)')
-#h_2D_genpt_l1pt.Write()
-#c1.SaveAs(outputdir + '/ptgen_ptl1.png')
-##raw_input("Enter")
-#c1.Close()
-
-
-#-------------------------------------
-#2D Efficiency (pT and eta)
-#-------------------------------------
-#c1 = TCanvas("c1")
-#h_2D_pt_eta_numer.Divide(h_2D_pt_eta_denom)
-#h_2D_pt_eta_numer.Draw("colz")
-#h_2D_pt_eta_numer.GetZaxis().SetRangeUser(0.,1.0)
-#h_2D_pt_eta_numer.SetTitle('Trigger efficiency 2D p_{T}^{GEN} vs #eta^{GEN} (p_{T}^{L1} > 20 GeV)')
-#h_2D_pt_eta_numer.GetXaxis().SetTitle('#eta^{GEN}') ; h_2D_pt_eta_numer.GetYaxis().SetTitle('p_{T}^{GEN}')
-#raw_input("Enter")
-#c1.Close()
-
-
-#-------------------------------------
-#Nstub and mode correlation plots
-#-------------------------------------
-'''
-c1 = TCanvas( 'c1', '', 200, 10, 700, 500)
-h_2D_nstubs_pt.Draw("colz")
-gStyle.SetOptStat(0)
-gPad.SetLogz()
-h_2D_nstubs_pt.SetTitle('Number of stubs vs p_{T}^{GEN}')
-h_2D_nstubs_pt.GetXaxis().SetTitle('p_{T}^{GEN}') ; h_2D_nstubs_pt.GetYaxis().SetTitle('N_{stubs}')
-h_2D_nstubs_pt.Write()
-c1.SaveAs(outputdir + '/stubs_pt.png')
-raw_input("Enter")
-c1.Close()
-
-c1 = TCanvas( 'c1', '', 200, 10, 700, 500)
-h_2D_nstubs_eta.Draw("colz")
-gStyle.SetOptStat(0)
-gPad.SetLogz()
-h_2D_nstubs_eta.SetTitle('Number of stubs vs |#eta^{GEN}|')
-h_2D_nstubs_eta.GetXaxis().SetTitle('#eta^{GEN}') ; h_2D_nstubs_eta.GetYaxis().SetTitle('N_{stubs}')
-h_2D_nstubs_eta.Write()
-c1.SaveAs(outputdir + '/stubs_eta.png')
-raw_input("Enter")
-c1.Close()
-
-c1 = TCanvas( 'c1', '', 200, 10, 700, 500)
-h_2D_mode_eta.Draw("colz")
-gStyle.SetOptStat(0)
-gPad.SetLogz()
-h_2D_mode_eta.SetTitle('Mode occupancy vs |#eta^{GEN}|')
-h_2D_mode_eta.GetXaxis().SetTitle('#eta^{GEN}') ; h_2D_mode_eta.GetYaxis().SetTitle('Track mode')
-h_2D_mode_eta.Write()
-c1.SaveAs(outputdir + '/mode_eta.png')
-raw_input("Enter")
-c1.Close()
-'''
+      eff.SetTitle("EMTF Trigger Efficiency vs #eta^{GEN} (p_{T}^{GEN}, p_{T}^{L1} > "+str(pt_cut[l])+" GeV) ; #eta^{GEN} ; Trigger Efficiency") 
+    
+      c1.SaveAs("plots/bdt_eff/BDTeff_eta_pt"+str(pt_str[l])+".png")
+      c1.SaveAs("plots/bdt_eff/BDTeff_eta_pt"+str(pt_str[l])+".C")
+      c1.SaveAs("plots/bdt_eff/BDTeff_eta_pt"+str(pt_str[l])+".pdf")
+      c1.Close()
