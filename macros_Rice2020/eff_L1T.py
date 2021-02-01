@@ -9,18 +9,17 @@ from array import *
 from termcolor import colored
 from ROOT import gROOT
 
-print '------> Importing Root File'
+## Run in quiet mode
+sys.argv.append('-b')
+gROOT.SetBatch(1)
+
 
 ## Configuration settings
-MAX_EVT  = -1 ## Maximum number of events to process
-PRT_EVT  = 10000 ## Print every Nth event
-printouts=False
 plot_EffVsPt=True ; plot_EffVsEta=False
 eta_slices=False ; single_pt=False
 
 if single_pt==True:
-  pt_cut = [22]
-  pt_str = ["22"]
+  pt_cut = [22] ; pt_str = ["22"]
 
 else:
   pt_cut = [3, 5, 7, 10, 12, 15, 20, 22, 24, 27]
@@ -33,10 +32,8 @@ if eta_slices==True:
   eta_str_max = ["1pt4", "1pt6", "1pt8", "2pt0", "2pt2", "2pt4"]
 
 else:  #Whole endcap region.
-  eta_min = [1.2]
-  eta_max = [2.4]
-  eta_str_min = ["1pt2"]
-  eta_str_max = ["2pt4"]
+  eta_min = [1.2] ; eta_max = [2.4]
+  eta_str_min = ["1pt2"] ; eta_str_max = ["2pt4"]
 
 
 ## ============== Define TTrees ================
@@ -45,6 +42,7 @@ evt_tree2 = TChain('f_MODE_15_logPtTarg_logPtWgt_noBitCompr_noRPC_noGEM_Run3Tree
 
 
 ## ================ Read input files ======================
+print '------> Importing Root Files..'
 dir1 = 'root://cmseos.fnal.gov//store/user/mdecaro/condor_output_BDT/'
 file_name = dir1+"PtRegression2018_MODE_15_noBitCompr_noRPC_noGEM_Run2Tree.root"
 file_name2 = dir1+"PtRegression2018_MODE_15_noBitCompr_noRPC_noGEM_Run3Tree.root"
@@ -52,7 +50,7 @@ file_name2 = dir1+"PtRegression2018_MODE_15_noBitCompr_noRPC_noGEM_Run3Tree.root
 print colored('Loading file: '+file_name, 'green') ; print colored('Loading file: '+file_name2, 'green')
 evt_tree.Add(file_name) ; evt_tree2.Add(file_name2)
 
-## ================ Event loop ======================
+## ================ Plotting script ======================
 
 for l in range(len(pt_cut)):
   for k in range(len(eta_min)):
