@@ -15,8 +15,8 @@ gROOT.SetBatch(1)
 
 
 ## Configuration settings
-efficiencies=True ; EffVsPt=False ; EffVsEta=True ; eta_slices=False ; single_pt=False
-resolutions=False ; res2D=False ; res1D=False
+efficiencies=False ; EffVsPt=False ; EffVsEta=False ; eta_slices=False ; single_pt=False
+resolutions=True ; res2D=False ; res1D=True ; res1D_diffOverGen=True ; res1D_oneOverDiffOverOneOverGen=False ; res1DvsPt=False
 
 if single_pt==True:
   pt_cut = [22] ; pt_str = ["22"]
@@ -49,6 +49,11 @@ file_name2 = dir1+"PtRegression2018_MODE_15_noBitCompr_noRPC_noGEM_Run3Tree.root
 
 print colored('Loading file: '+file_name, 'green') ; print colored('Loading file: '+file_name2, 'green')
 evt_tree.Add(file_name) ; evt_tree2.Add(file_name2)
+
+#Helper functions
+def truncate(number, digits):
+  stepper = 10.0 ** digits
+  return float(math.trunc(stepper * number) / stepper)
 
 ## ================ Plotting script ======================
 
@@ -144,38 +149,74 @@ if resolutions==True:
 
   if res1D==True:
 
-    pt_low = [] ; pt_hi = [] ; res = [] ; res2 = []
-    for i in range(1,49):
-      pt_low.append(float(i)) ; pt_hi.append(float(i+1))
+    if res1D_diffOverGen==True:
 
-    for l in range(len(pt_low)):
-      c1 = TCanvas("c1")
-      evt_tree2.Draw("(GEN_pt - (1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq)))))/(GEN_pt)>>htemp(64,-3.,3.)", "GEN_pt>"+str(pt_low[l])+" && GEN_pt<"+str(pt_hi[l]))
-      htemp = gPad.GetPrimitive("htemp") ; htemp.Draw()
-      res.append(htemp.GetRMS())
+      lat_scale = [270e3, 220e3, 171e3, 140e3, 120e3, 100e3, 79e3, 74e3, 65e3, 57e3]
+      lat_scale_diff = [4e4, 4e4, 3e4, 2.5e4, 2e4, 2e4, 1.5e4, 1.2e4, 1e4, 1e4]
+
+      for l in range(len(pt_cut)):
+    
+	c1 = TCanvas("c1")
+	evt_tree.Draw("(GEN_pt - (1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq)))))/(GEN_pt)>>htemp(64,-2.,2.)", "GEN_pt>"+str(pt_cut[l]))
+	evt_tree2.Draw("(GEN_pt - (1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq)))))/(GEN_pt)>>htemp2(64,-2.,2.)", "GEN_pt>"+str(pt_cut[l]))
+	
+	htemp=gROOT.FindObject("htemp") ; htemp2=gROOT.FindObject("htemp2")
+	htemp.SetLineColor(kRed) ; htemp2.SetLineColor(kBlue)
+	htemp.Draw() ; htemp2.Draw("same")
+
+	la1 = TLatex() ; la1.SetTextFont(22) ; la1.SetTextColor(kRed) ; la1.SetTextSize(0.033) ; la1.SetTextAlign(10)
+	la1.DrawLatex( 0.60, lat_scale[l], "Run-2 #mu = "+str(truncate(htemp.GetMean(),3))+", #sigma = "+str(truncate(htemp.GetRMS(),3)))
+	la2 = TLatex() ; la2.SetTextFont(22) ; la2.SetTextColor(kBlue) ; la2.SetTextSize(0.033) ; la2.SetTextAlign(10)
+	la2.DrawLatex( 0.60, lat_scale[l]-lat_scale_diff[l], "Run-3 #mu = "+str(truncate(htemp2.GetMean(),3))+", #sigma = "+str(truncate(htemp2.GetRMS(),3)))
+	la3 = TLatex() ; la3.SetTextFont(22) ; la3.SetTextColor(kBlack) ; la3.SetTextSize(0.033) ; la3.SetTextAlign(10)
+	la3.DrawLatex( 0.60, lat_scale[l]-2*lat_scale_diff[l], "Mode 15, p_{T}^{L1} > "+str(pt_cut[l])+" GeV")
+
+	leg = TLegend(0.61, 0.65, 0.80, 0.87) ; leg.AddEntry(htemp, "Run-2 BDT") ; leg.AddEntry(htemp2, "Run-3 BDT") ; leg.SetBorderSize(0) ; leg.Draw("same")
+      
+	htemp = gPad.GetPrimitive("htemp")
+	htemp.SetTitle("")
+	htemp.GetXaxis().SetTitle("(p_{T}^{GEN} - p_{T}^{L1}) / p_{T}^{GEN}")
+	gStyle.SetOptStat(0) ; gPad.Update()
+	c1.SaveAs("plots/resolutions/ptres1D_DiffOverGen_pt"+str(pt_str[l])+".png")
+	c1.SaveAs("plots/resolutions/ptres1D_DiffOverGen_pt"+str(pt_str[l])+".C")
+	c1.SaveAs("plots/resolutions/ptres1D_DiffOverGen_pt"+str(pt_str[l])+".pdf")
+	#raw_input("Enter")
+	c1.Close()
+
+    if res1DvsPt==True:
+
+      pt_low = [] ; pt_hi = [] ; res = [] ; res2 = []
+      for i in range(1,49):
+	pt_low.append(float(i)) ; pt_hi.append(float(i+1))
+
+      for l in range(len(pt_low)):
+	c1 = TCanvas("c1")
+	evt_tree2.Draw("(GEN_pt - (1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq)))))/(GEN_pt)>>htemp(64,-3.,3.)", "GEN_pt>"+str(pt_low[l])+" && GEN_pt<"+str(pt_hi[l]))
+	htemp = gPad.GetPrimitive("htemp") ; htemp.Draw()
+	res.append(htemp.GetRMS())
+	c1.Close()
+
+	c1 = TCanvas("c1")
+	evt_tree.Draw("(GEN_pt - (1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq)))))/(GEN_pt)>>htemp2(64,-3.,3.)", "GEN_pt>"+str(pt_low[l])+" && GEN_pt<"+str(pt_hi[l]))
+	htemp2 = gPad.GetPrimitive("htemp2") ; htemp2.Draw()
+	res2.append(htemp2.GetRMS())
+	c1.Close()
+
+      c1 = TCanvas( 'c1', 'test scatter', 200, 10, 700, 500)
+      g1 = TGraph(len(pt_low), np.array(pt_low), np.array(res))
+      g1.SetMarkerStyle(8) ; g1.SetMarkerSize(1) ; g1.SetMarkerColor(kBlue)
+      g2 = TGraph(len(pt_low), np.array(pt_low), np.array(res2))
+      g2.SetMarkerStyle(8) ; g2.SetMarkerSize(1) ; g2.SetMarkerColor(kRed)
+
+      mg = TMultiGraph() ; mg.Add(g1) ; mg.Add(g2) ; mg.Draw('ap')
+      mg.GetXaxis().SetTitle('(p_{T}^{GEN} - p_{T}^{L1}) / p_{T}^{GEN}')
+      mg.GetYaxis().SetTitle('#sigma')
+
+      c1.Update()
+      c1.SaveAs("plots/resolutions/res_vs_pt_diffOverGen.png")
+      c1.SaveAs("plots/resolutions/res_vs_pt_diffOverGen.C")
+      c1.SaveAs("plots/resolutions/res_vs_pt_diffOverGen.pdf")
       c1.Close()
-
-      c1 = TCanvas("c1")
-      evt_tree.Draw("(GEN_pt - (1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq)))))/(GEN_pt)>>htemp2(64,-3.,3.)", "GEN_pt>"+str(pt_low[l])+" && GEN_pt<"+str(pt_hi[l]))
-      htemp2 = gPad.GetPrimitive("htemp2") ; htemp2.Draw()
-      res2.append(htemp2.GetRMS())
-      c1.Close()
-
-    c1 = TCanvas( 'c1', 'test scatter', 200, 10, 700, 500)
-    g1 = TGraph(len(pt_low), np.array(pt_low), np.array(res))
-    g1.SetMarkerStyle(8) ; g1.SetMarkerSize(1) ; g1.SetMarkerColor(kBlue)
-    g2 = TGraph(len(pt_low), np.array(pt_low), np.array(res2))
-    g2.SetMarkerStyle(8) ; g2.SetMarkerSize(1) ; g2.SetMarkerColor(kRed)
-
-    mg = TMultiGraph() ; mg.Add(g1) ; mg.Add(g2) ; mg.Draw('ap')
-    mg.GetXaxis().SetTitle('(p_{T}^{GEN} - p_{T}^{L1}) / p_{T}^{GEN}')
-    mg.GetYaxis().SetTitle('#sigma')
-
-    c1.Update()
-    c1.SaveAs("plots/resolutions/res_vs_pt_diffOverGen.png")
-    c1.SaveAs("plots/resolutions/res_vs_pt_diffOverGen.C")
-    c1.SaveAs("plots/resolutions/res_vs_pt_diffOverGen.pdf")
-    c1.Close()
 
 
   if res2D==True:
@@ -193,6 +234,7 @@ if resolutions==True:
     c1.SaveAs("plots/resolutions/ptres2D_Run2BDT_scaled.C")
     c1.SaveAs("plots/resolutions/ptres2D_Run2BDT_scaled.png")
     c1.SaveAs("plots/resolutions/ptres2D_Run2BDT_scaled.pdf")
+    #raw_input("Enter")
 
     #Run-3 BDT
     evt_tree2.Draw("log2((1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq))))):log2(GEN_pt)>>htemp2(100,0,5.7,100,0,6.5)", "", "COLZ")
@@ -204,3 +246,4 @@ if resolutions==True:
     c1.SaveAs("plots/resolutions/ptres2D_Run3BDT_scaled.C")
     c1.SaveAs("plots/resolutions/ptres2D_Run3BDT_scaled.png")
     c1.SaveAs("plots/resolutions/ptres2D_Run3BDT_scaled.pdf")
+    #raw_input("Enter")
