@@ -16,7 +16,7 @@ gROOT.SetBatch(1)
 
 ## Configuration settings
 efficiencies=False ; EffVsPt=False ; EffVsEta=False ; eta_slices=False ; single_pt=False
-resolutions=True ; res2D=False ; res1D=True ; res1D_diffOverGen=False ; res1D_oneOverDiffOverOneOverGen=False ; res1DvsPt=True
+resolutions=True ; res2D=False ; res1D=True ; res1D_diffOverGen=False ; res1D_invDiffOverInvGen=True ; res1DvsPt=False
 
 if single_pt==True:
   pt_cut = [22] ; pt_str = ["22"]
@@ -50,10 +50,12 @@ file_name2 = dir1+"PtRegression2018_MODE_15_noBitCompr_noRPC_noGEM_Run3Tree.root
 print colored('Loading file: '+file_name, 'green') ; print colored('Loading file: '+file_name2, 'green')
 evt_tree.Add(file_name) ; evt_tree2.Add(file_name2)
 
-#Helper functions
+
+## ================ Helper functions ======================
 def truncate(number, digits):
   stepper = 10.0 ** digits
   return float(math.trunc(stepper * number) / stepper)
+
 
 ## ================ Plotting script ======================
 
@@ -169,7 +171,7 @@ if resolutions==True:
 	la2 = TLatex() ; la2.SetTextFont(22) ; la2.SetTextColor(kBlue) ; la2.SetTextSize(0.033) ; la2.SetTextAlign(10)
 	la2.DrawLatex( 0.60, lat_scale[l]-lat_scale_diff[l], "Run-3 #mu = "+str(truncate(htemp2.GetMean(),3))+", #sigma = "+str(truncate(htemp2.GetRMS(),3)))
 	la3 = TLatex() ; la3.SetTextFont(22) ; la3.SetTextColor(kBlack) ; la3.SetTextSize(0.033) ; la3.SetTextAlign(10)
-	la3.DrawLatex( 0.60, lat_scale[l]-2*lat_scale_diff[l], "Mode 15, p_{T}^{L1} > "+str(pt_cut[l])+" GeV")
+	la3.DrawLatex( 0.60, lat_scale[l]-2*lat_scale_diff[l], "Mode 15, p_{T}^{L1} > "+str(int(pt_cut[l]))+" GeV")
 
 	leg = TLegend(0.61, 0.65, 0.80, 0.87) ; leg.AddEntry(htemp, "Run-2 BDT") ; leg.AddEntry(htemp2, "Run-3 BDT") ; leg.SetBorderSize(0) ; leg.Draw("same")
       
@@ -180,6 +182,42 @@ if resolutions==True:
 	c1.SaveAs("plots/resolutions/ptres1D_DiffOverGen_pt"+str(pt_str[l])+".png")
 	c1.SaveAs("plots/resolutions/ptres1D_DiffOverGen_pt"+str(pt_str[l])+".C")
 	c1.SaveAs("plots/resolutions/ptres1D_DiffOverGen_pt"+str(pt_str[l])+".pdf")
+	#raw_input("Enter")
+	c1.Close()
+
+    if res1D_invDiffOverInvGen==True:
+
+      lat_scale = [275e3, 245e3, 210e3, 180e3, 160e3, 145e3, 105e3, 96e3, 85e3, 70e3]
+      lat_scale_diff = [4.2e4, 4e4, 3.3e4, 2.5e4, 2.5e4, 2e4, 1.7e4, 1.6e4, 1.4e4, 1.2e4]
+
+      for l in range(len(pt_cut)):
+
+	c1 = TCanvas("c1")
+	evt_tree.Draw("(1./(GEN_pt - (1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq))))))/(1./GEN_pt)>>htemp(64,-20.,20.)", "GEN_pt>"+str(pt_cut[l]))
+	evt_tree2.Draw("(1./(GEN_pt - (1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq))))))/(1./GEN_pt)>>htemp2(64,-20.,20.)", "GEN_pt>"+str(pt_cut[l]))
+	
+	htemp=gROOT.FindObject("htemp") ; htemp2=gROOT.FindObject("htemp2")
+	htemp.SetLineColor(kRed) ; htemp2.SetLineColor(kBlue)
+	htemp.Draw() ; htemp2.Draw("same")
+
+	
+	la1 = TLatex() ; la1.SetTextFont(22) ; la1.SetTextColor(kRed) ; la1.SetTextSize(0.031) ; la1.SetTextAlign(10)
+	la1.DrawLatex( 6.5, lat_scale[l], "Run-2 #mu = "+str(truncate(htemp.GetMean(),3))+", #sigma = "+str(truncate(htemp.GetRMS(),3)))
+	la2 = TLatex() ; la2.SetTextFont(22) ; la2.SetTextColor(kBlue) ; la2.SetTextSize(0.031) ; la2.SetTextAlign(10)
+	la2.DrawLatex( 6.5, lat_scale[l]-lat_scale_diff[l], "Run-3 #mu = "+str(truncate(htemp2.GetMean(),3))+", #sigma = "+str(truncate(htemp2.GetRMS(),3)))
+	la3 = TLatex() ; la3.SetTextFont(22) ; la3.SetTextColor(kBlack) ; la3.SetTextSize(0.031) ; la3.SetTextAlign(10)
+	la3.DrawLatex( 6.5, lat_scale[l]-2*lat_scale_diff[l], "Mode 15, p_{T}^{L1} > "+str(int(pt_cut[l]))+" GeV")
+	
+
+	leg = TLegend(0.62, 0.65, 0.81, 0.87) ; leg.AddEntry(htemp, "Run-2 BDT") ; leg.AddEntry(htemp2, "Run-3 BDT") ; leg.SetBorderSize(0) ; leg.Draw("same")
+	
+	htemp = gPad.GetPrimitive("htemp")
+	htemp.SetTitle("")
+	htemp.GetXaxis().SetTitle("(p_{T}^{GEN} - p_{T}^{L1})^{-1} / (p_{T}^{GEN})^{-1}")
+	gStyle.SetOptStat(0) ; gPad.Update()
+	c1.SaveAs("plots/resolutions/ptres1D_invDiffOverInvGen_pt"+str(pt_str[l])+".png")
+	c1.SaveAs("plots/resolutions/ptres1D_invDiffOverInvGen_pt"+str(pt_str[l])+".C")
+	c1.SaveAs("plots/resolutions/ptres1D_invDiffOverInvGen_pt"+str(pt_str[l])+".pdf")
 	#raw_input("Enter")
 	c1.Close()
 
