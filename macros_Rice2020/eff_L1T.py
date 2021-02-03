@@ -16,13 +16,13 @@ gROOT.SetBatch(1)
 
 ## Configuration settings
 efficiencies=False ; EffVsPt=False ; EffVsEta=False ; eta_slices=False ; single_pt=False
-resolutions=True ; res2D=False ; res1D=True ; res1D_diffOverGen=True ; res1D_oneOverDiffOverOneOverGen=False ; res1DvsPt=False
+resolutions=True ; res2D=False ; res1D=True ; res1D_diffOverGen=False ; res1D_oneOverDiffOverOneOverGen=False ; res1DvsPt=True
 
 if single_pt==True:
   pt_cut = [22] ; pt_str = ["22"]
 
 else:
-  pt_cut = [3, 5, 7, 10, 12, 15, 20, 22, 24, 27]
+  pt_cut = [3., 5., 7., 10., 12., 15., 20., 22., 24., 27.]
   pt_str = ["3", "5", "7", "10", "12", "15", "20", "22", "24", "27"]
 
 if eta_slices==True:
@@ -185,37 +185,40 @@ if resolutions==True:
 
     if res1DvsPt==True:
 
-      pt_low = [] ; pt_hi = [] ; res = [] ; res2 = []
-      for i in range(1,49):
-	pt_low.append(float(i)) ; pt_hi.append(float(i+1))
+      res = [] ; res2 = [] ; resErr = [] ; res2Err = [] ; zeros=[]
 
-      for l in range(len(pt_low)):
+      for l in range(len(pt_cut)):
 	c1 = TCanvas("c1")
-	evt_tree2.Draw("(GEN_pt - (1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq)))))/(GEN_pt)>>htemp(64,-3.,3.)", "GEN_pt>"+str(pt_low[l])+" && GEN_pt<"+str(pt_hi[l]))
+	evt_tree2.Draw("(GEN_pt - (1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq)))))/(GEN_pt)>>htemp(64,-3.,3.)", "GEN_pt>"+str(pt_cut[l]))#+" && GEN_pt<"+str(pt_hi[l]))
 	htemp = gPad.GetPrimitive("htemp") ; htemp.Draw()
-	res.append(htemp.GetRMS())
+	res.append(htemp.GetRMS()) ; resErr.append(htemp.GetRMSError())
 	c1.Close()
 
 	c1 = TCanvas("c1")
-	evt_tree.Draw("(GEN_pt - (1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq)))))/(GEN_pt)>>htemp2(64,-3.,3.)", "GEN_pt>"+str(pt_low[l])+" && GEN_pt<"+str(pt_hi[l]))
+	evt_tree.Draw("(GEN_pt - (1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq)))))/(GEN_pt)>>htemp2(64,-3.,3.)", "GEN_pt>"+str(pt_cut[l]))#+" && GEN_pt<"+str(pt_hi[l]))
 	htemp2 = gPad.GetPrimitive("htemp2") ; htemp2.Draw()
-	res2.append(htemp2.GetRMS())
+	res2.append(htemp2.GetRMS()) ; res2Err.append(htemp2.GetRMSError())
 	c1.Close()
+
+	zeros.append(0.)
 
       c1 = TCanvas( 'c1', 'test scatter', 200, 10, 700, 500)
-      g1 = TGraph(len(pt_low), np.array(pt_low), np.array(res))
+      g1 = TGraphErrors(len(pt_cut), np.array(pt_cut), np.array(res), np.array(zeros) , np.array(resErr))
       g1.SetMarkerStyle(8) ; g1.SetMarkerSize(1) ; g1.SetMarkerColor(kBlue)
-      g2 = TGraph(len(pt_low), np.array(pt_low), np.array(res2))
+      g2 = TGraphErrors(len(pt_cut), np.array(pt_cut), np.array(res2), np.array(zeros) , np.array(res2Err))
       g2.SetMarkerStyle(8) ; g2.SetMarkerSize(1) ; g2.SetMarkerColor(kRed)
 
       mg = TMultiGraph() ; mg.Add(g1) ; mg.Add(g2) ; mg.Draw('ap')
-      mg.GetXaxis().SetTitle('(p_{T}^{GEN} - p_{T}^{L1}) / p_{T}^{GEN}')
-      mg.GetYaxis().SetTitle('#sigma')
+      mg.GetXaxis().SetTitle('p_{T}^{GEN}')
+      mg.GetYaxis().SetTitle('#sigma ((p_{T}^{GEN} - p_{T}^{L1}) / p_{T}^{GEN})')
+
+      leg = TLegend(0.67, 0.65, 0.86, 0.87) ; leg.AddEntry(g2, "Run-2 BDT") ; leg.AddEntry(g1, "Run-3 BDT") ; leg.SetBorderSize(0) ; leg.Draw("same")
 
       c1.Update()
       c1.SaveAs("plots/resolutions/res_vs_pt_diffOverGen.png")
       c1.SaveAs("plots/resolutions/res_vs_pt_diffOverGen.C")
       c1.SaveAs("plots/resolutions/res_vs_pt_diffOverGen.pdf")
+      #raw_input("Enter")
       c1.Close()
 
 
