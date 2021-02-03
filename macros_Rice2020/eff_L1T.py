@@ -189,13 +189,13 @@ if resolutions==True:
 
       for l in range(len(pt_cut)):
 	c1 = TCanvas("c1")
-	evt_tree2.Draw("(GEN_pt - (1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq)))))/(GEN_pt)>>htemp(64,-3.,3.)", "GEN_pt>"+str(pt_cut[l]))#+" && GEN_pt<"+str(pt_hi[l]))
+	evt_tree2.Draw("(GEN_pt - (1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq)))))/(GEN_pt)>>htemp(64,-3.,3.)", "GEN_pt>"+str(pt_cut[l]))
 	htemp = gPad.GetPrimitive("htemp") ; htemp.Draw()
 	res.append(htemp.GetRMS()) ; resErr.append(htemp.GetRMSError())
 	c1.Close()
 
 	c1 = TCanvas("c1")
-	evt_tree.Draw("(GEN_pt - (1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq)))))/(GEN_pt)>>htemp2(64,-3.,3.)", "GEN_pt>"+str(pt_cut[l]))#+" && GEN_pt<"+str(pt_hi[l]))
+	evt_tree.Draw("(GEN_pt - (1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq)))))/(GEN_pt)>>htemp2(64,-3.,3.)", "GEN_pt>"+str(pt_cut[l]))
 	htemp2 = gPad.GetPrimitive("htemp2") ; htemp2.Draw()
 	res2.append(htemp2.GetRMS()) ; res2Err.append(htemp2.GetRMSError())
 	c1.Close()
