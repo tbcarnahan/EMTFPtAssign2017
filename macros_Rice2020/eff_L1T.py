@@ -16,7 +16,7 @@ gROOT.SetBatch(1)
 
 ## Configuration settings
 efficiencies=False ; EffVsPt=False ; EffVsEta=False ; eta_slices=False ; single_pt=False
-resolutions=True ; res2D=False ; res1D=True ; res1D_diffOverGen=False ; res1D_invDiffOverInvGen=True ; res1DvsPt=False
+resolutions=True ; res2D=False ; res1D=True ; res1D_diffOverGen=False ; res1D_invDiffOverInvGen=False ; res1DvsPt=False ; res1DvsEta=True
 
 if single_pt==True:
   pt_cut = [22] ; pt_str = ["22"]
@@ -187,9 +187,6 @@ if resolutions==True:
 
     if res1D_invDiffOverInvGen==True:
 
-      lat_scale = [275e3, 245e3, 210e3, 180e3, 160e3, 145e3, 105e3, 96e3, 85e3, 70e3]
-      lat_scale_diff = [4.2e4, 4e4, 3.3e4, 2.5e4, 2.5e4, 2e4, 1.7e4, 1.6e4, 1.4e4, 1.2e4]
-
       for l in range(len(pt_cut)):
 
 	c1 = TCanvas("c1")
@@ -200,7 +197,8 @@ if resolutions==True:
 	htemp.SetLineColor(kRed) ; htemp2.SetLineColor(kBlue)
 	htemp.Draw() ; htemp2.Draw("same")
 
-	
+	lat_scale = [275e3, 245e3, 210e3, 180e3, 160e3, 145e3, 105e3, 96e3, 85e3, 70e3]
+	lat_scale_diff = [4.2e4, 4e4, 3.3e4, 2.5e4, 2.5e4, 2e4, 1.7e4, 1.6e4, 1.4e4, 1.2e4]
 	la1 = TLatex() ; la1.SetTextFont(22) ; la1.SetTextColor(kRed) ; la1.SetTextSize(0.031) ; la1.SetTextAlign(10)
 	la1.DrawLatex( 6.5, lat_scale[l], "Run-2 #mu = "+str(truncate(htemp.GetMean(),3))+", #sigma = "+str(truncate(htemp.GetRMS(),3)))
 	la2 = TLatex() ; la2.SetTextFont(22) ; la2.SetTextColor(kBlue) ; la2.SetTextSize(0.031) ; la2.SetTextAlign(10)
@@ -222,6 +220,46 @@ if resolutions==True:
 	c1.Close()
 
     if res1DvsPt==True:
+
+      ## ============== Inverse Pt Diff Over Inverse GEN ================
+
+      res = [] ; res2 = [] ; resErr = [] ; res2Err = [] ; zeros=[]
+
+      for l in range(len(pt_cut)):
+	c1 = TCanvas("c1")
+	evt_tree2.Draw("(1./(GEN_pt - (1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq))))))/(1./GEN_pt)>>htemp(64,-20.,20.)", "GEN_pt>"+str(pt_cut[l]))
+	htemp = gPad.GetPrimitive("htemp") ; htemp.Draw()
+	res.append(htemp.GetRMS()) ; resErr.append(htemp.GetRMSError())
+	c1.Close()
+
+	c1 = TCanvas("c1")
+	evt_tree.Draw("(1./(GEN_pt - (1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq))))))/(1./GEN_pt)>>htemp2(64,-20.,20.)", "GEN_pt>"+str(pt_cut[l]))
+	htemp2 = gPad.GetPrimitive("htemp2") ; htemp2.Draw()
+	res2.append(htemp2.GetRMS()) ; res2Err.append(htemp2.GetRMSError())
+	c1.Close()
+
+	zeros.append(0.)
+
+      c1 = TCanvas( 'c1', 'test scatter', 200, 10, 700, 500)
+      g1 = TGraphErrors(len(pt_cut), np.array(pt_cut), np.array(res), np.array(zeros) , np.array(resErr))
+      g1.SetMarkerStyle(8) ; g1.SetMarkerSize(1) ; g1.SetMarkerColor(kBlue)
+      g2 = TGraphErrors(len(pt_cut), np.array(pt_cut), np.array(res2), np.array(zeros) , np.array(res2Err))
+      g2.SetMarkerStyle(8) ; g2.SetMarkerSize(1) ; g2.SetMarkerColor(kRed)
+
+      mg = TMultiGraph() ; mg.Add(g1) ; mg.Add(g2) ; mg.Draw('ap')
+      mg.GetXaxis().SetTitle('p_{T}^{GEN}')
+      mg.GetYaxis().SetTitle('#sigma ((p_{T}^{GEN} - p_{T}^{L1})^{-1} / (p_{T}^{GEN})^{-1})')
+
+      leg = TLegend(0.15, 0.65, 0.34, 0.87) ; leg.AddEntry(g2, "Run-2 BDT") ; leg.AddEntry(g1, "Run-3 BDT") ; leg.SetBorderSize(0) ; leg.Draw("same")
+
+      c1.Update()
+      c1.SaveAs("plots/resolutions/res_vs_pt_invDiffOverInvGen.png")
+      c1.SaveAs("plots/resolutions/res_vs_pt_invDiffOverInvGen.C")
+      c1.SaveAs("plots/resolutions/res_vs_pt_invDiffOverInvGen.pdf")
+      #raw_input("Enter")
+      c1.Close()
+
+      ## ============== Pt Diff Over GEN ================
 
       res = [] ; res2 = [] ; resErr = [] ; res2Err = [] ; zeros=[]
 
@@ -259,6 +297,68 @@ if resolutions==True:
       #raw_input("Enter")
       c1.Close()
 
+  if res1DvsEta==True:
+
+    eta_min1 = [-2.4, -2.2, -2.0, -1.8, -1.6, -1.4] ; eta_min2 = [1.2, 1.4, 1.6, 1.8, 2.0, 2.2]
+    eta_max1 = [-2.2, -2.0, -1.8, -1.6, -1.4, -1.2] ; eta_max2 = [1.4, 1.6, 1.8, 2.0, 2.2, 2.4]
+    
+    for k in range(len(pt_cut)):
+
+      res = [] ; res2 = [] ; resErr = [] ; res2Err = [] ; zeros=[]
+      
+      for l in range(len(eta_min1)):
+
+	c1 = TCanvas("c1")
+	evt_tree2.Draw("(GEN_pt - (1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq)))))/(GEN_pt)>>htemp(64,-3.,3.)", "GEN_pt>"+str(pt_cut[k])+" && GEN_eta>"+str(eta_min1[l])+" && GEN_eta<"+str(eta_max1[l]))
+	htemp = gPad.GetPrimitive("htemp") ; htemp.Draw()
+	res.append(htemp.GetRMS()) ; resErr.append(htemp.GetRMSError())
+	c1.Close()
+
+	c1 = TCanvas("c1")
+	evt_tree2.Draw("(GEN_pt - (1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq)))))/(GEN_pt)>>htemp2(64,-3.,3.)", "GEN_pt>"+str(pt_cut[k])+" && GEN_eta>"+str(eta_min2[l])+" && GEN_eta<"+str(eta_max2[l]))
+	htemp2 = gPad.GetPrimitive("htemp2") ; htemp2.Draw()
+	res.append(htemp2.GetRMS()) ; resErr.append(htemp2.GetRMSError())
+	c1.Close()
+
+	c1 = TCanvas("c1")
+	evt_tree.Draw("(GEN_pt - (1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq)))))/(GEN_pt)>>htemp3(64,-3.,3.)", "GEN_pt>"+str(pt_cut[k])+" && GEN_eta>"+str(eta_min1[l])+" && GEN_eta<"+str(eta_max1[l]))
+	htemp3 = gPad.GetPrimitive("htemp3") ; htemp3.Draw()
+	res2.append(htemp3.GetRMS()) ; res2Err.append(htemp3.GetRMSError())
+	c1.Close()
+
+	c1 = TCanvas("c1")
+	evt_tree.Draw("(GEN_pt - (1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq)))))/(GEN_pt)>>htemp4(64,-3.,3.)", "GEN_pt>"+str(pt_cut[k])+" && GEN_eta>"+str(eta_min2[l])+" && GEN_eta<"+str(eta_max2[l]))
+	htemp4 = gPad.GetPrimitive("htemp4") ; htemp4.Draw()
+	res2.append(htemp4.GetRMS()) ; res2Err.append(htemp4.GetRMSError())
+	c1.Close()
+
+	zeros.append(0.) ; zeros.append(0.)
+
+      eta = [-2.4, -2.2, -2.0, -1.8, -1.6, -1.4, 1.2, 1.4, 1.6, 1.8, 2.0, 2.2]
+      c1 = TCanvas( 'c1', 'test scatter', 200, 10, 700, 500)
+      g1 = TGraphErrors(len(eta), np.array(eta), np.array(res), np.array(zeros) , np.array(resErr))
+      g1.SetMarkerStyle(8) ; g1.SetMarkerSize(1) ; g1.SetMarkerColor(kBlue)
+      g2 = TGraphErrors(len(eta), np.array(eta), np.array(res2), np.array(zeros) , np.array(res2Err))
+      g2.SetMarkerStyle(8) ; g2.SetMarkerSize(1) ; g2.SetMarkerColor(kRed)
+
+      mg = TMultiGraph() ; mg.Add(g1) ; mg.Add(g2) ; mg.Draw('ap')
+      mg.GetXaxis().SetTitle('#eta^{GEN}')
+      mg.GetYaxis().SetTitle('#sigma ((p_{T}^{GEN} - p_{T}^{L1}) / p_{T}^{GEN})')
+
+      lat_scale = [.33, .34, .34, .34, .34, .325, .295, .28, .27, .253]
+      la = TLatex() ; la.SetTextFont(22) ; la.SetTextColor(kBlack) ; la.SetTextSize(0.031) ; la.SetTextAlign(10)
+      la.DrawLatex( -0.62, lat_scale[k], "Mode 15, p_{T}^{L1} > "+str(int(pt_cut[k]))+" GeV")
+
+
+      leg = TLegend(0.40, 0.61, 0.62, 0.85) ; leg.AddEntry(g2, "Run-2 BDT") ; leg.AddEntry(g1, "Run-3 BDT") ; leg.SetBorderSize(0) ; leg.Draw("same")
+
+      c1.Update()
+      c1.SaveAs("plots/resolutions/res_vs_eta_diffOverGen_pt"+str(pt_str[k])+".png")
+      c1.SaveAs("plots/resolutions/res_vs_eta_diffOverGen_pt"+str(pt_str[k])+".C")
+      c1.SaveAs("plots/resolutions/res_vs_eta_diffOverGen_pt"+str(pt_str[k])+".pdf")
+      #raw_input("Enter")
+      c1.Close()
+	
 
   if res2D==True:
 
@@ -272,9 +372,9 @@ if resolutions==True:
     htemp.GetXaxis().SetTitle("log2(p_{T}^{GEN})") ; htemp.GetYaxis().SetTitle("Run-2 Scaled trigger log2(p_{T}^{BDT})")
     line.Draw("same")
     gPad.SetLogz() ; gPad.Update() ; gStyle.SetOptStat(0)
-    c1.SaveAs("plots/resolutions/ptres2D_Run2BDT_scaled.C")
-    c1.SaveAs("plots/resolutions/ptres2D_Run2BDT_scaled.png")
-    c1.SaveAs("plots/resolutions/ptres2D_Run2BDT_scaled.pdf")
+    c1.SaveAs("plots/resolutions/ptres2D_Run2BDT.C")
+    c1.SaveAs("plots/resolutions/ptres2D_Run2BDT.png")
+    c1.SaveAs("plots/resolutions/ptres2D_Run2BDT.pdf")
     #raw_input("Enter")
 
     #Run-3 BDT
@@ -284,7 +384,7 @@ if resolutions==True:
     htemp2.GetXaxis().SetTitle("log2(p_{T}^{GEN})") ; htemp2.GetYaxis().SetTitle("Run-3 Scaled trigger log2(p_{T}^{BDT})")
     line.Draw("same")
     gPad.SetLogz() ; gPad.Update() ; gStyle.SetOptStat(0)
-    c1.SaveAs("plots/resolutions/ptres2D_Run3BDT_scaled.C")
-    c1.SaveAs("plots/resolutions/ptres2D_Run3BDT_scaled.png")
-    c1.SaveAs("plots/resolutions/ptres2D_Run3BDT_scaled.pdf")
+    c1.SaveAs("plots/resolutions/ptres2D_Run3BDT.C")
+    c1.SaveAs("plots/resolutions/ptres2D_Run3BDT.png")
+    c1.SaveAs("plots/resolutions/ptres2D_Run3BDT.pdf")
     #raw_input("Enter")
