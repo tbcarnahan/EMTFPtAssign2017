@@ -301,6 +301,68 @@ if resolutions==True:
 
     eta_min1 = [-2.4, -2.2, -2.0, -1.8, -1.6, -1.4] ; eta_min2 = [1.2, 1.4, 1.6, 1.8, 2.0, 2.2]
     eta_max1 = [-2.2, -2.0, -1.8, -1.6, -1.4, -1.2] ; eta_max2 = [1.4, 1.6, 1.8, 2.0, 2.2, 2.4]
+
+    ## ============== Inverse Pt Diff Over Inverse GEN ================
+
+    for k in range(len(pt_cut)):
+
+      res = [] ; res2 = [] ; resErr = [] ; res2Err = [] ; zeros=[]
+      
+      for l in range(len(eta_min1)):
+
+	c1 = TCanvas("c1")
+	evt_tree2.Draw("(1./(GEN_pt - (1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq))))))/(1./GEN_pt)>>htemp(64,-3.,3.)", "GEN_pt>"+str(pt_cut[k])+" && GEN_eta>"+str(eta_min1[l])+" && GEN_eta<"+str(eta_max1[l]))
+	htemp = gPad.GetPrimitive("htemp") ; htemp.Draw()
+	res.append(htemp.GetRMS()) ; resErr.append(htemp.GetRMSError())
+	c1.Close()
+
+	c1 = TCanvas("c1")
+	evt_tree2.Draw("(1./(GEN_pt - (1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq))))))/(1./GEN_pt)>>htemp2(64,-3.,3.)", "GEN_pt>"+str(pt_cut[k])+" && GEN_eta>"+str(eta_min2[l])+" && GEN_eta<"+str(eta_max2[l]))
+	htemp2 = gPad.GetPrimitive("htemp2") ; htemp2.Draw()
+	res.append(htemp2.GetRMS()) ; resErr.append(htemp2.GetRMSError())
+	c1.Close()
+
+	c1 = TCanvas("c1")
+	evt_tree.Draw("(1./(GEN_pt - (1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq))))))/(1./GEN_pt)>>htemp3(64,-3.,3.)", "GEN_pt>"+str(pt_cut[k])+" && GEN_eta>"+str(eta_min1[l])+" && GEN_eta<"+str(eta_max1[l]))
+	htemp3 = gPad.GetPrimitive("htemp3") ; htemp3.Draw()
+	res2.append(htemp3.GetRMS()) ; res2Err.append(htemp3.GetRMSError())
+	c1.Close()
+
+	c1 = TCanvas("c1")
+	evt_tree.Draw("(1./(GEN_pt - (1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq))))))/(1./GEN_pt)>>htemp4(64,-3.,3.)", "GEN_pt>"+str(pt_cut[k])+" && GEN_eta>"+str(eta_min2[l])+" && GEN_eta<"+str(eta_max2[l]))
+	htemp4 = gPad.GetPrimitive("htemp4") ; htemp4.Draw()
+	res2.append(htemp4.GetRMS()) ; res2Err.append(htemp4.GetRMSError())
+	c1.Close()
+
+	zeros.append(0.) ; zeros.append(0.)
+
+      eta = [-2.4, -2.2, -2.0, -1.8, -1.6, -1.4, 1.2, 1.4, 1.6, 1.8, 2.0, 2.2]
+      c1 = TCanvas( 'c1', 'test scatter', 200, 10, 700, 500)
+      g1 = TGraphErrors(len(eta), np.array(eta), np.array(res), np.array(zeros) , np.array(resErr))
+      g1.SetMarkerStyle(8) ; g1.SetMarkerSize(1) ; g1.SetMarkerColor(kBlue)
+      g2 = TGraphErrors(len(eta), np.array(eta), np.array(res2), np.array(zeros) , np.array(res2Err))
+      g2.SetMarkerStyle(8) ; g2.SetMarkerSize(1) ; g2.SetMarkerColor(kRed)
+
+      mg = TMultiGraph() ; mg.Add(g1) ; mg.Add(g2) ; mg.Draw('ap')
+      mg.GetXaxis().SetTitle('#eta^{GEN}')
+      mg.GetYaxis().SetTitle('#sigma ((p_{T}^{GEN} - p_{T}^{L1})^{-1} / (p_{T}^{GEN})^{-1})')
+
+      lat_scale = [0.87, 0.91, 0.935, 0.965, 0.985, 1.01, 1.08, 1.11, 1.15, 1.215]
+      la = TLatex() ; la.SetTextFont(22) ; la.SetTextColor(kBlack) ; la.SetTextSize(0.031) ; la.SetTextAlign(10)
+      la.DrawLatex( -0.62, lat_scale[k], "Mode 15, p_{T}^{L1} > "+str(int(pt_cut[k]))+" GeV")
+
+      leg = TLegend(0.40, 0.61, 0.62, 0.85) ; leg.AddEntry(g2, "Run-2 BDT") ; leg.AddEntry(g1, "Run-3 BDT") ; leg.SetBorderSize(0) ; leg.Draw("same")
+
+      c1.Update()
+      c1.SaveAs("plots/resolutions/res_vs_eta_InvDiffOverInvGen_pt"+str(pt_str[k])+".png")
+      c1.SaveAs("plots/resolutions/res_vs_eta_InvDiffOverInvGen_pt"+str(pt_str[k])+".C")
+      c1.SaveAs("plots/resolutions/res_vs_eta_InvDiffOverInvGen_pt"+str(pt_str[k])+".pdf")
+      #raw_input("Enter")
+      c1.Close()
+
+
+    '''
+    ## ============== Pt Diff Over GEN ================
     
     for k in range(len(pt_cut)):
 
@@ -349,7 +411,6 @@ if resolutions==True:
       la = TLatex() ; la.SetTextFont(22) ; la.SetTextColor(kBlack) ; la.SetTextSize(0.031) ; la.SetTextAlign(10)
       la.DrawLatex( -0.62, lat_scale[k], "Mode 15, p_{T}^{L1} > "+str(int(pt_cut[k]))+" GeV")
 
-
       leg = TLegend(0.40, 0.61, 0.62, 0.85) ; leg.AddEntry(g2, "Run-2 BDT") ; leg.AddEntry(g1, "Run-3 BDT") ; leg.SetBorderSize(0) ; leg.Draw("same")
 
       c1.Update()
@@ -358,7 +419,7 @@ if resolutions==True:
       c1.SaveAs("plots/resolutions/res_vs_eta_diffOverGen_pt"+str(pt_str[k])+".pdf")
       #raw_input("Enter")
       c1.Close()
-	
+  '''
 
   if res2D==True:
 
