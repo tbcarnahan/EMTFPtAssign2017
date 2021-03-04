@@ -89,47 +89,47 @@ int CalcPhiRun3( int& ph, int& ring, int& strip_quart_bit, int& strip_eight_bit,
 
   if (station == 1) {
     if (ring == 1) {
-      if (strip_quart_bit == 1 ) { (endcap>0 ? ph = ph + 1330 : ph = ph - 1330 ); }
-      if (strip_eight_bit == 1 ) { (endcap>0 ? ph = ph + 665 : ph = ph - 665 ); }	
+      if (strip_quart_bit == 1 ) { (endcap>0 ? ph = ph + 10 : ph = ph - 10 ); }
+      if (strip_eight_bit == 1 ) { (endcap>0 ? ph = ph + 5 : ph = ph - 5 ); }	
     }
 
     if (ring == 2) {
-      if (strip_quart_bit == 1 ) { (endcap>0 ? ph = ph + 1328 : ph = ph - 1328 ); }
-      if (strip_eight_bit == 1 ) { (endcap>0 ? ph = ph + 664 : ph = ph - 664 ); }
+      if (strip_quart_bit == 1 ) { (endcap>0 ? ph = ph + 8 : ph = ph - 8 ); }
+      if (strip_eight_bit == 1 ) { (endcap>0 ? ph = ph + 4 : ph = ph - 4 ); }
     }
 
     if (ring == 3) {
-      if (strip_quart_bit == 1 ) { (endcap>0 ? ph = ph + 1324 : ph = ph - 1324 ); }
-      if (strip_eight_bit == 1 ) { (endcap>0 ? ph = ph + 662 : ph = ph - 662 ); }
+      if (strip_quart_bit == 1 ) { (endcap>0 ? ph = ph + 4 : ph = ph - 4 ); }
+      if (strip_eight_bit == 1 ) { (endcap>0 ? ph = ph + 2 : ph = ph - 2 ); }
     }
 
     if (ring == 4) {
-      if (strip_quart_bit == 1 ) { (endcap>0 ? ph = ph + 1333 : ph = ph - 1333 ); }
-      if (strip_eight_bit == 1 ) { (endcap>0 ? ph = ph + 666 : ph = ph - 666 ); }
+      if (strip_quart_bit == 1 ) { (endcap>0 ? ph = ph + 13 : ph = ph - 13 ); }
+      if (strip_eight_bit == 1 ) { (endcap>0 ? ph = ph + 7 : ph = ph - 7 ); }
     }
   }  
 
   if (station == 2) {
     if (ring == 1) {
-      if (strip_quart_bit == 1 ) { (endcap>0 ? ph = ph + 1335 : ph = ph - 1335 ); }
-      if (strip_eight_bit == 1 ) { (endcap>0 ? ph = ph + 667 : ph = ph - 667 ); }
+      if (strip_quart_bit == 1 ) { (endcap>0 ? ph = ph + 16 : ph = ph - 16 ); }
+      if (strip_eight_bit == 1 ) { (endcap>0 ? ph = ph + 8 : ph = ph - 8 ); }
     }
 
     if (ring == 2) {
-      if (strip_quart_bit == 1 ) { (endcap>0 ? ph = ph + 1328 : ph = ph - 1328 ); }
-      if (strip_eight_bit == 1 ) { (endcap>0 ? ph = ph + 664 : ph = ph - 664 ); }
+      if (strip_quart_bit == 1 ) { (endcap>0 ? ph = ph + 8 : ph = ph - 8 ); }
+      if (strip_eight_bit == 1 ) { (endcap>0 ? ph = ph + 4 : ph = ph - 4 ); }
     }
   }
   
   if (station > 2) {
     if ( ring == 1) {
-      if (strip_quart_bit == 1 ) { (endcap>0 ? ph = ph - 1335 : ph = ph + 1335 ); }
-      if (strip_eight_bit == 1 ) { (endcap>0 ? ph = ph - 667 : ph = ph + 667 ); }
+      if (strip_quart_bit == 1 ) { (endcap>0 ? ph = ph - 16 : ph = ph + 16 ); }
+      if (strip_eight_bit == 1 ) { (endcap>0 ? ph = ph - 8 : ph = ph + 8 ); }
     }
  
     if (ring == 2) {
-      if (strip_quart_bit == 1 ) { (endcap>0 ? ph = ph - 1328 : ph = ph + 1328 ); }
-      if (strip_eight_bit == 1 ) { (endcap>0 ? ph = ph - 664 : ph = ph + 664 ); }
+      if (strip_quart_bit == 1 ) { (endcap>0 ? ph = ph - 8 : ph = ph + 8 ); }
+      if (strip_eight_bit == 1 ) { (endcap>0 ? ph = ph - 4 : ph = ph + 4 ); }
     }
   }
 
