@@ -739,10 +739,6 @@ void PtRegression2019_GEM_SD ( TString myMethodList = "" ) {
          int ring3 = (i3 >= 0 ? I("hit_ring",i3 ) : -99);
 	 int ring4 = (i4 >= 0 ? I("hit_ring",i4 ) : -99);
 
-	 int ph1_run3 = CalcPhi2019Run3(ph1, ring1, strip_quart_bit1, strip_eight_bit1, 1);
-	 int ph2_run3 = CalcPhi2019Run3(ph2, ring2, strip_quart_bit2, strip_eight_bit2, 2);
-	 int ph3_run3 = CalcPhi2019Run3(ph3, ring3, strip_quart_bit3, strip_eight_bit3, 3);
-	 int ph4_run3 = CalcPhi2019Run3(ph4, ring4, strip_quart_bit4, strip_eight_bit4, 4);
 
 	 //===========
          //track info: need to use offline CSC segments as well?
@@ -756,6 +752,11 @@ void PtRegression2019_GEM_SD ( TString myMethodList = "" ) {
          else if (i4 >= 0) { eta = F("hit_eta", i4 ); phi = F("hit_phi", i4 ); }
          else if (i1CSC >= 0) { eta = F("hit_eta",i1CSC ); phi = F("hit_phi",i1CSC ); }
          endcap = (eta > 0 ? +1 : -1);
+
+	 int ph1_run3 = CalcPhi2019Run3(ph1, ring1, strip_quart_bit1, strip_eight_bit1, 1, endcap);
+         int ph2_run3 = CalcPhi2019Run3(ph2, ring2, strip_quart_bit2, strip_eight_bit2, 2, endcap);
+         int ph3_run3 = CalcPhi2019Run3(ph3, ring3, strip_quart_bit3, strip_eight_bit3, 3, endcap);
+         int ph4_run3 = CalcPhi2019Run3(ph4, ring4, strip_quart_bit4, strip_eight_bit4, 4, endcap);
 
          //========================
          //Variables to go into BDT
