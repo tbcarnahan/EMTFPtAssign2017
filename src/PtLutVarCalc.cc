@@ -83,6 +83,47 @@ void CalcDeltaPhis_2019GEM( int& dPh12, int& dPh13, int& dPh14, int& dPh23, int&
   // probably best not to change the EMTF track mode at this point
 }
 
+
+int CalcPhi2019Run3( int& ph, int& ring, int& strip_quart_bit, int& strip_eight_bit, const int station ) {
+  ph = ph*4;
+
+  if (station == 1) {
+    if (ring == 1) {
+      if (strip_quart_bit == 1) { ph = ph + 1330; }
+      if (strip_eight_bit == 1) { ph = ph + 665; }
+    }  
+
+    if (ring == 2) {
+      if (strip_quart_bit == 1) { ph = ph + 1328; }
+      if (strip_eight_bit == 1) { ph = ph + 664; }
+    }
+  
+    if (ring == 3) {
+      if (strip_quart_bit == 1) { ph = ph + 1324; }
+      if (strip_eight_bit == 1) { ph = ph + 662; }
+    }
+
+    if (ring == 4) {
+      if (strip_quart_bit == 1) { ph = ph + 1333; }
+      if (strip_eight_bit == 1) { ph = ph + 666; }
+    }
+  }
+  
+  if (station > 1) {
+    if (ring == 1) {
+      if (strip_quart_bit == 1) { ph = ph + 1335; }
+      if (strip_eight_bit == 1) { ph = ph + 667; }
+    }
+    
+    if (ring == 2) {
+      if (strip_quart_bit == 1) { ph = ph + 1328; }
+      if (strip_eight_bit == 1) { ph = ph + 664; }
+    }
+  }
+
+  return ph;
+}
+
 void CalcDeltaPhis( int& dPh12, int& dPh13, int& dPh14, int& dPh23, int& dPh24, int& dPh34, int& dPhSign,
                     int& dPhSum4, int& dPhSum4A, int& dPhSum3, int& dPhSum3A, int& outStPh,
                     const int ph1, const int ph2, const int ph3, const int ph4, const int mode, const bool BIT_COMP ) {

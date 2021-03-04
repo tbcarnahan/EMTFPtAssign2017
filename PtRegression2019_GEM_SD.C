@@ -121,7 +121,7 @@ void PtRegression2019_GEM_SD ( TString myMethodList = "" ) {
    TString ZB_file_name;
 
    for (int i = 0; i < USESingleMu; i++) {
-     SM_file_name.Form( "%s/%s/%s", EOS_DIR_NAME.Data(), in_dir.Data(), SingleMu_files[i].Data() );
+     SM_file_name.Form( "%s", EOS_DIR_NAME.Data() ); //, in_dir.Data(), SingleMu_files[i].Data() );
      std::cout << "Adding file " << SM_file_name.Data() << std::endl;
      SM_in_file_names.push_back(SM_file_name.Data());
    }
@@ -734,7 +734,17 @@ void PtRegression2019_GEM_SD ( TString myMethodList = "" ) {
 
          int st1_ring2 = (i1CSC >= 0 ? ( I("hit_ring",i1CSC ) == 2 || I("hit_ring",i1CSC ) == 3 ) : 0);
 
-         //===========
+	 int ring1 = (i1CSC >= 0 ? I("hit_ring",i1CSC ) : -99);
+         int ring2 = (i2 >= 0 ? I("hit_ring",i2 ) : -99);
+         int ring3 = (i3 >= 0 ? I("hit_ring",i3 ) : -99);
+	 int ring4 = (i4 >= 0 ? I("hit_ring",i4 ) : -99);
+
+	 int ph1_run3 = CalcPhi2019Run3(ph1, ring1, strip_quart_bit1, strip_eight_bit1, 1);
+	 int ph2_run3 = CalcPhi2019Run3(ph2, ring2, strip_quart_bit2, strip_eight_bit2, 2);
+	 int ph3_run3 = CalcPhi2019Run3(ph3, ring3, strip_quart_bit3, strip_eight_bit3, 3);
+	 int ph4_run3 = CalcPhi2019Run3(ph4, ring4, strip_quart_bit4, strip_eight_bit4, 4);
+
+	 //===========
          //track info: need to use offline CSC segments as well?
          //===========
          double eta;
@@ -761,7 +771,7 @@ void PtRegression2019_GEM_SD ( TString myMethodList = "" ) {
          int GE11;
 
          // Extra variables for FR computation
-         int ring1, cham1, cham2, cham3, cham4;
+         int cham1, cham2, cham3, cham4;
 
          if (MODE == 0) {
            theta = emtf_eta_int;
@@ -784,7 +794,7 @@ void PtRegression2019_GEM_SD ( TString myMethodList = "" ) {
                           th1, th2, th3, th4, mode, BIT_COMP );
 
          // In firmware, RPC 'FR' bit set according to FR of corresponding CSC chamber
-         ring1 = (i1CSC >= 0 ? I("hit_ring",i1CSC ) : -99);
+         //ring1 = (i1CSC >= 0 ? I("hit_ring",i1CSC ) : -99);
          cham1 = (i1CSC >= 0 ? I("hit_chamber",i1CSC ) : -99);
          cham2 = (i2 >= 0 ? I("hit_chamber", i2 ) : -99);
          cham3 = (i3 >= 0 ? I("hit_chamber", i3 ) : -99);
