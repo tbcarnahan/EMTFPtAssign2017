@@ -95,7 +95,7 @@ int CalcPhiRun3( int& ph, int& ring, int& strip_quart_bit, int& strip_eight_bit,
     (for quart-strip pitch) or 8 (for eight-strip pitch), then converted from degrees to integer units by
     multiplying by a factor of 240.
   Lastly, these corrections are either added or subtrated based on the orientation (clockwise vs. counterclockwise).
-    St. 1 and 2 have the opposite orientation of St 3 and 4, and for the opposite endcaps these are reversed.
+    St. 1 and 2 have the opposite orientation of St 3 and 4, and for the opposite endcap these are reversed.
   The values for full strip pitch are tabulated in p.2 of https://arxiv.org/pdf/0911.4992.pdf
   Conversion of loc phi in degrees to int in the emulator can be found in:
     https://github.com/cms-sw/cmssw/blob/master/L1Trigger/L1TMuonEndCap/interface/TrackTools.h#L201-L207
