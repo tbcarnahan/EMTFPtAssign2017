@@ -90,11 +90,11 @@ int CalcPhiRun3( int& ph, int& ring, int& strip_quart_bit, int& strip_eight_bit,
   ph = ph*4;
 
   /*
-  The int phi is corrected by a constant amount based on the quart- and eight-strip bits of the positin offset.
+  The int phi is corrected by a constant amount based on the quart- and eight-strip bits of the position offset.
   To get these correction values, the full strip pitch (which varies by station/ring) is divided by a factor of 4
     (for quart-strip pitch) or 8 (for eight-strip pitch), then converted from degrees to integer units by
     multiplying by a factor of 240.
-  Lastly, these corrections are either added or subtrated based on the orientation (clockwise vs. counterclockwise).
+  Lastly, these corrections are either added or subtracted based on the orientation (clockwise vs. counterclockwise).
     St. 1 and 2 have the opposite orientation of St 3 and 4, and for the opposite endcap these are reversed.
   The values for full strip pitch are tabulated in p.2 of https://arxiv.org/pdf/0911.4992.pdf
   Conversion of loc phi in degrees to int in the emulator can be found in:
