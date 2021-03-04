@@ -84,14 +84,13 @@ void CalcDeltaPhis_2019GEM( int& dPh12, int& dPh13, int& dPh14, int& dPh23, int&
 }
 
 
-int CalcPhi2019Run3( int& ph, int& ring, int& strip_quart_bit, int& strip_eight_bit, const int station, int& endcap ) {
+int CalcPhiRun3( int& ph, int& ring, int& strip_quart_bit, int& strip_eight_bit, const int station, int& endcap ) {
   ph = ph*4;
 
   if (station == 1) {
     if (ring == 1) {
       if (strip_quart_bit == 1 ) { (endcap>0 ? ph = ph + 1330 : ph = ph - 1330 ); }
-      if (strip_eight_bit == 1 ) { (endcap>0 ? ph = ph + 665 : ph = ph - 665 ); }
-	
+      if (strip_eight_bit == 1 ) { (endcap>0 ? ph = ph + 665 : ph = ph - 665 ); }	
     }
 
     if (ring == 2) {
