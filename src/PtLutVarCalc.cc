@@ -84,7 +84,7 @@ void CalcDeltaPhis_2019GEM( int& dPh12, int& dPh13, int& dPh14, int& dPh23, int&
 }
 
 
-int CalcPhiRun3( int& ph, int& ring, int& strip_quart_bit, int& strip_eight_bit, const int station, int& endcap ) {
+int CalcPhiRun3( int ph, int ring, int strip_quart_bit, int strip_eight_bit, const int station, int endcap ) {
   //The integer phi by default is in half-strip precision (0-4920). Multiply this by a factor of 4 to convert 
   //  to eight-strip precision.
   ph = ph*4;

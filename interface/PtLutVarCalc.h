@@ -17,7 +17,7 @@ void CalcDeltaPhis_2019GEM( int& dPh12, int& dPh13, int& dPh14, int& dPh23, int&
                             int& dPhSum4, int& dPhSum4A, int& dPhSum3, int& dPhSum3A, int& outStPh, int& dPhGE11ME11,
                             const int ph1, const int ph2, const int ph3, const int ph4, const int phGEM, const int mode, const bool BIT_COMP=false );
 
-int CalcPhiRun3( int& ph, int& ring, int& strip_quart_bit, int& strip_eight_bit, const int station, int& endcap);
+int CalcPhiRun3( const int ph, const int ring, const int strip_quart_bit, const int strip_eight_bit, const int station, const int endcap);
 
 void CalcDeltaThetas( int& dTh12, int& dTh13, int& dTh14, int& dTh23, int& dTh24, int& dTh34,
 		      const int th1, const int th2, const int th3, const int th4, const int mode, const bool BIT_COMP=false );
