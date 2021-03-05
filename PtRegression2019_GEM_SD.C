@@ -105,7 +105,7 @@ void PtRegression2019_GEM_SD ( TString myMethodList = "" ) {
    TString RPC_str = (USE_RPC  ? "RPC"      : "noRPC");
    TString GEM_str = (USE_GEM  ? "GEM"      : "noGEM");
 
-   out_file_str.Form( "%s/%s_MODE_%d_%s_%s_%s.root",
+   out_file_str.Form( "%s/%s_MODE_%d_%s_%s_%s_enhancedPhi.root",
                       OUT_DIR_NAME.Data(), OUT_FILE_NAME.Data(),
                       MODE, bit_str.Data(), RPC_str.Data(), GEM_str.Data() );
 
@@ -753,10 +753,16 @@ void PtRegression2019_GEM_SD ( TString myMethodList = "" ) {
          else if (i1CSC >= 0) { eta = F("hit_eta",i1CSC ); phi = F("hit_phi",i1CSC ); }
          endcap = (eta > 0 ? +1 : -1);
 
+	 //std::cout << "ph1 HS (before): " << ph1 << ", ph1 ES (before): " << ph1*4 << ", ring: " << ring1 << ", endcap: " << endcap << ", quart_bit: " << strip_quart_bit1 << ", eight_bit: " << strip_eight_bit1 << std::endl;
+
+	 //This block of code adds a correction to the integer phi value based on the quarter and eight-strip position offset.
 	 if (ph1 != -99) { ph1 = CalcPhiRun3(ph1, ring1, strip_quart_bit1, strip_eight_bit1, 1, endcap); }
 	 if (ph2 != -99) { ph2 = CalcPhiRun3(ph2, ring2, strip_quart_bit2, strip_eight_bit2, 2, endcap); }
          if (ph3 != -99) { ph3 = CalcPhiRun3(ph3, ring3, strip_quart_bit3, strip_eight_bit3, 3, endcap); }
          if (ph4 != -99) { ph4 = CalcPhiRun3(ph4, ring4, strip_quart_bit4, strip_eight_bit4, 4, endcap); }
+
+	 //std::cout << "ph1 (after): " << ph1 << std::endl;
+	 //std::cout << "-------------Next muon-----------" << std::endl;
 
          //========================
          //Variables to go into BDT
