@@ -5,13 +5,14 @@ import sys, commands, os, fnmatch
 from optparse import OptionParser,OptionGroup
 import getpass
 import subprocess
+from datetime import datetime
 
 def exec_me(command, dryRun=False):
     print command
     if not dryRun:
         os.system(command)
 
-def write_condor(njobs, exe='condor_submit', dryRun=True):
+def write_condor(exe='condor_submit', dryRun=True):
     fname = '%s.jdl' % exe
     out = """universe = vanilla
 Executable = {exe}.sh
@@ -21,7 +22,6 @@ Transfer_Input_Files = {exe}.sh
 Output = BDT_$(Cluster)_$(Process).stdout
 Error = BDT_$(Cluster)_$(Process).stderr
 Log = BDT_$(Cluster)_$(Process).log
-Arguments = $(Process) {njobs}
 request_memory = 10000
 Queue
     """.format(exe=exe)
@@ -30,7 +30,7 @@ Queue
     if not dryRun:
         os.system("condor_submit %s" % fname)
 
-def write_bash(temp = 'runJob.sh', command = '', CMSSW = "", SCRAM_ARCH = "", dryRun=True):
+def write_bash(temp = 'runJob.sh', command = '', outputdirectory = '', CMSSW = "", SCRAM_ARCH = "", dryRun=True):
 
     ## 2: make run script
     out = '#!/bin/bash\n'
@@ -39,19 +39,18 @@ def write_bash(temp = 'runJob.sh', command = '', CMSSW = "", SCRAM_ARCH = "", dr
     out += 'ls\n'
     #out += 'voms-proxy-info --all\n'
     ## get the tarball from EOS
-    out += "xrdcp -s root://cmseos.fnal.gov//store/user/$USER/EMTFPtAssign2017Condor.tar.gz ."
+    out += "xrdcp -s root://cmseos.fnal.gov//store/user/$USER/EMTFPtAssign2017Condor.tar.gz .\n"
     ## unpack it
-    out += "tar zxvf EMTFPtAssign2017Condor.tar.gz ."
-    out += "rm EMTFPtAssign2017Condor.tar.gz ."
+    out += "tar zxvf EMTFPtAssign2017Condor.tar.gz .\n"
+    out += "rm EMTFPtAssign2017Condor.tar.gz .\n"
     ## setup CMSSW
-    out += '#CMSSW from scratch (only need for root)\n'
     out += 'export CWD=${PWD}\n'
-    out += "source /cvmfs/cms.cern.ch/cmsset_default.sh"
+    out += "source /cvmfs/cms.cern.ch/cmsset_default.sh\n"
     out += 'echo "Setting up CMSSW:"\n'
     out += 'export SCRAM_ARCH={}\n'.format(SCRAM_ARCH)
     out += 'scramv1 project CMSSW {}\n'.format(CMSSW)
     out += 'cd {}/src/\n'.format(CMSSW)
-    out += 'eval `scramv1 runtime -sh` # cmsenv\n'
+    out += 'eval `scramv1 runtime -sh`\n'
     ## move EMTFPtAssign2017Condor to CMSSW/src/
     out += 'mv ../../EMTFPtAssign2017Condor .\n'
     ## move to directory and execute command
@@ -59,9 +58,9 @@ def write_bash(temp = 'runJob.sh', command = '', CMSSW = "", SCRAM_ARCH = "", dr
     out += 'ls\n'
     out += command + '\n'
     ## copy the output to EOS
-    out += "xrdcp -f Pt*.root root://cmseos.fnal.gov//store/user/$USER/condor_output_BDT_TEST/"
+    out += "xrdcp -f Pt*.root root://cmseos.fnal.gov//store/user/$USER/{}/\n".format(outputdirectory)
     ## cleanup
-    out += 'cd $CWD'
+    out += 'cd $CWD\n'
     out += 'ls\n'
     out += 'echo "DELETING..."\n'
     out += 'rm -rf {}\n'.format(CMSSW)
@@ -85,6 +84,7 @@ if __name__ == '__main__':
     parser.add_option("--useGEM", dest="useGEM", default = False)
     parser.add_option("--useL1Pt", dest="useL1Pt", default = False)
     parser.add_option("--useBitCompression", dest="useBitCompression", default = False)
+
     (options, args) = parser.parse_args()
 
     ## CMSSW version
@@ -103,6 +103,9 @@ if __name__ == '__main__':
         options.useL1Pt
     )
 
+    currentDateTime = datetime.now().strftime("%Y%m%d_%H%M%S")
+    outputdirectory = "EMTF_BDT_Train_{}".format(currentDateTime)
+
     print "command to run: ", command, "for user", getpass.getuser()
 
     ## 1: make a tarball of the directory
@@ -117,7 +120,7 @@ if __name__ == '__main__':
 
     ## 3: create the bash file
     exe = "runJob"
-    write_bash(exe+".sh", command, CMSSW, SCRAM_ARCH, options.dryRun)
+    write_bash(exe+".sh", command, outputdirectory, CMSSW, SCRAM_ARCH, options.dryRun)
 
     ## 4: submit the job
-    write_condor(maxJobs, exe, options.dryRun)
+    write_condor(exe, options.dryRun)
