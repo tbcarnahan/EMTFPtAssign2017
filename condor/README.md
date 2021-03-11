@@ -1,6 +1,6 @@
 # Submit condor jobs in LPC
 
-The `submitJobs.py` script submits the training script `PtRegressionRun3Prep.C` to LPC condor queue
+The `submitJobs.py` script submits the training script `PtRegressionRun3Prep.C` to LPC condor queue. For interactive run, add `--interactiveRun`
 
 
 ## Run-2 LCTs
