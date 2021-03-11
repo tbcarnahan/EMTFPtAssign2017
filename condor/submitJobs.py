@@ -1,4 +1,4 @@
-B#! /usr/bin/env python
+#! /usr/bin/env python
 
 import glob
 import sys, commands, os, fnmatch
@@ -6,7 +6,7 @@ from optparse import OptionParser,OptionGroup
 import getpass
 import subprocess
 from datetime import datetime
-1;95;0c
+
 def exec_me(command, dryRun=False):
     print command
     if not dryRun:
@@ -88,8 +88,8 @@ if __name__ == '__main__':
     (options, args) = parser.parse_args()
 
     if options.isRun2:
-        options.useOneQuartPrecision = False
-        options.useOneEighthPrecision = False
+        options.useQSBit = False
+        options.useESBit = False
         options.useSlopes = False
         options.useGEM = False
         options.isRun3 = False
@@ -113,13 +113,14 @@ if __name__ == '__main__':
     tarball = "EMTFPtAssign2017Condor.tar.gz"
 
     ## training command
-    command  = 'root -l -b -q "PtRegressionRun3Prep.C(\"BDTG_AWB_Sq\", {}, {}, {}, {}, {}, {})"'.format(
+    command  = 'root -l -b -q "PtRegressionRun3Prep.C(\"BDTG_AWB_Sq\", {0}, {1}, {2}, {3}, {4}, {5})"'.format(
         options.isRun2,
         options.useRPC,
         options.useQSBit,
         options.useESBit,
         options.useSlopes,
         options.useGEM,
+        ## not considered yet
         options.useBitCompression,
         options.useL1Pt
     )
