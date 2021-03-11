@@ -10,7 +10,7 @@ TString ZeroBias_files[1] = {
 };
 const int USESingleMu = 1;//# of SM files to use
 const int USEZerobias = 0;//# of ZB files to use
-TString OUT_DIR_NAME  = "root://cmseos.fnal.gov//store/user/mdecaro/Ntuples/";
+TString OUT_DIR_NAME  = "./";
 TString OUT_FILE_NAME = "PtRegressionRun3Prep";  // Name base for output ROOT file
 
 namespace PtRegression2018_cfg {
