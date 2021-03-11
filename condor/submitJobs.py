@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+B#! /usr/bin/env python
 
 import glob
 import sys, commands, os, fnmatch
@@ -6,7 +6,7 @@ from optparse import OptionParser,OptionGroup
 import getpass
 import subprocess
 from datetime import datetime
-
+1;95;0c
 def exec_me(command, dryRun=False):
     print command
     if not dryRun:
@@ -73,7 +73,7 @@ def write_bash(temp = 'runJob.sh', command = '', outputdirectory = '', USER='', 
 if __name__ == '__main__':
     parser = OptionParser()
     parser.add_option('--clean', dest='clean', action='store_true',default = False, help='clean submission files', metavar='clean')
-    parser.add_option('--dryRun', dest='dryRun', action='store_true',default = True, help='write submission files only', metavar='dryRun')
+    parser.add_option('--dryRun', dest='dryRun', action='store_true',default = False, help='write submission files only', metavar='dryRun')
     ## expert options
     parser.add_option("--isRun2", dest="isRun2", action="store_true", default = False)
     parser.add_option("--isRun3", dest="isRun3", action="store_true", default = False)
@@ -110,6 +110,7 @@ if __name__ == '__main__':
     CMSSW = "CMSSW_11_2_0_pre9"
     SCRAM_ARCH = "slc7_amd64_gcc820"
     USER = getpass.getuser()
+    tarball = "EMTFPtAssign2017Condor.tar.gz"
 
     ## training command
     command  = 'root -l -b -q "PtRegressionRun3Prep.C(\"BDTG_AWB_Sq\", {}, {}, {}, {}, {}, {})"'.format(
@@ -142,13 +143,17 @@ if __name__ == '__main__':
 
     ## 1: make a tarball of the directory
     CMSSW_DIR = subprocess.Popen("echo $CMSSW_BASE", shell=True, stdout=subprocess.PIPE).stdout.read().strip('\n')
-    exec_me('''tar -pczf {0}/src/EMTFPtAssign2017Condor.tar.gz {0}/src/EMTFPtAssign2017 \
+    exec_me('''tar -pczf {0}/src/{1} {0}/src/EMTFPtAssign2017 \
     --exclude \"{0}/src/EMTFPtAssign2017/condor/" \
     --exclude \"{0}/src/EMTFPtAssign2017/macros/" \
-    --exclude \"{0}/src/EMTFPtAssign2017/macros_Rice2020/"'''.format(CMSSW_DIR), options.dryRun)
+    --exclude \"{0}/src/EMTFPtAssign2017/macros_Rice2020/"'''.format(CMSSW_DIR, tarball), options.dryRun)
 
     ## 2: copy the tarball to EOS (if it does not exist yet)
-    exec_me('xrdcp {cmssw}/src/EMTFPtAssign2017Condor.tar.gz root://cmseos.fnal.gov//store/user/{user}/'.format(cmssw=CMSSW_DIR, user=USER), options.dryRun)
+    tarBallCode = os.system("eos root://cmseos.fnal.gov ls /store/user/{user}/{tarball}".format(user=USER, tarball=tarball))
+    if tarBallCode != 0:
+        exec_me('xrdcp {cmssw}/src/{tarball} root://cmseos.fnal.gov//store/user/{user}/'.format(cmssw=CMSSW_DIR, user=USER, tarball=tarball), options.dryRun)
+    else:
+        print("Tarball {tarball} exists already on EOS LPC!".format(tarball=tarball))
 
     ## 3: create the bash file
     exe = "runJob"
