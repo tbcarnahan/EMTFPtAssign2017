@@ -73,29 +73,37 @@ def write_bash(temp = 'runJob.sh', command = '', outputdirectory = '', CMSSW = "
 if __name__ == '__main__':
     parser = OptionParser()
     parser.add_option('--clean', dest='clean', action='store_true',default = False, help='clean submission files', metavar='clean')
-    parser.add_option('--dryRun', dest='dryRun', action='store_true',default = True, help='write submission files only', metavar='dryRUn')
+    parser.add_option('--dryRun', dest='dryRun', action='store_true',default = True, help='write submission files only', metavar='dryRun')
     ## expert options
-    parser.add_option("--isRun2", dest="isRun2", default = True)
-    parser.add_option("--useRPC", dest="useRPC", default = True)
-    parser.add_option("--useQSBit", dest="useQSBit", default = False)
-    parser.add_option("--useESBit", dest="useESBit", default = False)
-    parser.add_option("--useSlopes", dest="useSlopes", default = False)
-    parser.add_option("--useGEM", dest="useGEM", default = False)
-    parser.add_option("--useL1Pt", dest="useL1Pt", default = False)
-    parser.add_option("--useBitCompression", dest="useBitCompression", default = False)
+    parser.add_option("--isRun2", dest="isRun2", action="store_true", default = False)
+    parser.add_option("--isRun3", dest="isRun3", action="store_true", default = False)
+    parser.add_option("--useRPC", dest="useRPC", action="store_true", default = False)
+    parser.add_option("--useQSBit", dest="useQSBit", action="store_true", default = False)
+    parser.add_option("--useESBit", dest="useESBit", action="store_true", default = False)
+    parser.add_option("--useSlopes", dest="useSlopes", action="store_true", default = False)
+    parser.add_option("--useGEM", dest="useGEM", action="store_true", default = False)
+    parser.add_option("--useL1Pt", dest="useL1Pt", action="store_true", default = False)
+    parser.add_option("--useBitCompression", dest="useBitCompression", action="store_true", default = False)
+    parser.add_option("--addDateTime", dest="addDateTime", action="store", default = True)
     (options, args) = parser.parse_args()
 
     if options.isRun2:
-        options.useRPC = True
         options.useOneQuartPrecision = False
         options.useOneEighthPrecision = False
         options.useSlopes = False
         options.useGEM = False
+        options.isRun3 = False
 
+    ## if both isRun2 and isRun3 are set, pick isRun3!
+    if options.isRun3:
+        options.isRun2 = False
+
+    ## if 1/8 strip precision is set, also 1/4 strip precision
     if options.useESBit:
         options.useQSBit = True
 
-    if not options.isRun2 and options.useRPC and options.useGEM:
+    ## GEM and RPC do not mix yet
+    if options.useGEM:
         options.useRPC = False
 
     ## CMSSW version
@@ -117,22 +125,18 @@ if __name__ == '__main__':
     ## name for output directory on EOS
     currentDateTime = datetime.now().strftime("%Y%m%d_%H%M%S")
     outputdirectory = "EMTF_BDT_Train"
-    if options.isRun2:
-        outputdirectory += "_isRun2"
-    if options.useRPC:
-        outputdirectory += "_useRPC"
-    if options.useQSBit:
-        outputdirectory += "_useQSBit"
-    if options.useESBit:
-        outputdirectory += "_useESBit"
-    if options.useSlopes:
-        outputdirectory += "_useSlopes"
-    if options.useGEM:
-        outputdirectory += "_useGEM"
-    outputdirectory += "_{}".format(currentDateTime)
+    if options.isRun2:      outputdirectory += "_isRun2"
+    if options.isRun3:      outputdirectory += "_isRun3"
+    if options.useRPC:      outputdirectory += "_useRPC"
+    if options.useQSBit:    outputdirectory += "_useQSBit"
+    if options.useESBit:    outputdirectory += "_useESBit"
+    if options.useSlopes:   outputdirectory += "_useSlopes"
+    if options.useGEM:      outputdirectory += "_useGEM"
+    if options.addDateTime: outputdirectory += "_{}".format(currentDateTime)
 
     print("command to run: ", command, "for user", getpass.getuser())
     print("Using output directory {}".format(outputdirectory))
+
     ## 1: make a tarball of the directory
     CMSSW_DIR = subprocess.Popen("echo $CMSSW_BASE", shell=True, stdout=subprocess.PIPE).stdout.read().strip('\n')
     exec_me('''tar -pczf {0}/src/EMTFPtAssign2017Condor.tar.gz {0}/src/EMTFPtAssign2017 \

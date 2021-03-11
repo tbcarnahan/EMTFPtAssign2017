@@ -60,7 +60,6 @@ void PtRegressionRun3Prep(TString myMethodList = "",
   // Expert options
   // Run-2 overrides all options
   if (isRun2) {
-    useRPC = true;
     useOneQuartPrecision = false;
     useOneEighthPrecision = false;
     useSlopes = false;
@@ -71,7 +70,7 @@ void PtRegressionRun3Prep(TString myMethodList = "",
     useOneQuartPrecision = true;
   // RPCs and GEMs don't mix (yet)
   // keep GEM
-  if (!isRun2 and useRPC and useGEM) {
+  if (useGEM) {
     useRPC = false;
   }
 
