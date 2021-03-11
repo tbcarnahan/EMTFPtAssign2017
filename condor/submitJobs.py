@@ -19,9 +19,9 @@ Executable = {exe}.sh
 Should_Transfer_Files = YES
 WhenToTransferOutput = ON_EXIT_OR_EVICT
 Transfer_Input_Files = {exe}.sh
-Output = {outputlog}/BDT_$(Cluster)_$(Process).stdout
-Error = {outputlog}/BDT_$(Cluster)_$(Process).stderr
-Log = {outputlog}/BDT_$(Cluster)_$(Process).log
+Output = {outputlog}/$(Cluster)_$(Process).stdout
+Error = {outputlog}/$(Cluster)_$(Process).stderr
+Log = {outputlog}/$(Cluster)_$(Process).log
 request_memory = 10000
 Queue
     """.format(exe=exe,outputlog=outputlog)
@@ -32,17 +32,18 @@ Queue
 
 def write_bash(temp = 'runJob.sh', tarball = '', command = '', outputdirectory = '', USER='', CMSSW = "", SCRAM_ARCH = "", dryRun=True):
 
+    emtfworkdir = tarball.replace('.tar.gz','')
     ## 2: make run script
     out = '#!/bin/bash\n'
     out += 'date\n'
     out += 'MAINDIR=`pwd`\n'
     out += 'ls\n'
     #out += 'voms-proxy-info --all\n'
-    ## get the tarball from EOS
+    out += 'echo "Copying tarball from EOS"\n'
     out += "xrdcp -s root://cmseos.fnal.gov//store/user/{user}/{tarball} .\n".format(tarball=tarball, user=USER)
     ## unpack it
-    out += "tar zxvf {tarball} .\n".format(tarball=tarball)
-    out += "rm {tarball} .\n".format(tarball=tarball)
+    out += 'echo "Unpacking tarball \'tar -zxvf {tarball}\'"\n'.format(tarball=tarball)
+    out += "tar -zxvf {tarball}\n".format(tarball=tarball)
     ## setup CMSSW
     out += 'export CWD=${PWD}\n'
     out += "source /cvmfs/cms.cern.ch/cmsset_default.sh\n"
@@ -52,13 +53,16 @@ def write_bash(temp = 'runJob.sh', tarball = '', command = '', outputdirectory =
     out += 'cd {}/src/\n'.format(CMSSW)
     out += 'eval `scramv1 runtime -sh`\n'
     ## move EMTFPtAssign2017Condor to CMSSW/src/
-    out += 'mv ../../{emtfworkdir} .\n'.format(emtfworkdir=tarball.replace('.tar.gz',''))
+    out += 'echo "Moving {emtfworkdir} to $PWD"\n'.format(emtfworkdir=emtfworkdir)
+    out += 'mv ../../{emtfworkdir} .\n'.format(emtfworkdir=emtfworkdir)
     ## move to directory and execute command
-    out += 'cd {emtfworkdir}\n'.format(emtfworkdir=tarball.replace('.tar.gz',''))
+    out += 'cd {emtfworkdir}\n'.format(emtfworkdir=emtfworkdir)
     out += 'ls\n'
     out += command + '\n'
     ## copy the output to EOS
     out += "xrdcp -f Pt*.root root://cmseos.fnal.gov//store/user/{user}/{outdir}/\n".format(outdir=outputdirectory, user=USER)
+    out += 'echo "Removing tarball"\n'
+    out += "rm {tarball}\n".format(tarball=tarball)
     ## cleanup
     out += 'cd $CWD\n'
     out += 'ls\n'
@@ -169,7 +173,7 @@ if __name__ == '__main__':
     if addDateTime: outputdirectory += "_{}".format(currentDateTime)
 
     outputlog = outputdirectory.replace('Train','Log')
-
+    os.system('mkdir {}'.format(outputlog))
     print("command to run: ", command, "for user", USER)
     print("Using output directory {}".format(outputdirectory))
 
@@ -179,10 +183,12 @@ if __name__ == '__main__':
     ## 1: make a tarball of the directory
     print("Making tarball")
     CMSSW_DIR = subprocess.Popen("echo $CMSSW_BASE", shell=True, stdout=subprocess.PIPE).stdout.read().strip('\n')
-    exec_me('''tar -pczf {cmssw}/src/{tarball} {cmssw}/src/EMTFPtAssign2017 \
-    --exclude \"{cmssw}/src/EMTFPtAssign2017/condor/" \
-    --exclude \"{cmssw}/src/EMTFPtAssign2017/macros/" \
-    --exclude \"{cmssw}/src/EMTFPtAssign2017/macros_Rice2020/"'''.format(cmssw=CMSSW_DIR, tarball=tarball), dryRun)
+    exec_me('''tar \
+    --exclude \'{cmssw}/src/EMTFPtAssign2017/condor/\' \
+    --exclude \'{cmssw}/src/EMTFPtAssign2017/macros/\' \
+    --exclude \'{cmssw}/src/EMTFPtAssign2017/.git/\' \
+    --exclude \'{cmssw}/src/EMTFPtAssign2017/macros_Rice2020/\' \
+    -pczf {cmssw}/src/{tarball} {cmssw}/src/EMTFPtAssign2017 '''.format(cmssw=CMSSW_DIR, tarball=tarball), dryRun)
 
     ## 2: copy the tarball to EOS (if it does not exist yet)
     print("Copying tarball")
