@@ -130,16 +130,18 @@ if __name__ == '__main__':
 
     ## training command
     def runCommand(localdir = './'):
-        command  = 'root -l -b -q "{localdir}PtRegressionRun3Prep.C(\\\"BDTG_AWB_Sq\\\", {0}, {1}, {2}, {3}, {4}, {5})"'.format(
-            int(isRun2),
-            int(useRPC),
-            int(useQSBit),
-            int(useESBit),
-            int(useSlopes),
-            int(useGEM),
+        command  = 'root -l -b -q "{localdir}PtRegressionRun3Prep.C({user}, {method}, {bisRun2}, {buseRPC}, {buseQSBit}, {buseESBit}, {buseSlopes}, {buseGEM})"'.format(
+            user = '''\\\"{}\\\"'''.format(USER),
+            method = '''\\\"BDTG_AWB_Sq\\\"''',
+            bisRun2 = int(isRun2),
+            buseRPC = int(useRPC),
+            buseQSBit = int(useQSBit),
+            buseESBit = int(useESBit),
+            buseSlopes = int(useSlopes),
+            buseGEM = int(useGEM),
             ## not considered yet
-            int(useBitComp),
-            int(useL1Pt),
+            buseBitComp = int(useBitComp),
+            buseL1Pt = int(useL1Pt),
             localdir = localdir
         )
         return command

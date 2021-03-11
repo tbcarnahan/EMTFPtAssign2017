@@ -47,7 +47,8 @@
 
 using namespace TMVA;
 
-void PtRegressionRun3Prep(TString myMethodList = "",
+void PtRegressionRun3Prep(TString user = "",
+                          TString myMethodList = "",
                           bool isRun2 = true,
                           bool useRPC = true,
                           bool useOneQuartPrecision = false,
@@ -135,7 +136,6 @@ void PtRegressionRun3Prep(TString myMethodList = "",
   //===================
   // Configure settings for this mode and user
   PtRegression2018_cfg::ConfigureMode( MODE );
-  PtRegression2018_cfg::ConfigureUser( USER );
 
   // Create a new root output file
   TString out_file_str;
