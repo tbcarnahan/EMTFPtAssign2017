@@ -30,7 +30,7 @@ Queue
     if not dryRun:
         os.system("condor_submit %s" % fname)
 
-def write_bash(temp = 'runJob.sh', command = '', outputdirectory = '', USER='', CMSSW = "", SCRAM_ARCH = "", dryRun=True):
+def write_bash(temp = 'runJob.sh', tarball = '', command = '', outputdirectory = '', USER='', CMSSW = "", SCRAM_ARCH = "", dryRun=True):
 
     ## 2: make run script
     out = '#!/bin/bash\n'
@@ -39,10 +39,10 @@ def write_bash(temp = 'runJob.sh', command = '', outputdirectory = '', USER='', 
     out += 'ls\n'
     #out += 'voms-proxy-info --all\n'
     ## get the tarball from EOS
-    out += "xrdcp -s root://cmseos.fnal.gov//store/user/{user}/EMTFPtAssign2017Condor.tar.gz .\n".format(user=USER)
+    out += "xrdcp -s root://cmseos.fnal.gov//store/user/{user}/{tarball} .\n".format(tarball=tarball, user=USER)
     ## unpack it
-    out += "tar zxvf EMTFPtAssign2017Condor.tar.gz .\n"
-    out += "rm EMTFPtAssign2017Condor.tar.gz .\n"
+    out += "tar zxvf {tarball} .\n".format(tarball=tarball)
+    out += "rm {tarball} .\n".format(tarball=tarball)
     ## setup CMSSW
     out += 'export CWD=${PWD}\n'
     out += "source /cvmfs/cms.cern.ch/cmsset_default.sh\n"
@@ -52,9 +52,9 @@ def write_bash(temp = 'runJob.sh', command = '', outputdirectory = '', USER='', 
     out += 'cd {}/src/\n'.format(CMSSW)
     out += 'eval `scramv1 runtime -sh`\n'
     ## move EMTFPtAssign2017Condor to CMSSW/src/
-    out += 'mv ../../EMTFPtAssign2017Condor .\n'
+    out += 'mv ../../{emtfworkdir} .\n'.format(emtfworkdir=tarball.replace('.tar.gz',''))
     ## move to directory and execute command
-    out += 'cd EMTFPtAssign2017Condor\n'
+    out += 'cd {emtfworkdir}\n'.format(emtfworkdir=tarball.replace('.tar.gz',''))
     out += 'ls\n'
     out += command + '\n'
     ## copy the output to EOS
@@ -74,6 +74,7 @@ if __name__ == '__main__':
     parser = OptionParser()
     parser.add_option('--clean', dest='clean', action='store_true',default = False, help='clean submission files', metavar='clean')
     parser.add_option('--dryRun', dest='dryRun', action='store_true',default = False, help='write submission files only', metavar='dryRun')
+    parser.add_option('--interactiveRun', dest='interactiveRun', action='store_true',default = False, help='do interactive run', metavar='dryRun')
     ## expert options
     parser.add_option("--isRun2", dest="isRun2", action="store_true", default = False)
     parser.add_option("--isRun3", dest="isRun3", action="store_true", default = False)
@@ -89,6 +90,7 @@ if __name__ == '__main__':
 
     # local variables
     dryRun = options.dryRun
+    interactiveRun = options.interactiveRun
     isRun2 = options.isRun2
     isRun3 = options.isRun3
     useRPC = options.useRPC
@@ -120,26 +122,40 @@ if __name__ == '__main__':
         useRPC = False
 
     ## CMSSW version
-    CMSSW = "CMSSW_11_2_0_pre9"
-    SCRAM_ARCH = "slc7_amd64_gcc820"
+    CMSSW = subprocess.Popen("echo $CMSSW_VERSION", shell=True, stdout=subprocess.PIPE).stdout.read().strip('\n')
+    SCRAM_ARCH = subprocess.Popen("echo $SCRAM_ARCH", shell=True, stdout=subprocess.PIPE).stdout.read().strip('\n')
     USER = getpass.getuser()
-    tarball = "EMTFPtAssign2017Condor.tar.gz"
+    currentDateTime = datetime.now().strftime("%Y%m%d_%H%M%S")
+    tarball = "EMTFPtAssign2017Condor_{}.tar.gz".format(currentDateTime)
 
     ## training command
-    command  = 'root -l -b -q "PtRegressionRun3Prep.C(\"BDTG_AWB_Sq\", {0}, {1}, {2}, {3}, {4}, {5})"'.format(
-        isRun2,
-        useRPC,
-        useQSBit,
-        useESBit,
-        useSlopes,
-        useGEM,
-        ## not considered yet
-        useBitComp,
-        useL1Pt
-    )
+    def runCommand(localdir = './'):
+        command  = 'root -l -b -q "{localdir}PtRegressionRun3Prep.C(\\\"BDTG_AWB_Sq\\\", {0}, {1}, {2}, {3}, {4}, {5})"'.format(
+            int(isRun2),
+            int(useRPC),
+            int(useQSBit),
+            int(useESBit),
+            int(useSlopes),
+            int(useGEM),
+            ## not considered yet
+            int(useBitComp),
+            int(useL1Pt),
+            localdir = localdir
+        )
+        return command
+
+    command = runCommand()
+
+    ## do interactive run?
+    if interactiveRun:
+        CMSSW_DIR = subprocess.Popen("echo $CMSSW_BASE", shell=True, stdout=subprocess.PIPE).stdout.read().strip('\n')
+        WORK_DIR = CMSSW_DIR + "/src/EMTFPtAssign2017/"
+        command = runCommand('../')
+        print(command)
+        os.system(command)
+        exit(1)
 
     ## name for output directory on EOS
-    currentDateTime = datetime.now().strftime("%Y%m%d_%H%M%S")
     outputdirectory = "EMTF_BDT_Train"
     if isRun2:      outputdirectory += "_isRun2"
     if isRun3:      outputdirectory += "_isRun3"
@@ -154,6 +170,9 @@ if __name__ == '__main__':
 
     print("command to run: ", command, "for user", USER)
     print("Using output directory {}".format(outputdirectory))
+
+    ## 0: make output directory
+    exec_me('eos root://cmseos.fnal.gov mkdir /store/user/{user}/{outdir}'.format(user=USER, outdir=outputdirectory), False)
 
     ## 1: make a tarball of the directory
     CMSSW_DIR = subprocess.Popen("echo $CMSSW_BASE", shell=True, stdout=subprocess.PIPE).stdout.read().strip('\n')
@@ -171,7 +190,7 @@ if __name__ == '__main__':
 
     ## 3: create the bash file
     exe = "runJob"
-    write_bash(exe+".sh", command, outputdirectory, USER, CMSSW, SCRAM_ARCH, dryRun)
+    write_bash(exe+".sh", tarball, command, outputdirectory, USER, CMSSW, SCRAM_ARCH, dryRun)
 
     ## 4: submit the job
     write_condor(exe, outputlog, dryRun)
