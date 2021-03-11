@@ -47,15 +47,15 @@
 
 using namespace TMVA;
 
-void PtRegression2021( TString myMethodList = "",
-                       bool isRun2 = true,
-                       bool useRPC = true,
-                       bool useOneQuartPrecision = false,
-                       bool useOneEighthPrecision = false,
-                       bool useSlopes = false,
-                       bool useGEM = false,
-                       bool useBitCompression = false,
-                       bool useL1Pt = false) {
+void PtRegressionRun3Prep(TString myMethodList = "",
+                          bool isRun2 = true,
+                          bool useRPC = true,
+                          bool useOneQuartPrecision = false,
+                          bool useOneEighthPrecision = false,
+                          bool useSlopes = false,
+                          bool useGEM = false,
+                          bool useBitCompression = false,
+                          bool useL1Pt = false) {
 
   // Expert options
   // Run-2 overrides all options
@@ -75,7 +75,7 @@ void PtRegression2021( TString myMethodList = "",
     useRPC = false;
   }
 
-  std::cout << "Running PtRegression2021 with options:\n"
+  std::cout << "Running PtRegressionRun3Prep with options:\n"
             << " - isRun2: " << isRun2 << "\n"
             << " - useRPC: " << useRPC << "\n"
             << " - useOneQuartPrecision: " << useOneQuartPrecision << "\n"
@@ -110,7 +110,7 @@ void PtRegression2021( TString myMethodList = "",
    bool verbose = false;//for debug
 
    std::cout << std::endl;
-   std::cout << "==> Start PtRegression2021" << std::endl;
+   std::cout << "==> Start PtRegressionRun3Prep" << std::endl;
 
    // Select methods (don't look at this code - not of interest)
    std::vector<TString> mlist;
@@ -1218,6 +1218,6 @@ int main( int argc, char** argv )
     if (!methodList.IsNull()) methodList += TString(",");
     methodList += regMethod;
   }
-  PtRegression2021(methodList, isRun2, useRPC, useOneQuartPrecision, useOneEighthPrecision, useSlopes, useGEM, useCompression);
+  PtRegressionRun3Prep(methodList, isRun2, useRPC, useOneQuartPrecision, useOneEighthPrecision, useSlopes, useGEM, useCompression);
   return 0;
 }
