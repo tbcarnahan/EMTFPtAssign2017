@@ -12,25 +12,25 @@ def exec_me(command, dryRun=False):
     if not dryRun:
         os.system(command)
 
-def write_condor(exe='condor_submit', dryRun=True):
+def write_condor(exe='condor_submit', outputlog = '', dryRun=True):
     fname = '%s.jdl' % exe
     out = """universe = vanilla
 Executable = {exe}.sh
 Should_Transfer_Files = YES
 WhenToTransferOutput = ON_EXIT_OR_EVICT
 Transfer_Input_Files = {exe}.sh
-Output = BDT_$(Cluster)_$(Process).stdout
-Error = BDT_$(Cluster)_$(Process).stderr
-Log = BDT_$(Cluster)_$(Process).log
+Output = {outputlog}/BDT_$(Cluster)_$(Process).stdout
+Error = {outputlog}/BDT_$(Cluster)_$(Process).stderr
+Log = {outputlog}/BDT_$(Cluster)_$(Process).log
 request_memory = 10000
 Queue
-    """.format(exe=exe)
+    """.format(exe=exe,outputlog=outputlog)
     with open(fname, 'w') as f:
         f.write(out)
     if not dryRun:
         os.system("condor_submit %s" % fname)
 
-def write_bash(temp = 'runJob.sh', command = '', outputdirectory = '', CMSSW = "", SCRAM_ARCH = "", dryRun=True):
+def write_bash(temp = 'runJob.sh', command = '', outputdirectory = '', USER='', CMSSW = "", SCRAM_ARCH = "", dryRun=True):
 
     ## 2: make run script
     out = '#!/bin/bash\n'
@@ -39,7 +39,7 @@ def write_bash(temp = 'runJob.sh', command = '', outputdirectory = '', CMSSW = "
     out += 'ls\n'
     #out += 'voms-proxy-info --all\n'
     ## get the tarball from EOS
-    out += "xrdcp -s root://cmseos.fnal.gov//store/user/$USER/EMTFPtAssign2017Condor.tar.gz .\n"
+    out += "xrdcp -s root://cmseos.fnal.gov//store/user/{user}/EMTFPtAssign2017Condor.tar.gz .\n".format(user=USER)
     ## unpack it
     out += "tar zxvf EMTFPtAssign2017Condor.tar.gz .\n"
     out += "rm EMTFPtAssign2017Condor.tar.gz .\n"
@@ -58,7 +58,7 @@ def write_bash(temp = 'runJob.sh', command = '', outputdirectory = '', CMSSW = "
     out += 'ls\n'
     out += command + '\n'
     ## copy the output to EOS
-    out += "xrdcp -f Pt*.root root://cmseos.fnal.gov//store/user/$USER/{}/\n".format(outputdirectory)
+    out += "xrdcp -f Pt*.root root://cmseos.fnal.gov//store/user/{user}/{outdir}/\n".format(outdir=outputdirectory, user=USER)
     ## cleanup
     out += 'cd $CWD\n'
     out += 'ls\n'
@@ -73,7 +73,7 @@ def write_bash(temp = 'runJob.sh', command = '', outputdirectory = '', CMSSW = "
 if __name__ == '__main__':
     parser = OptionParser()
     parser.add_option('--clean', dest='clean', action='store_true',default = False, help='clean submission files', metavar='clean')
-    parser.add_option('--dryRun', dest='dryRun', action='store_true',default = False, help='write submission files only', metavar='dryRun')
+    parser.add_option('--dryRun', dest='dryRun', action='store_true',default = True, help='write submission files only', metavar='dryRun')
     ## expert options
     parser.add_option("--isRun2", dest="isRun2", action="store_true", default = False)
     parser.add_option("--isRun3", dest="isRun3", action="store_true", default = False)
@@ -109,6 +109,7 @@ if __name__ == '__main__':
     ## CMSSW version
     CMSSW = "CMSSW_11_2_0_pre9"
     SCRAM_ARCH = "slc7_amd64_gcc820"
+    USER = getpass.getuser()
 
     ## training command
     command  = 'root -l -b -q "PtRegressionRun3Prep.C(\"BDTG_AWB_Sq\", {}, {}, {}, {}, {}, {})"'.format(
@@ -134,7 +135,9 @@ if __name__ == '__main__':
     if options.useGEM:      outputdirectory += "_useGEM"
     if options.addDateTime: outputdirectory += "_{}".format(currentDateTime)
 
-    print("command to run: ", command, "for user", getpass.getuser())
+    outputlog = outputdirectory.replace('Train','Log')
+
+    print("command to run: ", command, "for user", USER)
     print("Using output directory {}".format(outputdirectory))
 
     ## 1: make a tarball of the directory
@@ -145,11 +148,11 @@ if __name__ == '__main__':
     --exclude \"{0}/src/EMTFPtAssign2017/macros_Rice2020/"'''.format(CMSSW_DIR), options.dryRun)
 
     ## 2: copy the tarball to EOS (if it does not exist yet)
-    exec_me('xrdcp {0}/src/EMTFPtAssign2017Condor.tar.gz root://cmseos.fnal.gov//store/user/$USER/'.format(CMSSW_DIR), options.dryRun)
+    exec_me('xrdcp {cmssw}/src/EMTFPtAssign2017Condor.tar.gz root://cmseos.fnal.gov//store/user/{user}/'.format(cmssw=CMSSW_DIR, user=USER), options.dryRun)
 
     ## 3: create the bash file
     exe = "runJob"
-    write_bash(exe+".sh", command, outputdirectory, CMSSW, SCRAM_ARCH, options.dryRun)
+    write_bash(exe+".sh", command, outputdirectory, USER, CMSSW, SCRAM_ARCH, options.dryRun)
 
     ## 4: submit the job
-    write_condor(exe, options.dryRun)
+    write_condor(exe, outputlog, options.dryRun)
