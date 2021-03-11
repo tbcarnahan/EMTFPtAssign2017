@@ -83,7 +83,7 @@ void CalcDeltaPhisGEM( int& dPh12, int& dPh13, int& dPh14, int& dPh23, int& dPh2
   // probably best not to change the EMTF track mode at this point
 }
 
-void CalcPhiRun3( int& ph, int ring, int strip_quart_bit, int strip_eight_bit, int station, bool useQuartBit, bool useEighthBit) {
+void CalcPhiRun3( int& ph, int ring, int strip_quart_bit, int strip_eight_bit, int station, int endcap, bool useQuartBit, bool useEighthBit) {
 
   // if not bit was set, do no thing
   if (!useQuartBit) return;

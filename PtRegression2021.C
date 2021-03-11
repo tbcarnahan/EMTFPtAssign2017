@@ -311,7 +311,7 @@ void PtRegression2021( TString myMethodList = "",
    in_vars.push_back( MVA_var( "FR_4",      "St 4 LCT F/R",          "int", 'I', -88 ) ); // 0x0000 0800
 
    // block 4
-   if (useSlope) {
+   if (useSlopes) {
      in_vars.push_back( MVA_var( "slope_1",    "St 1 LCT slope",      "int", 'I', -88 ) ); // 0x0000 1000
      in_vars.push_back( MVA_var( "slope_2",    "St 2 LCT slope",      "int", 'I', -88 ) ); // 0x0000 2000
      in_vars.push_back( MVA_var( "slope_3",    "St 3 LCT slope",      "int", 'I', -88 ) ); // 0x0000 4000
@@ -769,20 +769,6 @@ void PtRegression2021( TString myMethodList = "",
          int ring3 = (i3 >= 0 ? I("hit_ring",i3 ) : -99);
          int ring4 = (i4 >= 0 ? I("hit_ring",i4 ) : -99);
 
-         //std::cout << "ph1 HS (before): " << ph1 << ", ph1 ES (before): " << ph1*4 << ", ring: " << ring1 << ", endcap: " << endcap << ", quart_bit: " << strip_quart_bit1 << ", eight_bit: " << strip_eight_bit1 << std::endl;
-
-         //This block of code adds a correction to the integer phi value based on the quarter and eight-strip position offset.
-         if (ph1 != -99) CalcPhiRun3(ph1, ring1, strip_quart_bit1, strip_eight_bit1, 1, endcap,
-                                     useOneQuartPrecision, useOneEighthPrecision);
-         if (ph2 != -99) CalcPhiRun3(ph2, ring2, strip_quart_bit2, strip_eight_bit2, 2, endcap,
-                                     useOneQuartPrecision, useOneEighthPrecision);
-         if (ph3 != -99) CalcPhiRun3(ph3, ring3, strip_quart_bit3, strip_eight_bit3, 3, endcap,
-                                     useOneQuartPrecision, useOneEighthPrecision);
-         if (ph4 != -99) CalcPhiRun3(ph4, ring4, strip_quart_bit4, strip_eight_bit4, 4, endcap,
-                                     useOneQuartPrecision, useOneEighthPrecision);
-
-         //std::cout << "ph1 (after): " << ph1 << std::endl;
-
          int st1_ring2 = (i1CSC >= 0 ? ( I("hit_ring",i1CSC ) == 2 || I("hit_ring",i1CSC ) == 3 ) : 0);
 
          //===========
@@ -797,6 +783,20 @@ void PtRegression2021( TString myMethodList = "",
          else if (i4 >= 0) { eta = F("hit_eta", i4 ); phi = F("hit_phi", i4 ); }
          else if (i1CSC >= 0) { eta = F("hit_eta",i1CSC ); phi = F("hit_phi",i1CSC ); }
          endcap = (eta > 0 ? +1 : -1);
+
+         //std::cout << "ph1 HS (before): " << ph1 << ", ph1 ES (before): " << ph1*4 << ", ring: " << ring1 << ", endcap: " << endcap << ", quart_bit: " << strip_quart_bit1 << ", eight_bit: " << strip_eight_bit1 << std::endl;
+
+         //This block of code adds a correction to the integer phi value based on the quarter and eight-strip position offset.
+         if (ph1 != -99) CalcPhiRun3(ph1, ring1, strip_quart_bit1, strip_eight_bit1, 1, endcap,
+                                     useOneQuartPrecision, useOneEighthPrecision);
+         if (ph2 != -99) CalcPhiRun3(ph2, ring2, strip_quart_bit2, strip_eight_bit2, 2, endcap,
+                                     useOneQuartPrecision, useOneEighthPrecision);
+         if (ph3 != -99) CalcPhiRun3(ph3, ring3, strip_quart_bit3, strip_eight_bit3, 3, endcap,
+                                     useOneQuartPrecision, useOneEighthPrecision);
+         if (ph4 != -99) CalcPhiRun3(ph4, ring4, strip_quart_bit4, strip_eight_bit4, 4, endcap,
+                                     useOneQuartPrecision, useOneEighthPrecision);
+
+         //std::cout << "ph1 (after): " << ph1 << std::endl;
 
          //========================
          //Variables to go into BDT
@@ -828,9 +828,9 @@ void PtRegression2021( TString myMethodList = "",
 
          // special case with GEMs
          if (useGEM) {
-           CalcDeltaPhis_2019GEM( dPh12, dPh13, dPh14, dPh23, dPh24, dPh34, dPhSign,
-                                  dPhSum4, dPhSum4A, dPhSum3, dPhSum3A, outStPh, dPhGE11ME11,
-                                  ph1, ph2, ph3, ph4, ph1GEM, mode, useBitCompression );
+           CalcDeltaPhisGEM( dPh12, dPh13, dPh14, dPh23, dPh24, dPh34, dPhSign,
+                             dPhSum4, dPhSum4A, dPhSum3, dPhSum3A, outStPh, dPhGE11ME11,
+                             ph1, ph2, ph3, ph4, ph1GEM, mode, useBitCompression );
          }
 
          //Avoid too large dPhis due to neighbouring chamber effects.
@@ -949,7 +949,7 @@ void PtRegression2021( TString myMethodList = "",
              if ( vName == "FR_2" ) var_vals.at(iVar) = FR2;
              if ( vName == "FR_3" ) var_vals.at(iVar) = FR3;
              if ( vName == "FR_4" ) var_vals.at(iVar) = FR4;
-             if (useSlope) {
+             if (useSlopes) {
                if ( vName == "slope_1" ) var_vals.at(iVar) = slope1;
                if ( vName == "slope_2" ) var_vals.at(iVar) = slope2;
                if ( vName == "slope_3" ) var_vals.at(iVar) = slope3;

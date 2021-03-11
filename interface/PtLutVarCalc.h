@@ -17,7 +17,7 @@ void CalcDeltaPhisGEM( int& dPh12, int& dPh13, int& dPh14, int& dPh23, int& dPh2
                             int& dPhSum4, int& dPhSum4A, int& dPhSum3, int& dPhSum3A, int& outStPh, int& dPhGE11ME11,
                             const int ph1, const int ph2, const int ph3, const int ph4, const int phGEM, const int mode, const bool BIT_COMP=false );
 
-void CalcPhiRun3( int& ph, int ring, int strip_quart_bit, int strip_eight_bit, const int station, bool useQuartBit, bool useEighthBit);
+void CalcPhiRun3( int& ph, int ring, int strip_quart_bit, int strip_eight_bit, int station, int endcap, bool useQuartBit, bool useEighthBit);
 
 void CalcDeltaThetas( int& dTh12, int& dTh13, int& dTh14, int& dTh23, int& dTh24, int& dTh34,
 		      const int th1, const int th2, const int th3, const int th4, const int mode, const bool BIT_COMP=false );
