@@ -32,8 +32,9 @@ Queue
 
 def write_bash(temp = 'runJob.sh', tarball = '', command = '', outputdirectory = '', USER='', CMSSW = "", SCRAM_ARCH = "", dryRun=True):
 
-    emtfworkdir = tarball.replace('.tar.gz','')
-    ## 2: make run script
+    #emtfworkdir = tarball.replace('.tar.gz','')
+    emtfworkdir = "EMTFPtAssign2017"
+
     out = '#!/bin/bash\n'
     out += 'date\n'
     out += 'MAINDIR=`pwd`\n'
@@ -183,7 +184,7 @@ if __name__ == '__main__':
     ## 1: make a tarball of the directory
     print("Making tarball")
     CMSSW_DIR = subprocess.Popen("echo $CMSSW_BASE", shell=True, stdout=subprocess.PIPE).stdout.read().strip('\n')
-    exec_me('''tar --exclude-vcs --exclude='EMTFPtAssign2017/macros_Rice2020/*'  --exclude='EMTFPtAssign2017/condor/*' --exclude='EMTFPtAssign2017/macros/*' -C {cmssw}/src/ -czvf {tarball} EMTFPtAssign2017 '''.format(cmssw=CMSSW_DIR, tarball=tarball), dryRun)
+    exec_me('''tar --exclude-vcs --exclude='EMTFPtAssign2017/*md' --exclude='EMTFPtAssign2017/macros_Rice2020/*'  --exclude='EMTFPtAssign2017/condor/*' --exclude='EMTFPtAssign2017/macros/*' -C {cmssw}/src/ -czvf {tarball} EMTFPtAssign2017 '''.format(cmssw=CMSSW_DIR, tarball=tarball), dryRun)
 
     ## 2: copy the tarball to EOS (if it does not exist yet)
     print("Copying tarball")
