@@ -83,6 +83,73 @@ void CalcDeltaPhis_2019GEM( int& dPh12, int& dPh13, int& dPh14, int& dPh23, int&
   // probably best not to change the EMTF track mode at this point
 }
 
+
+int CalcPhiRun3( int ph, int ring, int strip_quart_bit, int strip_eight_bit, const int station, int endcap ) {
+  //The integer phi by default is in half-strip precision (0-4920). Multiply this by a factor of 4 to convert 
+  //  to eight-strip precision.
+  ph = ph*4;
+
+  /*
+  The int phi is corrected by an amount depending on the quart- and eight-strip bits of the position offset.
+  To get these correction values, the full strip pitch (which varies by station/ring) is divided by a factor of 4
+    (for quart-strip pitch) or 8 (for eight-strip pitch), then converted from degrees to integer units by
+    multiplying by a factor of 240 [4 for ES precision * 60 degree sector].
+  Lastly, these corrections are either added or subtracted based on the chamber orientation (clockwise vs. counterclockwise).
+    St. 1 and 2 have the opposite orientation of St. 3 and 4, and for the opposite endcap these are reversed.
+  The values for full strip pitch are tabulated in p.2 of https://arxiv.org/pdf/0911.4992.pdf
+  For comparison, conversion of loc phi in degrees to int in the emulator can be found in:
+    https://github.com/cms-sw/cmssw/blob/master/L1Trigger/L1TMuonEndCap/interface/TrackTools.h#L201-L207
+  */
+
+  if (station == 1) {
+    if (ring == 1) {
+      if (strip_quart_bit == 1 ) { (endcap>0 ? ph = ph + 10 : ph = ph - 10 ); }
+      if (strip_eight_bit == 1 ) { (endcap>0 ? ph = ph + 5 : ph = ph - 5 ); }	
+    }
+
+    if (ring == 2) {
+      if (strip_quart_bit == 1 ) { (endcap>0 ? ph = ph + 8 : ph = ph - 8 ); }
+      if (strip_eight_bit == 1 ) { (endcap>0 ? ph = ph + 4 : ph = ph - 4 ); }
+    }
+
+    if (ring == 3) {
+      if (strip_quart_bit == 1 ) { (endcap>0 ? ph = ph + 4 : ph = ph - 4 ); }
+      if (strip_eight_bit == 1 ) { (endcap>0 ? ph = ph + 2 : ph = ph - 2 ); }
+    }
+
+    if (ring == 4) {
+      if (strip_quart_bit == 1 ) { (endcap>0 ? ph = ph + 13 : ph = ph - 13 ); }
+      if (strip_eight_bit == 1 ) { (endcap>0 ? ph = ph + 7 : ph = ph - 7 ); }
+    }
+  }  
+
+  if (station == 2) {
+    if (ring == 1) {
+      if (strip_quart_bit == 1 ) { (endcap>0 ? ph = ph + 16 : ph = ph - 16 ); }
+      if (strip_eight_bit == 1 ) { (endcap>0 ? ph = ph + 8 : ph = ph - 8 ); }
+    }
+
+    if (ring == 2) {
+      if (strip_quart_bit == 1 ) { (endcap>0 ? ph = ph + 8 : ph = ph - 8 ); }
+      if (strip_eight_bit == 1 ) { (endcap>0 ? ph = ph + 4 : ph = ph - 4 ); }
+    }
+  }
+  
+  if (station > 2) {
+    if ( ring == 1) {
+      if (strip_quart_bit == 1 ) { (endcap>0 ? ph = ph - 16 : ph = ph + 16 ); }
+      if (strip_eight_bit == 1 ) { (endcap>0 ? ph = ph - 8 : ph = ph + 8 ); }
+    }
+ 
+    if (ring == 2) {
+      if (strip_quart_bit == 1 ) { (endcap>0 ? ph = ph - 8 : ph = ph + 8 ); }
+      if (strip_eight_bit == 1 ) { (endcap>0 ? ph = ph - 4 : ph = ph + 4 ); }
+    }
+  }
+
+  return ph;
+}
+
 void CalcDeltaPhis( int& dPh12, int& dPh13, int& dPh14, int& dPh23, int& dPh24, int& dPh34, int& dPhSign,
                     int& dPhSum4, int& dPhSum4A, int& dPhSum3, int& dPhSum3A, int& outStPh,
                     const int ph1, const int ph2, const int ph3, const int ph4, const int mode, const bool BIT_COMP ) {
