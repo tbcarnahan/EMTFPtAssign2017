@@ -333,24 +333,11 @@ void PtRegression2021( TString myMethodList = "",
    in_vars.push_back( MVA_var( "dTh_14",    "#theta(4) - #theta(1)", "int", 'I', -88 ) ); // 0x0400 0000
    in_vars.push_back( MVA_var( "dTh_24",    "#theta(4) - #theta(2)", "int", 'I', -88 ) ); // 0x0800 0000
 
-   if (useOneQuartPrecision) {
-     in_vars.push_back( MVA_var( "strip_quart_bit_1",    "St 1 QS",      "int", 'I', -88 ) );
-     in_vars.push_back( MVA_var( "strip_quart_bit_2",    "St 2 QS",      "int", 'I', -88 ) );
-     in_vars.push_back( MVA_var( "strip_quart_bit_3",    "St 3 QS",      "int", 'I', -88 ) );
-     in_vars.push_back( MVA_var( "strip_quart_bit_4",    "St 4 QS",      "int", 'I', -88 ) );
-     if (useOneEighthPrecision) {
-       in_vars.push_back( MVA_var( "strip_eight_bit_1",    "St 1 ES",      "int", 'I', -88 ) );
-       in_vars.push_back( MVA_var( "strip_eight_bit_2",    "St 2 ES",      "int", 'I', -88 ) );
-       in_vars.push_back( MVA_var( "strip_eight_bit_3",    "St 3 ES",      "int", 'I', -88 ) );
-       in_vars.push_back( MVA_var( "strip_eight_bit_4",    "St 4 ES",      "int", 'I', -88 ) );
-     }
-   }
-
-   // add 2017 EMTF pT as input variable to accelerate training
-   if (useL1Pt) {
-     in_vars.push_back( MVA_var( "EMTF_pt",       "EMTF p_{T}",        "",    'F', -88 ) ); // 0x1000 0000
-     // Later on, it will probably make sense to match this variable with the GEN-level "target" variable
-     // in this case change to "log2_EMTF_pt"
+   if (useRPC) {
+     in_vars.push_back( MVA_var( "RPC_1",   "St 1 hit is RPC",       "int", 'I', -88 ) ); // 0x1000 0000
+     in_vars.push_back( MVA_var( "RPC_2",   "St 2 hit is RPC",       "int", 'I', -88 ) ); // 0x2000 0000
+     in_vars.push_back( MVA_var( "RPC_3",   "St 3 hit is RPC",       "int", 'I', -88 ) ); // 0x4000 0000
+     in_vars.push_back( MVA_var( "RPC_4",   "St 4 hit is RPC",       "int", 'I', -88 ) ); // 0x8000 0000
    }
 
    // new GEM-CSC bending angle
@@ -359,11 +346,11 @@ void PtRegression2021( TString myMethodList = "",
      in_vars.push_back( MVA_var( "GEM_1",   "St 1 hit is GEM",       "int", 'I', -88 ) ); // 0x1 0000 0000
    }
 
-   if (useRPC) {
-     in_vars.push_back( MVA_var( "RPC_1",   "St 1 hit is RPC",       "int", 'I', -88 ) ); // 0x1000 0000
-     in_vars.push_back( MVA_var( "RPC_2",   "St 2 hit is RPC",       "int", 'I', -88 ) ); // 0x2000 0000
-     in_vars.push_back( MVA_var( "RPC_3",   "St 3 hit is RPC",       "int", 'I', -88 ) ); // 0x4000 0000
-     in_vars.push_back( MVA_var( "RPC_4",   "St 4 hit is RPC",       "int", 'I', -88 ) ); // 0x8000 0000
+   // add 2017 EMTF pT as input variable to accelerate training
+   if (useL1Pt) {
+     in_vars.push_back( MVA_var( "EMTF_pt",       "EMTF p_{T}",        "",    'F', -88 ) ); // 0x1000 0000
+     // Later on, it will probably make sense to match this variable with the GEN-level "target" variable
+     // in this case change to "log2_EMTF_pt"
    }
 
    ////////////////////////////////////////////////////////////
@@ -767,6 +754,16 @@ void PtRegression2021( TString myMethodList = "",
          int strip_eight_bit2 = (i2 >= 0 ? I("hit_strip_eight_bit", i2 ) : -99);
          int strip_eight_bit3 = (i3 >= 0 ? I("hit_strip_eight_bit", i3 ) : -99);
          int strip_eight_bit4 = (i4 >= 0 ? I("hit_strip_eight_bit", i4 ) : -99);
+
+         //This block of code adds a correction to the integer phi value based on the quarter and eight-strip position offset.
+         if (ph1 != -99) CalcPhiRun3(ph1, ring1, strip_quart_bit1, strip_eight_bit1, 1, endcap,
+                                     useOneQuartPrecision, useOneEighthPrecision);
+         if (ph2 != -99) CalcPhiRun3(ph2, ring2, strip_quart_bit2, strip_eight_bit2, 2, endcap,
+                                     useOneQuartPrecision, useOneEighthPrecision);
+         if (ph3 != -99) CalcPhiRun3(ph3, ring3, strip_quart_bit3, strip_eight_bit3, 3, endcap,
+                                     useOneQuartPrecision, useOneEighthPrecision);
+         if (ph4 != -99) CalcPhiRun3(ph4, ring4, strip_quart_bit4, strip_eight_bit4, 4, endcap,
+                                     useOneQuartPrecision, useOneEighthPrecision);
 
          int st1_ring2 = (i1CSC >= 0 ? ( I("hit_ring",i1CSC ) == 2 || I("hit_ring",i1CSC ) == 3 ) : 0);
 
