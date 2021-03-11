@@ -4,6 +4,7 @@ import glob
 import sys, commands, os, fnmatch
 from optparse import OptionParser,OptionGroup
 import getpass
+import subprocess
 
 def exec_me(command, dryRun=False):
     print command
@@ -29,9 +30,13 @@ Queue
     if not dryRun:
         os.system("condor_submit %s" % fname)
 
-def write_bash(temp = 'runJob.sh', command = '', CMSSW = ""):
+def write_bash(temp = 'runJob.sh', command = '', CMSSW = "", dryRun=True):
 
     USER_NAME = getpass.getuser()
+    CMSSW_DIR = subprocess.Popen("echo $CMSSW_BASE", shell=True, stdout=subprocess.PIPE).stdout.read()
+
+    #exec_me('''tar -pczf EMTFPtAssign2017Condor.tar.gz {0}/src/EMTFPtAssign2017 --exclude \"{0}/src/EMTFPtAssign2017/condor/" '''.format(CMSSW_DIR), dryRun)
+    ## 1: make a tarball of the directory
 
     out = '#!/bin/bash\n'
     out += 'date\n'
@@ -65,9 +70,8 @@ def write_bash(temp = 'runJob.sh', command = '', CMSSW = ""):
     """
     #You'll need to first compress your CMSSW release (with BDT code) into
     #  a tarball and xrdcp it into eos. Point the next line to your tarball.
-    tar -pczf EMTFPtAssign2017Condor.tar.gz /home/user/public_html/ --exclude "/home/user/public_html/tmp"
 
-    xrdcp -s root://cmseos.fnal.gov//store/user/{}/EMTFPtAssign2017.tar%(USER_NAME) .
+    xrdcp -s root://cmseos.fnal.gov//store/user/$USER/EMTFPtAssign2017.tar .
     source /cvmfs/cms.cern.ch/cmsset_default.sh
     tar -xf EMTFPtAssign2017.tar
     rm EMTFPtAssign2017.tar
@@ -123,5 +127,8 @@ if __name__ == '__main__':
     print "command to run: ", command, "for user", getpass.getuser()
 
     exe = "runJob"
+    CMSSW_DIR = subprocess.Popen("echo $CMSSW_BASE", shell=True, stdout=subprocess.PIPE).stdout.read().strip('\n')
+    print CMSSW_DIR
+    exec_me('''tar -pczf {0}/src/EMTFPtAssign2017Condor.tar.gz {0}/src/EMTFPtAssign2017 --exclude \"{0}/src/EMTFPtAssign2017/condor/"  --exclude \"{0}/src/EMTFPtAssign2017/macros/" --exclude \"{0}/src/EMTFPtAssign2017/macros_Rice2020/"  '''.format(CMSSW_DIR), True)
     #write_bash(exe+".sh", command, CMSSW)
     #write_condor(maxJobs, exe, options.dryRun)
