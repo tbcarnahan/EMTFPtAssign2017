@@ -683,51 +683,6 @@ void PtRegressionRun3Prep(TString user = "",
         int th3 = (i3 >= 0 ? I("hit_theta_int", i3 ) : -99);
         int th4 = (i4 >= 0 ? I("hit_theta_int", i4 ) : -99);
 
-        // commented out on 2019-10-10
-        /*
-        //Use phi and theta info from offline CSC segments that are matched to the LCT
-        int iSeg1 = (i1 >= 0 ? I("hit_match_iSeg",i1CSC ) : -99);
-        int iSeg2 = (i2 >= 0 ? I("hit_match_iSeg", i2 ) : -99);
-        int iSeg3 = (i3 >= 0 ? I("hit_match_iSeg", i3 ) : -99);
-        int iSeg4 = (i4 >= 0 ? I("hit_match_iSeg", i4 ) : -99);
-
-        //Don't use the track if there is LCT without a offline CSC segment match
-        //Restrict the segment index less than nSegs
-        if ( iSeg1 < 0      || iSeg2 < 0      || iSeg3 < 0      || iSeg4 < 0     ||
-        iSeg1 >= nSegs || iSeg2 >= nSegs || iSeg3 >= nSegs || iSeg4 >= nSegs) continue;
-
-        double phi1 = F("seg_phi", iSeg1);
-        double phi2 = F("seg_phi", iSeg2);
-        double phi3 = F("seg_phi", iSeg3);
-        double phi4 = F("seg_phi", iSeg4);
-
-        double theta1 = F("seg_theta", iSeg1);
-        double theta2 = F("seg_theta", iSeg2);
-        double theta3 = F("seg_theta", iSeg3);
-        double theta4 = F("seg_theta", iSeg4);
-
-        int sector1 = I("seg_sector", iSeg1);
-        int sector2 = I("seg_sector", iSeg2);
-        int sector3 = I("seg_sector", iSeg3);
-        int sector4 = I("seg_sector", iSeg4);
-
-        int endcap1 = I("seg_endcap", iSeg1);
-        int endcap2 = I("seg_endcap", iSeg2);
-        int endcap3 = I("seg_endcap", iSeg3);
-        int endcap4 = I("seg_endcap", iSeg4);
-
-        //Convert phi and theta to integer
-        int ph1 = calc_phi_loc_int(phi1, sector1);
-        int ph2 = calc_phi_loc_int(phi2, sector2);
-        int ph3 = calc_phi_loc_int(phi3, sector3);
-        int ph4 = calc_phi_loc_int(phi4, sector4);
-
-        int th1 = calc_theta_int(theta1, endcap1);
-        int th2 = calc_theta_int(theta2, endcap2);
-        int th3 = calc_theta_int(theta3, endcap3);
-        int th4 = calc_theta_int(theta4, endcap4);
-        */
-
         int pat1 = (i1CSC >= 0 ? I("hit_pattern",i1CSC ) : -99);
         int pat2 = (i2 >= 0 ? I("hit_pattern", i2 ) : -99);
         int pat3 = (i3 >= 0 ? I("hit_pattern", i3 ) : -99);
@@ -858,21 +813,6 @@ void PtRegressionRun3Prep(TString user = "",
         FR3 = (i3 >= 0 ? (cham3 % 2 == 1) : -99);  // backwards in 3 & 4
         FR4 = (i4 >= 0 ? (cham4 % 2 == 1) : -99);
         if (ring1 == 3) FR1 = 0;                   // In ME1/3 chambers are non-overlapping
-
-        /*
-          uncommented on 19/1/2021
-          CalcBends( bend1, bend2, bend3, bend4,
-          pat1, pat2, pat3, pat4,
-          dPhSign, endcap, mode, useBitCompression );
-        */
-
-        //Recompute bend1/2/3/4 with offline segment bending
-        /*
-          bend1 = int( F("seg_bend_phi", i1CSC)*1000*dPhSign );
-          bend2 = int( F("seg_bend_phi", i2)*1000*dPhSign );
-          bend3 = int( F("seg_bend_phi", i3)*1000*dPhSign );
-          bend4 = int( F("seg_bend_phi", i4)*1000*dPhSign );
-        */
 
         if (useRPC) {
           RPC1 = (i1CSC >= 0 ? ( I("hit_isRPC",i1CSC ) == 1 ? 1 : 0) : -99);
