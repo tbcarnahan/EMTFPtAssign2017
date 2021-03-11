@@ -78,7 +78,7 @@ if __name__ == '__main__':
     parser = OptionParser()
     parser.add_option('--clean', dest='clean', action='store_true',default = False, help='clean submission files', metavar='clean')
     parser.add_option('--dryRun', dest='dryRun', action='store_true',default = False, help='write submission files only', metavar='dryRun')
-    parser.add_option('--interactiveRun', dest='interactiveRun', action='store_true',default = False, help='do interactive run', metavar='dryRun')
+    parser.add_option('--interactiveRun', dest='interactiveRun', action='store_true',default = False, help='do interactive run')
     ## expert options
     parser.add_option("--isRun2", dest="isRun2", action="store_true", default = False)
     parser.add_option("--isRun3", dest="isRun3", action="store_true", default = False)
@@ -184,11 +184,11 @@ if __name__ == '__main__':
     print("Making tarball")
     CMSSW_DIR = subprocess.Popen("echo $CMSSW_BASE", shell=True, stdout=subprocess.PIPE).stdout.read().strip('\n')
     exec_me('''tar \
-    --exclude \'{cmssw}/src/EMTFPtAssign2017/condor/\' \
-    --exclude \'{cmssw}/src/EMTFPtAssign2017/macros/\' \
-    --exclude \'{cmssw}/src/EMTFPtAssign2017/.git/\' \
-    --exclude \'{cmssw}/src/EMTFPtAssign2017/macros_Rice2020/\' \
-    -pczf {cmssw}/src/{tarball} {cmssw}/src/EMTFPtAssign2017 '''.format(cmssw=CMSSW_DIR, tarball=tarball), dryRun)
+    --exclude={cmssw}/src/EMTFPtAssign2017/condor/ \
+    --exclude={cmssw}/src/EMTFPtAssign2017/macros/ \
+    --exclude={cmssw}/src/EMTFPtAssign2017/.git/ \
+    --exclude={cmssw}/src/EMTFPtAssign2017/macros_Rice2020/ \
+    -czvf {cmssw}/src/{tarball} -C {cmssw}/src/EMTFPtAssign2017'''.format(cmssw=CMSSW_DIR, tarball=tarball), dryRun)
 
     ## 2: copy the tarball to EOS (if it does not exist yet)
     print("Copying tarball")
@@ -201,8 +201,8 @@ if __name__ == '__main__':
     ## 3: create the bash file
     print("Creating bash file")
     exe = "runJob"
-    write_bash(exe+".sh", tarball, command, outputdirectory, USER, CMSSW, SCRAM_ARCH, dryRun)
+    #write_bash(exe+".sh", tarball, command, outputdirectory, USER, CMSSW, SCRAM_ARCH, dryRun)
 
     ## 4: submit the job
     print("Creating job file")
-    write_condor(exe, outputlog, dryRun)
+    #write_condor(exe, outputlog, dryRun)
