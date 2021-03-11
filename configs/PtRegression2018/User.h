@@ -19,7 +19,7 @@ namespace PtRegression2018_cfg {
 
     std::cout << "\nConfiguring PtRegression2018 code for user " << USER << std::endl;
 
-    EOS_DIR_NAME = "root://cmsxrootd-site.fnal.gov///store/user/mdecaro/Ntuples/";  // Input directory in eos
+    EOS_DIR_NAME = "root://cmseos.fnal.gov//store/user/mdecaro/Ntuples/";  // Input directory in eos
     in_dir = "";
     OUT_FILE_NAME = "PtRegression2018";
 
