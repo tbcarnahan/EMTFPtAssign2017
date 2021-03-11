@@ -183,18 +183,13 @@ if __name__ == '__main__':
     ## 1: make a tarball of the directory
     print("Making tarball")
     CMSSW_DIR = subprocess.Popen("echo $CMSSW_BASE", shell=True, stdout=subprocess.PIPE).stdout.read().strip('\n')
-    exec_me('''tar \
-    --exclude={cmssw}/src/EMTFPtAssign2017/condor/ \
-    --exclude={cmssw}/src/EMTFPtAssign2017/macros/ \
-    --exclude={cmssw}/src/EMTFPtAssign2017/.git/ \
-    --exclude={cmssw}/src/EMTFPtAssign2017/macros_Rice2020/ \
-    -czvf {cmssw}/src/{tarball} -C {cmssw}/src/EMTFPtAssign2017'''.format(cmssw=CMSSW_DIR, tarball=tarball), dryRun)
+    exec_me('''tar -C {cmssw}/src/ -czvf {tarball} EMTFPtAssign2017 --exclude="EMTFPtAssign2017/condor/" --exclude="EMTFPtAssign2017/macros/" --exclude="EMTFPtAssign2017/.git/" --exclude="EMTFPtAssign2017/macros_Rice2020/" '''.format(cmssw=CMSSW_DIR, tarball=tarball), dryRun)
 
     ## 2: copy the tarball to EOS (if it does not exist yet)
     print("Copying tarball")
     tarBallCode = os.system("eos root://cmseos.fnal.gov ls /store/user/{user}/{tarball}".format(user=USER, tarball=tarball))
     if tarBallCode != 0:
-        exec_me('xrdcp {cmssw}/src/{tarball} root://cmseos.fnal.gov//store/user/{user}/'.format(cmssw=CMSSW_DIR, user=USER, tarball=tarball), dryRun)
+        exec_me('xrdcp {cmssw}/src/EMTFPtAssign2017/condor/{tarball} root://cmseos.fnal.gov//store/user/{user}/'.format(cmssw=CMSSW_DIR, user=USER, tarball=tarball), dryRun)
     else:
         print("..Tarball {tarball} exists already on EOS LPC!".format(tarball=tarball))
 
