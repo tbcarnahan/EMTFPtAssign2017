@@ -143,10 +143,10 @@ if __name__ == '__main__':
 
     ## 1: make a tarball of the directory
     CMSSW_DIR = subprocess.Popen("echo $CMSSW_BASE", shell=True, stdout=subprocess.PIPE).stdout.read().strip('\n')
-    exec_me('''tar -pczf {0}/src/{1} {0}/src/EMTFPtAssign2017 \
-    --exclude \"{0}/src/EMTFPtAssign2017/condor/" \
-    --exclude \"{0}/src/EMTFPtAssign2017/macros/" \
-    --exclude \"{0}/src/EMTFPtAssign2017/macros_Rice2020/"'''.format(CMSSW_DIR, tarball), options.dryRun)
+    exec_me('''tar -pczf {cmssw}/src/tarball {cmssw}/src/EMTFPtAssign2017 \
+    --exclude \"{cmssw}/src/EMTFPtAssign2017/condor/" \
+    --exclude \"{cmssw}/src/EMTFPtAssign2017/macros/" \
+    --exclude \"{cmssw}/src/EMTFPtAssign2017/macros_Rice2020/"'''.format(cmssw=CMSSW_DIR, tarball=tarball), options.dryRun)
 
     ## 2: copy the tarball to EOS (if it does not exist yet)
     tarBallCode = os.system("eos root://cmseos.fnal.gov ls /store/user/{user}/{tarball}".format(user=USER, tarball=tarball))
