@@ -66,8 +66,14 @@ void PtRegression2021( TString myMethodList = "",
     useSlopes = false;
     useGEM = false;
   }
+  // check if 1/4 is on
   if (useOneEighthPrecision)
     useOneQuartPrecision = true;
+  // RPCs and GEMs don't mix (yet)
+  // keep GEM
+  if (!isRun2 and useRPC and useGEM) {
+    useRPC = false;
+  }
 
   std::cout << "Running PtRegression2021 with options:\n"
             << " - isRun2: " << isRun2 << "\n"
@@ -75,8 +81,9 @@ void PtRegression2021( TString myMethodList = "",
             << " - useOneQuartPrecision: " << useOneQuartPrecision << "\n"
             << " - useOneEighthPrecision: " << useOneEighthPrecision << "\n"
             << " - useSlopes: " << useSlopes << "\n"
-            << " - useGEM: " << useGEM
-            << " - useBitCompression: " << useBitCompression
+            << " - useGEM: " << useGEM << "\n"
+            << " - useBitCompression: " << useBitCompression << "\n"
+            << " - useL1Pt: " << useL1Pt << "\n"
             << std::endl;
 
    // This loads the library
@@ -164,7 +171,7 @@ void PtRegression2021( TString myMethodList = "",
    }
 
    // Open all input files
-   for (int i = 0; i < SM_in_file_names.size(); i++) {
+   for (unsigned i = 0; i < SM_in_file_names.size(); i++) {
      if ( !gSystem->AccessPathName(SM_in_file_names.at(i)) )
        file_tmp = TFile::Open( SM_in_file_names.at(i) ); // Check if file exists
      if (!file_tmp) {
@@ -173,7 +180,7 @@ void PtRegression2021( TString myMethodList = "",
      }
    }
 
-   for (int i = 0; i < ZB_in_file_names.size(); i++) {
+   for (unsigned i = 0; i < ZB_in_file_names.size(); i++) {
      if ( !gSystem->AccessPathName(ZB_in_file_names.at(i)) )
        file_tmp = TFile::Open( ZB_in_file_names.at(i) ); // Check if file exists
      if (!file_tmp) {
@@ -222,8 +229,8 @@ void PtRegression2021( TString myMethodList = "",
    // 0xf the 1st 4, 0xff the 1st 8, 0xa the 2nd and 4th, 0xf1 the 1st and 5th-8th, etc.
    std::vector< std::tuple<TMVA::Factory*, TMVA::DataLoader*, TString, std::vector<TString>, std::vector<Double_t>, int> > factories;
 
-   for (int iTarg = 0; iTarg < TARG_VARS.size(); iTarg++) {
-     for (int iWgt = 0; iWgt < EVT_WGTS.size(); iWgt++) {
+   for (unsigned iTarg = 0; iTarg < TARG_VARS.size(); iTarg++) {
+     for (unsigned iWgt = 0; iWgt < EVT_WGTS.size(); iWgt++) {
 
        TString factName;  // "Targ" and "Wgt" components not arbitrary - correspond to specific options later on
        factName.Form( "f_MODE_%d_%sTarg_%sWgt_%s_%s_%s",
@@ -277,7 +284,7 @@ void PtRegression2021( TString myMethodList = "",
    } // End loop: for (int iWgt = 0; iWgt < EVT_WGTS.size(); iWgt++)
 
    // Initialize factories and dataloaders
-   for (UInt_t iFact = 0; iFact < factories.size(); iFact++) {
+   for (unsigned iFact = 0; iFact < factories.size(); iFact++) {
      std::get<0>(factories.at(iFact)) = new TMVA::Factory( std::get<2>(factories.at(iFact)), out_file, fact_set );
      std::get<1>(factories.at(iFact)) = new TMVA::DataLoader( std::get<2>(factories.at(iFact)) );
    }
@@ -398,11 +405,11 @@ void PtRegression2021( TString myMethodList = "",
    if (SPEC_VARS) all_vars.insert( all_vars.end(), spec_vars.begin(), spec_vars.end() );
 
    // Fill each factory with the correct set of variables
-   for (UInt_t iFact = 0; iFact < factories.size(); iFact++) {
+   for (unsigned iFact = 0; iFact < factories.size(); iFact++) {
      std::cout << "\n*** Factory " << std::get<2>(factories.at(iFact)) << " variables ***" << std::endl;
 
      std::cout << "*** Input ***" << std::endl;
-     for (UInt_t i = 0; i < in_vars.size(); i++) {
+     for (unsigned i = 0; i < in_vars.size(); i++) {
        if ( 0x1 & (std::get<5>(factories.at(iFact)) >> i) ) { // Hex bit mask for in_vars
          MVA_var v = in_vars.at(i);
          std::cout << v.name << std::endl;
@@ -414,7 +421,7 @@ void PtRegression2021( TString myMethodList = "",
 
      TString targ_str = ""; // Save name of target variable
      std::cout << "*** Target ***" << std::endl;
-     for (UInt_t i = 0; i < targ_vars.size(); i++) {
+     for (unsigned i = 0; i < targ_vars.size(); i++) {
        MVA_var v = targ_vars.at(i);
        if ( (v.name == "GEN_pt_trg"      && std::get<2>(factories.at(iFact)).Contains("_ptTarg"))    ||
 	          (v.name == "inv_GEN_pt_trg"  && std::get<2>(factories.at(iFact)).Contains("_invPtTarg")) ||
@@ -455,7 +462,7 @@ void PtRegression2021( TString myMethodList = "",
    //=================================
    //Register events: loop over chains
    //=================================
-   for (int iCh = 0; iCh < in_chains.size(); iCh++) {
+   for (unsigned iCh = 0; iCh < in_chains.size(); iCh++) {
      TChain *in_chain = in_chains.at(iCh);
 
      std::cout << "******* About to enter the event loop for chain " << iCh+1 << " " << in_chain->GetEntries() << " *******" << std::endl;
