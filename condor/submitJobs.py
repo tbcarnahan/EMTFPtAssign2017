@@ -174,9 +174,10 @@ if __name__ == '__main__':
     print("Using output directory {}".format(outputdirectory))
 
     ## 0: make output directory
-    exec_me('eos root://cmseos.fnal.gov mkdir /store/user/{user}/{outdir}'.format(user=USER, outdir=outputdirectory), False)
+    exec_me('eos root://cmseos.fnal.gov mkdir /store/user/{user}/{outdir}'.format(user=USER, outdir=outputdirectory), dryRun)
 
     ## 1: make a tarball of the directory
+    print("Making tarball")
     CMSSW_DIR = subprocess.Popen("echo $CMSSW_BASE", shell=True, stdout=subprocess.PIPE).stdout.read().strip('\n')
     exec_me('''tar -pczf {cmssw}/src/{tarball} {cmssw}/src/EMTFPtAssign2017 \
     --exclude \"{cmssw}/src/EMTFPtAssign2017/condor/" \
@@ -184,15 +185,18 @@ if __name__ == '__main__':
     --exclude \"{cmssw}/src/EMTFPtAssign2017/macros_Rice2020/"'''.format(cmssw=CMSSW_DIR, tarball=tarball), dryRun)
 
     ## 2: copy the tarball to EOS (if it does not exist yet)
+    print("Copying tarball")
     tarBallCode = os.system("eos root://cmseos.fnal.gov ls /store/user/{user}/{tarball}".format(user=USER, tarball=tarball))
     if tarBallCode != 0:
         exec_me('xrdcp {cmssw}/src/{tarball} root://cmseos.fnal.gov//store/user/{user}/'.format(cmssw=CMSSW_DIR, user=USER, tarball=tarball), dryRun)
     else:
-        print("Tarball {tarball} exists already on EOS LPC!".format(tarball=tarball))
+        print("..Tarball {tarball} exists already on EOS LPC!".format(tarball=tarball))
 
     ## 3: create the bash file
+    print("Creating bash file")
     exe = "runJob"
     write_bash(exe+".sh", tarball, command, outputdirectory, USER, CMSSW, SCRAM_ARCH, dryRun)
 
     ## 4: submit the job
+    print("Creating job file")
     write_condor(exe, outputlog, dryRun)
