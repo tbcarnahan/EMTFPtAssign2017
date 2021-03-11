@@ -83,28 +83,41 @@ if __name__ == '__main__':
     parser.add_option("--useSlopes", dest="useSlopes", action="store_true", default = False)
     parser.add_option("--useGEM", dest="useGEM", action="store_true", default = False)
     parser.add_option("--useL1Pt", dest="useL1Pt", action="store_true", default = False)
-    parser.add_option("--useBitCompression", dest="useBitCompression", action="store_true", default = False)
+    parser.add_option("--useBitComp", dest="useBitComp", action="store_true", default = False)
     parser.add_option("--addDateTime", dest="addDateTime", action="store", default = True)
     (options, args) = parser.parse_args()
 
-    if options.isRun2:
-        options.useQSBit = False
-        options.useESBit = False
-        options.useSlopes = False
-        options.useGEM = False
-        options.isRun3 = False
+    # local variables
+    dryRun = options.dryRun
+    isRun2 = options.isRun2
+    isRun3 = options.isRun3
+    useRPC = options.useRPC
+    useQSBit = options.useQSBit
+    useESBit = options.useESBit
+    useSlopes = options.useSlopes
+    useGEM = options.useGEM
+    useL1Pt = options.useL1Pt
+    useBitComp = options.useBitComp
+    addDateTime = options.addDateTime
+
+    if isRun2:
+        useQSBit = False
+        useESBit = False
+        useSlopes = False
+        useGEM = False
+        isRun3 = False
 
     ## if both isRun2 and isRun3 are set, pick isRun3!
-    if options.isRun3:
-        options.isRun2 = False
+    if isRun3:
+        isRun2 = False
 
     ## if 1/8 strip precision is set, also 1/4 strip precision
-    if options.useESBit:
-        options.useQSBit = True
+    if useESBit:
+        useQSBit = True
 
     ## GEM and RPC do not mix yet
-    if options.useGEM:
-        options.useRPC = False
+    if useGEM:
+        useRPC = False
 
     ## CMSSW version
     CMSSW = "CMSSW_11_2_0_pre9"
@@ -114,28 +127,28 @@ if __name__ == '__main__':
 
     ## training command
     command  = 'root -l -b -q "PtRegressionRun3Prep.C(\"BDTG_AWB_Sq\", {0}, {1}, {2}, {3}, {4}, {5})"'.format(
-        options.isRun2,
-        options.useRPC,
-        options.useQSBit,
-        options.useESBit,
-        options.useSlopes,
-        options.useGEM,
+        isRun2,
+        useRPC,
+        useQSBit,
+        useESBit,
+        useSlopes,
+        useGEM,
         ## not considered yet
-        options.useBitCompression,
-        options.useL1Pt
+        useBitComp,
+        useL1Pt
     )
 
     ## name for output directory on EOS
     currentDateTime = datetime.now().strftime("%Y%m%d_%H%M%S")
     outputdirectory = "EMTF_BDT_Train"
-    if options.isRun2:      outputdirectory += "_isRun2"
-    if options.isRun3:      outputdirectory += "_isRun3"
-    if options.useRPC:      outputdirectory += "_useRPC"
-    if options.useQSBit:    outputdirectory += "_useQSBit"
-    if options.useESBit:    outputdirectory += "_useESBit"
-    if options.useSlopes:   outputdirectory += "_useSlopes"
-    if options.useGEM:      outputdirectory += "_useGEM"
-    if options.addDateTime: outputdirectory += "_{}".format(currentDateTime)
+    if isRun2:      outputdirectory += "_isRun2"
+    if isRun3:      outputdirectory += "_isRun3"
+    if useRPC:      outputdirectory += "_useRPC"
+    if useQSBit:    outputdirectory += "_useQSBit"
+    if useESBit:    outputdirectory += "_useESBit"
+    if useSlopes:   outputdirectory += "_useSlopes"
+    if useGEM:      outputdirectory += "_useGEM"
+    if addDateTime: outputdirectory += "_{}".format(currentDateTime)
 
     outputlog = outputdirectory.replace('Train','Log')
 
@@ -144,21 +157,21 @@ if __name__ == '__main__':
 
     ## 1: make a tarball of the directory
     CMSSW_DIR = subprocess.Popen("echo $CMSSW_BASE", shell=True, stdout=subprocess.PIPE).stdout.read().strip('\n')
-    exec_me('''tar -pczf {cmssw}/src/tarball {cmssw}/src/EMTFPtAssign2017 \
+    exec_me('''tar -pczf {cmssw}/src/{tarball} {cmssw}/src/EMTFPtAssign2017 \
     --exclude \"{cmssw}/src/EMTFPtAssign2017/condor/" \
     --exclude \"{cmssw}/src/EMTFPtAssign2017/macros/" \
-    --exclude \"{cmssw}/src/EMTFPtAssign2017/macros_Rice2020/"'''.format(cmssw=CMSSW_DIR, tarball=tarball), options.dryRun)
+    --exclude \"{cmssw}/src/EMTFPtAssign2017/macros_Rice2020/"'''.format(cmssw=CMSSW_DIR, tarball=tarball), dryRun)
 
     ## 2: copy the tarball to EOS (if it does not exist yet)
     tarBallCode = os.system("eos root://cmseos.fnal.gov ls /store/user/{user}/{tarball}".format(user=USER, tarball=tarball))
     if tarBallCode != 0:
-        exec_me('xrdcp {cmssw}/src/{tarball} root://cmseos.fnal.gov//store/user/{user}/'.format(cmssw=CMSSW_DIR, user=USER, tarball=tarball), options.dryRun)
+        exec_me('xrdcp {cmssw}/src/{tarball} root://cmseos.fnal.gov//store/user/{user}/'.format(cmssw=CMSSW_DIR, user=USER, tarball=tarball), dryRun)
     else:
         print("Tarball {tarball} exists already on EOS LPC!".format(tarball=tarball))
 
     ## 3: create the bash file
     exe = "runJob"
-    write_bash(exe+".sh", command, outputdirectory, USER, CMSSW, SCRAM_ARCH, options.dryRun)
+    write_bash(exe+".sh", command, outputdirectory, USER, CMSSW, SCRAM_ARCH, dryRun)
 
     ## 4: submit the job
-    write_condor(exe, outputlog, options.dryRun)
+    write_condor(exe, outputlog, dryRun)
