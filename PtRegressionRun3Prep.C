@@ -136,6 +136,7 @@ void PtRegressionRun3Prep(TString user = "",
   //===================
   // Configure settings for this mode and user
   PtRegression2018_cfg::ConfigureMode( MODE );
+  PtRegression2018_cfg::ConfigureUser( user );
 
   // Create a new root output file
   TString out_file_str;
