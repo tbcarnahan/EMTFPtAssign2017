@@ -955,32 +955,25 @@ void PtRegressionRun3Prep(TString myMethodList = "",
              if ( vName == "FR_2" ) var_vals.at(iVar) = FR2;
              if ( vName == "FR_3" ) var_vals.at(iVar) = FR3;
              if ( vName == "FR_4" ) var_vals.at(iVar) = FR4;
-             if (useSlopes) {
-               if ( vName == "slope_1" ) var_vals.at(iVar) = slope1;
-               if ( vName == "slope_2" ) var_vals.at(iVar) = slope2;
-               if ( vName == "slope_3" ) var_vals.at(iVar) = slope3;
-               if ( vName == "slope_4" ) var_vals.at(iVar) = slope4;
-             }
-             else {
-               if ( vName == "bend_1" ) var_vals.at(iVar) = bend1;
-               if ( vName == "bend_2" ) var_vals.at(iVar) = bend2;
-               if ( vName == "bend_3" ) var_vals.at(iVar) = bend3;
-               if ( vName == "bend_4" ) var_vals.at(iVar) = bend4;
-             }
 
-             if (useOneQuartPrecision) {
-               if ( vName == "strip_quart_bit_1" ) var_vals.at(iVar) = strip_quart_bit1;
-               if ( vName == "strip_quart_bit_2" ) var_vals.at(iVar) = strip_quart_bit2;
-               if ( vName == "strip_quart_bit_3" ) var_vals.at(iVar) = strip_quart_bit3;
-               if ( vName == "strip_quart_bit_4" ) var_vals.at(iVar) = strip_quart_bit4;
+             if ( vName == "slope_1" ) var_vals.at(iVar) = slope1;
+             if ( vName == "slope_2" ) var_vals.at(iVar) = slope2;
+             if ( vName == "slope_3" ) var_vals.at(iVar) = slope3;
+             if ( vName == "slope_4" ) var_vals.at(iVar) = slope4;
 
-               if (useOneEighthPrecision) {
-                 if ( vName == "strip_eight_bit_1" ) var_vals.at(iVar) = strip_eight_bit1;
-                 if ( vName == "strip_eight_bit_2" ) var_vals.at(iVar) = strip_eight_bit2;
-                 if ( vName == "strip_eight_bit_3" ) var_vals.at(iVar) = strip_eight_bit3;
-                 if ( vName == "strip_eight_bit_4" ) var_vals.at(iVar) = strip_eight_bit4;
-               }
-             }
+             if ( vName == "bend_1" ) var_vals.at(iVar) = bend1;
+             if ( vName == "bend_2" ) var_vals.at(iVar) = bend2;
+             if ( vName == "bend_3" ) var_vals.at(iVar) = bend3;
+             if ( vName == "bend_4" ) var_vals.at(iVar) = bend4;
+
+             if ( vName == "strip_quart_bit_1" ) var_vals.at(iVar) = strip_quart_bit1;
+             if ( vName == "strip_quart_bit_2" ) var_vals.at(iVar) = strip_quart_bit2;
+             if ( vName == "strip_quart_bit_3" ) var_vals.at(iVar) = strip_quart_bit3;
+             if ( vName == "strip_quart_bit_4" ) var_vals.at(iVar) = strip_quart_bit4;
+             if ( vName == "strip_eight_bit_1" ) var_vals.at(iVar) = strip_eight_bit1;
+             if ( vName == "strip_eight_bit_2" ) var_vals.at(iVar) = strip_eight_bit2;
+             if ( vName == "strip_eight_bit_3" ) var_vals.at(iVar) = strip_eight_bit3;
+             if ( vName == "strip_eight_bit_4" ) var_vals.at(iVar) = strip_eight_bit4;
 
              if ( vName == "dPhiSum4" ) var_vals.at(iVar) = dPhSum4;
              if ( vName == "dPhiSum4A" ) var_vals.at(iVar) = dPhSum4A;
@@ -995,19 +988,14 @@ void PtRegressionRun3Prep(TString myMethodList = "",
              if ( vName == "dTh_24" ) var_vals.at(iVar) = dTh24;
              if ( vName == "dTh_34" ) var_vals.at(iVar) = dTh34;
 
-             if (useRPC) {
-               if ( vName == "RPC_1" ) var_vals.at(iVar) = RPC1;
-               if ( vName == "RPC_2" ) var_vals.at(iVar) = RPC2;
-               if ( vName == "RPC_3" ) var_vals.at(iVar) = RPC3;
-               if ( vName == "RPC_4" ) var_vals.at(iVar) = RPC4;
-             }
+             if ( vName == "RPC_1" ) var_vals.at(iVar) = RPC1;
+             if ( vName == "RPC_2" ) var_vals.at(iVar) = RPC2;
+             if ( vName == "RPC_3" ) var_vals.at(iVar) = RPC3;
+             if ( vName == "RPC_4" ) var_vals.at(iVar) = RPC4;
 
              // Makes output values [0, 1] instead of [-99, 1] which is easier to see in the output histogram.
-             if (useGEM) {
-               if ( vName == "GEM_1" ) var_vals.at(iVar) = max(0, GE11);
-               if ( vName == "dPhi_GE11_ME11" ) var_vals.at(iVar) = dPhGE11ME11;
-               // if ( vName == "ph_GE11" ) var_vals.at(iVar) = phGE11;
-             }
+             if ( vName == "GEM_1" ) var_vals.at(iVar) = max(0, GE11);
+             if ( vName == "dPhi_GE11_ME11" ) var_vals.at(iVar) = dPhGE11ME11;
 
              //////////////////////////////
              ///  Target and variables  ///
