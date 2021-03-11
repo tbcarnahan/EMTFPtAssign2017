@@ -73,7 +73,7 @@ def write_bash(temp = 'runJob.sh', command = '', outputdirectory = '', CMSSW = "
 if __name__ == '__main__':
     parser = OptionParser()
     parser.add_option('--clean', dest='clean', action='store_true',default = False, help='clean submission files', metavar='clean')
-    parser.add_option('--dryRun', dest='dryRun', action='store_true',default = True, help='write submission files only', metavar='dryRun')
+    parser.add_option('--dryRun', dest='dryRun', action='store_true',default = False, help='write submission files only', metavar='dryRun')
     ## expert options
     parser.add_option("--isRun2", dest="isRun2", action="store_true", default = False)
     parser.add_option("--isRun3", dest="isRun3", action="store_true", default = False)
@@ -140,11 +140,11 @@ if __name__ == '__main__':
     ## 1: make a tarball of the directory
     CMSSW_DIR = subprocess.Popen("echo $CMSSW_BASE", shell=True, stdout=subprocess.PIPE).stdout.read().strip('\n')
     exec_me('''tar -pczf {0}/src/EMTFPtAssign2017Condor.tar.gz {0}/src/EMTFPtAssign2017 \
-    --exclude \"{0}/src/EMTFPtAssign2017/condor/"  \
+    --exclude \"{0}/src/EMTFPtAssign2017/condor/" \
     --exclude \"{0}/src/EMTFPtAssign2017/macros/" \
-    --exclude \"{0}/src/EMTFPtAssign2017/macros_Rice2020/"  '''.format(CMSSW_DIR), options.dryRun)
+    --exclude \"{0}/src/EMTFPtAssign2017/macros_Rice2020/"'''.format(CMSSW_DIR), options.dryRun)
 
-    ## 2: copy the tarball to EOS
+    ## 2: copy the tarball to EOS (if it does not exist yet)
     exec_me('xrdcp {0}/src/EMTFPtAssign2017Condor.tar.gz root://cmseos.fnal.gov//store/user/$USER/'.format(CMSSW_DIR), options.dryRun)
 
     ## 3: create the bash file
