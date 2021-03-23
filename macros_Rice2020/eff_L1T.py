@@ -132,8 +132,7 @@ if efficiencies==True:
 	h_numer6=gROOT.FindObject("h_numer6")
 	c1.Update()
 
-	eff1 = TEfficiency(h_numer1, h_denom1) ; 
-	eff2 = TEfficiency(h_numer2, h_denom2) ; eff3 = TEfficiency(h_numer3, h_denom3)
+	eff1 = TEfficiency(h_numer1, h_denom1) ; eff2 = TEfficiency(h_numer2, h_denom2) ; eff3 = TEfficiency(h_numer3, h_denom3)
 	eff4 = TEfficiency(h_numer4, h_denom4) ; eff5 = TEfficiency(h_numer5, h_denom5) ; eff6 = TEfficiency(h_numer6, h_denom6)
 	line = TLine(0, 0.9, 50, 0.9)
 	line2 = TLine(pt_cut[l], 0., pt_cut[l], 1.1)
@@ -146,9 +145,8 @@ if efficiencies==True:
 	eff5.SetMarkerColor(7) ; eff5.SetLineColor(7) ; eff5.SetMarkerStyle(8)
 	eff6.SetMarkerColor(40) ; eff6.SetLineColor(40) ; eff6.SetMarkerStyle(8)
 
-	eff1.Draw("AP") ; 
 	#h_numer1.Divide(h_denom1) ; h_numer1.Draw()
-	eff2.Draw("same") ; eff3.Draw("same") ; eff4.Draw("same") ; eff5.Draw("same") ; eff6.Draw("same")
+	eff1.Draw("AP") ; eff2.Draw("same") ; eff3.Draw("same") ; eff4.Draw("same") ; eff5.Draw("same") ; eff6.Draw("same")
 	line.Draw("same") ; line2.Draw("same")
 
 	la1 = TLatex() ; la1.SetTextFont(22) ; la1.SetTextColor(1) ; la1.SetTextSize(0.035) ; la1.SetTextAlign(10)
@@ -157,14 +155,13 @@ if efficiencies==True:
 	la2.DrawLatex( 35., 0.1, str(eta_min[k])+" < |#eta^{GEN}| < "+str(eta_max[k]))
 
 	leg = TLegend(0.6, 0.33, 0.9, 0.63) 
-	leg.AddEntry(eff1, "Run-2 noRPC BDT") ; 
-	leg.AddEntry(eff2, "Run-2 BDT RPC") ; leg.AddEntry(eff3, "Run-3 BDT")
+	leg.AddEntry(eff1, "Run-2 noRPC BDT") ; leg.AddEntry(eff2, "Run-2 BDT RPC") ; leg.AddEntry(eff3, "Run-3 BDT")
 	leg.AddEntry(eff4, "Run-3 BDT w/ QSBit") ; leg.AddEntry(eff5, "Run-3 BDT w/ QSBit ESBit") ; leg.AddEntry(eff6, "Run-3 BDT w/ QSBit ESBit Slopes")
 	leg.SetBorderSize(0) ; leg.Draw("same")
       
 	gPad.Update()
-	eff2.SetTitle(" ; p_{T}^{GEN} (GeV) ; Trigger Efficiency") 
-	graph = eff2.GetPaintedGraph() ; graph.SetMinimum(0) ;  graph.SetMaximum(1.1)
+	eff1.SetTitle(" ; p_{T}^{GEN} (GeV) ; Trigger Efficiency") 
+	graph = eff1.GetPaintedGraph() ; graph.SetMinimum(0) ;  graph.SetMaximum(1.1)
 
 	#c1.SaveAs("plots/bdt_eff/eta_slices_03222021/BDTeff_pt"+str(pt_str[l])+"_eta"+str(eta_str_min[k])+"to"+str(eta_str_max[k])+".png")
 	#c1.SaveAs("plots/bdt_eff/eta_slices_03222021/BDTeff_pt"+str(pt_str[l])+"_eta"+str(eta_str_min[k])+"to"+str(eta_str_max[k])+".C")
