@@ -814,9 +814,17 @@ void PtRegressionRun3Prep(TString user = "",
         FR4 = (i4 >= 0 ? (cham4 % 2 == 1) : -99);
         if (ring1 == 3) FR1 = 0;                   // In ME1/3 chambers are non-overlapping
 
-	CalcBends( bend1, bend2, bend3, bend4,
-		   pat1, pat2, pat3, pat4,
-		   dPhSign, endcap, mode, BIT_COMP, isRun2 );
+	if(isRun2) {
+	  CalcBends( bend1, bend2, bend3, bend4,
+		     pat1, pat2, pat3, pat4,
+		     dPhSign, endcap, mode, BIT_COMP, isRun2 );
+	}
+
+	else {
+	  CalcBends( bend1, bend2, bend3, bend4,
+                     pat1_run3, pat2_run3, pat3_run3, pat4_run3,
+                     dPhSign, endcap, mode, BIT_COMP, isRun2 );
+        }
 
 
         if (useRPC) {
