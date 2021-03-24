@@ -260,14 +260,14 @@ void CalcDeltaThetas( int& dTh12, int& dTh13, int& dTh14, int& dTh23, int& dTh24
 
 
 
-void CalcBends( int& bend1, int& bend2, int& bend3, int& bend4,
+void CalcBendsRun2( int& bend1, int& bend2, int& bend3, int& bend4,
                 const int pat1, const int pat2, const int pat3, const int pat4,
                 const int dPhSign, const int endcap, const int mode, const bool BIT_COMP ) {
 
-  bend1 = CalcBendFromPattern( pat1, endcap );
-  bend2 = CalcBendFromPattern( pat2, endcap );
-  bend3 = CalcBendFromPattern( pat3, endcap );
-  bend4 = CalcBendFromPattern( pat4, endcap );
+  bend1 = CalcBendFromRun2Pattern( pat1, endcap );
+  bend2 = CalcBendFromRun2Pattern( pat2, endcap );
+  bend3 = CalcBendFromRun2Pattern( pat3, endcap );
+  bend4 = CalcBendFromRun2Pattern( pat4, endcap );
 
   if (BIT_COMP) {
     int nBits = 3;
@@ -354,7 +354,7 @@ void CalcRPCs( int& RPC1, int& RPC2, int& RPC3, int& RPC4, const int mode,
 } // End function: void CalcRPCs()
 
 
-int CalcBendFromPattern( const int pattern, const int endcap ) {
+int CalcBendFromRun2Pattern( const int pattern, const int endcap ) {
 
   int bend = -99;
   if (pattern < 0)

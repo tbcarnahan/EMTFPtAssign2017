@@ -160,7 +160,7 @@ void PtRegressionRun3Prep(TString user = "",
   TString ZB_file_name;
 
   for (int i = 0; i < USESingleMu; i++) {
-    SM_file_name.Form( "%s/%s/%s", EOS_DIR_NAME.Data(), in_dir.Data(), SingleMu_files[i].Data() );
+    SM_file_name.Form( "%s", EOS_DIR_NAME.Data() ); //, in_dir.Data(), SingleMu_files[i].Data() );
     std::cout << "Adding file " << SM_file_name.Data() << std::endl;
     SM_in_file_names.push_back(SM_file_name.Data());
   }
@@ -815,7 +815,7 @@ void PtRegressionRun3Prep(TString user = "",
         if (ring1 == 3) FR1 = 0;                   // In ME1/3 chambers are non-overlapping
 
 	if (isRun2) {
-	  CalcBends( bend1, bend2, bend3, bend4,
+	  CalcBendsRun2( bend1, bend2, bend3, bend4,
 		     pat1, pat2, pat3, pat4,
 		     dPhSign, endcap, mode, BIT_COMP );
 	}
