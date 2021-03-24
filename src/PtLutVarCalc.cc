@@ -56,7 +56,7 @@ int CalcTrackTheta( const int th1, const int th2, const int th3, const int th4,
 }
 
 
-void CalcDeltaPhis_2019GEM( int& dPh12, int& dPh13, int& dPh14, int& dPh23, int& dPh24, int& dPh34, int& dPhSign,
+void CalcDeltaPhisGEM( int& dPh12, int& dPh13, int& dPh14, int& dPh23, int& dPh24, int& dPh34, int& dPhSign,
                             int& dPhSum4, int& dPhSum4A, int& dPhSum3, int& dPhSum3A, int& outStPh, int& dPhGE11ME11,
                             const int ph1, const int ph2, const int ph3, const int ph4, const int phGEM, const int mode, const bool BIT_COMP ) {
 
@@ -83,11 +83,10 @@ void CalcDeltaPhis_2019GEM( int& dPh12, int& dPh13, int& dPh14, int& dPh23, int&
   // probably best not to change the EMTF track mode at this point
 }
 
+void CalcPhiRun3( int& ph, int ring, int strip_quart_bit, int strip_eight_bit, int station, int endcap, bool useQuartBit, bool useEighthBit) {
 
-int CalcPhiRun3( int ph, int ring, int strip_quart_bit, int strip_eight_bit, const int station, int endcap ) {
-  //The integer phi by default is in half-strip precision (0-4920). Multiply this by a factor of 4 to convert 
-  //  to eight-strip precision.
-  ph = ph*4;
+  // if not bit was set, do no thing
+  if (!useQuartBit) return;
 
   /*
   The int phi is corrected by an amount depending on the quart- and eight-strip bits of the position offset.
@@ -104,50 +103,48 @@ int CalcPhiRun3( int ph, int ring, int strip_quart_bit, int strip_eight_bit, con
   if (station == 1) {
     if (ring == 1) {
       if (strip_quart_bit == 1 ) { (endcap>0 ? ph = ph + 10 : ph = ph - 10 ); }
-      if (strip_eight_bit == 1 ) { (endcap>0 ? ph = ph + 5 : ph = ph - 5 ); }	
+      if (useEighthBit and strip_eight_bit == 1 ) { (endcap>0 ? ph = ph + 5 : ph = ph - 5 ); }
     }
 
     if (ring == 2) {
       if (strip_quart_bit == 1 ) { (endcap>0 ? ph = ph + 8 : ph = ph - 8 ); }
-      if (strip_eight_bit == 1 ) { (endcap>0 ? ph = ph + 4 : ph = ph - 4 ); }
+      if (useEighthBit and strip_eight_bit == 1 ) { (endcap>0 ? ph = ph + 4 : ph = ph - 4 ); }
     }
 
     if (ring == 3) {
       if (strip_quart_bit == 1 ) { (endcap>0 ? ph = ph + 4 : ph = ph - 4 ); }
-      if (strip_eight_bit == 1 ) { (endcap>0 ? ph = ph + 2 : ph = ph - 2 ); }
+      if (useEighthBit and strip_eight_bit == 1 ) { (endcap>0 ? ph = ph + 2 : ph = ph - 2 ); }
     }
 
     if (ring == 4) {
       if (strip_quart_bit == 1 ) { (endcap>0 ? ph = ph + 13 : ph = ph - 13 ); }
-      if (strip_eight_bit == 1 ) { (endcap>0 ? ph = ph + 7 : ph = ph - 7 ); }
+      if (useEighthBit and strip_eight_bit == 1 ) { (endcap>0 ? ph = ph + 7 : ph = ph - 7 ); }
     }
-  }  
+  }
 
   if (station == 2) {
     if (ring == 1) {
       if (strip_quart_bit == 1 ) { (endcap>0 ? ph = ph + 16 : ph = ph - 16 ); }
-      if (strip_eight_bit == 1 ) { (endcap>0 ? ph = ph + 8 : ph = ph - 8 ); }
+      if (useEighthBit and strip_eight_bit == 1 ) { (endcap>0 ? ph = ph + 8 : ph = ph - 8 ); }
     }
 
     if (ring == 2) {
       if (strip_quart_bit == 1 ) { (endcap>0 ? ph = ph + 8 : ph = ph - 8 ); }
-      if (strip_eight_bit == 1 ) { (endcap>0 ? ph = ph + 4 : ph = ph - 4 ); }
-    }
-  }
-  
-  if (station > 2) {
-    if ( ring == 1) {
-      if (strip_quart_bit == 1 ) { (endcap>0 ? ph = ph - 16 : ph = ph + 16 ); }
-      if (strip_eight_bit == 1 ) { (endcap>0 ? ph = ph - 8 : ph = ph + 8 ); }
-    }
- 
-    if (ring == 2) {
-      if (strip_quart_bit == 1 ) { (endcap>0 ? ph = ph - 8 : ph = ph + 8 ); }
-      if (strip_eight_bit == 1 ) { (endcap>0 ? ph = ph - 4 : ph = ph + 4 ); }
+      if (useEighthBit and strip_eight_bit == 1 ) { (endcap>0 ? ph = ph + 4 : ph = ph - 4 ); }
     }
   }
 
-  return ph;
+  if (station > 2) {
+    if ( ring == 1) {
+      if (strip_quart_bit == 1 ) { (endcap>0 ? ph = ph - 16 : ph = ph + 16 ); }
+      if (useEighthBit and strip_eight_bit == 1 ) { (endcap>0 ? ph = ph - 8 : ph = ph + 8 ); }
+    }
+
+    if (ring == 2) {
+      if (strip_quart_bit == 1 ) { (endcap>0 ? ph = ph - 8 : ph = ph + 8 ); }
+      if (useEighthBit and strip_eight_bit == 1 ) { (endcap>0 ? ph = ph - 4 : ph = ph + 4 ); }
+    }
+  }
 }
 
 void CalcDeltaPhis( int& dPh12, int& dPh13, int& dPh14, int& dPh23, int& dPh24, int& dPh34, int& dPhSign,
