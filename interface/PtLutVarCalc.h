@@ -29,9 +29,7 @@ void CalcBends( int& bend1, int& bend2, int& bend3, int& bend4,
 void CalcRPCs( int& RPC1, int& RPC2, int& RPC3, int& RPC4, const int mode,
 	       const int st1_ring2, const int theta, const bool BIT_COMP=false );
 
-int CalcBendFromRun2Pattern( const int pattern, const int endcap );
-
-int CalcBendFromRun3Pattern( const int pattern, const int endcap );
+int CalcBendFromPattern( const int pattern, const int endcap, const bool isRun2=false );
 
 void CalcDeltaPhiSums( int& dPhSum4, int& dPhSum4A, int& dPhSum3, int& dPhSum3A, int& outStPh,
                        const int dPh12, const int dPh13, const int dPh14, const int dPh23, const int dPh24, const int dPh34 );
