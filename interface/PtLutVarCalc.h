@@ -24,6 +24,7 @@ void CalcDeltaThetas( int& dTh12, int& dTh13, int& dTh14, int& dTh23, int& dTh24
 
 void CalcBends( int& bend1, int& bend2, int& bend3, int& bend4,
 		const int pat1, const int pat2, const int pat3, const int pat4,
+		const int pat1_run3, const int pat2_run3, const int pat3_run3, const int pat4_run3,
 		const int dPhSign, const int endcap, const int mode, const bool BIT_COMP=false, const bool isRun2=false );
 
 void CalcRPCs( int& RPC1, int& RPC2, int& RPC3, int& RPC4, const int mode,

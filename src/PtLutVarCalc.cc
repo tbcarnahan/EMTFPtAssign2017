@@ -261,15 +261,24 @@ void CalcDeltaThetas( int& dTh12, int& dTh13, int& dTh14, int& dTh23, int& dTh24
 
 
 void CalcBends( int& bend1, int& bend2, int& bend3, int& bend4,
-                const int pat1, const int pat2, const int pat3, const int pat4,
+                const int pat1, const int pat2, const int pat3, const int pat4, 
+		const int pat1_run3, const int pat2_run3, const int pat3_run3, const int run4_run3,
                 const int dPhSign, const int endcap, const int mode, const bool BIT_COMP, const bool isRun2) {
 
 
-  bend1 = CalcBendFromPattern( pat1, endcap, isRun2 );
-  bend2 = CalcBendFromPattern( pat2, endcap, isRun2 );
-  bend3 = CalcBendFromPattern( pat3, endcap, isRun2 );
-  bend4 = CalcBendFromPattern( pat4, endcap, isRun2 );
+  if(isRun2) {
+    bend1 = CalcBendFromPattern( pat1, endcap, isRun2 );
+    bend2 = CalcBendFromPattern( pat2, endcap, isRun2 );
+    bend3 = CalcBendFromPattern( pat3, endcap, isRun2 );
+    bend4 = CalcBendFromPattern( pat4, endcap, isRun2 );
+  }
 
+  else {
+    bend1 = CalcBendFromPattern( pat1_run3, endcap, isRun2 );
+    bend2 = CalcBendFromPattern( pat2_run3, endcap, isRun2 );
+    bend3 = CalcBendFromPattern( pat3_run3, endcap, isRun2 );
+    bend4 = CalcBendFromPattern( pat4_run3, endcap, isRun2 );
+  }
 
   if (BIT_COMP) {
     int nBits = 3;
