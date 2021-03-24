@@ -271,7 +271,12 @@ void CalcBends( int& bend1, int& bend2, int& bend3, int& bend4,
     bend4 = CalcBendFromRun2Pattern( pat4, endcap );
   }
 
-  else return;
+  else {
+    bend1 = CalcBendFromRun3Pattern( pat1, endcap );
+    bend2 = CalcBendFromRun3Pattern( pat2, endcap );
+    bend3 = CalcBendFromRun3Pattern( pat3, endcap );
+    bend4 = CalcBendFromRun3Pattern( pat4, endcap );
+  }
 
   if (BIT_COMP) {
     int nBits = 3;
@@ -372,6 +377,27 @@ int CalcBendFromRun2Pattern( const int pattern, const int endcap ) {
     bend = -1 * (11 - pattern) / 2;
 
   // Reverse to match dPhi convention
+  if (endcap == 1)
+    bend *= -1;
+
+  assert( bend != -99 );
+  return bend;
+}
+
+int CalcBendFromRun3Pattern( const int pattern, const int endcap ) {
+
+  int bend = -99;
+  if (pattern < 0)
+    return bend;
+
+  if (pattern == 4)
+    bend = 0;
+  else if ( (pattern % 2) == 0 )
+    bend = (4 - pattern) / 2;
+  else if ( (pattern % 2) == 1 )
+    bend = -1 * (5 - pattern) / 2;
+
+  // Reverse to match dPhi convention                                                                                                         
   if (endcap == 1)
     bend *= -1;
 

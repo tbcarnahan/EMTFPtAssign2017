@@ -31,5 +31,7 @@ void CalcRPCs( int& RPC1, int& RPC2, int& RPC3, int& RPC4, const int mode,
 
 int CalcBendFromRun2Pattern( const int pattern, const int endcap );
 
+int CalcBendFromRun3Pattern( const int pattern, const int endcap );
+
 void CalcDeltaPhiSums( int& dPhSum4, int& dPhSum4A, int& dPhSum3, int& dPhSum3A, int& outStPh,
                        const int dPh12, const int dPh13, const int dPh14, const int dPh23, const int dPh24, const int dPh34 );
