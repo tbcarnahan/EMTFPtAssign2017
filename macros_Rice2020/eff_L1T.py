@@ -10,16 +10,16 @@ from termcolor import colored
 from ROOT import gROOT
 
 ## Run in quiet mode
-sys.argv.append('-b')
-gROOT.SetBatch(1)
+#sys.argv.append('-b')
+#gROOT.SetBatch(1)
 
 
 ## Configuration settings
-efficiencies=False ; EffVsPt=False ; EffVsEta=False ; eta_slices=False ; single_pt=False
-resolutions=True ; res2D=False ; res1D=True ; res1D_diffOverGen=False ; res1D_invDiffOverInvGen=False ; res1DvsPt=False ; res1DvsEta=True
+efficiencies=True ; EffVsPt=True ; EffVsEta=False ; eta_slices=False ; single_pt=True
+resolutions=False ; res2D=False ; res1D=True ; res1D_diffOverGen=False ; res1D_invDiffOverInvGen=False ; res1DvsPt=True ; res1DvsEta=False
 
 if single_pt==True:
-  pt_cut = [22] ; pt_str = ["22"]
+  pt_cut = [24] ; pt_str = ["24"]
 
 else:
   pt_cut = [3., 5., 7., 10., 12., 15., 20., 22., 24., 27.]
@@ -37,19 +37,34 @@ else:  #Whole endcap region.
 
 
 ## ============== Define TTrees ================
-evt_tree = TChain('f_MODE_15_logPtTarg_logPtWgt_noBitCompr_noRPC_noGEM_Run2Tree/TestTree')
-evt_tree2 = TChain('f_MODE_15_logPtTarg_logPtWgt_noBitCompr_noRPC_noGEM_Run3Tree_newVarsOn/TestTree')
+evt_tree1 = TChain('f_MODE_15_logPtTarg_invPtWgt_noBitCompr_noRPC_noGEM/TestTree')
+evt_tree2 = TChain('f_MODE_15_logPtTarg_invPtWgt_noBitCompr_RPC_noGEM/TestTree')
+evt_tree3 = TChain('f_MODE_15_logPtTarg_invPtWgt_noBitCompr_noRPC_noGEM/TestTree')
+evt_tree4 = TChain('f_MODE_15_logPtTarg_invPtWgt_noBitCompr_noRPC_noGEM/TestTree')
+evt_tree5 = TChain('f_MODE_15_logPtTarg_invPtWgt_noBitCompr_noRPC_noGEM/TestTree')
+evt_tree6 = TChain('f_MODE_15_logPtTarg_invPtWgt_noBitCompr_noRPC_noGEM/TestTree')
 
 
 ## ================ Read input files ======================
 print '------> Importing Root Files..'
-dir1 = 'root://cmseos.fnal.gov//store/user/mdecaro/condor_output_BDT/'
-file_name = dir1+"PtRegression2018_MODE_15_noBitCompr_noRPC_noGEM_Run2Tree.root"
-file_name2 = dir1+"PtRegression2018_MODE_15_noBitCompr_noRPC_noGEM_Run3Tree.root"
+dir1 = 'root://cmseos.fnal.gov//store/user/mdecaro/EMTF_BDT_Train_isRun2_20210321_223914/'
+dir2 = 'root://cmseos.fnal.gov//store/user/mdecaro/EMTF_BDT_Train_isRun2_useRPC_20210312_094714/'
+dir3 = 'root://cmseos.fnal.gov//store/user/mdecaro/EMTF_BDT_Train_isRun3_20210312_094720/'
+dir4 = 'root://cmseos.fnal.gov//store/user/mdecaro/EMTF_BDT_Train_isRun3_useQSBit_20210321_223207/'
+dir5 = 'root://cmseos.fnal.gov//store/user/mdecaro/EMTF_BDT_Train_isRun3_useQSBit_useESBit_20210321_223649/'
+dir6 = 'root://cmseos.fnal.gov//store/user/mdecaro/EMTF_BDT_Train_isRun3_useQSBit_useESBit_useSlopes_20210312_094737/'
+file_name1 = dir1+"PtRegressionRun3Prep_MODE_15_noBitCompr_noRPC_noGEM.root"
+file_name2 = dir2+"PtRegressionRun3Prep_MODE_15_noBitCompr_RPC_noGEM.root"
+file_name3 = dir3+"PtRegressionRun3Prep_MODE_15_noBitCompr_noRPC_noGEM.root"
+file_name4 = dir4+"PtRegressionRun3Prep_MODE_15_noBitCompr_noRPC_noGEM.root"
+file_name5 = dir5+"PtRegressionRun3Prep_MODE_15_noBitCompr_noRPC_noGEM.root"
+file_name6 = dir6+"PtRegressionRun3Prep_MODE_15_noBitCompr_noRPC_noGEM.root"
 
-print colored('Loading file: '+file_name, 'green') ; print colored('Loading file: '+file_name2, 'green')
-evt_tree.Add(file_name) ; evt_tree2.Add(file_name2)
-
+print colored('Loading file: '+file_name1, 'green') ; print colored('Loading file: '+file_name2, 'green')
+print colored('Loading file: '+file_name3, 'green') ; print colored('Loading file: '+file_name4, 'green')
+print colored('Loading file: '+file_name5, 'green') ; print colored('Loading file: '+file_name6, 'green')
+evt_tree1.Add(file_name1) ; evt_tree2.Add(file_name2) ; evt_tree3.Add(file_name3)
+evt_tree4.Add(file_name4) ; evt_tree5.Add(file_name5) ; evt_tree6.Add(file_name6)
 
 ## ================ Helper functions ======================
 def truncate(number, digits):
@@ -69,28 +84,69 @@ if efficiencies==True:
       if EffVsPt == True:
 
 	#Run2 and Run3 BDT efficiency vs Pt
-	evt_tree2.Draw("GEN_pt>>h_denom(50,1.,50.)", "abs(GEN_eta)>"+str(eta_min[k])+" && abs(GEN_eta)<"+str(eta_max[k]))
-	h_denom=gROOT.FindObject("h_denom")
+	evt_tree1.Draw("GEN_pt>>h_denom1(50,1.,50.)", "abs(GEN_eta)>"+str(eta_min[k])+" && abs(GEN_eta)<"+str(eta_max[k]))
+	h_denom1=gROOT.FindObject("h_denom1")
 	c1.Update()
-	evt_tree2.Draw("GEN_pt>>h_numer(50,1.,50.)", "abs(GEN_eta)>"+str(eta_min[k])+" && abs(GEN_eta)<"+str(eta_max[k])+" && ((1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq)))))>"+str(pt_cut[l]))
-	h_numer=gROOT.FindObject("h_numer")
+	#evt_tree1.Draw("GEN_pt>>h_numer1(50,1.,50.)", "abs(GEN_eta)>"+str(eta_min[k])+" && abs(GEN_eta)<"+str(eta_max[k])+" && ((1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq)))))>"+str(pt_cut[l]))
+	evt_tree1.Draw("GEN_pt>>h_numer1(50,1.,50.)", "abs(GEN_eta)>"+str(eta_min[k])+" && abs(GEN_eta)<"+str(eta_max[k])+" && (2**(BDTG_AWB_Sq))>"+str(pt_cut[l]))
+	h_numer1=gROOT.FindObject("h_numer1")
 	c1.Update()
 
-	evt_tree.Draw("GEN_pt>>h_denom2(50,1.,50.)", "abs(GEN_eta)>"+str(eta_min[k])+" && abs(GEN_eta)<"+str(eta_max[k]))
+	evt_tree2.Draw("GEN_pt>>h_denom2(50,1.,50.)", "abs(GEN_eta)>"+str(eta_min[k])+" && abs(GEN_eta)<"+str(eta_max[k]))
 	h_denom2=gROOT.FindObject("h_denom2")
 	c1.Update()
-	evt_tree.Draw("GEN_pt>>h_numer2(50,1.,50.)", "abs(GEN_eta)>"+str(eta_min[k])+" && abs(GEN_eta)<"+str(eta_max[k])+" && ((1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq)))))>"+str(pt_cut[l]))
+	#evt_tree2.Draw("GEN_pt>>h_numer2(50,1.,50.)", "abs(GEN_eta)>"+str(eta_min[k])+" && abs(GEN_eta)<"+str(eta_max[k])+" && ((1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq)))))>"+str(pt_cut[l]))
+	evt_tree2.Draw("GEN_pt>>h_numer2(50,1.,50.)", "abs(GEN_eta)>"+str(eta_min[k])+" && abs(GEN_eta)<"+str(eta_max[k])+" && (2**(BDTG_AWB_Sq))>"+str(pt_cut[l]))
 	h_numer2=gROOT.FindObject("h_numer2")
 	c1.Update()
 
-	eff = TEfficiency(h_numer, h_denom) ; eff2 = TEfficiency(h_numer2, h_denom2)
+	evt_tree3.Draw("GEN_pt>>h_denom3(50,1.,50.)", "abs(GEN_eta)>"+str(eta_min[k])+" && abs(GEN_eta)<"+str(eta_max[k]))
+	h_denom3=gROOT.FindObject("h_denom3")
+	c1.Update()
+	#evt_tree3.Draw("GEN_pt>>h_numer3(50,1.,50.)", "abs(GEN_eta)>"+str(eta_min[k])+" && abs(GEN_eta)<"+str(eta_max[k])+" && ((1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq)))))>"+str(pt_cut[l]))
+	evt_tree3.Draw("GEN_pt>>h_numer3(50,1.,50.)", "abs(GEN_eta)>"+str(eta_min[k])+" && abs(GEN_eta)<"+str(eta_max[k])+" && (2**(BDTG_AWB_Sq))>"+str(pt_cut[l]))
+	h_numer3=gROOT.FindObject("h_numer3")
+	c1.Update()
+
+	evt_tree4.Draw("GEN_pt>>h_denom4(50,1.,50.)", "abs(GEN_eta)>"+str(eta_min[k])+" && abs(GEN_eta)<"+str(eta_max[k]))
+	h_denom4=gROOT.FindObject("h_denom4")
+	c1.Update()
+	#evt_tree4.Draw("GEN_pt>>h_numer4(50,1.,50.)", "abs(GEN_eta)>"+str(eta_min[k])+" && abs(GEN_eta)<"+str(eta_max[k])+" && ((1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq)))))>"+str(pt_cut[l]))
+	evt_tree4.Draw("GEN_pt>>h_numer4(50,1.,50.)", "abs(GEN_eta)>"+str(eta_min[k])+" && abs(GEN_eta)<"+str(eta_max[k])+" && (2**(BDTG_AWB_Sq))>"+str(pt_cut[l]))
+	h_numer4=gROOT.FindObject("h_numer4")
+	c1.Update()
+
+	evt_tree5.Draw("GEN_pt>>h_denom5(50,1.,50.)", "abs(GEN_eta)>"+str(eta_min[k])+" && abs(GEN_eta)<"+str(eta_max[k]))
+	h_denom5=gROOT.FindObject("h_denom5")
+	c1.Update()
+	#evt_tree5.Draw("GEN_pt>>h_numer5(50,1.,50.)", "abs(GEN_eta)>"+str(eta_min[k])+" && abs(GEN_eta)<"+str(eta_max[k])+" && ((1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq)))))>"+str(pt_cut[l]))
+	evt_tree5.Draw("GEN_pt>>h_numer5(50,1.,50.)", "abs(GEN_eta)>"+str(eta_min[k])+" && abs(GEN_eta)<"+str(eta_max[k])+" && (2**(BDTG_AWB_Sq))>"+str(pt_cut[l]))
+	h_numer5=gROOT.FindObject("h_numer5")
+	c1.Update()
+
+	evt_tree6.Draw("GEN_pt>>h_denom6(50,1.,50.)", "abs(GEN_eta)>"+str(eta_min[k])+" && abs(GEN_eta)<"+str(eta_max[k]))
+	h_denom6=gROOT.FindObject("h_denom6")
+	c1.Update()
+	#evt_tree6.Draw("GEN_pt>>h_numer6(50,1.,50.)", "abs(GEN_eta)>"+str(eta_min[k])+" && abs(GEN_eta)<"+str(eta_max[k])+" && ((1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq)))))>"+str(pt_cut[l]))
+	evt_tree6.Draw("GEN_pt>>h_numer6(50,1.,50.)", "abs(GEN_eta)>"+str(eta_min[k])+" && abs(GEN_eta)<"+str(eta_max[k])+" && (2**(BDTG_AWB_Sq))>"+str(pt_cut[l]))
+	h_numer6=gROOT.FindObject("h_numer6")
+	c1.Update()
+
+	eff1 = TEfficiency(h_numer1, h_denom1) ; eff2 = TEfficiency(h_numer2, h_denom2) ; eff3 = TEfficiency(h_numer3, h_denom3)
+	eff4 = TEfficiency(h_numer4, h_denom4) ; eff5 = TEfficiency(h_numer5, h_denom5) ; eff6 = TEfficiency(h_numer6, h_denom6)
 	line = TLine(0, 0.9, 50, 0.9)
 	line2 = TLine(pt_cut[l], 0., pt_cut[l], 1.1)
 	line.SetLineStyle(7) ; line2.SetLineStyle(7)
 
-	eff.SetMarkerColor(kBlue) ; eff.SetLineColor(kBlue) ; eff.SetMarkerStyle(8)
+	eff1.SetMarkerColor(kBlue) ; eff1.SetLineColor(kBlue) ; eff1.SetMarkerStyle(8)
 	eff2.SetMarkerColor(kRed) ; eff2.SetLineColor(kRed) ; eff2.SetMarkerStyle(8)
-	eff.Draw("AP") ; eff2.Draw("same")
+	eff3.SetMarkerColor(kGreen+2) ; eff3.SetLineColor(kGreen+2) ; eff3.SetMarkerStyle(8)
+	eff4.SetMarkerColor(kBlack) ; eff4.SetLineColor(kBlack) ; eff4.SetMarkerStyle(8)
+	eff5.SetMarkerColor(7) ; eff5.SetLineColor(7) ; eff5.SetMarkerStyle(8)
+	eff6.SetMarkerColor(40) ; eff6.SetLineColor(40) ; eff6.SetMarkerStyle(8)
+
+	#h_numer1.Divide(h_denom1) ; h_numer1.Draw()
+	eff1.Draw("AP") ; eff2.Draw("same") ; eff3.Draw("same") ; eff4.Draw("same") ; eff5.Draw("same") ; eff6.Draw("same")
 	line.Draw("same") ; line2.Draw("same")
 
 	la1 = TLatex() ; la1.SetTextFont(22) ; la1.SetTextColor(1) ; la1.SetTextSize(0.035) ; la1.SetTextAlign(10)
@@ -98,15 +154,19 @@ if efficiencies==True:
 	la2 = TLatex() ; la2.SetTextFont(22) ; la2.SetTextColor(1) ; la2.SetTextSize(0.035) ; la2.SetTextAlign(10)
 	la2.DrawLatex( 35., 0.1, str(eta_min[k])+" < |#eta^{GEN}| < "+str(eta_max[k]))
 
-	leg = TLegend(0.6, 0.33, 0.9, 0.63) ; leg.AddEntry(eff2, "Run-2 BDT scaled") ; leg.AddEntry(eff, "Run-3 BDT scaled") ; leg.SetBorderSize(0) ; leg.Draw("same")
+	leg = TLegend(0.6, 0.33, 0.9, 0.63) 
+	leg.AddEntry(eff1, "Run-2 noRPC BDT") ; leg.AddEntry(eff2, "Run-2 BDT RPC") ; leg.AddEntry(eff3, "Run-3 BDT")
+	leg.AddEntry(eff4, "Run-3 BDT w/ QSBit") ; leg.AddEntry(eff5, "Run-3 BDT w/ QSBit ESBit") ; leg.AddEntry(eff6, "Run-3 BDT w/ QSBit ESBit Slopes")
+	leg.SetBorderSize(0) ; leg.Draw("same")
       
 	gPad.Update()
-	eff.SetTitle(" ; p_{T}^{GEN} (GeV) ; Trigger Efficiency") 
-	graph = eff.GetPaintedGraph() ; graph.SetMinimum(0) ;  graph.SetMaximum(1.1)
+	eff1.SetTitle(" ; p_{T}^{GEN} (GeV) ; Trigger Efficiency") 
+	graph = eff1.GetPaintedGraph() ; graph.SetMinimum(0) ;  graph.SetMaximum(1.1)
 
-	c1.SaveAs("plots/bdt_eff/eta_slices/BDTeff_pt"+str(pt_str[l])+"_eta"+str(eta_str_min[k])+"to"+str(eta_str_max[k])+".png")
-	c1.SaveAs("plots/bdt_eff/eta_slices/BDTeff_pt"+str(pt_str[l])+"_eta"+str(eta_str_min[k])+"to"+str(eta_str_max[k])+".C")
-	c1.SaveAs("plots/bdt_eff/eta_slices/BDTeff_pt"+str(pt_str[l])+"_eta"+str(eta_str_min[k])+"to"+str(eta_str_max[k])+".pdf")
+	#c1.SaveAs("plots/bdt_eff/eta_slices_03222021/BDTeff_pt"+str(pt_str[l])+"_eta"+str(eta_str_min[k])+"to"+str(eta_str_max[k])+".png")
+	#c1.SaveAs("plots/bdt_eff/eta_slices_03222021/BDTeff_pt"+str(pt_str[l])+"_eta"+str(eta_str_min[k])+"to"+str(eta_str_max[k])+".C")
+	#c1.SaveAs("plots/bdt_eff/eta_slices_03222021/BDTeff_pt"+str(pt_str[l])+"_eta"+str(eta_str_min[k])+"to"+str(eta_str_max[k])+".pdf")
+	raw_input("Enter")
 	c1.Close()
 
 
@@ -161,10 +221,11 @@ if resolutions==True:
 	c1 = TCanvas("c1")
 	evt_tree.Draw("(GEN_pt - (1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq)))))/(GEN_pt)>>htemp(64,-2.,2.)", "GEN_pt>"+str(pt_cut[l]))
 	evt_tree2.Draw("(GEN_pt - (1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq)))))/(GEN_pt)>>htemp2(64,-2.,2.)", "GEN_pt>"+str(pt_cut[l]))
-	
-	htemp=gROOT.FindObject("htemp") ; htemp2=gROOT.FindObject("htemp2")
-	htemp.SetLineColor(kRed) ; htemp2.SetLineColor(kBlue)
-	htemp.Draw() ; htemp2.Draw("same")
+	evt_tree3.Draw("(GEN_pt - (1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq)))))/(GEN_pt)>>htemp3(64,-2.,2.)", "GEN_pt>"+str(pt_cut[l]))
+
+	htemp=gROOT.FindObject("htemp") ; htemp2=gROOT.FindObject("htemp2") ; htemp3=gROOT.FindObject("htemp3")
+	htemp.SetLineColor(kRed) ; htemp2.SetLineColor(kGreen+2) ; htemp3.SetLineColor(kBlue)
+	htemp.Draw() ; htemp2.Draw("same") ; htemp3.Draw("same")
 
 	la1 = TLatex() ; la1.SetTextFont(22) ; la1.SetTextColor(kRed) ; la1.SetTextSize(0.033) ; la1.SetTextAlign(10)
 	la1.DrawLatex( 0.60, lat_scale[l], "Run-2 #mu = "+str(truncate(htemp.GetMean(),3))+", #sigma = "+str(truncate(htemp.GetRMS(),3)))
@@ -179,10 +240,10 @@ if resolutions==True:
 	htemp.SetTitle("")
 	htemp.GetXaxis().SetTitle("(p_{T}^{GEN} - p_{T}^{L1}) / p_{T}^{GEN}")
 	gStyle.SetOptStat(0) ; gPad.Update()
-	c1.SaveAs("plots/resolutions/ptres1D_DiffOverGen_pt"+str(pt_str[l])+".png")
-	c1.SaveAs("plots/resolutions/ptres1D_DiffOverGen_pt"+str(pt_str[l])+".C")
-	c1.SaveAs("plots/resolutions/ptres1D_DiffOverGen_pt"+str(pt_str[l])+".pdf")
-	#raw_input("Enter")
+	#c1.SaveAs("plots/resolutions/ptres1D_DiffOverGen_pt"+str(pt_str[l])+".png")
+	#c1.SaveAs("plots/resolutions/ptres1D_DiffOverGen_pt"+str(pt_str[l])+".C")
+	#c1.SaveAs("plots/resolutions/ptres1D_DiffOverGen_pt"+str(pt_str[l])+".pdf")
+	raw_input("Enter")
 	c1.Close()
 
     if res1D_invDiffOverInvGen==True:
@@ -190,12 +251,13 @@ if resolutions==True:
       for l in range(len(pt_cut)):
 
 	c1 = TCanvas("c1")
-	evt_tree.Draw("(1./(GEN_pt - (1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq))))))/(1./GEN_pt)>>htemp(64,-20.,20.)", "GEN_pt>"+str(pt_cut[l]))
-	evt_tree2.Draw("(1./(GEN_pt - (1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq))))))/(1./GEN_pt)>>htemp2(64,-20.,20.)", "GEN_pt>"+str(pt_cut[l]))
-	
-	htemp=gROOT.FindObject("htemp") ; htemp2=gROOT.FindObject("htemp2")
-	htemp.SetLineColor(kRed) ; htemp2.SetLineColor(kBlue)
-	htemp.Draw() ; htemp2.Draw("same")
+	evt_tree.Draw("(((1./GEN_pt) - (1./(1.2 * (2**(BDTG_AWB_Sq)))))/(1 - (0.004 * (2**(BDTG_AWB_Sq))))))/(1./GEN_pt)>>htemp(64,-20.,20.)", "GEN_pt>"+str(pt_cut[l]))
+	evt_tree2.Draw("(((1./GEN_pt) - (1./(1.2 * (2**(BDTG_AWB_Sq)))))/(1 - (0.004 * (2**(BDTG_AWB_Sq))))))/(1./GEN_pt)>>htemp2(64,-20.,20.)", "GEN_pt>"+str(pt_cut[l]))
+	evt_tree3.Draw("(((1./GEN_pt) - (1./(1.2 * (2**(BDTG_AWB_Sq)))))/(1 - (0.004 * (2**(BDTG_AWB_Sq))))))/(1./GEN_pt)>>htemp3(64,-20.,20.)", "GEN_pt>"+str(pt_cut[l]))
+
+	htemp=gROOT.FindObject("htemp") ; htemp2=gROOT.FindObject("htemp2") ; htemp3=gROOT.FindObject("htemp3")
+	htemp.SetLineColor(kRed) ; htemp2.SetLineColor(kGreen+2) ; htemp2.SetLineColor(kBlue)
+	htemp.Draw() ; htemp2.Draw("same") ; htemp3.Draw("same")
 
 	lat_scale = [275e3, 245e3, 210e3, 180e3, 160e3, 145e3, 105e3, 96e3, 85e3, 70e3]
 	lat_scale_diff = [4.2e4, 4e4, 3.3e4, 2.5e4, 2.5e4, 2e4, 1.7e4, 1.6e4, 1.4e4, 1.2e4]
@@ -213,87 +275,109 @@ if resolutions==True:
 	htemp.SetTitle("")
 	htemp.GetXaxis().SetTitle("(p_{T}^{GEN} - p_{T}^{L1})^{-1} / (p_{T}^{GEN})^{-1}")
 	gStyle.SetOptStat(0) ; gPad.Update()
-	c1.SaveAs("plots/resolutions/ptres1D_invDiffOverInvGen_pt"+str(pt_str[l])+".png")
-	c1.SaveAs("plots/resolutions/ptres1D_invDiffOverInvGen_pt"+str(pt_str[l])+".C")
-	c1.SaveAs("plots/resolutions/ptres1D_invDiffOverInvGen_pt"+str(pt_str[l])+".pdf")
-	#raw_input("Enter")
+	#c1.SaveAs("plots/resolutions/ptres1D_invDiffOverInvGen_pt"+str(pt_str[l])+".png")
+	#c1.SaveAs("plots/resolutions/ptres1D_invDiffOverInvGen_pt"+str(pt_str[l])+".C")
+	#c1.SaveAs("plots/resolutions/ptres1D_invDiffOverInvGen_pt"+str(pt_str[l])+".pdf")
+	raw_input("Enter")
 	c1.Close()
 
     if res1DvsPt==True:
 
       ## ============== Inverse Pt Diff Over Inverse GEN ================
 
-      res = [] ; res2 = [] ; resErr = [] ; res2Err = [] ; zeros=[]
+      res = [] ; res2 = [] ; res3 = [] ; resErr = [] ; res2Err = [] ; res3Err = [] ; zeros=[]
 
       for l in range(len(pt_cut)):
 	c1 = TCanvas("c1")
-	evt_tree2.Draw("(1./(GEN_pt - (1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq))))))/(1./GEN_pt)>>htemp(64,-20.,20.)", "GEN_pt>"+str(pt_cut[l]))
+	#evt_tree2.Draw("(((1./GEN_pt) - (1./(1.2 * (2**(BDTG_AWB_Sq)))))/(1 - (0.004 * (2**(BDTG_AWB_Sq)))))/(1./GEN_pt)>>htemp(64,-20.,20.)", "GEN_pt>"+str(pt_cut[l]))
+	evt_tree2.Draw("((1./GEN_pt) - (1./(2**(BDTG_AWB_Sq))))/(1./GEN_pt)>>htemp(64,-20.,20.)", "GEN_pt>"+str(pt_cut[l]))
 	htemp = gPad.GetPrimitive("htemp") ; htemp.Draw()
 	res.append(htemp.GetRMS()) ; resErr.append(htemp.GetRMSError())
 	c1.Close()
 
 	c1 = TCanvas("c1")
-	evt_tree.Draw("(1./(GEN_pt - (1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq))))))/(1./GEN_pt)>>htemp2(64,-20.,20.)", "GEN_pt>"+str(pt_cut[l]))
+	#evt_tree5.Draw("(((1./GEN_pt) - (1./(1.2 * (2**(BDTG_AWB_Sq)))))/(1 - (0.004 * (2**(BDTG_AWB_Sq)))))/(1./GEN_pt)>>htemp2(64,-20.,20.)", "GEN_pt>"+str(pt_cut[l]))
+	evt_tree5.Draw("((1./GEN_pt) - (1./(2**(BDTG_AWB_Sq))))/(1./GEN_pt)>>htemp2(64,-20.,20.)", "GEN_pt>"+str(pt_cut[l]))
 	htemp2 = gPad.GetPrimitive("htemp2") ; htemp2.Draw()
 	res2.append(htemp2.GetRMS()) ; res2Err.append(htemp2.GetRMSError())
+	c1.Close()
+
+	c1 = TCanvas("c1")
+	#evt_tree6.Draw("(((1./GEN_pt) - (1./(1.2 * (2**(BDTG_AWB_Sq)))))/(1 - (0.004 * (2**(BDTG_AWB_Sq)))))/(1./GEN_pt)>>htemp3(64,-20.,20.)", "GEN_pt>"+str(pt_cut[l]))
+	evt_tree6.Draw("((1./GEN_pt) - (1./(2**(BDTG_AWB_Sq))))/(1./GEN_pt)>>htemp3(64,-20.,20.)", "GEN_pt>"+str(pt_cut[l]))
+	htemp3 = gPad.GetPrimitive("htemp3") ; htemp3.Draw()
+	res3.append(htemp3.GetRMS()) ; res3Err.append(htemp3.GetRMSError())
 	c1.Close()
 
 	zeros.append(0.)
 
       c1 = TCanvas( 'c1', 'test scatter', 200, 10, 700, 500)
       g1 = TGraphErrors(len(pt_cut), np.array(pt_cut), np.array(res), np.array(zeros) , np.array(resErr))
-      g1.SetMarkerStyle(8) ; g1.SetMarkerSize(1) ; g1.SetMarkerColor(kBlue)
+      g1.SetMarkerStyle(8) ; g1.SetMarkerSize(1) ; g1.SetMarkerColor(kGreen+2)
       g2 = TGraphErrors(len(pt_cut), np.array(pt_cut), np.array(res2), np.array(zeros) , np.array(res2Err))
       g2.SetMarkerStyle(8) ; g2.SetMarkerSize(1) ; g2.SetMarkerColor(kRed)
+      g3 = TGraphErrors(len(pt_cut), np.array(pt_cut), np.array(res3), np.array(zeros) , np.array(res3Err))
+      g3.SetMarkerStyle(8) ; g3.SetMarkerSize(1) ; g3.SetMarkerColor(kBlue)
 
-      mg = TMultiGraph() ; mg.Add(g1) ; mg.Add(g2) ; mg.Draw('ap')
+      mg = TMultiGraph() ; mg.Add(g1) ; mg.Add(g2) ; mg.Add(g3) ; mg.Draw('ap')
       mg.GetXaxis().SetTitle('p_{T}^{GEN}')
-      mg.GetYaxis().SetTitle('#sigma ((p_{T}^{GEN} - p_{T}^{L1})^{-1} / (p_{T}^{GEN})^{-1})')
+      mg.GetYaxis().SetTitle('#sigma ((p_{T,GEN}^{-1} - p_{T,L1}^{-1}) / p_{T,GEN}^{-1})')
 
-      leg = TLegend(0.15, 0.65, 0.34, 0.87) ; leg.AddEntry(g2, "Run-2 BDT") ; leg.AddEntry(g1, "Run-3 BDT") ; leg.SetBorderSize(0) ; leg.Draw("same")
+      #leg = TLegend(0.13, 0.66, 0.45, 0.87) ; leg.AddEntry(g2, "Run-2 BDT") ; leg.AddEntry(g3, "Run-3 BDT (HS precision dPhi)") ; leg.AddEntry(g1, "Run-3 BDT (ES precision dPhi)") ; leg.SetBorderSize(0) ; leg.Draw("same")
 
       c1.Update()
-      c1.SaveAs("plots/resolutions/res_vs_pt_invDiffOverInvGen.png")
-      c1.SaveAs("plots/resolutions/res_vs_pt_invDiffOverInvGen.C")
-      c1.SaveAs("plots/resolutions/res_vs_pt_invDiffOverInvGen.pdf")
+      c1.SaveAs("plots/resolutions/mu_vs_pt_invDiffOverInvGen_R2dPhiSlopes.png")
+      #c1.SaveAs("plots/resolutions/res_vs_pt_invDiffOverInvGen_enhancedDPhi_slopeRemoved.C")
+      #c1.SaveAs("plots/resolutions/res_vs_pt_invDiffOverInvGen_enhancedDPhi_slopeRemoved.pdf")
       #raw_input("Enter")
       c1.Close()
 
       ## ============== Pt Diff Over GEN ================
 
-      res = [] ; res2 = [] ; resErr = [] ; res2Err = [] ; zeros=[]
+      res = [] ; res2 = [] ; res3 = [] ; resErr = [] ; res2Err = [] ; res3Err = [] ; zeros=[]
 
       for l in range(len(pt_cut)):
 	c1 = TCanvas("c1")
-	evt_tree2.Draw("(GEN_pt - (1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq)))))/(GEN_pt)>>htemp(64,-3.,3.)", "GEN_pt>"+str(pt_cut[l]))
+	#evt_tree2.Draw("(GEN_pt - (1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq)))))/(GEN_pt)>>htemp(64,-3.,3.)", "GEN_pt>"+str(pt_cut[l]))
+	evt_tree2.Draw("(GEN_pt - (2**(BDTG_AWB_Sq)))/(GEN_pt)>>htemp(64,-3.,3.)", "GEN_pt>"+str(pt_cut[l]))
 	htemp = gPad.GetPrimitive("htemp") ; htemp.Draw()
 	res.append(htemp.GetRMS()) ; resErr.append(htemp.GetRMSError())
 	c1.Close()
 
 	c1 = TCanvas("c1")
-	evt_tree.Draw("(GEN_pt - (1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq)))))/(GEN_pt)>>htemp2(64,-3.,3.)", "GEN_pt>"+str(pt_cut[l]))
+	#evt_tree5.Draw("(GEN_pt - (1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq)))))/(GEN_pt)>>htemp2(64,-3.,3.)", "GEN_pt>"+str(pt_cut[l]))
+	evt_tree5.Draw("(GEN_pt - (2**(BDTG_AWB_Sq)))/(GEN_pt)>>htemp2(64,-3.,3.)", "GEN_pt>"+str(pt_cut[l]))
 	htemp2 = gPad.GetPrimitive("htemp2") ; htemp2.Draw()
 	res2.append(htemp2.GetRMS()) ; res2Err.append(htemp2.GetRMSError())
+	c1.Close()
+
+	c1 = TCanvas("c1")
+	#evt_tree6.Draw("(GEN_pt - (1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq)))))/(GEN_pt)>>htemp3(64,-3.,3.)", "GEN_pt>"+str(pt_cut[l]))
+	evt_tree6.Draw("(GEN_pt - (2**(BDTG_AWB_Sq)))/(GEN_pt)>>htemp3(64,-3.,3.)", "GEN_pt>"+str(pt_cut[l]))
+	htemp3 = gPad.GetPrimitive("htemp3") ; htemp3.Draw()
+	res3.append(htemp3.GetRMS()) ; res3Err.append(htemp3.GetRMSError())
 	c1.Close()
 
 	zeros.append(0.)
 
       c1 = TCanvas( 'c1', 'test scatter', 200, 10, 700, 500)
       g1 = TGraphErrors(len(pt_cut), np.array(pt_cut), np.array(res), np.array(zeros) , np.array(resErr))
-      g1.SetMarkerStyle(8) ; g1.SetMarkerSize(1) ; g1.SetMarkerColor(kBlue)
+      g1.SetMarkerStyle(8) ; g1.SetMarkerSize(1) ; g1.SetMarkerColor(kGreen+2)
       g2 = TGraphErrors(len(pt_cut), np.array(pt_cut), np.array(res2), np.array(zeros) , np.array(res2Err))
       g2.SetMarkerStyle(8) ; g2.SetMarkerSize(1) ; g2.SetMarkerColor(kRed)
+      g3 = TGraphErrors(len(pt_cut), np.array(pt_cut), np.array(res3), np.array(zeros) , np.array(res3Err))
+      g3.SetMarkerStyle(8) ; g3.SetMarkerSize(1) ; g3.SetMarkerColor(kBlue)
 
-      mg = TMultiGraph() ; mg.Add(g1) ; mg.Add(g2) ; mg.Draw('ap')
+      mg = TMultiGraph() ; mg.Add(g1) ; mg.Add(g2) ; mg.Add(g3) ; mg.Draw('ap')
       mg.GetXaxis().SetTitle('p_{T}^{GEN}')
       mg.GetYaxis().SetTitle('#sigma ((p_{T}^{GEN} - p_{T}^{L1}) / p_{T}^{GEN})')
 
-      leg = TLegend(0.67, 0.65, 0.86, 0.87) ; leg.AddEntry(g2, "Run-2 BDT") ; leg.AddEntry(g1, "Run-3 BDT") ; leg.SetBorderSize(0) ; leg.Draw("same")
+      #leg = TLegend(0.13, 0.15, 0.55, 0.47) ; leg.AddEntry(g2, "Run-2 BDT") ; leg.AddEntry(g3, "Run-3 BDT (HS precision dPhi)") ; leg.AddEntry(g1, "Run-3 BDT (ES precision dPhi)") ; leg.SetBorderSize(0) ; leg.Draw("same")
 
       c1.Update()
-      c1.SaveAs("plots/resolutions/res_vs_pt_diffOverGen.png")
-      c1.SaveAs("plots/resolutions/res_vs_pt_diffOverGen.C")
-      c1.SaveAs("plots/resolutions/res_vs_pt_diffOverGen.pdf")
+      c1.SaveAs("plots/resolutions/mu_vs_pt_diffOverGen_R2dPhiSlopes.png")
+      #c1.SaveAs("plots/resolutions/res_vs_pt_diffOverGen_nonEnhanced.C")
+      #c1.SaveAs("plots/resolutions/res_vs_pt_diffOverGen_nonEnhanced.pdf")
       #raw_input("Enter")
       c1.Close()
 
@@ -311,25 +395,25 @@ if resolutions==True:
       for l in range(len(eta_min1)):
 
 	c1 = TCanvas("c1")
-	evt_tree2.Draw("(1./(GEN_pt - (1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq))))))/(1./GEN_pt)>>htemp(64,-3.,3.)", "GEN_pt>"+str(pt_cut[k])+" && GEN_eta>"+str(eta_min1[l])+" && GEN_eta<"+str(eta_max1[l]))
+	evt_tree2.Draw("((1./GEN_pt) - (1./(1.2 * (2**(BDTG_AWB_Sq)))))/(1 - (0.004 * (2**(BDTG_AWB_Sq))))))/(1./GEN_pt)>>htemp(64,-3.,3.)", "GEN_pt>"+str(pt_cut[k])+" && GEN_eta>"+str(eta_min1[l])+" && GEN_eta<"+str(eta_max1[l]))
 	htemp = gPad.GetPrimitive("htemp") ; htemp.Draw()
 	res.append(htemp.GetRMS()) ; resErr.append(htemp.GetRMSError())
 	c1.Close()
 
 	c1 = TCanvas("c1")
-	evt_tree2.Draw("(1./(GEN_pt - (1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq))))))/(1./GEN_pt)>>htemp2(64,-3.,3.)", "GEN_pt>"+str(pt_cut[k])+" && GEN_eta>"+str(eta_min2[l])+" && GEN_eta<"+str(eta_max2[l]))
+	evt_tree2.Draw("((1./GEN_pt) - (1./(1.2 * (2**(BDTG_AWB_Sq)))))/(1 - (0.004 * (2**(BDTG_AWB_Sq))))))/(1./GEN_pt)>>htemp2(64,-3.,3.)", "GEN_pt>"+str(pt_cut[k])+" && GEN_eta>"+str(eta_min2[l])+" && GEN_eta<"+str(eta_max2[l]))
 	htemp2 = gPad.GetPrimitive("htemp2") ; htemp2.Draw()
 	res.append(htemp2.GetRMS()) ; resErr.append(htemp2.GetRMSError())
 	c1.Close()
 
 	c1 = TCanvas("c1")
-	evt_tree.Draw("(1./(GEN_pt - (1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq))))))/(1./GEN_pt)>>htemp3(64,-3.,3.)", "GEN_pt>"+str(pt_cut[k])+" && GEN_eta>"+str(eta_min1[l])+" && GEN_eta<"+str(eta_max1[l]))
+	evt_tree.Draw("((1./GEN_pt) - (1./(1.2 * (2**(BDTG_AWB_Sq)))))/(1 - (0.004 * (2**(BDTG_AWB_Sq))))))/(1./GEN_pt)>>htemp3(64,-3.,3.)", "GEN_pt>"+str(pt_cut[k])+" && GEN_eta>"+str(eta_min1[l])+" && GEN_eta<"+str(eta_max1[l]))
 	htemp3 = gPad.GetPrimitive("htemp3") ; htemp3.Draw()
 	res2.append(htemp3.GetRMS()) ; res2Err.append(htemp3.GetRMSError())
 	c1.Close()
 
 	c1 = TCanvas("c1")
-	evt_tree.Draw("(1./(GEN_pt - (1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq))))))/(1./GEN_pt)>>htemp4(64,-3.,3.)", "GEN_pt>"+str(pt_cut[k])+" && GEN_eta>"+str(eta_min2[l])+" && GEN_eta<"+str(eta_max2[l]))
+	evt_tree.Draw("((1./GEN_pt) - (1./(1.2 * (2**(BDTG_AWB_Sq)))))/(1 - (0.004 * (2**(BDTG_AWB_Sq))))))/(1./GEN_pt)>>htemp4(64,-3.,3.)", "GEN_pt>"+str(pt_cut[k])+" && GEN_eta>"+str(eta_min2[l])+" && GEN_eta<"+str(eta_max2[l]))
 	htemp4 = gPad.GetPrimitive("htemp4") ; htemp4.Draw()
 	res2.append(htemp4.GetRMS()) ; res2Err.append(htemp4.GetRMSError())
 	c1.Close()
@@ -360,8 +444,6 @@ if resolutions==True:
       #raw_input("Enter")
       c1.Close()
 
-
-    
     ## ============== Pt Diff Over GEN ================
     
     for k in range(len(pt_cut)):

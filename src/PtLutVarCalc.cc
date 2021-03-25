@@ -261,13 +261,24 @@ void CalcDeltaThetas( int& dTh12, int& dTh13, int& dTh14, int& dTh23, int& dTh24
 
 
 void CalcBends( int& bend1, int& bend2, int& bend3, int& bend4,
-                const int pat1, const int pat2, const int pat3, const int pat4,
-                const int dPhSign, const int endcap, const int mode, const bool BIT_COMP ) {
+                const int pat1, const int pat2, const int pat3, const int pat4, 
+		const int pat1_run3, const int pat2_run3, const int pat3_run3, const int run4_run3,
+                const int dPhSign, const int endcap, const int mode, const bool BIT_COMP, const bool isRun2) {
 
-  bend1 = CalcBendFromPattern( pat1, endcap );
-  bend2 = CalcBendFromPattern( pat2, endcap );
-  bend3 = CalcBendFromPattern( pat3, endcap );
-  bend4 = CalcBendFromPattern( pat4, endcap );
+
+  if(isRun2) {
+    bend1 = CalcBendFromPattern( pat1, endcap, isRun2 );
+    bend2 = CalcBendFromPattern( pat2, endcap, isRun2 );
+    bend3 = CalcBendFromPattern( pat3, endcap, isRun2 );
+    bend4 = CalcBendFromPattern( pat4, endcap, isRun2 );
+  }
+
+  else {
+    bend1 = CalcBendFromPattern( pat1_run3, endcap, isRun2 );
+    bend2 = CalcBendFromPattern( pat2_run3, endcap, isRun2 );
+    bend3 = CalcBendFromPattern( pat3_run3, endcap, isRun2 );
+    bend4 = CalcBendFromPattern( pat4_run3, endcap, isRun2 );
+  }
 
   if (BIT_COMP) {
     int nBits = 3;
@@ -354,18 +365,29 @@ void CalcRPCs( int& RPC1, int& RPC2, int& RPC3, int& RPC4, const int mode,
 } // End function: void CalcRPCs()
 
 
-int CalcBendFromPattern( const int pattern, const int endcap ) {
+int CalcBendFromPattern( const int pattern, const int endcap, const bool isRun2 ) {
 
   int bend = -99;
   if (pattern < 0)
     return bend;
 
-  if (pattern == 10)
-    bend = 0;
-  else if ( (pattern % 2) == 0 )
-    bend = (10 - pattern) / 2;
-  else if ( (pattern % 2) == 1 )
-    bend = -1 * (11 - pattern) / 2;
+  if(isRun2) {
+    if (pattern == 10)
+      bend = 0;
+    else if ( (pattern % 2) == 0 )
+      bend = (10 - pattern) / 2;
+    else if ( (pattern % 2) == 1 )
+      bend = -1 * (11 - pattern) / 2;
+  }
+
+  else {
+    if (pattern == 4)
+      bend = 0;
+    else if ( (pattern % 2) == 0 )
+      bend = (4 - pattern) / 2;
+    else if ( (pattern % 2) == 1 )
+      bend = -1 * (5 - pattern) / 2;
+  }
 
   // Reverse to match dPhi convention
   if (endcap == 1)

@@ -160,7 +160,7 @@ void PtRegressionRun3Prep(TString user = "",
   TString ZB_file_name;
 
   for (int i = 0; i < USESingleMu; i++) {
-    SM_file_name.Form( "%s/%s/%s", EOS_DIR_NAME.Data(), in_dir.Data(), SingleMu_files[i].Data() );
+    SM_file_name.Form( "%s", EOS_DIR_NAME.Data() ); //, in_dir.Data(), SingleMu_files[i].Data() );
     std::cout << "Adding file " << SM_file_name.Data() << std::endl;
     SM_in_file_names.push_back(SM_file_name.Data());
   }
@@ -814,7 +814,13 @@ void PtRegressionRun3Prep(TString user = "",
         FR4 = (i4 >= 0 ? (cham4 % 2 == 1) : -99);
         if (ring1 == 3) FR1 = 0;                   // In ME1/3 chambers are non-overlapping
 
-        if (useRPC) {
+
+	CalcBends( bend1, bend2, bend3, bend4,
+	           pat1, pat2, pat3, pat4, pat1_run3, pat2_run3, pat3_run3, pat4_run3,
+         	   dPhSign, endcap, mode, BIT_COMP, isRun2 );
+
+
+	if (useRPC) {
           RPC1 = (i1CSC >= 0 ? ( I("hit_isRPC",i1CSC ) == 1 ? 1 : 0) : -99);
           RPC2 = (i2 >= 0 ? ( I("hit_isRPC", i2 ) == 1 ? 1 : 0) : -99);
           RPC3 = (i3 >= 0 ? ( I("hit_isRPC", i3 ) == 1 ? 1 : 0) : -99);
