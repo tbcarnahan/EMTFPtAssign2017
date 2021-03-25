@@ -19,7 +19,7 @@ from ROOT import gROOT
 #isRun2 = True ; isRun2RPC = False
 #isRun3 = False ; isRun3QSBit = False ; isRun3QSBitESBit = True ; isRun3QSBitESBitSlopes = True
 
-efficiencies=False ; EffVsPt=False ; EffVsEta=True ; eta_slices=False ; single_pt=False
+efficiencies=False ; EffVsPt=True ; EffVsEta=False ; eta_slices=False ; single_pt=False
 resolutions=True ; res2D=False ; res1D=True ; res1D_diffOverGen=False ; res1D_invDiffOverInvGen=False ; res1DvsPt=True ; res1DvsEta=False
 
 if single_pt==True:
@@ -50,13 +50,12 @@ evt_tree6 = TChain('f_MODE_15_logPtTarg_invPtWgt_noBitCompr_noRPC_noGEM/TestTree
 
 ## ================ Read input files ======================
 print '------> Importing Root Files..'
-dir1 = 'root://cmseos.fnal.gov//store/user/mdecaro/EMTF_BDT_Train_isRun2_20210321_223914/'
-dir2 = 'root://cmseos.fnal.gov//store/user/mdecaro/EMTF_BDT_Train_isRun2_useRPC_20210312_094714/'
-dir3 = 'root://cmseos.fnal.gov//store/user/mdecaro/EMTF_BDT_Train_isRun3_20210312_094720/'
-dir4 = 'root://cmseos.fnal.gov//store/user/mdecaro/EMTF_BDT_Train_isRun3_useQSBit_20210321_223207/'
-dir5 = 'root://cmseos.fnal.gov//store/user/mdecaro/EMTF_BDT_Train_isRun3_useQSBit_useESBit_20210321_223649/'
-dir6 = 'root://cmseos.fnal.gov//store/user/mdecaro/EMTF_BDT_Train_isRun3_useQSBit_useESBit_useSlopes_20210312_094737/'
-dir7 = 'root://cmsxrootd.fnal.gov//store/user/mdecaro/condor_output_BDT/'
+dir1 = 'root://cmseos.fnal.gov//store/user/mdecaro/EMTF_BDT_Train_isRun2_20210325_100918/'
+dir2 = 'root://cmseos.fnal.gov//store/user/mdecaro/EMTF_BDT_Train_isRun2_useRPC_20210325_101102/'
+dir3 = 'root://cmseos.fnal.gov//store/user/mdecaro/EMTF_BDT_Train_isRun3_20210325_101446/'
+dir4 = 'root://cmseos.fnal.gov//store/user/mdecaro/EMTF_BDT_Train_isRun3_useQSBit_20210325_101931/'
+dir5 = 'root://cmseos.fnal.gov//store/user/mdecaro/EMTF_BDT_Train_isRun3_useQSBit_useESBit_20210325_102134/'
+dir6 = 'root://cmseos.fnal.gov//store/user/mdecaro/EMTF_BDT_Train_isRun3_useQSBit_useESBit_useSlopes_20210325_102358/'
 file_name1 = dir1+"PtRegressionRun3Prep_MODE_15_noBitCompr_noRPC_noGEM.root"
 file_name2 = dir2+"PtRegressionRun3Prep_MODE_15_noBitCompr_RPC_noGEM.root"
 file_name3 = dir3+"PtRegressionRun3Prep_MODE_15_noBitCompr_noRPC_noGEM.root"
@@ -98,6 +97,7 @@ if efficiencies==True:
       if EffVsPt:
 
 	#Run2 and Run3 BDT efficiency vs Pt
+	
 	evt_tree1.Draw("GEN_pt>>h_denom1(50,1.,50.)", "abs(GEN_eta)>"+str(eta_min[k])+" && abs(GEN_eta)<"+str(eta_max[k]))
 	h_denom1=gROOT.FindObject("h_denom1")
 	c1.Update()
@@ -105,7 +105,7 @@ if efficiencies==True:
 	evt_tree1.Draw("GEN_pt>>h_numer1(50,1.,50.)", "abs(GEN_eta)>"+str(eta_min[k])+" && abs(GEN_eta)<"+str(eta_max[k])+" && (2**(BDTG_AWB_Sq))>"+str(pt_cut[l]))
 	h_numer1=gROOT.FindObject("h_numer1")
 	c1.Update()
-
+	
 	evt_tree2.Draw("GEN_pt>>h_denom2(50,1.,50.)", "abs(GEN_eta)>"+str(eta_min[k])+" && abs(GEN_eta)<"+str(eta_max[k]))
 	h_denom2=gROOT.FindObject("h_denom2")
 	c1.Update()
@@ -343,48 +343,74 @@ if resolutions:
 	raw_input("Enter")
 	c1.Close()
 
-    if res1DvsPt:
+    if res1DvsPt and single_pt: print "Error: Must set single_pt to false in order to plot resolutions vs Pt."
+    if res1DvsPt and single_pt==False:
 
       ## ============== Inverse Pt Diff Over Inverse GEN ================
 
-      res = [] ; res2 = [] ; res3 = [] #; res4 = [] ; res5 = [] ; res6 = []
-      resErr = [] ; res2Err = [] ; res3Err = [] #; res4Err = [] ; res5Err = [] ; res6Err = []
+      res1 = [] ; res2 = [] ; res3 = [] ; res4 = [] ; res5 = [] ; res6 = []
+      res1Err = [] ; res2Err = [] ; res3Err = [] ; res4Err = [] ; res5Err = [] ; res6Err = []
       zeros=[]
       
       for l in range(len(pt_cut)):
 
+	#evt_tree1.Draw("(((1./GEN_pt) - (1./(1.2 * (2**(BDTG_AWB_Sq)))))/(1 - (0.004 * (2**(BDTG_AWB_Sq)))))/(1./GEN_pt)>>htemp(64,-20.,20.)", "GEN_pt>"+str(pt_cut[l]))
+	evt_tree1.Draw("((1./GEN_pt) - (1./(2**(BDTG_AWB_Sq))))/(1./GEN_pt)>>htemp1(64,-20.,20.)", "(2**(BDTG_AWB_Sq))>"+str(pt_cut[l]))
+	htemp1 = gPad.GetPrimitive("htemp1") ; htemp1.Draw()
+	res1.append(htemp1.GetRMS()) ; res1Err.append(htemp1.GetRMSError())
+	c1.Close()
+
 	#evt_tree2.Draw("(((1./GEN_pt) - (1./(1.2 * (2**(BDTG_AWB_Sq)))))/(1 - (0.004 * (2**(BDTG_AWB_Sq)))))/(1./GEN_pt)>>htemp(64,-20.,20.)", "GEN_pt>"+str(pt_cut[l]))
-	evt_tree2.Draw("((1./GEN_pt) - (1./(2**(BDTG_AWB_Sq))))/(1./GEN_pt)>>htemp(64,-20.,20.)", "(2**(BDTG_AWB_Sq))>"+str(pt_cut[l]))
-	htemp = gPad.GetPrimitive("htemp") ; htemp.Draw()
-	res.append(htemp.GetRMS()) ; resErr.append(htemp.GetRMSError())
+	evt_tree2.Draw("((1./GEN_pt) - (1./(2**(BDTG_AWB_Sq))))/(1./GEN_pt)>>htemp2(64,-20.,20.)", "(2**(BDTG_AWB_Sq))>"+str(pt_cut[l]))
+	htemp2 = gPad.GetPrimitive("htemp2") ; htemp2.Draw()
+	res2.append(htemp2.GetRMS()) ; res2Err.append(htemp2.GetRMSError())
+	c1.Close()
+  
+	#evt_tree2.Draw("(((1./GEN_pt) - (1./(1.2 * (2**(BDTG_AWB_Sq)))))/(1 - (0.004 * (2**(BDTG_AWB_Sq)))))/(1./GEN_pt)>>htemp(64,-20.,20.)", "GEN_pt>"+str(pt_cut[l]))
+	evt_tree3.Draw("((1./GEN_pt) - (1./(2**(BDTG_AWB_Sq))))/(1./GEN_pt)>>htemp3(64,-20.,20.)", "(2**(BDTG_AWB_Sq))>"+str(pt_cut[l]))
+	htemp3 = gPad.GetPrimitive("htemp3") ; htemp3.Draw()
+	res3.append(htemp3.GetRMS()) ; res3Err.append(htemp3.GetRMSError())
+	c1.Close()
+
+	c1 = TCanvas("c1")
+	#evt_tree4.Draw("(((1./GEN_pt) - (1./(1.2 * (2**(BDTG_AWB_Sq)))))/(1 - (0.004 * (2**(BDTG_AWB_Sq)))))/(1./GEN_pt)>>htemp2(64,-20.,20.)", "GEN_pt>"+str(pt_cut[l]))
+	evt_tree4.Draw("((1./GEN_pt) - (1./(2**(BDTG_AWB_Sq))))/(1./GEN_pt)>>htemp4(64,-20.,20.)", "(2**(BDTG_AWB_Sq))>"+str(pt_cut[l]))
+	htemp4 = gPad.GetPrimitive("htemp4") ; htemp4.Draw()
+	res4.append(htemp4.GetRMS()) ; res4Err.append(htemp4.GetRMSError())
 	c1.Close()
 
 	c1 = TCanvas("c1")
 	#evt_tree5.Draw("(((1./GEN_pt) - (1./(1.2 * (2**(BDTG_AWB_Sq)))))/(1 - (0.004 * (2**(BDTG_AWB_Sq)))))/(1./GEN_pt)>>htemp2(64,-20.,20.)", "GEN_pt>"+str(pt_cut[l]))
-	evt_tree5.Draw("((1./GEN_pt) - (1./(2**(BDTG_AWB_Sq))))/(1./GEN_pt)>>htemp2(64,-20.,20.)", "(2**(BDTG_AWB_Sq))>"+str(pt_cut[l]))
-	htemp2 = gPad.GetPrimitive("htemp2") ; htemp2.Draw()
-	res2.append(htemp2.GetRMS()) ; res2Err.append(htemp2.GetRMSError())
+	evt_tree5.Draw("((1./GEN_pt) - (1./(2**(BDTG_AWB_Sq))))/(1./GEN_pt)>>htemp5(64,-20.,20.)", "(2**(BDTG_AWB_Sq))>"+str(pt_cut[l]))
+	htemp5 = gPad.GetPrimitive("htemp5") ; htemp5.Draw()
+	res5.append(htemp5.GetRMS()) ; res5Err.append(htemp5.GetRMSError())
 	c1.Close()
 
 	c1 = TCanvas("c1")
 	#evt_tree6.Draw("(((1./GEN_pt) - (1./(1.2 * (2**(BDTG_AWB_Sq)))))/(1 - (0.004 * (2**(BDTG_AWB_Sq)))))/(1./GEN_pt)>>htemp3(64,-20.,20.)", "GEN_pt>"+str(pt_cut[l]))
-	evt_tree6.Draw("((1./GEN_pt) - (1./(2**(BDTG_AWB_Sq))))/(1./GEN_pt)>>htemp3(64,-20.,20.)", "(2**(BDTG_AWB_Sq))>"+str(pt_cut[l]))
-	htemp3 = gPad.GetPrimitive("htemp3") ; htemp3.Draw()
-	res3.append(htemp3.GetRMS()) ; res3Err.append(htemp3.GetRMSError())
+	evt_tree6.Draw("((1./GEN_pt) - (1./(2**(BDTG_AWB_Sq))))/(1./GEN_pt)>>htemp6(64,-20.,20.)", "(2**(BDTG_AWB_Sq))>"+str(pt_cut[l]))
+	htemp6 = gPad.GetPrimitive("htemp6") ; htemp6.Draw()
+	res6.append(htemp6.GetRMS()) ; res6Err.append(htemp6.GetRMSError())
 	c1.Close()
 
 	zeros.append(0.)
 
       
       c1 = TCanvas( 'c1', 'test scatter', 200, 10, 700, 500)
-      g1 = TGraphErrors(len(pt_cut), np.array(pt_cut), np.array(res), np.array(zeros) , np.array(resErr))
-      g1.SetMarkerStyle(8) ; g1.SetMarkerSize(1) ; g1.SetMarkerColor(kGreen+2)
+      g1 = TGraphErrors(len(pt_cut), np.array(pt_cut), np.array(res1), np.array(zeros) , np.array(res1Err))
+      g1.SetMarkerStyle(8) ; g1.SetMarkerSize(1) ; g1.SetMarkerColor(kBlue)
       g2 = TGraphErrors(len(pt_cut), np.array(pt_cut), np.array(res2), np.array(zeros) , np.array(res2Err))
       g2.SetMarkerStyle(8) ; g2.SetMarkerSize(1) ; g2.SetMarkerColor(kRed)
       g3 = TGraphErrors(len(pt_cut), np.array(pt_cut), np.array(res3), np.array(zeros) , np.array(res3Err))
-      g3.SetMarkerStyle(8) ; g3.SetMarkerSize(1) ; g3.SetMarkerColor(kBlue)
+      g3.SetMarkerStyle(8) ; g3.SetMarkerSize(1) ; g3.SetMarkerColor(kGreen+2)
+      g4 = TGraphErrors(len(pt_cut), np.array(pt_cut), np.array(res4), np.array(zeros) , np.array(res4Err))
+      g4.SetMarkerStyle(8) ; g4.SetMarkerSize(1) ; g4.SetMarkerColor(kBlack)
+      g5 = TGraphErrors(len(pt_cut), np.array(pt_cut), np.array(res5), np.array(zeros) , np.array(res5Err))
+      g5.SetMarkerStyle(8) ; g5.SetMarkerSize(1) ; g5.SetMarkerColor(7)
+      g6 = TGraphErrors(len(pt_cut), np.array(pt_cut), np.array(res6), np.array(zeros) , np.array(res6Err))
+      g6.SetMarkerStyle(8) ; g6.SetMarkerSize(1) ; g6.SetMarkerColor(40)
 
-      mg = TMultiGraph() ; mg.Add(g1) ; mg.Add(g2) ; mg.Add(g3) ; mg.Draw('ap')
+      mg = TMultiGraph() ; mg.Add(g1) ; mg.Add(g2) ; mg.Add(g3) ; mg.Add(g4) ; mg.Add(g5) ; mg.Add(g6) ; mg.Draw('ap')
       mg.GetXaxis().SetTitle('p_{T}^{GEN}')
       mg.GetYaxis().SetTitle('#sigma ((p_{T,GEN}^{-1} - p_{T,L1}^{-1}) / p_{T,GEN}^{-1})')
 
@@ -399,41 +425,68 @@ if resolutions:
 
       ## ============== Pt Diff Over GEN ================
 
-      res = [] ; res2 = [] ; res3 = [] ; resErr = [] ; res2Err = [] ; res3Err = [] ; zeros=[]
+      res1 = [] ; res2 = [] ; res3 = [] ; res4 = [] ; res5 = [] ; res6 = []
+      res1Err = [] ; res2Err = [] ; res3Err = [] ; res4Err = [] ; res5Err = [] ; res6Err = []
+      zeros=[]
 
       for l in range(len(pt_cut)):
-	c1 = TCanvas("c1")
-	#evt_tree2.Draw("(GEN_pt - (1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq)))))/(GEN_pt)>>htemp(64,-3.,3.)", "GEN_pt>"+str(pt_cut[l]))
-	evt_tree2.Draw("(GEN_pt - (2**(BDTG_AWB_Sq)))/(GEN_pt)>>htemp(64,-3.,3.)", "(2**(BDTG_AWB_Sq))>"+str(pt_cut[l]))
-	htemp = gPad.GetPrimitive("htemp") ; htemp.Draw()
-	res.append(htemp.GetRMS()) ; resErr.append(htemp.GetRMSError())
+	
+	#evt_tree1.Draw("(GEN_pt - (1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq)))))/(GEN_pt)>>htemp(64,-3.,3.)", "GEN_pt>"+str(pt_cut[l]))
+	evt_tree1.Draw("(GEN_pt - (2**(BDTG_AWB_Sq)))/(GEN_pt)>>htemp1(64,-3.,3.)", "(2**(BDTG_AWB_Sq))>"+str(pt_cut[l]))
+	htemp1 = gPad.GetPrimitive("htemp1") ; htemp1.Draw()
+	res1.append(htemp1.GetRMS()) ; res1Err.append(htemp1.GetRMSError())
 	c1.Close()
 
-	c1 = TCanvas("c1")
-	#evt_tree5.Draw("(GEN_pt - (1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq)))))/(GEN_pt)>>htemp2(64,-3.,3.)", "GEN_pt>"+str(pt_cut[l]))
-	evt_tree5.Draw("(GEN_pt - (2**(BDTG_AWB_Sq)))/(GEN_pt)>>htemp2(64,-3.,3.)", "(2**(BDTG_AWB_Sq))>"+str(pt_cut[l]))
+	#evt_tree2.Draw("(GEN_pt - (1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq)))))/(GEN_pt)>>htemp(64,-3.,3.)", "GEN_pt>"+str(pt_cut[l]))
+	evt_tree2.Draw("(GEN_pt - (2**(BDTG_AWB_Sq)))/(GEN_pt)>>htemp2(64,-3.,3.)", "(2**(BDTG_AWB_Sq))>"+str(pt_cut[l]))
 	htemp2 = gPad.GetPrimitive("htemp2") ; htemp2.Draw()
 	res2.append(htemp2.GetRMS()) ; res2Err.append(htemp2.GetRMSError())
 	c1.Close()
-
-	c1 = TCanvas("c1")
-	#evt_tree6.Draw("(GEN_pt - (1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq)))))/(GEN_pt)>>htemp3(64,-3.,3.)", "GEN_pt>"+str(pt_cut[l]))
-	evt_tree6.Draw("(GEN_pt - (2**(BDTG_AWB_Sq)))/(GEN_pt)>>htemp3(64,-3.,3.)", "(2**(BDTG_AWB_Sq))>"+str(pt_cut[l]))
+  
+	#evt_tree3.Draw("(GEN_pt - (1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq)))))/(GEN_pt)>>htemp(64,-3.,3.)", "GEN_pt>"+str(pt_cut[l]))
+	evt_tree3.Draw("(GEN_pt - (2**(BDTG_AWB_Sq)))/(GEN_pt)>>htemp3(64,-3.,3.)", "(2**(BDTG_AWB_Sq))>"+str(pt_cut[l]))
 	htemp3 = gPad.GetPrimitive("htemp3") ; htemp3.Draw()
 	res3.append(htemp3.GetRMS()) ; res3Err.append(htemp3.GetRMSError())
+	c1.Close()
+
+	c1 = TCanvas("c1")
+	#evt_tree4.Draw("(GEN_pt - (1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq)))))/(GEN_pt)>>htemp(64,-3.,3.)", "GEN_pt>"+str(pt_cut[l]))
+	evt_tree4.Draw("(GEN_pt - (2**(BDTG_AWB_Sq)))/(GEN_pt)>>htemp4(64,-3.,3.)", "(2**(BDTG_AWB_Sq))>"+str(pt_cut[l]))
+	htemp4 = gPad.GetPrimitive("htemp4") ; htemp4.Draw()
+	res4.append(htemp4.GetRMS()) ; res4Err.append(htemp4.GetRMSError())
+	c1.Close()
+
+	c1 = TCanvas("c1")
+	#evt_tree5.Draw("(GEN_pt - (1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq)))))/(GEN_pt)>>htemp(64,-3.,3.)", "GEN_pt>"+str(pt_cut[l]))
+	evt_tree5.Draw("(GEN_pt - (2**(BDTG_AWB_Sq)))/(GEN_pt)>>htemp5(64,-3.,3.)", "(2**(BDTG_AWB_Sq))>"+str(pt_cut[l]))
+	htemp5 = gPad.GetPrimitive("htemp5") ; htemp5.Draw()
+	res5.append(htemp5.GetRMS()) ; res5Err.append(htemp5.GetRMSError())
+	c1.Close()
+
+	c1 = TCanvas("c1")
+	#evt_tree6.Draw("(GEN_pt - (1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq)))))/(GEN_pt)>>htemp(64,-3.,3.)", "GEN_pt>"+str(pt_cut[l]))
+	evt_tree6.Draw("(GEN_pt - (2**(BDTG_AWB_Sq)))/(GEN_pt)>>htemp6(64,-3.,3.)", "(2**(BDTG_AWB_Sq))>"+str(pt_cut[l]))
+	htemp6 = gPad.GetPrimitive("htemp6") ; htemp6.Draw()
+	res6.append(htemp6.GetRMS()) ; res6Err.append(htemp6.GetRMSError())
 	c1.Close()
 
 	zeros.append(0.)
 
       c1 = TCanvas( 'c1', 'test scatter', 200, 10, 700, 500)
-      g1 = TGraphErrors(len(pt_cut), np.array(pt_cut), np.array(res), np.array(zeros) , np.array(resErr))
-      g1.SetMarkerStyle(8) ; g1.SetMarkerSize(1) ; g1.SetMarkerColor(kGreen+2)
+      g1 = TGraphErrors(len(pt_cut), np.array(pt_cut), np.array(res1), np.array(zeros) , np.array(res1Err))
+      g1.SetMarkerStyle(8) ; g1.SetMarkerSize(1) ; g1.SetMarkerColor(kBlue)
       g2 = TGraphErrors(len(pt_cut), np.array(pt_cut), np.array(res2), np.array(zeros) , np.array(res2Err))
       g2.SetMarkerStyle(8) ; g2.SetMarkerSize(1) ; g2.SetMarkerColor(kRed)
       g3 = TGraphErrors(len(pt_cut), np.array(pt_cut), np.array(res3), np.array(zeros) , np.array(res3Err))
-      g3.SetMarkerStyle(8) ; g3.SetMarkerSize(1) ; g3.SetMarkerColor(kBlue)
+      g3.SetMarkerStyle(8) ; g3.SetMarkerSize(1) ; g3.SetMarkerColor(kGreen+2)
+      g4 = TGraphErrors(len(pt_cut), np.array(pt_cut), np.array(res4), np.array(zeros) , np.array(res4Err))
+      g4.SetMarkerStyle(8) ; g4.SetMarkerSize(1) ; g4.SetMarkerColor(kBlack)
+      g5 = TGraphErrors(len(pt_cut), np.array(pt_cut), np.array(res5), np.array(zeros) , np.array(res5Err))
+      g5.SetMarkerStyle(8) ; g5.SetMarkerSize(1) ; g5.SetMarkerColor(7)
+      g6 = TGraphErrors(len(pt_cut), np.array(pt_cut), np.array(res6), np.array(zeros) , np.array(res6Err))
+      g6.SetMarkerStyle(8) ; g6.SetMarkerSize(1) ; g6.SetMarkerColor(40)
 
-      mg = TMultiGraph() ; mg.Add(g1) ; mg.Add(g2) ; mg.Add(g3) ; mg.Draw('ap')
+      mg = TMultiGraph() ; mg.Add(g1) ; mg.Add(g2) ; mg.Add(g3) ; mg.Add(g4) ; mg.Add(g5) ; mg.Add(g6) ; mg.Draw('ap')
       mg.GetXaxis().SetTitle('p_{T}^{GEN}')
       mg.GetYaxis().SetTitle('#sigma ((p_{T}^{GEN} - p_{T}^{L1}) / p_{T}^{GEN})')
 
