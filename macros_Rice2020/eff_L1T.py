@@ -19,8 +19,8 @@ from ROOT import gROOT
 #isRun2 = True ; isRun2RPC = False
 #isRun3 = False ; isRun3QSBit = False ; isRun3QSBitESBit = True ; isRun3QSBitESBitSlopes = True
 
-efficiencies=True ; EffVsPt=False ; EffVsEta=True ; eta_slices=False ; single_pt=True
-resolutions=False ; res2D=False ; res1D=True ; res1D_diffOverGen=False ; res1D_invDiffOverInvGen=False ; res1DvsPt=True ; res1DvsEta=False
+efficiencies=False ; EffVsPt=False ; EffVsEta=True ; eta_slices=False ; single_pt=False
+resolutions=True ; res2D=False ; res1D=True ; res1D_diffOverGen=False ; res1D_invDiffOverInvGen=False ; res1DvsPt=True ; res1DvsEta=False
 
 if single_pt==True:
   pt_cut = [22] ; pt_str = ["22"]
@@ -95,7 +95,7 @@ if efficiencies==True:
 
       c1 = TCanvas("c1")
 
-      if EffVsPt == True:
+      if EffVsPt:
 
 	#Run2 and Run3 BDT efficiency vs Pt
 	evt_tree1.Draw("GEN_pt>>h_denom1(50,1.,50.)", "abs(GEN_eta)>"+str(eta_min[k])+" && abs(GEN_eta)<"+str(eta_max[k]))
@@ -185,7 +185,7 @@ if efficiencies==True:
 	c1.Close()
 
 
-    if EffVsEta == True:
+    if EffVsEta:
     
       #Run2 and Run3 BDT efficiency vs Eta
       evt_tree1.Draw("GEN_eta>>h_denom1(64,-3.,3.)", "GEN_pt>"+str(pt_cut[l]))
@@ -270,11 +270,11 @@ if efficiencies==True:
       c1.Close()
 
 
-if resolutions==True:
+if resolutions:
 
-  if res1D==True:
+  if res1D:
 
-    if res1D_diffOverGen==True:
+    if res1D_diffOverGen:
 
       lat_scale = [270e3, 220e3, 171e3, 140e3, 120e3, 100e3, 79e3, 74e3, 65e3, 57e3]
       lat_scale_diff = [4e4, 4e4, 3e4, 2.5e4, 2e4, 2e4, 1.5e4, 1.2e4, 1e4, 1e4]
@@ -309,7 +309,7 @@ if resolutions==True:
 	raw_input("Enter")
 	c1.Close()
 
-    if res1D_invDiffOverInvGen==True:
+    if res1D_invDiffOverInvGen:
 
       for l in range(len(pt_cut)):
 
@@ -343,7 +343,7 @@ if resolutions==True:
 	raw_input("Enter")
 	c1.Close()
 
-    if res1DvsPt==True:
+    if res1DvsPt:
 
       ## ============== Inverse Pt Diff Over Inverse GEN ================
 
@@ -446,7 +446,7 @@ if resolutions==True:
       raw_input("Enter")
       c1.Close()
       
-  if res1DvsEta==True:
+  if res1DvsEta:
 
     eta_min1 = [-2.4, -2.2, -2.0, -1.8, -1.6, -1.4] ; eta_min2 = [1.2, 1.4, 1.6, 1.8, 2.0, 2.2]
     eta_max1 = [-2.2, -2.0, -1.8, -1.6, -1.4, -1.2] ; eta_max2 = [1.4, 1.6, 1.8, 2.0, 2.2, 2.4]
@@ -568,7 +568,7 @@ if resolutions==True:
       c1.Close()
   
 
-  if res2D==True:
+  if res2D:
 
     c1 = TCanvas("c1")
     line = TLine(0, 0, 5.7, 5.7) ; line.SetLineColor(kRed) ; line.SetLineStyle(7)
