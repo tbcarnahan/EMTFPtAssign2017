@@ -331,7 +331,6 @@ if resolutions==True:
 	la3 = TLatex() ; la3.SetTextFont(22) ; la3.SetTextColor(kBlack) ; la3.SetTextSize(0.031) ; la3.SetTextAlign(10)
 	la3.DrawLatex( 6.5, lat_scale[l]-2*lat_scale_diff[l], "Mode 15, p_{T}^{L1} > "+str(int(pt_cut[l]))+" GeV")
 	
-
 	leg = TLegend(0.62, 0.65, 0.81, 0.87) ; leg.AddEntry(htemp, "Run-2 BDT") ; leg.AddEntry(htemp2, "Run-3 BDT") ; leg.SetBorderSize(0) ; leg.Draw("same")
 	
 	htemp = gPad.GetPrimitive("htemp")
@@ -353,13 +352,6 @@ if resolutions==True:
       zeros=[]
       
       for l in range(len(pt_cut)):
-
-	#for k in range(len(evt_tree)):
-	c1 = TCanvas("c1")
-	evt_tree1.Draw("((1./GEN_pt) - (1./(2**(BDTG_AWB_Sq))))/(1./GEN_pt)>>htemp(64,-20.,20.)", "(2**(BDTG_AWB_Sq))>"+str(pt_cut[l]))
-	htemp = gPad.GetPrimitive("htemp") ; htemp.Draw()
-	res.append(htemp.GetRMS()) ; resErr.append(htemp.GetRMSError())
-	c1.Close()
 
 	#evt_tree2.Draw("(((1./GEN_pt) - (1./(1.2 * (2**(BDTG_AWB_Sq)))))/(1 - (0.004 * (2**(BDTG_AWB_Sq)))))/(1./GEN_pt)>>htemp(64,-20.,20.)", "GEN_pt>"+str(pt_cut[l]))
 	evt_tree2.Draw("((1./GEN_pt) - (1./(2**(BDTG_AWB_Sq))))/(1./GEN_pt)>>htemp(64,-20.,20.)", "(2**(BDTG_AWB_Sq))>"+str(pt_cut[l]))
