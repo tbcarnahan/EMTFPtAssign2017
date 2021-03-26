@@ -485,11 +485,6 @@ void PtRegressionRun3Prep(TString user = "",
         isTEST = false;
         NonZBEvt += 1;
       }
-      // else{
-      //   isZB = true;
-      //   isTEST = true;
-      //   ZBEvt += 1;
-      // }
 
       in_chain->GetEntry(jEvt);
 
@@ -497,24 +492,6 @@ void PtRegressionRun3Prep(TString user = "",
       UInt_t nHits  = I("nHits");//hit_* branches are unpacked hits
       UInt_t nTrks  = I("nTracks");//trk_* branches are EMTF tracks
       UInt_t nSegs  = I("nSegs");//csc segments number
-
-      /*
-        if ( (NonZBEvt % REPORT_EVT) == 0 || (ZBEvt > 0 && (ZBEvt % REPORT_EVT) == 0 ) )
-        std::cout << "Looking at Non-ZB event " << NonZBEvt << "; ZB event " << ZBEvt << std::endl;
-      */
-
-      // commented out 2019-10-10
-      // //============================================
-      // //EMTF biased events can't be used for training or test
-      // //============================================
-      // if (!isZB){
-      //   if( I("nRecoMuonsTrig")<2 && I("nRecoMuonsTrigCen")==0 ) {
-      //     //isTEST = true;
-      //     continue;
-      //   }//end remove bias
-      // }//end if
-
-      if(verbose) std::cout << "End removing bias ... "<< std::endl;
 
       //===================
       //Loop over EMTF trks
@@ -539,54 +516,12 @@ void PtRegressionRun3Prep(TString user = "",
         int gmt_pt = 999;
         Bool_t mu_train = false;  // tag muon for training
 
-        // commented out 2019-10-10
-        // //Get RECO mu(i.e. GEN mu) with unique match from nonZB events
-        // if( !isZB && emtf_unique_match == 1 ){
-
-        //   if (emtf_unique_iMu >= nMuons) continue;//Restrict number iMu index in the range of nMuons
-
         // index of emtf_unique_iMu is 0 or 1
         mu_train = true;
         mu_pt =  F("mu_pt", emtf_unique_iMu);
         mu_eta = F("mu_eta", emtf_unique_iMu);
         mu_phi = F("mu_phi", emtf_unique_iMu);
         mu_charge = I("mu_charge", emtf_unique_iMu);
-        // }
-
-        // commented out 2019-10-10
-        //===============================================
-        //Option1: Discard nonZB trk without unique match
-        //===============================================
-        // if( !isZB && emtf_unique_match != 1 ) continue;
-
-        // commented out 2019-10-10
-        /*
-        //===================================================
-        //Option2: Assign 1GeV to RECO mu if no unique match
-        //===================================================
-        if( !isZB && emtf_unique_match != 1 ) {
-        mu_train = true;
-        mu_pt = 1.0;
-        mu_eta = emtf_eta;
-        mu_phi = emtf_phi;
-        mu_charge = emtf_charge;
-        }
-        */
-
-        /*
-        //===========================================================
-        //Option3: Assign uGMT pT(eta) to RECO mu if no unique match
-        //===========================================================
-        //if( !isZB && emtf_unique_match != 1 ) {}
-        if( !isZB && (emtf_dR_match_nReco+emtf_dR_match_nRecoSoft == 0) ) {//reject tracks without any match
-        mu_train = true;
-        mu_eta = emtf_eta_int*0.010875;
-        mu_phi = emtf_phi;
-        mu_charge = emtf_charge;
-        gmt_pt = 10 - (abs(emtf_eta_int) / 32);
-        mu_pt = (gmt_pt <= 0) ?  0 : (gmt_pt-1) * 0.5; // Decode integer pT (result is in 0.5 GeV step)
-        }
-        */
 
         if(verbose) std::cout << "RECO kinematics ... "<< std::endl;
 
@@ -815,12 +750,12 @@ void PtRegressionRun3Prep(TString user = "",
         if (ring1 == 3) FR1 = 0;                   // In ME1/3 chambers are non-overlapping
 
 
-	CalcBends( bend1, bend2, bend3, bend4,
-	           pat1, pat2, pat3, pat4, pat1_run3, pat2_run3, pat3_run3, pat4_run3,
-         	   dPhSign, endcap, mode, BIT_COMP, isRun2 );
+        CalcBends(bend1, bend2, bend3, bend4,
+                  pat1, pat2, pat3, pat4,
+                  pat1_run3, pat2_run3, pat3_run3, pat4_run3,
+                  dPhSign, endcap, mode, BIT_COMP, isRun2 );
 
-
-	if (useRPC) {
+        if (useRPC) {
           RPC1 = (i1CSC >= 0 ? ( I("hit_isRPC",i1CSC ) == 1 ? 1 : 0) : -99);
           RPC2 = (i2 >= 0 ? ( I("hit_isRPC", i2 ) == 1 ? 1 : 0) : -99);
           RPC3 = (i3 >= 0 ? ( I("hit_isRPC", i3 ) == 1 ? 1 : 0) : -99);
