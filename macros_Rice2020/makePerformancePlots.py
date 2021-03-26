@@ -112,16 +112,16 @@ def truncate(number, digits):
   return float(math.trunc(stepper * number) / stepper)
 
 def gen_pt_cut(pt_min):
-  return "GEN_pt >= {0}".format(pt_min)
+  return TString("GEN_pt >= {0}".format(pt_min))
 
 def gen_eta_cut(eta_min, eta_max):
-  return "abs(GEN_eta) >= {0} && abs(GEN_eta) <= {1}".format(eta_min, eta_max)
+  return TString("abs(GEN_eta) >= {0} && abs(GEN_eta) <= {1}".format(eta_min, eta_max))
 
 def bdt_pt_cut(pt_min):
-  return "pow(2, BDTG_AWB_Sq) >= {}".format(pt_min)
+  return TString("pow(2, BDTG_AWB_Sq) >= {}".format(pt_min))
 
 def bdt_pt_scaled_cut(pt_min):
-  return "pow(2, BDTG_AWB_Sq) >= {}".format(pt_min)
+  return TString("pow(2, BDTG_AWB_Sq) >= {}".format(pt_min))
   #((1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq)))))
 
 def makePlots(canvas, plotTitle):
@@ -200,8 +200,8 @@ if options.efficiencies:
       la1.DrawLatex( -0.6, 0.65, "p_{T}^{GEN}, p_{T}^{L1} > "+str(pt_cut[l])+" GeV")
 
       leg = TLegend(0.40, 0.26, 0.67, 0.53) ;
-        for ee in range(0,6):
-          leg.AddEntry(effs[ee], legendEntries[ee])
+      for ee in range(0,6):
+        leg.AddEntry(effs[ee], legendEntries[ee])
       leg.SetBorderSize(0)
       leg.Draw("same")
 
