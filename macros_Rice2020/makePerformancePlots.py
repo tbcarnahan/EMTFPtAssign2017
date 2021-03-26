@@ -8,6 +8,7 @@ from array import *
 from termcolor import colored
 from ROOT import gROOT
 from optparse import OptionParser,OptionGroup
+from Helpers import *
 
 ## Configuration settings
 print '------> Setting Environment'
@@ -96,6 +97,15 @@ evt_tree4.Add(file_name4)
 evt_tree5.Add(file_name5)
 evt_tree6.Add(file_name6)
 
+evt_trees = [
+  evt_tree1,
+  evt_tree2,
+  evt_tree3,
+  evt_tree4,
+  evt_tree5,
+  evt_tree6
+]
+
 ## ================ Helper functions ======================
 def truncate(number, digits):
   stepper = 10.0 ** digits
@@ -119,15 +129,13 @@ def makePlots(canvas, plotTitle):
   c1.SaveAs(plotDir + plotTitle + ".pdf")
   c1.SaveAs(plotDir + plotTitle + ".C")
 
-''' (Work in progress)
-evt_tree = [] ; files = []
-if isRun2: evt_tree.append(evt_tree1)
-if isRun2RPC: evt_tree.append(evt_tree2)
-if isRun3: evt_tree.append(evt_tree3)
-if isRun3QSBit: evt_tree.append(evt_tree4)
-if isRun3QSBitESBit: evt_tree.append(evt_tree5)
-if isRun3QSBitESBitSlopes: evt_tree.append(evt_tree6)
-'''
+markerColors = [kBlue, kRed, kGreen+2, kBlack, 7, 40]
+lineColors = [kBlue, kRed, kGreen+2, kBlack, 7, 40]
+markerStyles = [8,8,8,8,8,8]
+drawOptions = ["AP", "same", "same", "same", "same", "same"]
+legendEntries = ["Run-2 BDT", "Run-2 BDT RPC", "Run-3 BDT",
+                 "Run-3 BDT w/ QSBit", "Run-3 BDT w/ QSBit ESBit", "Run-3 BDT w/ QSBit ESBit Slopes"]
+
 
 ## ================ Plotting script ======================
 if options.efficiencies:
@@ -140,65 +148,20 @@ if options.efficiencies:
       if options.EffVsPt:
 
 	#Run2 and Run3 BDT efficiency vs Pt
+        effs = []
+        for ee in range(0,6):
+          eff = draw_eff(evt_trees[ee], "(50,1.,50.)", "GEN_pt", gen_eta_cut(eta_min[k], eta_max[k]), bdt_pt_cut(pt_cut[l]))
+          eff.SetMarkerColor(markerColors[ee])
+          eff.SetLineColor(lineColors[ee])
+          eff.SetMarkerStyle(markerStyles[ee])
+          eff.Draw(drawOptions[ee])
+          effs.append(eff)
 
-	evt_tree1.Draw("GEN_pt>>h_denom1(50,1.,50.)", gen_eta_cut(eta_min[k], eta_max[k]))
-	h_denom1=gROOT.FindObject("h_denom1")
-	c1.Update()
-	evt_tree1.Draw("GEN_pt>>h_numer1(50,1.,50.)", gen_eta_cut(eta_min[k], eta_max[k])+ "&&" + bdt_pt_cut(pt_cut[l]))
-	h_numer1=gROOT.FindObject("h_numer1")
-	c1.Update()
 
-	evt_tree2.Draw("GEN_pt>>h_denom2(50,1.,50.)", gen_eta_cut(eta_min[k], eta_max[k]))
-	h_denom2=gROOT.FindObject("h_denom2")
-	c1.Update()
-	evt_tree2.Draw("GEN_pt>>h_numer2(50,1.,50.)", gen_eta_cut(eta_min[k], eta_max[k])+" && " + bdt_pt_cut(pt_cut[l]))
-	h_numer2=gROOT.FindObject("h_numer2")
-	c1.Update()
-
-	evt_tree3.Draw("GEN_pt>>h_denom3(50,1.,50.)", gen_eta_cut(eta_min[k], eta_max[k]))
-	h_denom3=gROOT.FindObject("h_denom3")
-	c1.Update()
-	evt_tree3.Draw("GEN_pt>>h_numer3(50,1.,50.)", gen_eta_cut(eta_min[k], eta_max[k])+" && " + bdt_pt_cut(pt_cut[l]))
-	h_numer3=gROOT.FindObject("h_numer3")
-	c1.Update()
-
-	evt_tree4.Draw("GEN_pt>>h_denom4(50,1.,50.)", gen_eta_cut(eta_min[k], eta_max[k]))
-	h_denom4=gROOT.FindObject("h_denom4")
-	c1.Update()
-	evt_tree4.Draw("GEN_pt>>h_numer4(50,1.,50.)", gen_eta_cut(eta_min[k], eta_max[k])+" && " + bdt_pt_cut(pt_cut[l]))
-	h_numer4=gROOT.FindObject("h_numer4")
-	c1.Update()
-
-	evt_tree5.Draw("GEN_pt>>h_denom5(50,1.,50.)", gen_eta_cut(eta_min[k], eta_max[k]))
-	h_denom5=gROOT.FindObject("h_denom5")
-	c1.Update()
-	evt_tree5.Draw("GEN_pt>>h_numer5(50,1.,50.)", gen_eta_cut(eta_min[k], eta_max[k])+" && " + bdt_pt_cut(pt_cut[l]))
-	h_numer5=gROOT.FindObject("h_numer5")
-	c1.Update()
-
-	evt_tree6.Draw("GEN_pt>>h_denom6(50,1.,50.)", gen_eta_cut(eta_min[k], eta_max[k]))
-	h_denom6=gROOT.FindObject("h_denom6")
-	c1.Update()
-	evt_tree6.Draw("GEN_pt>>h_numer6(50,1.,50.)", gen_eta_cut(eta_min[k], eta_max[k])+" && " + bdt_pt_cut(pt_cut[l]))
-	h_numer6=gROOT.FindObject("h_numer6")
-	c1.Update()
-
-	eff1 = TEfficiency(h_numer1, h_denom1) ; eff2 = TEfficiency(h_numer2, h_denom2) ; eff3 = TEfficiency(h_numer3, h_denom3)
-	eff4 = TEfficiency(h_numer4, h_denom4) ; eff5 = TEfficiency(h_numer5, h_denom5) ; eff6 = TEfficiency(h_numer6, h_denom6)
 	line = TLine(0, 0.5, 50, 0.5)
 	line2 = TLine(pt_cut[l], 0., pt_cut[l], 1.1)
 	line.SetLineStyle(7) ; line2.SetLineStyle(7)
-
-	eff1.SetMarkerColor(kBlue) ; eff1.SetLineColor(kBlue) ; eff1.SetMarkerStyle(8)
-	eff2.SetMarkerColor(kRed) ; eff2.SetLineColor(kRed) ; eff2.SetMarkerStyle(8)
-	eff3.SetMarkerColor(kGreen+2) ; eff3.SetLineColor(kGreen+2) ; eff3.SetMarkerStyle(8)
-	eff4.SetMarkerColor(kBlack) ; eff4.SetLineColor(kBlack) ; eff4.SetMarkerStyle(8)
-	eff5.SetMarkerColor(7) ; eff5.SetLineColor(7) ; eff5.SetMarkerStyle(8)
-	eff6.SetMarkerColor(40) ; eff6.SetLineColor(40) ; eff6.SetMarkerStyle(8)
-
-	eff1.Draw("AP") ; eff2.Draw("same") ; eff3.Draw("same")
-	eff4.Draw("same") ; eff5.Draw("same") ; eff6.Draw("same")
-	line.Draw("same") ; line2.Draw("same")
+        line.Draw("same") ; line2.Draw("same")
 
 	la1 = TLatex() ; la1.SetTextFont(22) ; la1.SetTextColor(1) ; la1.SetTextSize(0.035) ; la1.SetTextAlign(10)
 	la1.DrawLatex( 35., 0.2, "p_{T}^{L1} > "+str(pt_cut[l])+" GeV")
@@ -206,9 +169,10 @@ if options.efficiencies:
 	la2.DrawLatex( 35., 0.1, str(eta_min[k])+" < |#eta^{GEN}| < "+str(eta_max[k]))
 
 	leg = TLegend(0.6, 0.33, 0.9, 0.63)
-	leg.AddEntry(eff1, "Run-2 BDT") ; leg.AddEntry(eff2, "Run-2 BDT RPC") ; leg.AddEntry(eff3, "Run-3 BDT")
-	leg.AddEntry(eff4, "Run-3 BDT w/ QSBit") ; leg.AddEntry(eff5, "Run-3 BDT w/ QSBit ESBit") ; leg.AddEntry(eff6, "Run-3 BDT w/ QSBit ESBit Slopes")
-	leg.SetBorderSize(0) ; leg.Draw("same")
+        for ee in range(0,6):
+          leg.AddEntry(effs[ee], legendEntries[ee])
+	leg.SetBorderSize(0)
+        leg.Draw("same")
 
 	gPad.Update()
 	eff1.SetTitle(" ; p_{T}^{GEN} (GeV) ; Trigger Efficiency")
@@ -221,69 +185,25 @@ if options.efficiencies:
     if options.EffVsEta:
 
       #Run2 and Run3 BDT efficiency vs Eta
-      evt_tree1.Draw("GEN_eta>>h_denom1(64,-3.,3.)", gen_pt_cut(pt_cut[l]))
-      h_denom1=gROOT.FindObject("h_denom1")
-      c1.Update()
-      evt_tree1.Draw("GEN_eta>>h_numer1(64,-3.,3.)", gen_pt_cut(pt_cut[l])+" && " + bdt_pt_cut(pt_cut[l]))
-      h_numer1=gROOT.FindObject("h_numer1")
-      c1.Update()
-
-      evt_tree2.Draw("GEN_eta>>h_denom2(64,-3.,3.)", gen_pt_cut(pt_cut[l]))
-      h_denom2=gROOT.FindObject("h_denom2")
-      c1.Update()
-      evt_tree2.Draw("GEN_eta>>h_numer2(64,-3.,3.)", gen_pt_cut(pt_cut[l])+" && " + bdt_pt_cut(pt_cut[l]))
-      h_numer2=gROOT.FindObject("h_numer2")
-      c1.Update()
-
-      evt_tree3.Draw("GEN_eta>>h_denom3(64,-3.,3.)", gen_pt_cut(pt_cut[l]))
-      h_denom3=gROOT.FindObject("h_denom3")
-      c1.Update()
-      evt_tree3.Draw("GEN_eta>>h_numer3(64,-3.,3.)", gen_pt_cut(pt_cut[l])+" && " + bdt_pt_cut(pt_cut[l]))
-      h_numer3=gROOT.FindObject("h_numer3")
-      c1.Update()
-
-      evt_tree4.Draw("GEN_eta>>h_denom4(64,-3.,3.)", gen_pt_cut(pt_cut[l]))
-      h_denom4=gROOT.FindObject("h_denom4")
-      c1.Update()
-      evt_tree4.Draw("GEN_eta>>h_numer4(64,-3.,3.)", gen_pt_cut(pt_cut[l])+" && " + bdt_pt_cut(pt_cut[l]))
-      h_numer4=gROOT.FindObject("h_numer4")
-      c1.Update()
-
-      evt_tree5.Draw("GEN_eta>>h_denom5(64,-3.,3.)", gen_pt_cut(pt_cut[l]))
-      h_denom5=gROOT.FindObject("h_denom5")
-      c1.Update()
-      evt_tree5.Draw("GEN_eta>>h_numer5(64,-3.,3.)", gen_pt_cut(pt_cut[l])+" && " + bdt_pt_cut(pt_cut[l]))
-      h_numer5=gROOT.FindObject("h_numer5")
-      c1.Update()
-
-      evt_tree6.Draw("GEN_eta>>h_denom6(64,-3.,3.)", gen_pt_cut(pt_cut[l]))
-      h_denom6=gROOT.FindObject("h_denom6")
-      c1.Update()
-      evt_tree6.Draw("GEN_eta>>h_numer6(64,-3.,3.)", gen_pt_cut(pt_cut[l])+" && " + bdt_pt_cut(pt_cut[l]))
-      h_numer6=gROOT.FindObject("h_numer6")
-      c1.Update()
-
-      eff1 = TEfficiency(h_numer1, h_denom1) ; eff2 = TEfficiency(h_numer2, h_denom2) ; eff3 = TEfficiency(h_numer3, h_denom3)
-      eff4 = TEfficiency(h_numer4, h_denom4) ; eff5 = TEfficiency(h_numer5, h_denom5) ; eff6 = TEfficiency(h_numer6, h_denom6)
-
-      eff1.SetMarkerColor(kBlue) ; eff1.SetLineColor(kBlue) ; eff1.SetMarkerStyle(8)
-      eff2.SetMarkerColor(kRed) ; eff2.SetLineColor(kRed) ; eff2.SetMarkerStyle(8)
-      eff3.SetMarkerColor(kGreen+2) ; eff3.SetLineColor(kGreen+2) ; eff3.SetMarkerStyle(8)
-      eff4.SetMarkerColor(kBlack) ; eff4.SetLineColor(kBlack) ; eff4.SetMarkerStyle(8)
-      eff5.SetMarkerColor(7) ; eff5.SetLineColor(7) ; eff5.SetMarkerStyle(8)
-      eff6.SetMarkerColor(40) ; eff6.SetLineColor(40) ; eff6.SetMarkerStyle(8)
-
-      eff1.Draw("AP") ; eff2.Draw("same") ; eff3.Draw("same")
-      eff4.Draw("same") ; eff5.Draw("same") ; eff6.Draw("same")
+      binning = "(64,-3.,3.)"
+      effs = []
+      for ee in range(0,6):
+        eff = draw_eff(evt_trees[ee], binning, "GEN_eta", gen_pt_cut(pt_cut[l]), bdt_pt_cut(pt_cut[l]))
+        eff.SetMarkerColor(markerColors[ee])
+        eff.SetLineColor(lineColors[ee])
+        eff.SetMarkerStyle(markerStyles[ee])
+        eff.Draw(drawOptions[ee])
+        effs.append(eff)
 
       la1 = TLatex() ; la1.SetTextFont(22) ; la1.SetTextColor(1) ; la1.SetTextSize(0.033) ; la1.SetTextAlign(10)
       #Note that the position of the label in the following line is hard-coded onto the axis (easier way to do this?)
       la1.DrawLatex( -0.6, 0.65, "p_{T}^{GEN}, p_{T}^{L1} > "+str(pt_cut[l])+" GeV")
 
       leg = TLegend(0.40, 0.26, 0.67, 0.53) ;
-      leg.AddEntry(eff1, "Run-2 BDT") ; leg.AddEntry(eff2, "Run-2 BDT RPC") ; leg.AddEntry(eff3, "Run-3 BDT")
-      leg.AddEntry(eff4, "Run-3 BDT w/ QSBit") ; leg.AddEntry(eff5, "Run-3 BDT w/ QSBit ESBit") ; leg.AddEntry(eff6, "Run-3 BDT w/ QSBit ESBit Slopes")
-      leg.SetBorderSize(0) ; leg.Draw("same")
+        for ee in range(0,6):
+          leg.AddEntry(effs[ee], legendEntries[ee])
+      leg.SetBorderSize(0)
+      leg.Draw("same")
 
       gPad.Update()
       eff1.SetTitle(" ; #eta^{GEN} ; Trigger Efficiency")
