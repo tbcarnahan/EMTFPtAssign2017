@@ -144,9 +144,9 @@ void PtRegressionRun3Prep(TString user = "",
   TString RPC_str = (useRPC  ? "RPC"      : "noRPC");
   TString GEM_str = (useGEM  ? "GEM"      : "noGEM");
 
-  out_file_str.Form( "%s/%s_MODE_%d_%s_%s_%s.root",
+  out_file_str.Form( "%s/%s_MODE_%d_%s.root",
                      OUT_DIR_NAME.Data(), OUT_FILE_NAME.Data(),
-                     MODE, bit_str.Data(), RPC_str.Data(), GEM_str.Data() );
+                     MODE, bit_str.Data());
 
   TFile* out_file = TFile::Open( out_file_str, "RECREATE" );
 
@@ -233,9 +233,9 @@ void PtRegressionRun3Prep(TString user = "",
     for (unsigned iWgt = 0; iWgt < EVT_WGTS.size(); iWgt++) {
 
       TString factName;  // "Targ" and "Wgt" components not arbitrary - correspond to specific options later on
-      factName.Form( "f_MODE_%d_%sTarg_%sWgt_%s_%s_%s",
+      factName.Form( "f_MODE_%d_%sTarg_%sWgt_%s",
                      MODE, TARG_VARS.at(iTarg).Data(), EVT_WGTS.at(iWgt).Data(),
-                     bit_str.Data(), RPC_str.Data(), GEM_str.Data() );
+                     bit_str.Data());
 
       // 4-station tracks
       if        (MODE == 15) {
