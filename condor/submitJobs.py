@@ -80,7 +80,11 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--dryRun', action='store_true',default = False, help='write submission files only')
     parser.add_argument('--interactiveRun', action='store_true',default = False)
+    parser.add_argument("--addDateTime", action="store", default = True)
     ## expert options
+    parser.add_argument('--trainVars',nargs='+', help='<Required> Set training variables', required=True)
+    parser.add_argument('--targetVar', action="store", help='Set target variable', default="log2(pt)")
+
     parser.add_argument("--isRun2", action="store_true", default = False)
     parser.add_argument("--isRun3", action="store_true", default = False)
     parser.add_argument("--useRPC", action="store_true", default = False)
@@ -90,12 +94,20 @@ if __name__ == '__main__':
     parser.add_argument("--useGEM", action="store_true", default = False)
     parser.add_argument("--useL1Pt", action="store_true", default = False)
     parser.add_argument("--useBitComp", action="store_true", default = False)
-    parser.add_argument("--addDateTime", action="store", default = True)
+    parser.add_argument("--emtfMode", action="store", default = 15)
+    parser.add_argument("--minEta", action="store", default = 1.25)
+    parser.add_argument("--maxEta", action="store", default = 2.4)
+    parser.add_argument("--minPt", action="store", default = 1)
+    parser.add_argument("--maxPt", action="store", default = 1000)
+    parser.add_argument("--minPtTrain", action="store", default = 1)
+    parser.add_argument("--maxPtTrain", action="store", default = 2560)
     args = parser.parse_args()
 
-    ## add options for min eta, max eta
+
+    print("Chosen training variables", args.trainVars)
+    print("Chosen target variables", args.targetVar)
+
     ## add options for training mode
-    ## add option for emtf mode
     ## add options for each variable
 
     # local variables

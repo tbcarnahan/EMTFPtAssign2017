@@ -168,7 +168,7 @@ void PtRegressionRun3Prep(TString user = "",
   TString ZB_file_name;
 
   for (int i = 0; i < USESingleMu; i++) {
-    SM_file_name.Form( "%s", EOS_DIR_NAME.Data() ); //, in_dir.Data(), SingleMu_files[i].Data() );
+    SM_file_name.Form( "%s%s", EOS_DIR_NAME.Data(), SingleMu_files[i].Data() );
     std::cout << "Adding file " << SM_file_name.Data() << std::endl;
     SM_in_file_names.push_back(SM_file_name.Data());
   }
@@ -281,7 +281,7 @@ void PtRegressionRun3Prep(TString user = "",
         // BASELINE mode  5 - dPhi24, theta, FR2/4, dTh24, bend2/4, RPC 2/4
         factories.push_back( std::make_tuple( nullF, nullL, factName, var_names, var_vals, 0xa800aa81) );
       } else if (MODE ==  3) {
-        // BASELINE mode  3 - dPhi34, theta, FR3/4, dTh12, bend3/4, RPC 3/4
+        // BASELINE mode  3 - dPhi34, theta, FR3/4, dTh34, bend3/4, RPC 3/4
         factories.push_back( std::make_tuple( nullF, nullL, factName, var_names, var_vals, 0xc100cc11) );
       } else if (MODE == 0) {
         // Null track, for testing EMTF performance
