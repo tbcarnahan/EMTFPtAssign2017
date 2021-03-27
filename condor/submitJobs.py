@@ -156,10 +156,6 @@ if __name__ == '__main__':
     ## check if slopes are used
     useSlopes = any(item in trainVariables for item in ['slope_1', 'slope_2', 'slope_3', 'slope_4'])
     useBend = any(item in trainVariables for item in ['bend_1', 'bend_2', 'bend_3', 'bend_4'])
-    if not useSlopes and (useQSBit or useESBit):
-        print("Warning: disabling --useQSBit and --useESBit because no slopes in training variables.")
-        useQSBit = False
-        useESBit = False
 
     ## cannot mix slope and bend
     if useSlopes and useBend:
