@@ -94,6 +94,7 @@ if __name__ == '__main__':
 
     ## expert options
     parser = argparse.ArgumentParser()
+    parser.add_argument('--cleanTarBalls', action='store_true',default = False, help='Remove all tarballs.')
     parser.add_argument('--dryRun', action='store_true',default = False, help='write submission files only')
     parser.add_argument('--interactiveRun', action='store_true', default = False)
     parser.add_argument("--addDateTime", action="store", default = True)
@@ -112,6 +113,19 @@ if __name__ == '__main__':
     parser.add_argument("--minPtTrain", action="store", default = 1.)
     parser.add_argument("--maxPtTrain", action="store", default = 256.)
     args = parser.parse_args()
+
+    ## CMSSW version
+    CMSSW = subprocess.Popen("echo $CMSSW_VERSION", shell=True, stdout=subprocess.PIPE).stdout.read().strip('\n')
+    CMSSW_DIR = subprocess.Popen("echo $CMSSW_BASE", shell=True, stdout=subprocess.PIPE).stdout.read().strip('\n')
+    SCRAM_ARCH = subprocess.Popen("echo $SCRAM_ARCH", shell=True, stdout=subprocess.PIPE).stdout.read().strip('\n')
+    USER = getpass.getuser()
+    currentDateTime = datetime.now().strftime("%Y%m%d_%H%M%S")
+    tarball = "EMTFPtAssign2017Condor_{}.tar.gz".format(currentDateTime)
+
+    if args.cleanTarBalls:
+        print("Info: removing tarballs matching EMTFPtAssign2017Condor*.tar.gz")
+        exec_me('rm {cmssw}/src/EMTFPtAssign2017/condor/EMTFPtAssign2017Condor*.tar.gz'.format(cmssw=CMSSW_DIR), args.dryRun)
+        exit(1)
 
     ## get the training variables
     trainVariables = args.trainVars
@@ -166,13 +180,6 @@ if __name__ == '__main__':
     if dryRun and interactiveRun:
         interactiveRun = False
 
-    ## CMSSW version
-    CMSSW = subprocess.Popen("echo $CMSSW_VERSION", shell=True, stdout=subprocess.PIPE).stdout.read().strip('\n')
-    SCRAM_ARCH = subprocess.Popen("echo $SCRAM_ARCH", shell=True, stdout=subprocess.PIPE).stdout.read().strip('\n')
-    USER = getpass.getuser()
-    currentDateTime = datetime.now().strftime("%Y%m%d_%H%M%S")
-    tarball = "EMTFPtAssign2017Condor_{}.tar.gz".format(currentDateTime)
-
     ## training command
     def runCommand(localdir = './'):
         command  = 'root -l -b -q "{localdir}PtRegressionRun3Prep.C({user}, {method}, {bemtfMode}, {minPt}, {maxPt}, {minPtTrain}, {maxPtTrain}, {minEta}, {maxEta}, {btrainVarsHex}, {bisRun2}, {buseQSBit}, {buseESBit}, {buseBitComp})"'.format(
@@ -198,7 +205,6 @@ if __name__ == '__main__':
 
     ## do interactive run?
     if interactiveRun:
-        CMSSW_DIR = subprocess.Popen("echo $CMSSW_BASE", shell=True, stdout=subprocess.PIPE).stdout.read().strip('\n')
         WORK_DIR = CMSSW_DIR + "/src/EMTFPtAssign2017/"
         command = runCommand('../')
         print(command)
@@ -224,7 +230,6 @@ if __name__ == '__main__':
 
     ## 1: make a tarball of the directory
     print("Info: Making tarball")
-    CMSSW_DIR = subprocess.Popen("echo $CMSSW_BASE", shell=True, stdout=subprocess.PIPE).stdout.read().strip('\n')
     exec_me('''tar --exclude-vcs --exclude='EMTFPtAssign2017/*md' --exclude='EMTFPtAssign2017/macros_Rice2020/*'  --exclude='EMTFPtAssign2017/condor/*' --exclude='EMTFPtAssign2017/macros/*' -C {cmssw}/src/ -czvf {tarball} EMTFPtAssign2017 '''.format(cmssw=CMSSW_DIR, tarball=tarball), dryRun)
 
     ## 2: copy the tarball to EOS (if it does not exist yet)
@@ -233,6 +238,7 @@ if __name__ == '__main__':
     if tarBallCode != 0:
         print("Info: Copying tarball")
         exec_me('xrdcp {cmssw}/src/EMTFPtAssign2017/condor/{tarball} root://cmseos.fnal.gov//store/user/{user}/'.format(cmssw=CMSSW_DIR, user=USER, tarball=tarball), dryRun)
+        exec_me('rm {cmssw}/src/EMTFPtAssign2017/condor/{tarball}'.format(cmssw=CMSSW_DIR, tarball=tarball), dryRun)
     else:
         print("Warning: Tarball {tarball} exists already on EOS LPC!".format(tarball=tarball))
 
