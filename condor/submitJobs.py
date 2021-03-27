@@ -95,7 +95,7 @@ if __name__ == '__main__':
     ## expert options
     parser = argparse.ArgumentParser()
     parser.add_argument('--dryRun', action='store_true',default = False, help='write submission files only')
-    parser.add_argument('--interactiveRun', action='store_true',default = False)
+    parser.add_argument('--interactiveRun', action='store_true',default = True)
     parser.add_argument("--addDateTime", action="store", default = True)
     parser.add_argument('--trainVars',nargs='+', help='<Required> Set training variables', required=False)
     parser.add_argument('--targetVar', action="store", help='Set target variable', default="log2(pt)")
@@ -147,8 +147,6 @@ if __name__ == '__main__':
     if useESBit:
         useQSBit = True
 
-    exit(1)
-
     ## CMSSW version
     CMSSW = subprocess.Popen("echo $CMSSW_VERSION", shell=True, stdout=subprocess.PIPE).stdout.read().strip('\n')
     SCRAM_ARCH = subprocess.Popen("echo $SCRAM_ARCH", shell=True, stdout=subprocess.PIPE).stdout.read().strip('\n')
@@ -158,10 +156,11 @@ if __name__ == '__main__':
 
     ## training command
     def runCommand(localdir = './'):
-        command  = 'root -l -b -q "{localdir}PtRegressionRun3Prep.C({user}, {method}, {btrainVarsHex}, {bisRun2}, {buseQSBit}, {buseESBit})"'.format(
+        command  = 'root -l -b -q "{localdir}PtRegressionRun3Prep.C({user}, {method}, {bemtfMode}, {btrainVarsHex}, {bisRun2}, {buseQSBit}, {buseESBit}, {buseBitComp})"'.format(
             user = '''\\\"{}\\\"'''.format(USER),
             method = '''\\\"BDTG_AWB_Sq\\\"''',
-            btrainVarsHex = int(trainVarsHex),
+            bemtfMode = int(args.emtfMode),
+            btrainVarsHex = int(trainVarsHex, 16),
             bisRun2 = int(isRun2),
             buseQSBit = int(useQSBit),
             buseESBit = int(useESBit),

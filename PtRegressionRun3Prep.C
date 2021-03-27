@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////
-///  pT Regression with 2017 data for 2018 EMTF pT assignment  ///
-///                  Wei Shi                                   ///
+///   pT Regression with Run-3 MC for 2022 EMTF pT assignment  ///
+///                   Sven Dildick                             ///
 ///  Adapted from PtRegression_Apr_2017.C                      ///
 //////////////////////////////////////////////////////////////////
 #include <cstdlib>
@@ -49,7 +49,8 @@ using namespace TMVA;
 
 void PtRegressionRun3Prep(TString user = "",
                           TString myMethodList = "",
-                          int trainVarsHex = 0,
+                          unsigned emtfMode = 15,
+                          unsigned long trainVarsSelection = 0,
                           /*
                             float min_pt = 1,
                             float max_pt = 1000,
@@ -59,7 +60,6 @@ void PtRegressionRun3Prep(TString user = "",
                             float max_pt_train = 256,
                           */
                           bool isRun2 = true,
-                          bool useGEM = false,
                           bool useOneQuartPrecision = false,
                           bool useOneEighthPrecision = false,
                           bool useBitCompression = false) {
@@ -74,10 +74,11 @@ void PtRegressionRun3Prep(TString user = "",
   if (useOneEighthPrecision)
     useOneQuartPrecision = true;
 
-
+  bool useGEM = false;
   std::cout << "Running PtRegressionRun3Prep with options:\n"
+            << " - emtfMode: " << emtfMode << "\n"
+            << " - trainVarsSelection: " << trainVarsSelection << "\n"
             << " - isRun2: " << isRun2 << "\n"
-    // << " - useRPC: " << useRPC << "\n"
             << " - useOneQuartPrecision: " << useOneQuartPrecision << "\n"
             << " - useOneEighthPrecision: " << useOneEighthPrecision << "\n"
             << " - useGEM: " << useGEM << "\n"
@@ -133,18 +134,16 @@ void PtRegressionRun3Prep(TString user = "",
   //Preparation phase
   //===================
   // Configure settings for this mode and user
-  PtRegression2018_cfg::ConfigureMode( MODE );
+  PtRegression2018_cfg::ConfigureMode( emtfMode );
   PtRegression2018_cfg::ConfigureUser( user );
 
   // Create a new root output file
   TString out_file_str;
   TString bit_str = (useBitCompression ? "bitCompr" : "noBitCompr");
-  // TString RPC_str = (useRPC  ? "RPC"      : "noRPC");
-  // TString GEM_str = (useGEM  ? "GEM"      : "noGEM");
 
   out_file_str.Form( "%s/%s_MODE_%d_%s.root",
                      OUT_DIR_NAME.Data(), OUT_FILE_NAME.Data(),
-                     MODE, bit_str.Data());
+                     emtfMode, bit_str.Data());
 
   TFile* out_file = TFile::Open( out_file_str, "RECREATE" );
 
@@ -225,18 +224,18 @@ void PtRegressionRun3Prep(TString user = "",
   // var name and value vectors, and hex bit masks for input variables.
   // Each hex bit represents four variables, e.g. 0x1 would select only the 1st variable,
   // 0xf the 1st 4, 0xff the 1st 8, 0xa the 2nd and 4th, 0xf1 the 1st and 5th-8th, etc.
-  std::vector< std::tuple<TMVA::Factory*, TMVA::DataLoader*, TString, std::vector<TString>, std::vector<Double_t>, int> > factories;
+  std::vector< std::tuple<TMVA::Factory*, TMVA::DataLoader*, TString, std::vector<TString>, std::vector<Double_t>, unsigned long>  > factories;
 
   for (unsigned iTarg = 0; iTarg < TARG_VARS.size(); iTarg++) {
     for (unsigned iWgt = 0; iWgt < EVT_WGTS.size(); iWgt++) {
 
       TString factName;  // "Targ" and "Wgt" components not arbitrary - correspond to specific options later on
       factName.Form( "f_MODE_%d_%sTarg_%sWgt_%s",
-                     MODE, TARG_VARS.at(iTarg).Data(), EVT_WGTS.at(iWgt).Data(),
+                     emtfMode, TARG_VARS.at(iTarg).Data(), EVT_WGTS.at(iWgt).Data(),
                      bit_str.Data());
 
       // the selection is now done in the Python configuration, not here!
-      factories.push_back( std::make_tuple( nullF, nullL, factName, var_names, var_vals, trainVarsHex) );
+      factories.push_back( std::make_tuple( nullF, nullL, factName, var_names, var_vals, trainVarsSelection) );
     }
   }
 
@@ -357,9 +356,10 @@ void PtRegressionRun3Prep(TString user = "",
   for (unsigned iFact = 0; iFact < factories.size(); iFact++) {
     std::cout << "\n*** Factory " << std::get<2>(factories.at(iFact)) << " variables ***" << std::endl;
 
-    std::cout << "*** Input ***" << std::endl;
+    std::cout << std::endl << "*** Input ***" << std::endl;
     for (unsigned i = 0; i < in_vars.size(); i++) {
-      if ( 0x1 & (std::get<5>(factories.at(iFact)) >> i) ) { // Hex bit mask for in_vars
+      // Hex bit mask for in_vars
+      if ( 0x1 & (std::get<5>(factories.at(iFact)) >> i) ) {
         MVA_var v = in_vars.at(i);
         std::cout << v.name << std::endl;
         std::get<1>(factories.at(iFact))->AddVariable( v.name, v.descr, v.unit, v.type ); // Add var to dataloader
@@ -369,7 +369,7 @@ void PtRegressionRun3Prep(TString user = "",
     }
 
     TString targ_str = ""; // Save name of target variable
-    std::cout << "*** Target ***" << std::endl;
+    std::cout << std::endl << "*** Target ***" << std::endl;
     for (unsigned i = 0; i < targ_vars.size(); i++) {
       MVA_var v = targ_vars.at(i);
       if ( (v.name == "GEN_pt_trg"      && std::get<2>(factories.at(iFact)).Contains("_ptTarg"))    ||
@@ -385,7 +385,7 @@ void PtRegressionRun3Prep(TString user = "",
       }
     }
 
-    std::cout << "*** Spectator ***" << std::endl;
+    std::cout << std::endl << "*** Spectator ***" << std::endl;
     for (UInt_t i = 0; i < spec_vars.size(); i++) {
       MVA_var v = spec_vars.at(i);
       if (v.name == targ_str) continue; // Don't add target variable
@@ -548,8 +548,8 @@ void PtRegressionRun3Prep(TString user = "",
         int mode     = emtf_mode;
         int mode_CSC = emtf_mode_CSC;
         int mode_RPC = emtf_mode_RPC;
-        if(verbose) std::cout << "mode: "<<mode<<" MODE: "<<MODE<< std::endl;
-        if (mode != MODE) continue;
+        if(verbose) std::cout << "mode: "<<mode<<" MODE: "<<emtfMode<< std::endl;
+        if (mode != emtfMode) continue;
         if (mode != mode_CSC) {
           if(verbose) std::cout << "Not CSC-only track"<< std::endl;
           continue;
@@ -658,7 +658,7 @@ void PtRegressionRun3Prep(TString user = "",
         // Extra variables for FR computation
         int cham1, cham2, cham3, cham4;
 
-        if (MODE == 0) {
+        if (emtfMode == 0) {
           theta = emtf_eta_int;
           goto EMTF_ONLY;
         }
@@ -710,13 +710,6 @@ void PtRegressionRun3Prep(TString user = "",
         GE11 = (i1GEM >= 0 ? ( I("hit_isGEM",i1GEM ) == 1 ? 1 : 0) : -99);
 
         CalcRPCs( RPC1, RPC2, RPC3, RPC4, mode, st1_ring2, theta, useBitCompression );
-
-        // Uncommented on 2019-10-10
-        // Clean out showering muons with outlier station 1, or >= 2 outlier stations
-        // if (!isTEST && log2(mu_pt) > 6 && CLEAN_HI_PT && MODE == 15)
-        // if ( dPhSum4A >= fmax(40., 332. - 40*log2(mu_pt)) )
-        // if ( outStPh < 2 || dPhSum3A >= fmax(24., 174. - 20*log2(mu_pt)) )
-        // mu_train = false;
 
       EMTF_ONLY: // Skip track building, just store EMTF info
 
@@ -859,7 +852,7 @@ void PtRegressionRun3Prep(TString user = "",
           } // End loop: for (UInt_t iVar = 0; iVar < var_names.size(); iVar++)
 
           // Load values into event
-          if ( (NonZBEvt % 2)==0 && mu_train && MODE > 0 ) {
+          if ( (NonZBEvt % 2)==0 && mu_train && emtfMode > 0 ) {
             std::get<1>(factories.at(iFact))->AddTrainingEvent( "Regression", var_vals, evt_weight );
             if (iFact == 0) nTrain += 1;
 
