@@ -35,12 +35,12 @@ allowedTrainingVars = [
     'outStPhi',
     'filler',
     'dTh_12',
-    'dTh_13',
-    # block 7
-    'dTh_14',
     'dTh_23',
-    'dTh_24',
+    # block 7
     'dTh_34',
+    'dTh_13',
+    'dTh_14',
+    'dTh_24',
     # block 8
     'RPC_1',
     'RPC_2',
@@ -97,8 +97,7 @@ Run2TrainingVariables = {
         'FR_1',
         'FR_2',
         'bend_1',
-        #'dTh_13',
-        'dTh_23',
+        'dTh_13',
         'RPC_1',
         'RPC_2',
         'RPC_3',
@@ -117,7 +116,6 @@ Run2TrainingVariables = {
         'RPC_1',
         'RPC_2',
         'RPC_4',
-        'outStPhi',
     ],
     # BASELINE mode 11 - dPhi13/34/14, theta, FR1/3, St1 ring, dTh14, bend1, RPC 1/3/4
     '11' : [
@@ -137,7 +135,6 @@ Run2TrainingVariables = {
     # BASELINE mode  7 - dPhi23/34/24, theta, FR2, dTh24, bend2, RPC 2/3/4
     '7' : [
         'theta',
-        'St1_ring2',
         'dPhi_23',
         'dPhi_34',
         'dPhi_24',
@@ -229,5 +226,7 @@ Run2TrainingVariables = {
     # Null track, for testing EMTF performance
     '0' : [
         'theta',
+        'RPC_3',
+        'RPC_4',
     ],
 }
