@@ -49,6 +49,14 @@ using namespace TMVA;
 
 void PtRegressionRun3Prep(TString user = "",
                           TString myMethodList = "",
+                          /*
+                          float min_pt = 1,
+                          float max_pt = 1000,
+                          float min_eta = 1.25,
+                          float max_eta = 2.4,
+                          float min_pt_train = 1,
+                          float max_pt_train = 256,
+                          */
                           bool isRun2 = true,
                           bool useRPC = true,
                           bool useOneQuartPrecision = false,

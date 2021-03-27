@@ -2,7 +2,7 @@
 
 import glob
 import sys, commands, os, fnmatch
-from optparse import OptionParser,OptionGroup
+import argparse
 import getpass
 import subprocess
 from datetime import datetime
@@ -76,36 +76,41 @@ def write_bash(temp = 'runJob.sh', tarball = '', command = '', outputdirectory =
         f.write(out)
 
 if __name__ == '__main__':
-    parser = OptionParser()
-    parser.add_option('--clean', dest='clean', action='store_true',default = False, help='clean submission files', metavar='clean')
-    parser.add_option('--dryRun', dest='dryRun', action='store_true',default = False, help='write submission files only', metavar='dryRun')
-    parser.add_option('--interactiveRun', dest='interactiveRun', action='store_true',default = False, help='do interactive run')
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--dryRun', action='store_true',default = False, help='write submission files only')
+    parser.add_argument('--interactiveRun', action='store_true',default = False)
     ## expert options
-    parser.add_option("--isRun2", dest="isRun2", action="store_true", default = False)
-    parser.add_option("--isRun3", dest="isRun3", action="store_true", default = False)
-    parser.add_option("--useRPC", dest="useRPC", action="store_true", default = False)
-    parser.add_option("--useQSBit", dest="useQSBit", action="store_true", default = False)
-    parser.add_option("--useESBit", dest="useESBit", action="store_true", default = False)
-    parser.add_option("--useSlopes", dest="useSlopes", action="store_true", default = False)
-    parser.add_option("--useGEM", dest="useGEM", action="store_true", default = False)
-    parser.add_option("--useL1Pt", dest="useL1Pt", action="store_true", default = False)
-    parser.add_option("--useBitComp", dest="useBitComp", action="store_true", default = False)
-    parser.add_option("--addDateTime", dest="addDateTime", action="store", default = True)
-    (options, args) = parser.parse_args()
+    parser.add_argument("--isRun2", action="store_true", default = False)
+    parser.add_argument("--isRun3", action="store_true", default = False)
+    parser.add_argument("--useRPC", action="store_true", default = False)
+    parser.add_argument("--useQSBit", action="store_true", default = False)
+    parser.add_argument("--useESBit", action="store_true", default = False)
+    parser.add_argument("--useSlopes", action="store_true", default = False)
+    parser.add_argument("--useGEM", action="store_true", default = False)
+    parser.add_argument("--useL1Pt", action="store_true", default = False)
+    parser.add_argument("--useBitComp", action="store_true", default = False)
+    parser.add_argument("--addDateTime", action="store", default = True)
+    args = parser.parse_args()
+
+    ## add options for min eta, max eta
+    ## add options for training mode
+    ## add option for emtf mode
+    ## add options for each variable
 
     # local variables
-    dryRun = options.dryRun
-    interactiveRun = options.interactiveRun
-    isRun2 = options.isRun2
-    isRun3 = options.isRun3
-    useRPC = options.useRPC
-    useQSBit = options.useQSBit
-    useESBit = options.useESBit
-    useSlopes = options.useSlopes
-    useGEM = options.useGEM
-    useL1Pt = options.useL1Pt
-    useBitComp = options.useBitComp
-    addDateTime = options.addDateTime
+    dryRun = args.dryRun
+    interactiveRun = args.interactiveRun
+    isRun2 = args.isRun2
+    isRun3 = args.isRun3
+    useRPC = args.useRPC
+    useQSBit = args.useQSBit
+    useESBit = args.useESBit
+    useSlopes = args.useSlopes
+    useGEM = args.useGEM
+    useL1Pt = args.useL1Pt
+    useBitComp = args.useBitComp
+    addDateTime = args.addDateTime
 
     if isRun2:
         useQSBit = False
