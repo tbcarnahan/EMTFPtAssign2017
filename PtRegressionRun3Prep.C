@@ -74,6 +74,7 @@ void PtRegressionRun3Prep(TString user = "",
   if (useOneEighthPrecision)
     useOneQuartPrecision = true;
 
+  // FIXME, check if the useGEM bit is set
   bool useGEM = false;
   std::cout << "Running PtRegressionRun3Prep with options:\n"
             << " - emtfMode: " << emtfMode << "\n"
