@@ -3,49 +3,27 @@
 The `submitJobs.py` script submits the training script `PtRegressionRun3Prep.C` to LPC condor queue. For interactive run, add `--interactiveRun`
 
 
-## Run-2 LCTs
+## Run-2 LCTs: pick a pre-defined mode
 
 
-### Run-2 with RPCs
+### Default Run-2 (pick a mode!)
 ```
-python submitJobs.py --isRun2 --useRPC
-```
-
-### Run-2 without RPCs
-```
-python submitJobs.py --isRun2
+python submitJobs.py --isRun2 --emtfMode=15
 ```
 
-### Run-2 with GEMs (GEMs and RPCs don't mix yet)
+## Run-3 LCTs: define your own selection (both mode and variables)!
+
+Example:
 ```
-python submitJobs.py --isRun2 --useGEM
+python submitJobs.py --isRun3 --emtfMode=15 --trainVars dPhi_12 dPhi_23 dPhi_34
 ```
 
-
-## Run-3 LCTs
-
-
-### Run-3 without resolution improvement
+Example: with 1/4 strip
 ```
-python submitJobs.py --isRun3
+python submitJobs.py --isRun3 --emtfMode=15 --trainVars dPhi_12 dPhi_23 dPhi_34 --useQSBit
 ```
 
-### Run-3 with 1/4 strip
+Example: with 1/4 and 1/8 strip
 ```
-python submitJobs.py --isRun3 --useQSBit
-```
-
-### Run-3 with 1/4 and 1/8 strip
-```
-python submitJobs.py --isRun3 --useQSBit --useESBit
-```
-
-### Run-3 with 1/4 and 1/8 strip and slopes
-```
-python submitJobs.py --isRun3 --useQSBit --useESBit --useSlopes
-```
-
-### Run-3 with 1/4 and 1/8 strip and slopes and GEMs
-```
-python submitJobs.py --isRun3 --useQSBit --useESBit --useSlopes --useGEM
+python submitJobs.py --isRun3 --emtfMode=15 --trainVars dPhi_12 dPhi_23 dPhi_34 --useQSBit --useESBit
 ```
