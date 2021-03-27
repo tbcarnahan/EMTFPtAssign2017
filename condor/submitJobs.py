@@ -95,9 +95,9 @@ if __name__ == '__main__':
     ## expert options
     parser = argparse.ArgumentParser()
     parser.add_argument('--dryRun', action='store_true',default = False, help='write submission files only')
-    parser.add_argument('--interactiveRun', action='store_true',default = True)
+    parser.add_argument('--interactiveRun', action='store_true', default = True)
     parser.add_argument("--addDateTime", action="store", default = True)
-    parser.add_argument('--trainVars',nargs='+', help='Set training variables. Required when Run3 is set', choices=allowedTrainingVars)
+    parser.add_argument('--trainVars',nargs='+', help='Set training variables. Required when Run3 is set', choices=allowedTrainingVars, default = [])
     parser.add_argument('--targetVar', action="store", help='Set target variable', default="log2(pt)")
     parser.add_argument("--isRun2", action="store_true", default = False)
     parser.add_argument("--isRun3", action="store_true", default = False)
@@ -115,13 +115,20 @@ if __name__ == '__main__':
 
     ## get the training variables
     trainVariables = args.trainVars
-    if args.isRun2:
+
+    ## if no selection is provided for Run-2, use the default ones!
+    if args.isRun2 and len(trainVariables) == 0:
         trainVariables = Run2TrainingVariables[args.emtfMode]
+        print("Info: no training variable selection provided for Run-2 with mode {mode}. Using default selection.".format(mode = args.emtfMode))
+
+    if args.isRun3 and len(trainVariables) == 0:
+        print("Error: no training variable selection provided for Run-3 with mode {mode}. Exiting.".format(mode = args.emtfMode))
+        exit(1)
 
     ## get the associated hex string for this selection
     trainVarsHex = trainVarsSelToHex(trainVariables)
-    print("Chosen training variables {0} -> {1}".format(trainVariables, trainVarsHex))
-    print("Chosen target variable(s): {}".format(args.targetVar))
+    print("Info: Chosen training variables {0} -> {1}".format(trainVariables, trainVarsHex))
+    print("Info: Chosen target variable(s): {}".format(args.targetVar))
 
     # local variables
     dryRun = args.dryRun
@@ -209,30 +216,30 @@ if __name__ == '__main__':
 
     outputlog = outputdirectory.replace('Train','Log')
     os.system('mkdir {}'.format(outputlog))
-    print("command to run: ", command, "for user", USER)
-    print("Using output directory {}".format(outputdirectory))
+    print("Info: command to run: ", command, "for user", USER)
+    print("Info: using output directory {}".format(outputdirectory))
 
     ## 0: make output directory
     exec_me('eos root://cmseos.fnal.gov mkdir /store/user/{user}/{outdir}'.format(user=USER, outdir=outputdirectory), dryRun)
 
     ## 1: make a tarball of the directory
-    print("Making tarball")
+    print("Info: Making tarball")
     CMSSW_DIR = subprocess.Popen("echo $CMSSW_BASE", shell=True, stdout=subprocess.PIPE).stdout.read().strip('\n')
     exec_me('''tar --exclude-vcs --exclude='EMTFPtAssign2017/*md' --exclude='EMTFPtAssign2017/macros_Rice2020/*'  --exclude='EMTFPtAssign2017/condor/*' --exclude='EMTFPtAssign2017/macros/*' -C {cmssw}/src/ -czvf {tarball} EMTFPtAssign2017 '''.format(cmssw=CMSSW_DIR, tarball=tarball), dryRun)
 
     ## 2: copy the tarball to EOS (if it does not exist yet)
-    print("Copying tarball")
+    print("Info: Copying tarball")
     tarBallCode = os.system("eos root://cmseos.fnal.gov ls /store/user/{user}/{tarball}".format(user=USER, tarball=tarball))
     if tarBallCode != 0:
         exec_me('xrdcp {cmssw}/src/EMTFPtAssign2017/condor/{tarball} root://cmseos.fnal.gov//store/user/{user}/'.format(cmssw=CMSSW_DIR, user=USER, tarball=tarball), dryRun)
     else:
-        print("..Tarball {tarball} exists already on EOS LPC!".format(tarball=tarball))
+        print("Warning: Tarball {tarball} exists already on EOS LPC!".format(tarball=tarball))
 
     ## 3: create the bash file
-    print("Creating bash file")
+    print("Info: Creating bash file")
     exe = "runJob"
     write_bash(exe+".sh", tarball, command, outputdirectory, USER, CMSSW, SCRAM_ARCH, dryRun)
 
     ## 4: submit the job
-    print("Creating job file")
+    print("Info: Creating job file")
     write_condor(exe, outputlog, dryRun)
