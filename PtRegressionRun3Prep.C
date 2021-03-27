@@ -50,15 +50,13 @@ using namespace TMVA;
 void PtRegressionRun3Prep(TString user = "",
                           TString myMethodList = "",
                           unsigned emtfMode = 15,
+                          float minPt = 1.,
+                          float maxPt = 1000.,
+                          float minPtTrain = 1.,
+                          float maxPtTrain = 256.,
+                          float minEta = 1.25,
+                          float maxEta = 2.4,
                           unsigned long trainVarsSelection = 0,
-                          /*
-                            float min_pt = 1,
-                            float max_pt = 1000,
-                            float min_eta = 1.25,
-                            float max_eta = 2.4,
-                            float min_pt_train = 1,
-                            float max_pt_train = 256,
-                          */
                           bool isRun2 = true,
                           bool useOneQuartPrecision = false,
                           bool useOneEighthPrecision = false,
@@ -78,6 +76,12 @@ void PtRegressionRun3Prep(TString user = "",
   bool useGEM = false;
   std::cout << "Running PtRegressionRun3Prep with options:\n"
             << " - emtfMode: " << emtfMode << "\n"
+            << " - minPt: " << minPt << "\n"
+            << " - maxPt: " << maxPt << "\n"
+            << " - minPtTrain: " << minPtTrain << "\n"
+            << " - maxPtTrain: " << maxPtTrain << "\n"
+            << " - minEta: " << minEta << "\n"
+            << " - maxEta: " << maxEta << "\n"
             << " - trainVarsSelection: " << trainVarsSelection << "\n"
             << " - isRun2: " << isRun2 << "\n"
             << " - useOneQuartPrecision: " << useOneQuartPrecision << "\n"
@@ -478,9 +482,9 @@ void PtRegressionRun3Prep(TString user = "",
         //===============================
         //RECO mu kinematics requirements
         //===============================
-        if ( !isZB && (mu_pt < PTMIN || mu_pt > PTMAX) ) continue;
-        if ( !isZB && (fabs( mu_eta ) < ETAMIN || fabs( mu_eta ) > ETAMAX) ) continue;
-        if ( mu_pt < PTMIN_TR || mu_pt > PTMAX_TR || isTEST) mu_train = false;
+        if ( !isZB && (mu_pt < minPt || mu_pt > maxPt) ) continue;
+        if ( !isZB && (fabs( mu_eta ) < minEta || fabs( mu_eta ) > maxEta) ) continue;
+        if ( mu_pt < minPtTrain || mu_pt > maxPtTrain || isTEST) mu_train = false;
 
         //==================
         //Require valid mode

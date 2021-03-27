@@ -107,10 +107,10 @@ if __name__ == '__main__':
     parser.add_argument("--emtfMode", action="store", default = 15)
     parser.add_argument("--minEta", action="store", default = 1.25)
     parser.add_argument("--maxEta", action="store", default = 2.4)
-    parser.add_argument("--minPt", action="store", default = 1)
-    parser.add_argument("--maxPt", action="store", default = 1000)
-    parser.add_argument("--minPtTrain", action="store", default = 1)
-    parser.add_argument("--maxPtTrain", action="store", default = 2560)
+    parser.add_argument("--minPt", action="store", default = 1.)
+    parser.add_argument("--maxPt", action="store", default = 1000.)
+    parser.add_argument("--minPtTrain", action="store", default = 1.)
+    parser.add_argument("--maxPtTrain", action="store", default = 256.)
     args = parser.parse_args()
 
     trainVariables = args.trainVars
@@ -156,10 +156,16 @@ if __name__ == '__main__':
 
     ## training command
     def runCommand(localdir = './'):
-        command  = 'root -l -b -q "{localdir}PtRegressionRun3Prep.C({user}, {method}, {bemtfMode}, {btrainVarsHex}, {bisRun2}, {buseQSBit}, {buseESBit}, {buseBitComp})"'.format(
+        command  = 'root -l -b -q "{localdir}PtRegressionRun3Prep.C({user}, {method}, {bemtfMode}, {minPt}, {maxPt}, {minPtTrain}, {maxPtTrain}, {minEta}, {maxEta}, {btrainVarsHex}, {bisRun2}, {buseQSBit}, {buseESBit}, {buseBitComp})"'.format(
             user = '''\\\"{}\\\"'''.format(USER),
             method = '''\\\"BDTG_AWB_Sq\\\"''',
             bemtfMode = int(args.emtfMode),
+            minPt = float(args.minPt),
+            maxPt = float(args.maxPt),
+            minPtTrain = float(args.minPtTrain),
+            maxPtTrain = float(args.maxPtTrain),
+            minEta = float(args.minEta),
+            maxEta = float(args.maxEta),
             btrainVarsHex = int(trainVarsHex, 16),
             bisRun2 = int(isRun2),
             buseQSBit = int(useQSBit),
