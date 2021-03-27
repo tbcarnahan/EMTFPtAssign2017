@@ -5,45 +5,54 @@ This file contains the Run-2 training variables for each mode
 Available variables:
 '''
 allowedTrainingVars = [
+    # block 1
     'theta',
     'St1_ring2',
     'dPhi_12',
     'dPhi_23',
+    # block 2
     'dPhi_34',
     'dPhi_13',
     'dPhi_14',
     'dPhi_24',
+    # block 3
     'FR_1',
     'FR_2',
     'FR_3',
     'FR_4',
+    # block 4
     'bend_1',
     'bend_2',
     'bend_3',
     'bend_4',
+    # block 5
     'dPhiSum4',
     'dPhiSum4A',
     'dPhiSum3',
     'dPhiSum3A',
+    # block 6
     'outStPhi',
-    'slope_1',
-    'slope_2',
-    'slope_3',
-    'slope_4',
     'filler',
     'dTh_12',
     'dTh_13',
+    # block 7
     'dTh_14',
     'dTh_23',
     'dTh_24',
     'dTh_34',
+    # block 8
     'RPC_1',
     'RPC_2',
     'RPC_3',
     'RPC_4',
+    # block 9
+    'slope_1',
+    'slope_2',
+    'slope_3',
+    'slope_4',
+    # block 10
     'dPhi_GE11_ME11',
-    'GEM_1',
-    'L1Pt'
+    'GEM_1'
 ]
 
 Run2TrainingVariables = {
@@ -86,11 +95,6 @@ Run2TrainingVariables = {
         'FR_1',
         'FR_2',
         'bend_1',
-        'dPhiSum4',
-        'dPhiSum4A',
-        'dPhiSum3',
-        'dPhiSum3A',
-        'outStPhi',
         'dTh_13',
         'RPC_1',
         'RPC_2',
@@ -106,11 +110,6 @@ Run2TrainingVariables = {
         'FR_1',
         'FR_2',
         'bend_1',
-        'dPhiSum4',
-        'dPhiSum4A',
-        'dPhiSum3',
-        'dPhiSum3A',
-        'outStPhi',
         'dTh_14',
         'RPC_1',
         'RPC_2',
@@ -126,11 +125,6 @@ Run2TrainingVariables = {
         'FR_1',
         'FR_3',
         'bend_1',
-        'dPhiSum4',
-        'dPhiSum4A',
-        'dPhiSum3',
-        'dPhiSum3A',
-        'outStPhi',
         'dTh_14',
         'RPC_1',
         'RPC_3',
@@ -145,11 +139,6 @@ Run2TrainingVariables = {
         'dPhi_24',
         'FR_2',
         'bend_2',
-        'dPhiSum4',
-        'dPhiSum4A',
-        'dPhiSum3',
-        'dPhiSum3A',
-        'outStPhi',
         'dTh_24',
         'RPC_2',
         'RPC_3',

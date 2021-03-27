@@ -6,6 +6,7 @@ import argparse
 import getpass
 import subprocess
 from datetime import datetime
+from bdtVariables import *
 
 def exec_me(command, dryRun=False):
     print command
@@ -103,9 +104,31 @@ if __name__ == '__main__':
     parser.add_argument("--maxPtTrain", action="store", default = 2560)
     args = parser.parse_args()
 
+    trainVariables = args.trainVars
+    if args.isRun2:
+        trainVariables = Run2TrainingVariables[args.emtfMode]
 
-    print("Chosen training variables", args.trainVars)
+    print("Chosen training variables", trainVariables)
     print("Chosen target variables", args.targetVar)
+
+    ## function to return hex string with train variables
+    selectedVars = [0] * len(allowedTrainingVars)
+    for p in trainVariables:
+        if p in allowedTrainingVars:
+            selectedVars[allowedTrainingVars.index(p)] = 1
+
+    ## reverse the list
+    selectedVars.reverse()
+    print selectedVars
+
+    selection = "".join([str(p) for p in selectedVars])
+    hexsel = hex(int(selection, 2))
+
+    ## contatenate and turn into a hex string
+
+    print selection, hexsel
+
+    exit(1)
 
     ## add options for training mode
     ## add options for each variable
@@ -152,9 +175,10 @@ if __name__ == '__main__':
 
     ## training command
     def runCommand(localdir = './'):
-        command  = 'root -l -b -q "{localdir}PtRegressionRun3Prep.C({user}, {method}, {bisRun2}, {buseRPC}, {buseQSBit}, {buseESBit}, {buseSlopes}, {buseGEM})"'.format(
+        command  = 'root -l -b -q "{localdir}PtRegressionRun3Prep.C({user}, {method}, {btrainVarsHex}, {bisRun2}, {buseRPC}, {buseQSBit}, {buseESBit}, {buseSlopes}, {buseGEM})"'.format(
             user = '''\\\"{}\\\"'''.format(USER),
             method = '''\\\"BDTG_AWB_Sq\\\"''',
+            btrainVarsHex = int(trainVarsHex),
             bisRun2 = int(isRun2),
             buseRPC = int(useRPC),
             buseQSBit = int(useQSBit),
