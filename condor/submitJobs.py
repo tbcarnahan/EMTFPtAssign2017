@@ -95,7 +95,7 @@ if __name__ == '__main__':
     ## expert options
     parser = argparse.ArgumentParser()
     parser.add_argument('--dryRun', action='store_true',default = False, help='write submission files only')
-    parser.add_argument('--interactiveRun', action='store_true', default = True)
+    parser.add_argument('--interactiveRun', action='store_true', default = False)
     parser.add_argument("--addDateTime", action="store", default = True)
     parser.add_argument('--trainVars',nargs='+', help='Set training variables. Required when Run3 is set', choices=allowedTrainingVars, default = [])
     parser.add_argument('--targetVar', action="store", help='Set target variable', default="log2(pt)")
@@ -157,14 +157,18 @@ if __name__ == '__main__':
     useSlopes = any(item in trainVariables for item in ['slope_1', 'slope_2', 'slope_3', 'slope_4'])
     useBend = any(item in trainVariables for item in ['bend_1', 'bend_2', 'bend_3', 'bend_4'])
     if not useSlopes and (useQSBit or useESBit):
-        print("Warning: cannot use --useQSBit or --useESBit without slopes enabled")
+        print("Warning: disabling --useQSBit and --useESBit because no slopes in training variables.")
         useQSBit = False
         useESBit = False
 
     ## cannot mix slope and bend
     if useSlopes and useBend:
-        print("Error: cannot mix slope with bend training variables")
+        print("Error: cannot mix slope with bend training variables.")
         exit(1)
+
+    ## prefer dryRun over inveractiveRun
+    if dryRun and interactiveRun:
+        interactiveRun = False
 
     ## CMSSW version
     CMSSW = subprocess.Popen("echo $CMSSW_VERSION", shell=True, stdout=subprocess.PIPE).stdout.read().strip('\n')
@@ -228,9 +232,10 @@ if __name__ == '__main__':
     exec_me('''tar --exclude-vcs --exclude='EMTFPtAssign2017/*md' --exclude='EMTFPtAssign2017/macros_Rice2020/*'  --exclude='EMTFPtAssign2017/condor/*' --exclude='EMTFPtAssign2017/macros/*' -C {cmssw}/src/ -czvf {tarball} EMTFPtAssign2017 '''.format(cmssw=CMSSW_DIR, tarball=tarball), dryRun)
 
     ## 2: copy the tarball to EOS (if it does not exist yet)
-    print("Info: Copying tarball")
+    print("Info: Check if tarball exists.")
     tarBallCode = os.system("eos root://cmseos.fnal.gov ls /store/user/{user}/{tarball}".format(user=USER, tarball=tarball))
     if tarBallCode != 0:
+        print("Info: Copying tarball")
         exec_me('xrdcp {cmssw}/src/EMTFPtAssign2017/condor/{tarball} root://cmseos.fnal.gov//store/user/{user}/'.format(cmssw=CMSSW_DIR, user=USER, tarball=tarball), dryRun)
     else:
         print("Warning: Tarball {tarball} exists already on EOS LPC!".format(tarball=tarball))
