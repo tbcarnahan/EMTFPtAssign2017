@@ -113,16 +113,15 @@ if __name__ == '__main__':
     parser.add_argument("--maxPtTrain", action="store", default = 256.)
     args = parser.parse_args()
 
+    ## get the training variables
     trainVariables = args.trainVars
     if args.isRun2:
         trainVariables = Run2TrainingVariables[args.emtfMode]
 
+    ## get the associated hex string for this selection
     trainVarsHex = trainVarsSelToHex(trainVariables)
     print("Chosen training variables {0} -> {1}".format(trainVariables, trainVarsHex))
     print("Chosen target variable(s): {}".format(args.targetVar))
-
-    ## add options for training mode
-    ## add options for each variable
 
     # local variables
     dryRun = args.dryRun
@@ -146,6 +145,13 @@ if __name__ == '__main__':
     ## if 1/8 strip precision is set, also 1/4 strip precision
     if useESBit:
         useQSBit = True
+
+    ## check if slopes are used
+    useSlopes = any(item in trainVariables for item in ['slope_1', 'slope_2', 'slope_3', 'slope_4'])
+    if not useSlopes and (useQSBit or useESBit):
+        print("Warning: cannot use --useQSBit or --useESBit without slopes enabled")
+        useQSBit = False
+        useESBit = False
 
     ## CMSSW version
     CMSSW = subprocess.Popen("echo $CMSSW_VERSION", shell=True, stdout=subprocess.PIPE).stdout.read().strip('\n')
