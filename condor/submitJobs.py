@@ -92,22 +92,17 @@ def write_bash(temp = 'runJob.sh', tarball = '', command = '', outputdirectory =
 
 if __name__ == '__main__':
 
+    ## expert options
     parser = argparse.ArgumentParser()
     parser.add_argument('--dryRun', action='store_true',default = False, help='write submission files only')
     parser.add_argument('--interactiveRun', action='store_true',default = False)
     parser.add_argument("--addDateTime", action="store", default = True)
-    ## expert options
     parser.add_argument('--trainVars',nargs='+', help='<Required> Set training variables', required=False)
     parser.add_argument('--targetVar', action="store", help='Set target variable', default="log2(pt)")
-
     parser.add_argument("--isRun2", action="store_true", default = False)
     parser.add_argument("--isRun3", action="store_true", default = False)
-    parser.add_argument("--useRPC", action="store_true", default = False)
     parser.add_argument("--useQSBit", action="store_true", default = False)
     parser.add_argument("--useESBit", action="store_true", default = False)
-    parser.add_argument("--useSlopes", action="store_true", default = False)
-    parser.add_argument("--useGEM", action="store_true", default = False)
-    parser.add_argument("--useL1Pt", action="store_true", default = False)
     parser.add_argument("--useBitComp", action="store_true", default = False)
     parser.add_argument("--emtfMode", action="store", default = 15)
     parser.add_argument("--minEta", action="store", default = 1.25)
@@ -122,27 +117,9 @@ if __name__ == '__main__':
     if args.isRun2:
         trainVariables = Run2TrainingVariables[args.emtfMode]
 
-    print("Chosen training variables", trainVariables)
-    print("Chosen target variables", args.targetVar)
-
-    ## function to return hex string with train variables
-    selectedVars = [0] * len(allowedTrainingVars)
-    for p in trainVariables:
-        if p in allowedTrainingVars:
-            selectedVars[allowedTrainingVars.index(p)] = 1
-
-    ## reverse the list
-    selectedVars.reverse()
-    print selectedVars
-
-    selection = "".join([str(p) for p in selectedVars])
-    hexsel = hex(int(selection, 2))
-
-    ## contatenate and turn into a hex string
-
-    print selection, trainVarsSelToHex(trainVariables)
-
-    exit(1)
+    trainVarsHex = trainVarsSelToHex(trainVariables)
+    print("Chosen training variables {0} -> {1}".format(trainVariables, trainVarsHex))
+    print("Chosen target variable(s): {}".format(args.targetVar))
 
     ## add options for training mode
     ## add options for each variable
@@ -152,20 +129,14 @@ if __name__ == '__main__':
     interactiveRun = args.interactiveRun
     isRun2 = args.isRun2
     isRun3 = args.isRun3
-    useRPC = args.useRPC
     useQSBit = args.useQSBit
     useESBit = args.useESBit
-    useSlopes = args.useSlopes
-    useGEM = args.useGEM
-    useL1Pt = args.useL1Pt
     useBitComp = args.useBitComp
     addDateTime = args.addDateTime
 
     if isRun2:
         useQSBit = False
         useESBit = False
-        useSlopes = False
-        useGEM = False
         isRun3 = False
 
     ## if both isRun2 and isRun3 are set, pick isRun3!
@@ -176,9 +147,7 @@ if __name__ == '__main__':
     if useESBit:
         useQSBit = True
 
-    ## GEM and RPC do not mix yet
-    if useGEM:
-        useRPC = False
+    exit(1)
 
     ## CMSSW version
     CMSSW = subprocess.Popen("echo $CMSSW_VERSION", shell=True, stdout=subprocess.PIPE).stdout.read().strip('\n')
@@ -189,19 +158,14 @@ if __name__ == '__main__':
 
     ## training command
     def runCommand(localdir = './'):
-        command  = 'root -l -b -q "{localdir}PtRegressionRun3Prep.C({user}, {method}, {btrainVarsHex}, {bisRun2}, {buseRPC}, {buseQSBit}, {buseESBit}, {buseSlopes}, {buseGEM})"'.format(
+        command  = 'root -l -b -q "{localdir}PtRegressionRun3Prep.C({user}, {method}, {btrainVarsHex}, {bisRun2}, {buseQSBit}, {buseESBit})"'.format(
             user = '''\\\"{}\\\"'''.format(USER),
             method = '''\\\"BDTG_AWB_Sq\\\"''',
             btrainVarsHex = int(trainVarsHex),
             bisRun2 = int(isRun2),
-            buseRPC = int(useRPC),
             buseQSBit = int(useQSBit),
             buseESBit = int(useESBit),
-            buseSlopes = int(useSlopes),
-            buseGEM = int(useGEM),
-            ## not considered yet
             buseBitComp = int(useBitComp),
-            buseL1Pt = int(useL1Pt),
             localdir = localdir
         )
         return command
@@ -221,11 +185,9 @@ if __name__ == '__main__':
     outputdirectory = "EMTF_BDT_Train"
     if isRun2:      outputdirectory += "_isRun2"
     if isRun3:      outputdirectory += "_isRun3"
-    if useRPC:      outputdirectory += "_useRPC"
     if useQSBit:    outputdirectory += "_useQSBit"
     if useESBit:    outputdirectory += "_useESBit"
-    if useSlopes:   outputdirectory += "_useSlopes"
-    if useGEM:      outputdirectory += "_useGEM"
+    outputdirectory += "_Selection{}".format(trainVarsHex)
     if addDateTime: outputdirectory += "_{}".format(currentDateTime)
 
     outputlog = outputdirectory.replace('Train','Log')
