@@ -4,6 +4,7 @@
 This file contains the Run-2 training variables for each mode
 Available variables:
 '''
+## The ordering matters. Only append!
 allowedTrainingVars = [
     # block 1
     'theta',
@@ -55,6 +56,7 @@ allowedTrainingVars = [
     'GEM_1'
 ]
 
+## the ordering of the variables here does not matter
 Run2TrainingVariables = {
 
     ## 4-station tracks
@@ -95,7 +97,8 @@ Run2TrainingVariables = {
         'FR_1',
         'FR_2',
         'bend_1',
-        'dTh_13',
+        #'dTh_13',
+        'dTh_23',
         'RPC_1',
         'RPC_2',
         'RPC_3',
@@ -114,6 +117,7 @@ Run2TrainingVariables = {
         'RPC_1',
         'RPC_2',
         'RPC_4',
+        'outStPhi',
     ],
     # BASELINE mode 11 - dPhi13/34/14, theta, FR1/3, St1 ring, dTh14, bend1, RPC 1/3/4
     '11' : [

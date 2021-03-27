@@ -8,6 +8,20 @@ import subprocess
 from datetime import datetime
 from bdtVariables import *
 
+def trainVarsSelToHex(trainVariables):
+    ## function to return hex string with train variables
+    selectedVars = [0] * len(allowedTrainingVars)
+    for p in trainVariables:
+        if p in allowedTrainingVars:
+            selectedVars[allowedTrainingVars.index(p)] = 1
+
+    ## reverse the list
+    selectedVars.reverse()
+    ## contatenate and turn into a hex string
+    selection = "".join([str(p) for p in selectedVars])
+    hexsel = hex(int(selection, 2))
+    return hexsel
+
 def exec_me(command, dryRun=False):
     print command
     if not dryRun:
@@ -126,7 +140,7 @@ if __name__ == '__main__':
 
     ## contatenate and turn into a hex string
 
-    print selection, hexsel
+    print selection, trainVarsSelToHex(trainVariables)
 
     exit(1)
 
