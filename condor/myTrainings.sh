@@ -8,21 +8,21 @@
 
 #If "Run 3" is better, then start adding in variables (e.g. bend) until "Run 2" starts to pass it up, then look at that variable.
 
-python submitJobs.py --isRun2 --emtfMode=15 --trainVars dPhi_12 dPhi_23 dPhi_34 --minEta=1.2 --maxEta=1.55
+python submitJobs.py --isRun2 --emtfMode=15 --trainVars dPhi_12 dPhi_23 dPhi_34 --minEta=1.2 --maxEta=1.55 --jobLabel=Test3DPhi
 sleep 2
-python submitJobs.py --isRun3 --emtfMode=15 --trainVars dPhi_12 dPhi_23 dPhi_34 --minEta=1.2 --maxEta=1.55
+python submitJobs.py --isRun3 --emtfMode=15 --trainVars dPhi_12 dPhi_23 dPhi_34 --minEta=1.2 --maxEta=1.55 --jobLabel=Test3DPhi
 sleep 2
-python submitJobs.py --isRun3 --emtfMode=15 --trainVars dPhi_12 dPhi_23 dPhi_34 --useQSBit --minEta=1.2 --maxEta=1.55
+python submitJobs.py --isRun3 --emtfMode=15 --trainVars dPhi_12 dPhi_23 dPhi_34 --useQSBit --minEta=1.2 --maxEta=1.55 --jobLabel=Test3DPhi
 sleep 2
-python submitJobs.py --isRun3 --emtfMode=15 --trainVars dPhi_12 dPhi_23 dPhi_34 --useQSBit --useESBit --minEta=1.2 --maxEta=1.55
+python submitJobs.py --isRun3 --emtfMode=15 --trainVars dPhi_12 dPhi_23 dPhi_34 --useQSBit --useESBit --minEta=1.2 --maxEta=1.55 --jobLabel=Test3DPhi
 sleep 2
 
 
-python submitJobs.py --isRun2 --emtfMode=15 --trainVars dPhi_12 dPhi_23 dPhi_34 --minEta=2.1 --maxEta=2.4
+python submitJobs.py --isRun2 --emtfMode=15 --trainVars dPhi_12 dPhi_23 dPhi_34 --minEta=2.1 --maxEta=2.4 --jobLabel=Test3DPhi
 sleep 2
-python submitJobs.py --isRun3 --emtfMode=15 --trainVars dPhi_12 dPhi_23 dPhi_34 --minEta=2.1 --maxEta=2.4
+python submitJobs.py --isRun3 --emtfMode=15 --trainVars dPhi_12 dPhi_23 dPhi_34 --minEta=2.1 --maxEta=2.4 --jobLabel=Test3DPhi
 sleep 2
-python submitJobs.py --isRun3 --emtfMode=15 --trainVars dPhi_12 dPhi_23 dPhi_34 --useQSBit --minEta=2.1 --maxEta=2.4
+python submitJobs.py --isRun3 --emtfMode=15 --trainVars dPhi_12 dPhi_23 dPhi_34 --useQSBit --minEta=2.1 --maxEta=2.4 --jobLabel=Test3DPhi
 sleep 2
-python submitJobs.py --isRun3 --emtfMode=15 --trainVars dPhi_12 dPhi_23 dPhi_34 --useQSBit --useESBit --minEta=2.1 --maxEta=2.4
+python submitJobs.py --isRun3 --emtfMode=15 --trainVars dPhi_12 dPhi_23 dPhi_34 --useQSBit --useESBit --minEta=2.1 --maxEta=2.4 --jobLabel=Test3DPhi
 sleep 2

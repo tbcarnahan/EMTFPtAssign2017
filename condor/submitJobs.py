@@ -94,6 +94,7 @@ if __name__ == '__main__':
 
     ## expert options
     parser = argparse.ArgumentParser()
+    parser.add_argument('--jobLabel', action='store',default='')
     parser.add_argument('--cleanTarBalls', action='store_true',default = False, help='Remove all tarballs.')
     parser.add_argument('--dryRun', action='store_true',default = False, help='write submission files only')
     parser.add_argument('--interactiveRun', action='store_true', default = False)
@@ -213,6 +214,7 @@ if __name__ == '__main__':
 
     ## name for output directory on EOS
     outputdirectory = "EMTF_BDT_Train"
+    outputdirectory += "_{}".format(args.jobLabel)
     if isRun2:      outputdirectory += "_isRun2"
     if isRun3:      outputdirectory += "_isRun3"
     if useQSBit:    outputdirectory += "_useQSBit"

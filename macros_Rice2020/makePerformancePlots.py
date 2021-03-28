@@ -11,14 +11,13 @@ from optparse import OptionParser,OptionGroup
 from Helpers import *
 
 ## Configuration settings
-print '------> Setting Environment'
 parser = OptionParser()
 parser.add_option('--batchMode', dest='batchMode', action='store_true',default = True)
 parser.add_option("--eta_slices", dest="eta_slices", action="store_true", default = False)
 parser.add_option("--single_pt", dest="single_pt", action="store_true", default = False)
 parser.add_option("--addDateTime", dest="addDateTime", action="store", default = True)
 
-parser.add_option("--efficiencies", dest="efficiencies", action="store_true", default = False)
+parser.add_option("--efficiencies", dest="efficiencies", action="store_true", default = True)
 parser.add_option("--EffVsPt", dest="EffVsPt", action="store_true", default = True)
 parser.add_option("--EffVsEta", dest="EffVsEta", action="store_true", default = False)
 
@@ -59,52 +58,39 @@ else:
   eta_str_max = ["2pt4"]
 
 
-## ============== Define TTrees ================
-evt_tree1 = TChain('f_MODE_15_logPtTarg_invPtWgt_noBitCompr_noRPC_noGEM/TestTree')
-evt_tree2 = TChain('f_MODE_15_logPtTarg_invPtWgt_noBitCompr_RPC_noGEM/TestTree')
-evt_tree3 = TChain('f_MODE_15_logPtTarg_invPtWgt_noBitCompr_noRPC_noGEM/TestTree')
-evt_tree4 = TChain('f_MODE_15_logPtTarg_invPtWgt_noBitCompr_noRPC_noGEM/TestTree')
-evt_tree5 = TChain('f_MODE_15_logPtTarg_invPtWgt_noBitCompr_noRPC_noGEM/TestTree')
-evt_tree6 = TChain('f_MODE_15_logPtTarg_invPtWgt_noBitCompr_noRPC_noGEM/TestTree')
-
-
-## ================ Read input files ======================
-print '------> Importing Root Files..'
-prefix = "root://cmseos.fnal.gov//store/user/mdecaro/"
-dir1 = prefix + 'EMTF_BDT_Train_isRun2_20210321_223914/'
-dir2 = prefix + 'EMTF_BDT_Train_isRun2_useRPC_20210312_094714/'
-dir3 = prefix + 'EMTF_BDT_Train_isRun3_20210312_094720/'
-dir4 = prefix + 'EMTF_BDT_Train_isRun3_useQSBit_20210321_223207/'
-dir5 = prefix + 'EMTF_BDT_Train_isRun3_useQSBit_useESBit_20210321_223649/'
-dir6 = prefix + 'EMTF_BDT_Train_isRun3_useQSBit_useESBit_useSlopes_20210312_094737/'
-file_name1 = dir1+"PtRegressionRun3Prep_MODE_15_noBitCompr_noRPC_noGEM.root"
-file_name2 = dir2+"PtRegressionRun3Prep_MODE_15_noBitCompr_RPC_noGEM.root"
-file_name3 = dir3+"PtRegressionRun3Prep_MODE_15_noBitCompr_noRPC_noGEM.root"
-file_name4 = dir4+"PtRegressionRun3Prep_MODE_15_noBitCompr_noRPC_noGEM.root"
-file_name5 = dir5+"PtRegressionRun3Prep_MODE_15_noBitCompr_noRPC_noGEM.root"
-file_name6 = dir6+"PtRegressionRun3Prep_MODE_15_noBitCompr_noRPC_noGEM.root"
-
-print colored('Loading file: '+file_name1, 'green')
-print colored('Loading file: '+file_name2, 'green')
-print colored('Loading file: '+file_name3, 'green')
-print colored('Loading file: '+file_name4, 'green')
-print colored('Loading file: '+file_name5, 'green')
-print colored('Loading file: '+file_name6, 'green')
-evt_tree1.Add(file_name1)
-evt_tree2.Add(file_name2)
-evt_tree3.Add(file_name3)
-evt_tree4.Add(file_name4)
-evt_tree5.Add(file_name5)
-evt_tree6.Add(file_name6)
-
-evt_trees = [
-  evt_tree1,
-  evt_tree2,
-  evt_tree3,
-  evt_tree4,
-  evt_tree5,
-  evt_tree6
+## Data
+prefix = "root://cmseos.fnal.gov//store/user/dildick/"
+fileName = "PtRegressionRun3Prep_MODE_15_noBitCompr.root"
+trainings= [
+  'EMTF_BDT_Train_isRun2_Selection0x1c_20210327_152934',
+  'EMTF_BDT_Train_isRun3_Selection0x1c_20210327_152937',
+  'EMTF_BDT_Train_isRun3_useQSBit_Selection0x1c_20210327_152940',
+  'EMTF_BDT_Train_isRun3_useQSBit_useESBit_Selection0x1c_20210327_152942',
+#  'EMTF_BDT_Train_isRun2_Selection0x1c_20210327_152946',
+#  'EMTF_BDT_Train_isRun3_Selection0x1c_20210327_152948',
+#  'EMTF_BDT_Train_isRun3_useQSBit_Selection0x1c_20210327_152951',
+#  'EMTF_BDT_Train_isRun3_useQSBit_useESBit_Selection0x1c_20210327_152954'
 ]
+
+treeName = "f_MODE_15_logPtTarg_invPtWgt_noBitCompr/TestTree"
+
+evt_trees = []
+for p in trainings:
+  ttree = TChain(treeName)
+  ttree.Add("{}{}/{}".format(prefix,p,fileName))
+  evt_trees.append(ttree)
+
+markerColors = [kBlue, kRed, kGreen+2, kBlack, 7, 40]
+lineColors = [kBlue, kRed, kGreen+2, kBlack, 7, 40]
+markerStyles = [8,8,8,8,8,8]
+drawOptions = ["AP", "same", "same", "same", "same", "same"]
+legendEntries = ["Run-2", "Run-3", "Run-3 QSBit", "Run-3 QSBit ESBit",
+                 "Run-3 BDT w/ QSBit", "Run-3 BDT w/ QSBit ESBit", "Run-3 BDT w/ QSBit ESBit Slopes"]
+
+
+
+
+
 
 ## ================ Helper functions ======================
 def truncate(number, digits):
@@ -129,14 +115,6 @@ def makePlots(canvas, plotTitle):
   c1.SaveAs(plotDir + plotTitle + ".pdf")
   c1.SaveAs(plotDir + plotTitle + ".C")
 
-markerColors = [kBlue, kRed, kGreen+2, kBlack, 7, 40]
-lineColors = [kBlue, kRed, kGreen+2, kBlack, 7, 40]
-markerStyles = [8,8,8,8,8,8]
-drawOptions = ["AP", "same", "same", "same", "same", "same"]
-legendEntries = ["Run-2 BDT", "Run-2 BDT RPC", "Run-3 BDT",
-                 "Run-3 BDT w/ QSBit", "Run-3 BDT w/ QSBit ESBit", "Run-3 BDT w/ QSBit ESBit Slopes"]
-
-
 ## ================ Plotting script ======================
 if options.efficiencies:
 
@@ -149,16 +127,16 @@ if options.efficiencies:
 
 	#Run2 and Run3 BDT efficiency vs Pt
         effs = []
-        for ee in range(0,6):
-          eff = draw_eff(evt_trees[ee], "(50,1.,50.)", "GEN_pt", gen_eta_cut(eta_min[k], eta_max[k]), bdt_pt_cut(pt_cut[l]))
+        for ee in range(0,len(evt_trees)):
+          eff = draw_eff(evt_trees[ee], "; p_{T}^{GEN} (GeV) ; Trigger Efficiency", "(50,1.,50.)", "GEN_pt", gen_eta_cut(eta_min[k], eta_max[k]), bdt_pt_cut(pt_cut[l]))
           eff.SetMarkerColor(markerColors[ee])
           eff.SetLineColor(lineColors[ee])
           eff.SetMarkerStyle(markerStyles[ee])
           eff.Draw(drawOptions[ee])
           effs.append(eff)
 
-
-	line = TLine(0, 0.5, 50, 0.5)
+        """
+        line = TLine(0, 0.5, 50, 0.5)
 	line2 = TLine(pt_cut[l], 0., pt_cut[l], 1.1)
 	line.SetLineStyle(7) ; line2.SetLineStyle(7)
         line.Draw("same") ; line2.Draw("same")
@@ -167,6 +145,7 @@ if options.efficiencies:
 	la1.DrawLatex( 35., 0.2, "p_{T}^{L1} > "+str(pt_cut[l])+" GeV")
 	la2 = TLatex() ; la2.SetTextFont(22) ; la2.SetTextColor(1) ; la2.SetTextSize(0.035) ; la2.SetTextAlign(10)
 	la2.DrawLatex( 35., 0.1, str(eta_min[k])+" < |#eta^{GEN}| < "+str(eta_max[k]))
+        """
 
 	leg = TLegend(0.6, 0.33, 0.9, 0.63)
         for ee in range(0,6):
@@ -177,9 +156,11 @@ if options.efficiencies:
 	gPad.Update()
 	eff1.SetTitle(" ; p_{T}^{GEN} (GeV) ; Trigger Efficiency")
 	gStyle.SetOptStat(0)
-	graph = eff1.GetPaintedGraph() ; graph.SetMinimum(0) ;  graph.SetMaximum(1.1)
+	graph = eff1.GetPaintedGraph()
+        graph.SetMinimum(0)
+        graph.SetMaximum(1.1)
 
-        makePlots(c1, "bdt_eff/eta_slices_03222021/BDTeff_pt"+str(pt_str[l])+"_eta"+str(eta_str_min[k])+"to"+str(eta_str_max[k]))
+        makePlots(c1, "bdt_eff/BDT_eff_SD_pt{}_eta{}to{}".format(pt_str[l], eta_str_min[k], eta_str_max[k]))
 
 
     if options.EffVsEta:
@@ -212,7 +193,7 @@ if options.efficiencies:
 
       makePlot(c1, "bdt_eff/eta/BDTeff_eta_pt"+str(pt_str[l]) )
 
-
+'''
 if options.resolutions:
 
   if options.res1D:
@@ -552,3 +533,4 @@ if options.resolutions:
     line.Draw("same")
     gPad.SetLogz() ; gPad.Update() ; gStyle.SetOptStat(0)
     makePlot(c1, "resolutions/ptres2D_Run3BDT")
+'''
