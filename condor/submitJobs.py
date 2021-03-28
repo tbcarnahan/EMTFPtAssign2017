@@ -120,13 +120,18 @@ if __name__ == '__main__':
     CMSSW_DIR = subprocess.Popen("echo $CMSSW_BASE", shell=True, stdout=subprocess.PIPE).stdout.read().strip('\n')
     SCRAM_ARCH = subprocess.Popen("echo $SCRAM_ARCH", shell=True, stdout=subprocess.PIPE).stdout.read().strip('\n')
     USER = getpass.getuser()
+
+    ## few checks
+    if CMSSW == '' or CMSSW_DIR == '' or SCRAM_ARCH == '' or USER == '':
+        sys.exit("Error: an environment variable has not been set! Exiting.")
+
     currentDateTime = datetime.now().strftime("%Y%m%d_%H%M%S")
     tarball = "EMTFPtAssign2017Condor_{}.tar.gz".format(currentDateTime)
 
     if args.cleanTarBalls:
         print("Info: removing tarballs matching EMTFPtAssign2017Condor*.tar.gz")
         exec_me('rm {cmssw}/src/EMTFPtAssign2017/condor/EMTFPtAssign2017Condor*.tar.gz'.format(cmssw=CMSSW_DIR), args.dryRun)
-        exit(1)
+        sys.exit()
 
     ## get the training variables
     trainVariables = args.trainVars
@@ -137,8 +142,7 @@ if __name__ == '__main__':
         print("Info: no training variable selection provided for Run-2 with mode {mode}. Using default selection.".format(mode = args.emtfMode))
 
     if args.isRun3 and len(trainVariables) == 0:
-        print("Error: no training variable selection provided for Run-3 with mode {mode}. Exiting.".format(mode = args.emtfMode))
-        exit(1)
+        sys.exit("Error: no training variable selection provided for Run-3 with mode {mode}. Exiting.".format(mode = args.emtfMode))
 
     ## get the associated hex string for this selection
     trainVarsHex = trainVarsSelToHex(trainVariables)
@@ -174,8 +178,7 @@ if __name__ == '__main__':
 
     ## cannot mix slope and bend
     if useSlopes and useBend:
-        print("Error: cannot mix slope with bend training variables.")
-        exit(1)
+        sys.exit("Error: cannot mix slope with bend training variables.")
 
     ## prefer dryRun over inveractiveRun
     if dryRun and interactiveRun:
@@ -210,11 +213,12 @@ if __name__ == '__main__':
         command = runCommand('../')
         print(command)
         os.system(command)
-        exit(1)
+        sys.exit()
 
     ## name for output directory on EOS
     outputdirectory = "EMTF_BDT_Train"
     outputdirectory += "_{}".format(args.jobLabel)
+    outputdirectory += "_eta{}to{}".format(args.minEta, args.maxEta)
     if isRun2:      outputdirectory += "_isRun2"
     if isRun3:      outputdirectory += "_isRun3"
     if useQSBit:    outputdirectory += "_useQSBit"
@@ -233,6 +237,9 @@ if __name__ == '__main__':
     ## 1: make a tarball of the directory
     print("Info: Making tarball")
     exec_me('''tar --exclude-vcs --exclude='EMTFPtAssign2017/*md' --exclude='EMTFPtAssign2017/macros_Rice2020/*'  --exclude='EMTFPtAssign2017/condor/*' --exclude='EMTFPtAssign2017/macros/*' -C {cmssw}/src/ -czvf {tarball} EMTFPtAssign2017 '''.format(cmssw=CMSSW_DIR, tarball=tarball), dryRun)
+    tarBallCode = os.system("ls {cmssw}/src/EMTFPtAssign2017/condor/{tarball}".format(cmssw=CMSSW_DIR, tarball=tarball))
+    if tarBallCode != 0:
+        sys.exit("Error: tarball does not exist")
 
     ## 2: copy the tarball to EOS (if it does not exist yet)
     print("Info: Check if tarball exists.")
