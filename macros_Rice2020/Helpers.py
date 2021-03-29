@@ -162,14 +162,6 @@ def draw_geff(t, title, h_bins, to_draw, den_cut, extra_num_cut,
     t.Draw(to_draw + ">>num", num_cut, "goff")
     t.Draw(to_draw + ">>den", den_cut, "goff")
 
-    ## check if the number of passed entries larger than total entries
-    doConsistencyCheck = False
-    if doConsistencyCheck:
-        for i in range(0,nBins):
-            print i, num.GetBinContent(i), den.GetBinContent(i)
-            if num.GetBinContent(i) > den.GetBinContent(i):
-                print ">>>Error: passed entries > total entries"
-
     eff = TEfficiency(num, den)
 
     ## plotting options

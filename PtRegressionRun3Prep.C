@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////
-///  pT Regression with 2017 data for 2018 EMTF pT assignment  ///
-///                  Wei Shi                                   ///
+///   pT Regression with Run-3 MC for 2022 EMTF pT assignment  ///
+///                   Sven Dildick                             ///
 ///  Adapted from PtRegression_Apr_2017.C                      ///
 //////////////////////////////////////////////////////////////////
 #include <cstdlib>
@@ -49,41 +49,45 @@ using namespace TMVA;
 
 void PtRegressionRun3Prep(TString user = "",
                           TString myMethodList = "",
+                          unsigned emtfMode = 15,
+                          float minPt = 1.,
+                          float maxPt = 1000.,
+                          float minPtTrain = 1.,
+                          float maxPtTrain = 256.,
+                          float minEta = 1.25,
+                          float maxEta = 2.4,
+                          unsigned long trainVarsSelection = 0,
                           bool isRun2 = true,
-                          bool useRPC = true,
                           bool useOneQuartPrecision = false,
                           bool useOneEighthPrecision = false,
-                          bool useSlopes = false,
-                          bool useGEM = false,
-                          bool useBitCompression = false,
-                          bool useL1Pt = false) {
+                          bool useBitCompression = false) {
 
   // Expert options
   // Run-2 overrides all options
   if (isRun2) {
     useOneQuartPrecision = false;
     useOneEighthPrecision = false;
-    useSlopes = false;
-    useGEM = false;
   }
   // check if 1/4 is on
   if (useOneEighthPrecision)
     useOneQuartPrecision = true;
-  // RPCs and GEMs don't mix (yet)
-  // keep GEM
-  if (useGEM) {
-    useRPC = false;
-  }
 
+  // FIXME, check if the useGEM bit is set
+  bool useGEM = false;
   std::cout << "Running PtRegressionRun3Prep with options:\n"
+            << " - emtfMode: " << emtfMode << "\n"
+            << " - minPt: " << minPt << "\n"
+            << " - maxPt: " << maxPt << "\n"
+            << " - minPtTrain: " << minPtTrain << "\n"
+            << " - maxPtTrain: " << maxPtTrain << "\n"
+            << " - minEta: " << minEta << "\n"
+            << " - maxEta: " << maxEta << "\n"
+            << " - trainVarsSelection: " << trainVarsSelection << "\n"
             << " - isRun2: " << isRun2 << "\n"
-            << " - useRPC: " << useRPC << "\n"
             << " - useOneQuartPrecision: " << useOneQuartPrecision << "\n"
             << " - useOneEighthPrecision: " << useOneEighthPrecision << "\n"
-            << " - useSlopes: " << useSlopes << "\n"
             << " - useGEM: " << useGEM << "\n"
             << " - useBitCompression: " << useBitCompression << "\n"
-            << " - useL1Pt: " << useL1Pt << "\n"
             << std::endl;
 
   // This loads the library
@@ -135,18 +139,16 @@ void PtRegressionRun3Prep(TString user = "",
   //Preparation phase
   //===================
   // Configure settings for this mode and user
-  PtRegression2018_cfg::ConfigureMode( MODE );
+  PtRegression2018_cfg::ConfigureMode( emtfMode );
   PtRegression2018_cfg::ConfigureUser( user );
 
   // Create a new root output file
   TString out_file_str;
   TString bit_str = (useBitCompression ? "bitCompr" : "noBitCompr");
-  TString RPC_str = (useRPC  ? "RPC"      : "noRPC");
-  TString GEM_str = (useGEM  ? "GEM"      : "noGEM");
 
   out_file_str.Form( "%s/%s_MODE_%d_%s.root",
                      OUT_DIR_NAME.Data(), OUT_FILE_NAME.Data(),
-                     MODE, bit_str.Data());
+                     emtfMode, bit_str.Data());
 
   TFile* out_file = TFile::Open( out_file_str, "RECREATE" );
 
@@ -160,7 +162,7 @@ void PtRegressionRun3Prep(TString user = "",
   TString ZB_file_name;
 
   for (int i = 0; i < USESingleMu; i++) {
-    SM_file_name.Form( "%s", EOS_DIR_NAME.Data() ); //, in_dir.Data(), SingleMu_files[i].Data() );
+    SM_file_name.Form( "%s%s", EOS_DIR_NAME.Data(), SingleMu_files[i].Data() );
     std::cout << "Adding file " << SM_file_name.Data() << std::endl;
     SM_in_file_names.push_back(SM_file_name.Data());
   }
@@ -227,61 +229,20 @@ void PtRegressionRun3Prep(TString user = "",
   // var name and value vectors, and hex bit masks for input variables.
   // Each hex bit represents four variables, e.g. 0x1 would select only the 1st variable,
   // 0xf the 1st 4, 0xff the 1st 8, 0xa the 2nd and 4th, 0xf1 the 1st and 5th-8th, etc.
-  std::vector< std::tuple<TMVA::Factory*, TMVA::DataLoader*, TString, std::vector<TString>, std::vector<Double_t>, int> > factories;
+  std::vector< std::tuple<TMVA::Factory*, TMVA::DataLoader*, TString, std::vector<TString>, std::vector<Double_t>, unsigned long>  > factories;
 
   for (unsigned iTarg = 0; iTarg < TARG_VARS.size(); iTarg++) {
     for (unsigned iWgt = 0; iWgt < EVT_WGTS.size(); iWgt++) {
 
       TString factName;  // "Targ" and "Wgt" components not arbitrary - correspond to specific options later on
       factName.Form( "f_MODE_%d_%sTarg_%sWgt_%s",
-                     MODE, TARG_VARS.at(iTarg).Data(), EVT_WGTS.at(iWgt).Data(),
+                     emtfMode, TARG_VARS.at(iTarg).Data(), EVT_WGTS.at(iWgt).Data(),
                      bit_str.Data());
 
-      // 4-station tracks
-      if        (MODE == 15) {
-        // BASELINE mode 15 - dPhi12/23/34 + combos, theta, FR1, St1 ring, dTh14, bend1, 2017 pT, GEM
-        factories.push_back( std::make_tuple( nullF, nullL, factName, var_names, var_vals, 0x741f11ff) ); // changed 1 to 7
-      }
-      // 3-station tracks
-      else if   (MODE == 14) {
-        // BASELINE mode 14 - dPhi12/23/13, theta, FR1/2, St1 ring, dTh13, bend1, RPC 1/2/3
-        factories.push_back( std::make_tuple( nullF, nullL, factName, var_names, var_vals, 0x7200132f) );
-      } else if (MODE == 13) {
-        // BASELINE mode 13 - dPhi12/24/14, theta, FR1/2, St1 ring, dTh14, bend1, RPC 1/2/4
-        factories.push_back( std::make_tuple( nullF, nullL, factName, var_names, var_vals, 0xb40013c7) );
-      } else if (MODE == 11) {
-        // BASELINE mode 11 - dPhi13/34/14, theta, FR1/3, St1 ring, dTh14, bend1, RPC 1/3/4
-        factories.push_back( std::make_tuple( nullF, nullL, factName, var_names, var_vals, 0xd4001573) );
-      } else if (MODE ==  7) {
-        // BASELINE mode  7 - dPhi23/34/24, theta, FR2, dTh24, bend2, RPC 2/3/4
-        factories.push_back( std::make_tuple( nullF, nullL, factName, var_names, var_vals, 0xe8002299) );
-      }
-      // 2-station tracks
-      else if   (MODE == 12) {
-        // BASELINE mode 12 - dPhi12, theta, FR1/2, St1 ring, dTh12, bend1/2, RPC 1/2
-        factories.push_back( std::make_tuple( nullF, nullL, factName, var_names, var_vals, 0x30403307) );
-      } else if (MODE == 10) {
-        // BASELINE mode 10 - dPhi13, theta, FR1/3, St1 ring, dTh13, bend1/3, RPC 1/3
-        factories.push_back( std::make_tuple( nullF, nullL, factName, var_names, var_vals, 0x52005523) );
-      } else if (MODE ==  9) {
-        // BASELINE mode  9 - dPhi14, theta, FR1/4, St1 ring, dTh14, bend1/4, RPC 1/4
-        factories.push_back( std::make_tuple( nullF, nullL, factName, var_names, var_vals, 0x94009943) );
-      } else if (MODE ==  6) {
-        // BASELINE mode  6 - dPhi23, theta, FR2/3, dTh23, bend2/3, RPC 2/3
-        factories.push_back( std::make_tuple( nullF, nullL, factName, var_names, var_vals, 0x60806609) );
-      } else if (MODE ==  5) {
-        // BASELINE mode  5 - dPhi24, theta, FR2/4, dTh24, bend2/4, RPC 2/4
-        factories.push_back( std::make_tuple( nullF, nullL, factName, var_names, var_vals, 0xa800aa81) );
-      } else if (MODE ==  3) {
-        // BASELINE mode  3 - dPhi34, theta, FR3/4, dTh12, bend3/4, RPC 3/4
-        factories.push_back( std::make_tuple( nullF, nullL, factName, var_names, var_vals, 0xc100cc11) );
-      } else if (MODE == 0) {
-        // Null track, for testing EMTF performance
-        factories.push_back( std::make_tuple( nullF, nullL, factName, var_names, var_vals, 0xc0000001) );
-      }
-
-    } // End loop: for (int iTarg = 0; iTarg < TARG_VARS.size(); iTarg++)
-  } // End loop: for (int iWgt = 0; iWgt < EVT_WGTS.size(); iWgt++)
+      // the selection is now done in the Python configuration, not here!
+      factories.push_back( std::make_tuple( nullF, nullL, factName, var_names, var_vals, trainVarsSelection) );
+    }
+  }
 
   // Initialize factories and dataloaders
   for (unsigned iFact = 0; iFact < factories.size(); iFact++) {
@@ -298,6 +259,8 @@ void PtRegressionRun3Prep(TString user = "",
   /////////////////////////
   ///  Input variables  ///
   /////////////////////////
+
+  /// this block needs to match exactly the "allowedTrainingVars" block!!!
 
   // block 1
   in_vars.push_back( MVA_var( "theta",     "Track #theta",          "int", 'I', -88 ) ); // 0x0000 0001
@@ -318,17 +281,10 @@ void PtRegressionRun3Prep(TString user = "",
   in_vars.push_back( MVA_var( "FR_4",      "St 4 LCT F/R",          "int", 'I', -88 ) ); // 0x0000 0800
 
   // block 4
-  if (useSlopes) {
-    in_vars.push_back( MVA_var( "slope_1",    "St 1 LCT slope",      "int", 'I', -88 ) ); // 0x0000 1000
-    in_vars.push_back( MVA_var( "slope_2",    "St 2 LCT slope",      "int", 'I', -88 ) ); // 0x0000 2000
-    in_vars.push_back( MVA_var( "slope_3",    "St 3 LCT slope",      "int", 'I', -88 ) ); // 0x0000 4000
-    in_vars.push_back( MVA_var( "slope_4",    "St 4 LCT slope",      "int", 'I', -88 ) ); // 0x0000 8000
-  } else {
-    in_vars.push_back( MVA_var( "bend_1",    "St 1 LCT bending",      "int", 'I', -88 ) ); // 0x0000 1000
-    in_vars.push_back( MVA_var( "bend_2",    "St 2 LCT bending",      "int", 'I', -88 ) ); // 0x0000 2000
-    in_vars.push_back( MVA_var( "bend_3",    "St 3 LCT bending",      "int", 'I', -88 ) ); // 0x0000 4000
-    in_vars.push_back( MVA_var( "bend_4",    "St 4 LCT bending",      "int", 'I', -88 ) ); // 0x0000 8000
-  }
+  in_vars.push_back( MVA_var( "bend_1",    "St 1 LCT bending",      "int", 'I', -88 ) ); // 0x0000 1000
+  in_vars.push_back( MVA_var( "bend_2",    "St 2 LCT bending",      "int", 'I', -88 ) ); // 0x0000 2000
+  in_vars.push_back( MVA_var( "bend_3",    "St 3 LCT bending",      "int", 'I', -88 ) ); // 0x0000 4000
+  in_vars.push_back( MVA_var( "bend_4",    "St 4 LCT bending",      "int", 'I', -88 ) ); // 0x0000 8000
 
   // block 5
   in_vars.push_back( MVA_var( "dPhiSum4",  "#Sigmad#phi (6)",       "int", 'I', -88 ) ); // 0x0001 0000
@@ -349,25 +305,20 @@ void PtRegressionRun3Prep(TString user = "",
   in_vars.push_back( MVA_var( "dTh_24",    "#theta(4) - #theta(2)", "int", 'I', -88 ) ); // 0x0800 0000
 
   // block 8
-  if (useRPC) {
-    in_vars.push_back( MVA_var( "RPC_1",   "St 1 hit is RPC",       "int", 'I', -88 ) ); // 0x1000 0000
-    in_vars.push_back( MVA_var( "RPC_2",   "St 2 hit is RPC",       "int", 'I', -88 ) ); // 0x2000 0000
-    in_vars.push_back( MVA_var( "RPC_3",   "St 3 hit is RPC",       "int", 'I', -88 ) ); // 0x4000 0000
-    in_vars.push_back( MVA_var( "RPC_4",   "St 4 hit is RPC",       "int", 'I', -88 ) ); // 0x8000 0000
-  }
+  in_vars.push_back( MVA_var( "RPC_1",   "St 1 hit is RPC",       "int", 'I', -88 ) ); // 0x1000 0000
+  in_vars.push_back( MVA_var( "RPC_2",   "St 2 hit is RPC",       "int", 'I', -88 ) ); // 0x2000 0000
+  in_vars.push_back( MVA_var( "RPC_3",   "St 3 hit is RPC",       "int", 'I', -88 ) ); // 0x4000 0000
+  in_vars.push_back( MVA_var( "RPC_4",   "St 4 hit is RPC",       "int", 'I', -88 ) ); // 0x8000 0000
 
-  // new GEM-CSC bending angle
-  if (useGEM) {
-    in_vars.push_back( MVA_var( "dPhi_GE11_ME11", "#phi(GE11) - #phi(ME11)", "", 'F', -88 ) ); // 0x1 0000 0000
-    in_vars.push_back( MVA_var( "GEM_1",   "St 1 hit is GEM",       "int", 'I', -88 ) ); // 0x1 0000 0000
-  }
+  // block 9
+  in_vars.push_back( MVA_var( "slope_1",    "St 1 LCT slope",      "int", 'I', -88 ) ); // 0x0000 1000
+  in_vars.push_back( MVA_var( "slope_2",    "St 2 LCT slope",      "int", 'I', -88 ) ); // 0x0000 2000
+  in_vars.push_back( MVA_var( "slope_3",    "St 3 LCT slope",      "int", 'I', -88 ) ); // 0x0000 4000
+  in_vars.push_back( MVA_var( "slope_4",    "St 4 LCT slope",      "int", 'I', -88 ) ); // 0x0000 8000
 
-  // add 2017 EMTF pT as input variable to accelerate training
-  if (useL1Pt) {
-    in_vars.push_back( MVA_var( "EMTF_pt",       "EMTF p_{T}",        "",    'F', -88 ) ); // 0x1000 0000
-    // Later on, it will probably make sense to match this variable with the GEN-level "target" variable
-    // in this case change to "log2_EMTF_pt"
-  }
+  // block 10
+  in_vars.push_back( MVA_var( "dPhi_GE11_ME11", "#phi(GE11) - #phi(ME11)", "", 'F', -88 ) ); // 0x1 0000 0000
+  in_vars.push_back( MVA_var( "GEM_1",   "St 1 hit is GEM",       "int", 'I', -88 ) ); // 0x1 0000 0000
 
   ////////////////////////////////////////////////////////////
   //  Target variable: true muon pT, or 1/pT, or log2(pT)  ///
@@ -399,18 +350,21 @@ void PtRegressionRun3Prep(TString user = "",
 
   assert( in_vars.size() > 0 );   // Need at least one input variable
   assert( targ_vars.size() > 0 ); // Need at least one target variable
+
   // Order is important: input variables first, then target, then specator
   all_vars.insert( all_vars.end(), in_vars.begin(), in_vars.end() );
   all_vars.insert( all_vars.end(), targ_vars.begin(), targ_vars.end() );
+
   if (SPEC_VARS) all_vars.insert( all_vars.end(), spec_vars.begin(), spec_vars.end() );
 
   // Fill each factory with the correct set of variables
   for (unsigned iFact = 0; iFact < factories.size(); iFact++) {
     std::cout << "\n*** Factory " << std::get<2>(factories.at(iFact)) << " variables ***" << std::endl;
 
-    std::cout << "*** Input ***" << std::endl;
+    std::cout << std::endl << "*** Input ***" << std::endl;
     for (unsigned i = 0; i < in_vars.size(); i++) {
-      if ( 0x1 & (std::get<5>(factories.at(iFact)) >> i) ) { // Hex bit mask for in_vars
+      // Hex bit mask for in_vars
+      if ( 0x1 & (std::get<5>(factories.at(iFact)) >> i) ) {
         MVA_var v = in_vars.at(i);
         std::cout << v.name << std::endl;
         std::get<1>(factories.at(iFact))->AddVariable( v.name, v.descr, v.unit, v.type ); // Add var to dataloader
@@ -420,7 +374,7 @@ void PtRegressionRun3Prep(TString user = "",
     }
 
     TString targ_str = ""; // Save name of target variable
-    std::cout << "*** Target ***" << std::endl;
+    std::cout << std::endl << "*** Target ***" << std::endl;
     for (unsigned i = 0; i < targ_vars.size(); i++) {
       MVA_var v = targ_vars.at(i);
       if ( (v.name == "GEN_pt_trg"      && std::get<2>(factories.at(iFact)).Contains("_ptTarg"))    ||
@@ -436,7 +390,7 @@ void PtRegressionRun3Prep(TString user = "",
       }
     }
 
-    std::cout << "*** Spectator ***" << std::endl;
+    std::cout << std::endl << "*** Spectator ***" << std::endl;
     for (UInt_t i = 0; i < spec_vars.size(); i++) {
       MVA_var v = spec_vars.at(i);
       if (v.name == targ_str) continue; // Don't add target variable
@@ -485,11 +439,6 @@ void PtRegressionRun3Prep(TString user = "",
         isTEST = false;
         NonZBEvt += 1;
       }
-      // else{
-      //   isZB = true;
-      //   isTEST = true;
-      //   ZBEvt += 1;
-      // }
 
       in_chain->GetEntry(jEvt);
 
@@ -497,24 +446,6 @@ void PtRegressionRun3Prep(TString user = "",
       UInt_t nHits  = I("nHits");//hit_* branches are unpacked hits
       UInt_t nTrks  = I("nTracks");//trk_* branches are EMTF tracks
       UInt_t nSegs  = I("nSegs");//csc segments number
-
-      /*
-        if ( (NonZBEvt % REPORT_EVT) == 0 || (ZBEvt > 0 && (ZBEvt % REPORT_EVT) == 0 ) )
-        std::cout << "Looking at Non-ZB event " << NonZBEvt << "; ZB event " << ZBEvt << std::endl;
-      */
-
-      // commented out 2019-10-10
-      // //============================================
-      // //EMTF biased events can't be used for training or test
-      // //============================================
-      // if (!isZB){
-      //   if( I("nRecoMuonsTrig")<2 && I("nRecoMuonsTrigCen")==0 ) {
-      //     //isTEST = true;
-      //     continue;
-      //   }//end remove bias
-      // }//end if
-
-      if(verbose) std::cout << "End removing bias ... "<< std::endl;
 
       //===================
       //Loop over EMTF trks
@@ -539,63 +470,21 @@ void PtRegressionRun3Prep(TString user = "",
         int gmt_pt = 999;
         Bool_t mu_train = false;  // tag muon for training
 
-        // commented out 2019-10-10
-        // //Get RECO mu(i.e. GEN mu) with unique match from nonZB events
-        // if( !isZB && emtf_unique_match == 1 ){
-
-        //   if (emtf_unique_iMu >= nMuons) continue;//Restrict number iMu index in the range of nMuons
-
         // index of emtf_unique_iMu is 0 or 1
         mu_train = true;
         mu_pt =  F("mu_pt", emtf_unique_iMu);
         mu_eta = F("mu_eta", emtf_unique_iMu);
         mu_phi = F("mu_phi", emtf_unique_iMu);
         mu_charge = I("mu_charge", emtf_unique_iMu);
-        // }
-
-        // commented out 2019-10-10
-        //===============================================
-        //Option1: Discard nonZB trk without unique match
-        //===============================================
-        // if( !isZB && emtf_unique_match != 1 ) continue;
-
-        // commented out 2019-10-10
-        /*
-        //===================================================
-        //Option2: Assign 1GeV to RECO mu if no unique match
-        //===================================================
-        if( !isZB && emtf_unique_match != 1 ) {
-        mu_train = true;
-        mu_pt = 1.0;
-        mu_eta = emtf_eta;
-        mu_phi = emtf_phi;
-        mu_charge = emtf_charge;
-        }
-        */
-
-        /*
-        //===========================================================
-        //Option3: Assign uGMT pT(eta) to RECO mu if no unique match
-        //===========================================================
-        //if( !isZB && emtf_unique_match != 1 ) {}
-        if( !isZB && (emtf_dR_match_nReco+emtf_dR_match_nRecoSoft == 0) ) {//reject tracks without any match
-        mu_train = true;
-        mu_eta = emtf_eta_int*0.010875;
-        mu_phi = emtf_phi;
-        mu_charge = emtf_charge;
-        gmt_pt = 10 - (abs(emtf_eta_int) / 32);
-        mu_pt = (gmt_pt <= 0) ?  0 : (gmt_pt-1) * 0.5; // Decode integer pT (result is in 0.5 GeV step)
-        }
-        */
 
         if(verbose) std::cout << "RECO kinematics ... "<< std::endl;
 
         //===============================
         //RECO mu kinematics requirements
         //===============================
-        if ( !isZB && (mu_pt < PTMIN || mu_pt > PTMAX) ) continue;
-        if ( !isZB && (fabs( mu_eta ) < ETAMIN || fabs( mu_eta ) > ETAMAX) ) continue;
-        if ( mu_pt < PTMIN_TR || mu_pt > PTMAX_TR || isTEST) mu_train = false;
+        if ( !isZB && (mu_pt < minPt || mu_pt > maxPt) ) continue;
+        if ( !isZB && (fabs( mu_eta ) < minEta || fabs( mu_eta ) > maxEta) ) continue;
+        if ( mu_pt < minPtTrain || mu_pt > maxPtTrain || isTEST) mu_train = false;
 
         //==================
         //Require valid mode
@@ -664,8 +553,8 @@ void PtRegressionRun3Prep(TString user = "",
         int mode     = emtf_mode;
         int mode_CSC = emtf_mode_CSC;
         int mode_RPC = emtf_mode_RPC;
-        if(verbose) std::cout << "mode: "<<mode<<" MODE: "<<MODE<< std::endl;
-        if (mode != MODE) continue;
+        if(verbose) std::cout << "mode: "<<mode<<" MODE: "<<emtfMode<< std::endl;
+        if (mode != emtfMode) continue;
         if (mode != mode_CSC) {
           if(verbose) std::cout << "Not CSC-only track"<< std::endl;
           continue;
@@ -746,8 +635,6 @@ void PtRegressionRun3Prep(TString user = "",
         else if (i1CSC >= 0) { eta = F("hit_eta",i1CSC ); phi = F("hit_phi",i1CSC ); }
         endcap = (eta > 0 ? +1 : -1);
 
-        //std::cout << "ph1 HS (before): " << ph1 << ", ph1 ES (before): " << ph1*4 << ", ring: " << ring1 << ", endcap: " << endcap << ", quart_bit: " << strip_quart_bit1 << ", eight_bit: " << strip_eight_bit1 << std::endl;
-
         //This block of code adds a correction to the integer phi value based on the quarter and eight-strip position offset.
         if (ph1 != -99) CalcPhiRun3(ph1, ring1, strip_quart_bit1, strip_eight_bit1, 1, endcap,
                                     useOneQuartPrecision, useOneEighthPrecision);
@@ -776,7 +663,7 @@ void PtRegressionRun3Prep(TString user = "",
         // Extra variables for FR computation
         int cham1, cham2, cham3, cham4;
 
-        if (MODE == 0) {
+        if (emtfMode == 0) {
           theta = emtf_eta_int;
           goto EMTF_ONLY;
         }
@@ -815,28 +702,19 @@ void PtRegressionRun3Prep(TString user = "",
         if (ring1 == 3) FR1 = 0;                   // In ME1/3 chambers are non-overlapping
 
 
-	CalcBends( bend1, bend2, bend3, bend4,
-	           pat1, pat2, pat3, pat4, pat1_run3, pat2_run3, pat3_run3, pat4_run3,
-         	   dPhSign, endcap, mode, BIT_COMP, isRun2 );
+        CalcBends(bend1, bend2, bend3, bend4,
+                  pat1, pat2, pat3, pat4,
+                  pat1_run3, pat2_run3, pat3_run3, pat4_run3,
+                  dPhSign, endcap, mode, BIT_COMP, isRun2 );
 
-
-	if (useRPC) {
-          RPC1 = (i1CSC >= 0 ? ( I("hit_isRPC",i1CSC ) == 1 ? 1 : 0) : -99);
-          RPC2 = (i2 >= 0 ? ( I("hit_isRPC", i2 ) == 1 ? 1 : 0) : -99);
-          RPC3 = (i3 >= 0 ? ( I("hit_isRPC", i3 ) == 1 ? 1 : 0) : -99);
-          RPC4 = (i4 >= 0 ? ( I("hit_isRPC", i4 ) == 1 ? 1 : 0) : -99);
-        }
+        RPC1 = (i1CSC >= 0 ? ( I("hit_isRPC",i1CSC ) == 1 ? 1 : 0) : -99);
+        RPC2 = (i2 >= 0 ? ( I("hit_isRPC", i2 ) == 1 ? 1 : 0) : -99);
+        RPC3 = (i3 >= 0 ? ( I("hit_isRPC", i3 ) == 1 ? 1 : 0) : -99);
+        RPC4 = (i4 >= 0 ? ( I("hit_isRPC", i4 ) == 1 ? 1 : 0) : -99);
 
         GE11 = (i1GEM >= 0 ? ( I("hit_isGEM",i1GEM ) == 1 ? 1 : 0) : -99);
 
         CalcRPCs( RPC1, RPC2, RPC3, RPC4, mode, st1_ring2, theta, useBitCompression );
-
-        // Uncommented on 2019-10-10
-        // Clean out showering muons with outlier station 1, or >= 2 outlier stations
-        // if (!isTEST && log2(mu_pt) > 6 && CLEAN_HI_PT && MODE == 15)
-        // if ( dPhSum4A >= fmax(40., 332. - 40*log2(mu_pt)) )
-        // if ( outStPh < 2 || dPhSum3A >= fmax(24., 174. - 20*log2(mu_pt)) )
-        // mu_train = false;
 
       EMTF_ONLY: // Skip track building, just store EMTF info
 
@@ -894,33 +772,21 @@ void PtRegressionRun3Prep(TString user = "",
             if ( vName == "St1_ring2" ) var_vals.at(iVar) = st1_ring2;
             if ( vName == "dPhi_12" ) var_vals.at(iVar) = dPh12;
             if ( vName == "dPhi_13" ) var_vals.at(iVar) = dPh13;
+
             if ( vName == "dPhi_14" ) var_vals.at(iVar) = dPh14;
             if ( vName == "dPhi_23" ) var_vals.at(iVar) = dPh23;
             if ( vName == "dPhi_24" ) var_vals.at(iVar) = dPh24;
             if ( vName == "dPhi_34" ) var_vals.at(iVar) = dPh34;
+
             if ( vName == "FR_1" ) var_vals.at(iVar) = FR1;
             if ( vName == "FR_2" ) var_vals.at(iVar) = FR2;
             if ( vName == "FR_3" ) var_vals.at(iVar) = FR3;
             if ( vName == "FR_4" ) var_vals.at(iVar) = FR4;
 
-            if ( vName == "slope_1" ) var_vals.at(iVar) = slope1;
-            if ( vName == "slope_2" ) var_vals.at(iVar) = slope2;
-            if ( vName == "slope_3" ) var_vals.at(iVar) = slope3;
-            if ( vName == "slope_4" ) var_vals.at(iVar) = slope4;
-
             if ( vName == "bend_1" ) var_vals.at(iVar) = bend1;
             if ( vName == "bend_2" ) var_vals.at(iVar) = bend2;
             if ( vName == "bend_3" ) var_vals.at(iVar) = bend3;
             if ( vName == "bend_4" ) var_vals.at(iVar) = bend4;
-
-            if ( vName == "strip_quart_bit_1" ) var_vals.at(iVar) = strip_quart_bit1;
-            if ( vName == "strip_quart_bit_2" ) var_vals.at(iVar) = strip_quart_bit2;
-            if ( vName == "strip_quart_bit_3" ) var_vals.at(iVar) = strip_quart_bit3;
-            if ( vName == "strip_quart_bit_4" ) var_vals.at(iVar) = strip_quart_bit4;
-            if ( vName == "strip_eight_bit_1" ) var_vals.at(iVar) = strip_eight_bit1;
-            if ( vName == "strip_eight_bit_2" ) var_vals.at(iVar) = strip_eight_bit2;
-            if ( vName == "strip_eight_bit_3" ) var_vals.at(iVar) = strip_eight_bit3;
-            if ( vName == "strip_eight_bit_4" ) var_vals.at(iVar) = strip_eight_bit4;
 
             if ( vName == "dPhiSum4" ) var_vals.at(iVar) = dPhSum4;
             if ( vName == "dPhiSum4A" ) var_vals.at(iVar) = dPhSum4A;
@@ -939,6 +805,11 @@ void PtRegressionRun3Prep(TString user = "",
             if ( vName == "RPC_2" ) var_vals.at(iVar) = RPC2;
             if ( vName == "RPC_3" ) var_vals.at(iVar) = RPC3;
             if ( vName == "RPC_4" ) var_vals.at(iVar) = RPC4;
+
+            if ( vName == "slope_1" ) var_vals.at(iVar) = slope1;
+            if ( vName == "slope_2" ) var_vals.at(iVar) = slope2;
+            if ( vName == "slope_3" ) var_vals.at(iVar) = slope3;
+            if ( vName == "slope_4" ) var_vals.at(iVar) = slope4;
 
             // Makes output values [0, 1] instead of [-99, 1] which is easier to see in the output histogram.
             if ( vName == "GEM_1" ) var_vals.at(iVar) = max(0, GE11);
@@ -986,7 +857,7 @@ void PtRegressionRun3Prep(TString user = "",
           } // End loop: for (UInt_t iVar = 0; iVar < var_names.size(); iVar++)
 
           // Load values into event
-          if ( (NonZBEvt % 2)==0 && mu_train && MODE > 0 ) {
+          if ( (NonZBEvt % 2)==0 && mu_train && emtfMode > 0 ) {
             std::get<1>(factories.at(iFact))->AddTrainingEvent( "Regression", var_vals, evt_weight );
             if (iFact == 0) nTrain += 1;
 
@@ -1121,37 +992,4 @@ void PtRegressionRun3Prep(TString user = "",
 
   // Launch the GUI for the root macros
   if (!gROOT->IsBatch()) TMVA::TMVARegGui( out_file_str );
-}
-
-
-int main( int argc, char** argv )
-{
-  /*
-    options for the training
-    - isRun2
-    - useRPC
-    - useOneQuartPrecision
-    - useOneEighthPrecision
-    - useSlopes: replace bend with slope
-    - useGEM
-  */
-
-  const bool isRun2 = argv[1];
-  bool useRPC = argv[2];
-  bool useOneQuartPrecision = argv[3];
-  bool useOneEighthPrecision = argv[4];
-  bool useSlopes = argv[5];
-  bool useGEM = argv[6];
-  bool useCompression = argv[7];
-
-  // Select methods (don't look at this code - not of interest)
-  TString methodList;
-  for (int i=1; i<argc; i++) {
-    TString regMethod(argv[i]);
-    if(regMethod=="-b" || regMethod=="--batch") continue;
-    if (!methodList.IsNull()) methodList += TString(",");
-    methodList += regMethod;
-  }
-  PtRegressionRun3Prep(methodList, isRun2, useRPC, useOneQuartPrecision, useOneEighthPrecision, useSlopes, useGEM, useCompression);
-  return 0;
 }
