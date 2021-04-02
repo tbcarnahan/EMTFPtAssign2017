@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 
 import sys
+import os
 import math
 from ROOT import *
 import numpy as np
@@ -29,8 +30,6 @@ parser.add_option("--res1DvsPt", dest="res1DvsPt", action="store_true", default 
 parser.add_option("--res1DvsEta", dest="res1DvsEta", action="store_true", default = True)
 parser.add_option("--res2D", dest="res2D", action="store_true", default = False)
 (options, args) = parser.parse_args()
-
-
 
 plotDir = "plots/"
 
@@ -158,7 +157,9 @@ if options.efficiencies:
 
         leg.Draw("same")
 
-
+        path = './plots/bdt_eff'
+        isPath = os.path.isfile(path)
+        if not isPath: os.mkdir(path)
         makePlots(c1, "bdt_eff/BDT_eff_SD_pt{}_eta{}to{}".format(pt_str[l], eta_str_min[k], eta_str_max[k]))
 
 
@@ -190,7 +191,8 @@ if options.efficiencies:
       gStyle.SetOptStat(0)
       graph = eff1.GetPaintedGraph() ; graph.SetMinimum(0) ;  graph.SetMaximum(1.003)
 
-      makePlot(c1, "bdt_eff/eta/BDTeff_eta_pt"+str(pt_str[l]) )
+      #makePlot(c1, "bdt_eff/eta/BDTeff_eta_pt"+str(pt_str[l]) )
+     
 
 '''
 if options.resolutions:
