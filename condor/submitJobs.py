@@ -116,10 +116,14 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     ## CMSSW version
+    CWD = subprocess.Popen("echo $PWD", shell=True, stdout=subprocess.PIPE).stdout.read().strip('\n')
     CMSSW = subprocess.Popen("echo $CMSSW_VERSION", shell=True, stdout=subprocess.PIPE).stdout.read().strip('\n')
     CMSSW_DIR = subprocess.Popen("echo $CMSSW_BASE", shell=True, stdout=subprocess.PIPE).stdout.read().strip('\n')
     SCRAM_ARCH = subprocess.Popen("echo $SCRAM_ARCH", shell=True, stdout=subprocess.PIPE).stdout.read().strip('\n')
     USER = getpass.getuser()
+
+    if CMSSW not in CWD:
+        sys.exit("Error: CMSSW environment variable has not been set! Exiting.")
 
     ## few checks
     if CMSSW == '' or CMSSW_DIR == '' or SCRAM_ARCH == '' or USER == '':
