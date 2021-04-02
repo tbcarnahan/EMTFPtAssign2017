@@ -85,7 +85,7 @@ void CalcDeltaPhisGEM( int& dPh12, int& dPh13, int& dPh14, int& dPh23, int& dPh2
 
 void CalcPhiRun3( int& ph, int ring, int strip_quart_bit, int strip_eight_bit, int station, int endcap, bool useQuartBit, bool useEighthBit) {
 
-  // if not bit was set, do no thing
+  // if not bit was set, do nothing
   if (!useQuartBit) return;
 
   /*
@@ -296,6 +296,25 @@ void CalcBends( int& bend1, int& bend2, int& bend3, int& bend4,
   } // End conditional: if (BIT_COMP)
 
 } // End function: CalcBends()
+
+void CalcSlopes( const int bend, float& slope, const int endcap, const int mode, const bool BIT_COMP, const bool isRun2) {
+
+  if (std::abs(slope) > 15) {
+    slope = -99;
+    return;
+  }
+
+  // multiply with bending
+  // make sure that bending convention is not {0,1}, but {1, -1}!!!
+  slope *= bend;
+
+  // Reverse to match dPhi convention
+  if (endcap == 1)
+    slope *= -1;
+
+  assert( slope != -99 );
+}
+
 
 void CalcRPCs( int& RPC1, int& RPC2, int& RPC3, int& RPC4, const int mode,
 	       const int st1_ring2, const int theta, const bool BIT_COMP ) {

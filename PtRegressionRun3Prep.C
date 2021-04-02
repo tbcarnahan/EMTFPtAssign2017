@@ -161,7 +161,7 @@ void PtRegressionRun3Prep(TString user = "",
   TString SM_file_name;
   TString ZB_file_name;
 
-  for (int i = 0; i < USESingleMu; i++) {
+  for (int i = 0; i < SingleMu_files.size(); i++) {
     SM_file_name.Form( "%s%s", EOS_DIR_NAME.Data(), SingleMu_files[i].Data() );
     std::cout << "Adding file " << SM_file_name.Data() << std::endl;
     SM_in_file_names.push_back(SM_file_name.Data());
@@ -572,11 +572,13 @@ void PtRegressionRun3Prep(TString user = "",
         int th3 = (i3 >= 0 ? I("hit_theta_int", i3 ) : -99);
         int th4 = (i4 >= 0 ? I("hit_theta_int", i4 ) : -99);
 
+        // 4-bit value
         int pat1 = (i1CSC >= 0 ? I("hit_pattern",i1CSC ) : -99);
         int pat2 = (i2 >= 0 ? I("hit_pattern", i2 ) : -99);
         int pat3 = (i3 >= 0 ? I("hit_pattern", i3 ) : -99);
         int pat4 = (i4 >= 0 ? I("hit_pattern", i4 ) : -99);
 
+        // 4-bit value
         int pat1_run3 = (i1CSC >= 0 ? I("hit_pattern_run3",i1CSC ) : -99);
         int pat2_run3 = (i2 >= 0 ? I("hit_pattern_run3", i2 ) : -99);
         int pat3_run3 = (i3 >= 0 ? I("hit_pattern_run3", i3 ) : -99);
@@ -594,17 +596,7 @@ void PtRegressionRun3Prep(TString user = "",
         int bend3 = (i3 >= 0 ? I("hit_bend", i3 ) : -99);
         int bend4 = (i4 >= 0 ? I("hit_bend", i4 ) : -99);
 
-        // 5-bit slope: 1-bit sign + 4-bit value
-        int slopeshift1 = (bend1 == 0) ? 0 : 16;
-        int slopeshift2 = (bend2 == 0) ? 0 : 16;
-        int slopeshift3 = (bend3 == 0) ? 0 : 16;
-        int slopeshift4 = (bend4 == 0) ? 0 : 16;
-
-        slope1 += slopeshift1;
-        slope2 += slopeshift2;
-        slope3 += slopeshift3;
-        slope4 += slopeshift4;
-
+        // CCLUT bit corrections
         int strip_quart_bit1 = (i1CSC >= 0 ? I("hit_strip_quart_bit",i1CSC ) : -99);
         int strip_quart_bit2 = (i2 >= 0 ? I("hit_strip_quart_bit", i2 ) : -99);
         int strip_quart_bit3 = (i3 >= 0 ? I("hit_strip_quart_bit", i3 ) : -99);
@@ -701,12 +693,22 @@ void PtRegressionRun3Prep(TString user = "",
         FR4 = (i4 >= 0 ? (cham4 % 2 == 1) : -99);
         if (ring1 == 3) FR1 = 0;                   // In ME1/3 chambers are non-overlapping
 
+        // calculate bendings from CCLUT slope (Run-3)
+        // this needs to be evaluated before the CalcBends
+        // this function does not modify bendX
+        CalcSlopes(bend1, slope1, endcap, mode, BIT_COMP, isRun2 );
+        CalcSlopes(bend2, slope2, endcap, mode, BIT_COMP, isRun2 );
+        CalcSlopes(bend3, slope3, endcap, mode, BIT_COMP, isRun2 );
+        CalcSlopes(bend4, slope4, endcap, mode, BIT_COMP, isRun2 );
 
+        // calculate bendings from pattern numbers (Run-2, Run-3)
+        // this function modifies bendX
         CalcBends(bend1, bend2, bend3, bend4,
                   pat1, pat2, pat3, pat4,
                   pat1_run3, pat2_run3, pat3_run3, pat4_run3,
                   dPhSign, endcap, mode, BIT_COMP, isRun2 );
 
+        // Check for additional hits
         RPC1 = (i1CSC >= 0 ? ( I("hit_isRPC",i1CSC ) == 1 ? 1 : 0) : -99);
         RPC2 = (i2 >= 0 ? ( I("hit_isRPC", i2 ) == 1 ? 1 : 0) : -99);
         RPC3 = (i3 >= 0 ? ( I("hit_isRPC", i3 ) == 1 ? 1 : 0) : -99);

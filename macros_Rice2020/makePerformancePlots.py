@@ -28,8 +28,9 @@ parser.add_option("--res1D_invDiffOverInvGen", dest="res1D_invDiffOverInvGen", a
 parser.add_option("--res1DvsPt", dest="res1DvsPt", action="store_true", default = True)
 parser.add_option("--res1DvsEta", dest="res1DvsEta", action="store_true", default = True)
 parser.add_option("--res2D", dest="res2D", action="store_true", default = False)
-
 (options, args) = parser.parse_args()
+
+
 
 plotDir = "plots/"
 
@@ -60,16 +61,17 @@ else:
 
 ## Data
 prefix = "root://cmseos.fnal.gov//store/user/dildick/"
+#prefix = "root://cmseos.fnal.gov//store/user/madecaro/"
 fileName = "PtRegressionRun3Prep_MODE_15_noBitCompr.root"
 trainings= [
-  'EMTF_BDT_Train_isRun2_Selection0x1c_20210327_152934',
-  'EMTF_BDT_Train_isRun3_Selection0x1c_20210327_152937',
-  'EMTF_BDT_Train_isRun3_useQSBit_Selection0x1c_20210327_152940',
-  'EMTF_BDT_Train_isRun3_useQSBit_useESBit_Selection0x1c_20210327_152942',
-#  'EMTF_BDT_Train_isRun2_Selection0x1c_20210327_152946',
-#  'EMTF_BDT_Train_isRun3_Selection0x1c_20210327_152948',
-#  'EMTF_BDT_Train_isRun3_useQSBit_Selection0x1c_20210327_152951',
-#  'EMTF_BDT_Train_isRun3_useQSBit_useESBit_Selection0x1c_20210327_152954'
+  'EMTF_BDT_Train_Test3DPhi_eta1.2to1.55_isRun2_Selection0x1c_20210401_213705/',
+  'EMTF_BDT_Train_Test3DPhi_eta1.2to1.55_isRun3_Selection0x1c_20210401_213807/',
+  'EMTF_BDT_Train_Test3DPhi_eta1.2to1.55_isRun3_useQSBit_Selection0x1c_20210401_213908/',
+  'EMTF_BDT_Train_Test3DPhi_eta1.2to1.55_isRun3_useQSBit_useESBit_Selection0x1c_20210401_214009/',
+  'EMTF_BDT_Train_Test3DPhi_eta2.1to2.4_isRun2_Selection0x1c_20210401_214110/',
+  'EMTF_BDT_Train_Test3DPhi_eta2.1to2.4_isRun3_Selection0x1c_20210401_214211/',
+  'EMTF_BDT_Train_Test3DPhi_eta2.1to2.4_isRun3_useQSBit_Selection0x1c_20210401_214313/',
+  'EMTF_BDT_Train_Test3DPhi_eta2.1to2.4_isRun3_useQSBit_useESBit_Selection0x1c_20210401_214414/'
 ]
 
 treeName = "f_MODE_15_logPtTarg_invPtWgt_noBitCompr/TestTree"
@@ -77,20 +79,18 @@ treeName = "f_MODE_15_logPtTarg_invPtWgt_noBitCompr/TestTree"
 evt_trees = []
 for p in trainings:
   ttree = TChain(treeName)
-  ttree.Add("{}{}/{}".format(prefix,p,fileName))
+  fName = "{}{}{}".format(prefix,p,fileName)
+  print("Reading file: {}".format(fName))
+  ttree.Add(fName)
   evt_trees.append(ttree)
 
 markerColors = [kBlue, kRed, kGreen+2, kBlack, 7, 40]
 lineColors = [kBlue, kRed, kGreen+2, kBlack, 7, 40]
-markerStyles = [8,8,8,8,8,8]
+markerStyles = [8,8,8,8,8,8,8,8]
 drawOptions = ["AP", "same", "same", "same", "same", "same"]
 legendEntries = ["Run-2", "Run-3", "Run-3 QSBit", "Run-3 QSBit ESBit",
-                 "Run-3 BDT w/ QSBit", "Run-3 BDT w/ QSBit ESBit", "Run-3 BDT w/ QSBit ESBit Slopes"]
-
-
-
-
-
+                 "Run-2", "Run-3", "Run-3 QSBit", "Run-3 QSBit ESBit",
+               ]
 
 ## ================ Helper functions ======================
 def truncate(number, digits):
@@ -125,16 +125,25 @@ if options.efficiencies:
 
       if options.EffVsPt:
 
+	leg = TLegend(0.6, 0.33, 0.9, 0.63)
+	leg.SetBorderSize(0)
+	gStyle.SetOptStat(0)
+
 	#Run2 and Run3 BDT efficiency vs Pt
         effs = []
-        for ee in range(0,len(evt_trees)):
-          eff = draw_eff(evt_trees[ee], "; p_{T}^{GEN} (GeV) ; Trigger Efficiency", "(50,1.,50.)", "GEN_pt", gen_eta_cut(eta_min[k], eta_max[k]), bdt_pt_cut(pt_cut[l]))
+        for ee in range(0,4):
+          eff = draw_eff(evt_trees[ee], "; p_{T}^{GEN} (GeV) ; Trigger Efficiency", "(50,1.,50.)", "GEN_pt",
+                         gen_eta_cut(eta_min[k], eta_max[k]), bdt_pt_cut(pt_cut[l]))
           eff.SetMarkerColor(markerColors[ee])
           eff.SetLineColor(lineColors[ee])
           eff.SetMarkerStyle(markerStyles[ee])
           eff.Draw(drawOptions[ee])
           effs.append(eff)
-
+          leg.AddEntry(effs[ee], legendEntries[ee])
+          #graph = eff.GetPaintedGraph()
+          #graph.SetMinimum(0)
+          #graph.SetMaximum(1.1)
+          eff.Draw("same")
         """
         line = TLine(0, 0.5, 50, 0.5)
 	line2 = TLine(pt_cut[l], 0., pt_cut[l], 1.1)
@@ -147,18 +156,8 @@ if options.efficiencies:
 	la2.DrawLatex( 35., 0.1, str(eta_min[k])+" < |#eta^{GEN}| < "+str(eta_max[k]))
         """
 
-	leg = TLegend(0.6, 0.33, 0.9, 0.63)
-        for ee in range(0,6):
-          leg.AddEntry(effs[ee], legendEntries[ee])
-	leg.SetBorderSize(0)
         leg.Draw("same")
 
-	gPad.Update()
-	eff1.SetTitle(" ; p_{T}^{GEN} (GeV) ; Trigger Efficiency")
-	gStyle.SetOptStat(0)
-	graph = eff1.GetPaintedGraph()
-        graph.SetMinimum(0)
-        graph.SetMaximum(1.1)
 
         makePlots(c1, "bdt_eff/BDT_eff_SD_pt{}_eta{}to{}".format(pt_str[l], eta_str_min[k], eta_str_max[k]))
 
