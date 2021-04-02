@@ -56,7 +56,7 @@ int CalcTrackTheta( const int th1, const int th2, const int th3, const int th4,
 }
 
 
-void CalcDeltaPhis_2019GEM( int& dPh12, int& dPh13, int& dPh14, int& dPh23, int& dPh24, int& dPh34, int& dPhSign,
+void CalcDeltaPhisGEM( int& dPh12, int& dPh13, int& dPh14, int& dPh23, int& dPh24, int& dPh34, int& dPhSign,
                             int& dPhSum4, int& dPhSum4A, int& dPhSum3, int& dPhSum3A, int& outStPh, int& dPhGE11ME11,
                             const int ph1, const int ph2, const int ph3, const int ph4, const int phGEM, const int mode, const bool BIT_COMP ) {
 
@@ -64,9 +64,87 @@ void CalcDeltaPhis_2019GEM( int& dPh12, int& dPh13, int& dPh14, int& dPh23, int&
                 dPhSum4,dPhSum4A,dPhSum3,dPhSum3A,outStPh,
                 ph1,  ph2,  ph3,  ph4,  mode,BIT_COMP );
 
-  dPhGE11ME11 = phGEM - ph1;
+  /*
+    AWB: "One other thing: in PtLutVarCalc.cc, the variable dPhGE11ME11 should be set
+    to some default value if *either* phGEM *or* ph1 is < 0, and that default
+    value should be some constant like -999, rather than being set equal to phGEM (line 71)."
+  */
+  if (ph1 < 0 or phGEM < 0)
+    dPhGE11ME11 = -999;
+
+  /*
+    AWB: "Also, the quantity dPhGE11ME11 should be multiplied by -1*dPhSign, so use
+    dPhGE11ME11 = (ph1 - phGEM)*dPhSign;  With this convention, when dPhi(GEM-ME1)
+    and dPhi(ME1-ME2) are in line, both will have positive values."
+  */
+
+  dPhGE11ME11 = (ph1 - phGEM)*dPhSign;
 
   // probably best not to change the EMTF track mode at this point
+}
+
+void CalcPhiRun3( int& ph, int ring, int strip_quart_bit, int strip_eight_bit, int station, int endcap, bool useQuartBit, bool useEighthBit) {
+
+  // if not bit was set, do no thing
+  if (!useQuartBit) return;
+
+  /*
+  The int phi is corrected by an amount depending on the quart- and eight-strip bits of the position offset.
+  To get these correction values, the full strip pitch (which varies by station/ring) is divided by a factor of 4
+    (for quart-strip pitch) or 8 (for eight-strip pitch), then converted from degrees to integer units by
+    multiplying by a factor of 240 [4 for ES precision * 60 degree sector].
+  Lastly, these corrections are either added or subtracted based on the chamber orientation (clockwise vs. counterclockwise).
+    St. 1 and 2 have the opposite orientation of St. 3 and 4, and for the opposite endcap these are reversed.
+  The values for full strip pitch are tabulated in p.2 of https://arxiv.org/pdf/0911.4992.pdf
+  For comparison, conversion of loc phi in degrees to int in the emulator can be found in:
+    https://github.com/cms-sw/cmssw/blob/master/L1Trigger/L1TMuonEndCap/interface/TrackTools.h#L201-L207
+  */
+
+  if (station == 1) {
+    if (ring == 1) {
+      if (strip_quart_bit == 1 ) { (endcap>0 ? ph = ph + 10 : ph = ph - 10 ); }
+      if (useEighthBit and strip_eight_bit == 1 ) { (endcap>0 ? ph = ph + 5 : ph = ph - 5 ); }
+    }
+
+    if (ring == 2) {
+      if (strip_quart_bit == 1 ) { (endcap>0 ? ph = ph + 8 : ph = ph - 8 ); }
+      if (useEighthBit and strip_eight_bit == 1 ) { (endcap>0 ? ph = ph + 4 : ph = ph - 4 ); }
+    }
+
+    if (ring == 3) {
+      if (strip_quart_bit == 1 ) { (endcap>0 ? ph = ph + 4 : ph = ph - 4 ); }
+      if (useEighthBit and strip_eight_bit == 1 ) { (endcap>0 ? ph = ph + 2 : ph = ph - 2 ); }
+    }
+
+    if (ring == 4) {
+      if (strip_quart_bit == 1 ) { (endcap>0 ? ph = ph + 13 : ph = ph - 13 ); }
+      if (useEighthBit and strip_eight_bit == 1 ) { (endcap>0 ? ph = ph + 7 : ph = ph - 7 ); }
+    }
+  }
+
+  if (station == 2) {
+    if (ring == 1) {
+      if (strip_quart_bit == 1 ) { (endcap>0 ? ph = ph + 16 : ph = ph - 16 ); }
+      if (useEighthBit and strip_eight_bit == 1 ) { (endcap>0 ? ph = ph + 8 : ph = ph - 8 ); }
+    }
+
+    if (ring == 2) {
+      if (strip_quart_bit == 1 ) { (endcap>0 ? ph = ph + 8 : ph = ph - 8 ); }
+      if (useEighthBit and strip_eight_bit == 1 ) { (endcap>0 ? ph = ph + 4 : ph = ph - 4 ); }
+    }
+  }
+
+  if (station > 2) {
+    if ( ring == 1) {
+      if (strip_quart_bit == 1 ) { (endcap>0 ? ph = ph - 16 : ph = ph + 16 ); }
+      if (useEighthBit and strip_eight_bit == 1 ) { (endcap>0 ? ph = ph - 8 : ph = ph + 8 ); }
+    }
+
+    if (ring == 2) {
+      if (strip_quart_bit == 1 ) { (endcap>0 ? ph = ph - 8 : ph = ph + 8 ); }
+      if (useEighthBit and strip_eight_bit == 1 ) { (endcap>0 ? ph = ph - 4 : ph = ph + 4 ); }
+    }
+  }
 }
 
 void CalcDeltaPhis( int& dPh12, int& dPh13, int& dPh14, int& dPh23, int& dPh24, int& dPh34, int& dPhSign,
@@ -184,12 +262,23 @@ void CalcDeltaThetas( int& dTh12, int& dTh13, int& dTh14, int& dTh23, int& dTh24
 
 void CalcBends( int& bend1, int& bend2, int& bend3, int& bend4,
                 const int pat1, const int pat2, const int pat3, const int pat4,
-                const int dPhSign, const int endcap, const int mode, const bool BIT_COMP ) {
+                const int pat1_run3, const int pat2_run3, const int pat3_run3, const int pat4_run3,
+                const int dPhSign, const int endcap, const int mode, const bool BIT_COMP, const bool isRun2) {
 
-  bend1 = CalcBendFromPattern( pat1, endcap );
-  bend2 = CalcBendFromPattern( pat2, endcap );
-  bend3 = CalcBendFromPattern( pat3, endcap );
-  bend4 = CalcBendFromPattern( pat4, endcap );
+
+  if(isRun2) {
+    bend1 = CalcBendFromPattern( pat1, endcap, isRun2 );
+    bend2 = CalcBendFromPattern( pat2, endcap, isRun2 );
+    bend3 = CalcBendFromPattern( pat3, endcap, isRun2 );
+    bend4 = CalcBendFromPattern( pat4, endcap, isRun2 );
+  }
+
+  else {
+    bend1 = CalcBendFromPattern( pat1_run3, endcap, isRun2 );
+    bend2 = CalcBendFromPattern( pat2_run3, endcap, isRun2 );
+    bend3 = CalcBendFromPattern( pat3_run3, endcap, isRun2 );
+    bend4 = CalcBendFromPattern( pat4_run3, endcap, isRun2 );
+  }
 
   if (BIT_COMP) {
     int nBits = 3;
@@ -276,18 +365,29 @@ void CalcRPCs( int& RPC1, int& RPC2, int& RPC3, int& RPC4, const int mode,
 } // End function: void CalcRPCs()
 
 
-int CalcBendFromPattern( const int pattern, const int endcap ) {
+int CalcBendFromPattern( const int pattern, const int endcap, const bool isRun2 ) {
 
   int bend = -99;
   if (pattern < 0)
     return bend;
 
-  if (pattern == 10)
-    bend = 0;
-  else if ( (pattern % 2) == 0 )
-    bend = (10 - pattern) / 2;
-  else if ( (pattern % 2) == 1 )
-    bend = -1 * (11 - pattern) / 2;
+  if(isRun2) {
+    if (pattern == 10)
+      bend = 0;
+    else if ( (pattern % 2) == 0 )
+      bend = (10 - pattern) / 2;
+    else if ( (pattern % 2) == 1 )
+      bend = -1 * (11 - pattern) / 2;
+  }
+
+  else {
+    if (pattern == 4)
+      bend = 0;
+    else if ( (pattern % 2) == 0 )
+      bend = (4 - pattern) / 2;
+    else if ( (pattern % 2) == 1 )
+      bend = -1 * (5 - pattern) / 2;
+  }
 
   // Reverse to match dPhi convention
   if (endcap == 1)
