@@ -1,5 +1,6 @@
 from ROOT import *
 from ROOT import TStyle
+import os
 
 def ANDtwo(cut1,cut2):
     """AND of two TCuts in PyROOT"""
@@ -181,3 +182,14 @@ def draw_geff(t, title, h_bins, to_draw, den_cut, extra_num_cut,
 
     SetOwnership(eff, False)
     return eff
+
+
+#_______________________________________________________________________________
+def checkDir(path):
+    try: 
+        os.mkdir(path)
+    except OSError as error:
+        "could not make output directory"
+    #isPath = os.path.isfile(path)
+    #if isPath: return
+    #if not isPath: os.mkdir(path)

@@ -157,9 +157,7 @@ if options.efficiencies:
 
         leg.Draw("same")
 
-        path = './plots/bdt_eff'
-        isPath = os.path.isfile(path)
-        if not isPath: os.mkdir(path)
+        checkDir('./plots/bdt_eff')
         makePlots(c1, "bdt_eff/BDT_eff_SD_pt{}_eta{}to{}".format(pt_str[l], eta_str_min[k], eta_str_max[k]))
 
 
@@ -191,7 +189,8 @@ if options.efficiencies:
       gStyle.SetOptStat(0)
       graph = eff1.GetPaintedGraph() ; graph.SetMinimum(0) ;  graph.SetMaximum(1.003)
 
-      #makePlot(c1, "bdt_eff/eta/BDTeff_eta_pt"+str(pt_str[l]) )
+      checkDir('plots/bdt_eff/eta')
+      makePlot(c1, "bdt_eff/eta/BDTeff_eta_pt"+str(pt_str[l]) )
      
 
 '''
