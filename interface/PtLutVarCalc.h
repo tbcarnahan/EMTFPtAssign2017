@@ -1,3 +1,6 @@
+#ifndef PtLutVarCalc_h
+#define PtLutVarCalc_h
+
 double range_phi_deg(double deg);
 
 double calc_phi_loc_deg_from_glob(double glob, int sector);
@@ -27,6 +30,8 @@ void CalcBends( int& bend1, int& bend2, int& bend3, int& bend4,
 		const int pat1_run3, const int pat2_run3, const int pat3_run3, const int pat4_run3,
 		const int dPhSign, const int endcap, const int mode, const bool BIT_COMP=false, const bool isRun2=false );
 
+void CalcSlopes( const int bend, int& slope, const int endcap, const int mode, const bool BIT_COMP, const bool isRun2);
+
 void CalcRPCs( int& RPC1, int& RPC2, int& RPC3, int& RPC4, const int mode,
 	       const int st1_ring2, const int theta, const bool BIT_COMP=false );
 
@@ -34,3 +39,5 @@ int CalcBendFromPattern( const int pattern, const int endcap, const bool isRun2=
 
 void CalcDeltaPhiSums( int& dPhSum4, int& dPhSum4A, int& dPhSum3, int& dPhSum3A, int& outStPh,
                        const int dPh12, const int dPh13, const int dPh14, const int dPh23, const int dPh24, const int dPh34 );
+
+#endif

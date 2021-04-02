@@ -297,7 +297,7 @@ void CalcBends( int& bend1, int& bend2, int& bend3, int& bend4,
 
 } // End function: CalcBends()
 
-void CalcSlopes( const int bend, float& slope, const int endcap, const int mode, const bool BIT_COMP, const bool isRun2) {
+void CalcSlopes( const int bend, int& slope, const int endcap, const int mode, const bool BIT_COMP, const bool isRun2) {
 
   if (std::abs(slope) > 15) {
     slope = -99;
