@@ -6,7 +6,9 @@ import argparse
 import getpass
 import subprocess
 from datetime import datetime
-from bdtVariables import *
+from commonVariables import *
+from Run2Variables import *
+from Run3Variables import *
 
 def trainVarsSelToHex(trainVariables):
     ## function to return hex string with train variables
