@@ -191,7 +191,7 @@ if __name__ == '__main__':
 
     ## training command
     def runCommand(localdir = './'):
-        command  = 'root -l -b -q "{localdir}PtRegressionRun3Prep.C({user}, {method}, {bemtfMode}, {minPt}, {maxPt}, {minPtTrain}, {maxPtTrain}, {minEta}, {maxEta}, {btrainVarsHex}, {bisRun2}, {buseQSBit}, {buseESBit}, {buseBitComp}, {nEvents})"'.format(
+        command  = 'root -l -b -q "{localdir}PtRegressionRun3Prep.C({user}, {method}, {bemtfMode}, {minPt}, {maxPt}, {minPtTrain}, {maxPtTrain}, {minEta}, {maxEta}, {btrainVarsHex}, {btrainVarsSize}, {bisRun2}, {buseQSBit}, {buseESBit}, {buseBitComp}, {nEvents})"'.format(
             user = '''\\\"{}\\\"'''.format(USER),
             method = '''\\\"BDTG_AWB_Sq\\\"''',
             bemtfMode = int(args.emtfMode),
@@ -202,6 +202,7 @@ if __name__ == '__main__':
             minEta = float(args.minEta),
             maxEta = float(args.maxEta),
             btrainVarsHex = int(trainVarsHex, 16),
+            btrainVarsSize = 0,
             bisRun2 = int(isRun2),
             buseQSBit = int(useQSBit),
             buseESBit = int(useESBit),
