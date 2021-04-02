@@ -161,7 +161,7 @@ void PtRegressionRun3Prep(TString user = "",
   TString SM_file_name;
   TString ZB_file_name;
 
-  for (int i = 0; i < USESingleMu; i++) {
+  for (int i = 0; i < SingleMu_files.size(); i++) {
     SM_file_name.Form( "%s%s", EOS_DIR_NAME.Data(), SingleMu_files[i].Data() );
     std::cout << "Adding file " << SM_file_name.Data() << std::endl;
     SM_in_file_names.push_back(SM_file_name.Data());
