@@ -79,9 +79,9 @@ treeName = "f_MODE_15_logPtTarg_invPtWgt_noBitCompr/TestTree"
 evt_trees = []
 for p in trainings:
   ttree = TChain(treeName)
-  fName = "{}{}/{}".format(prefix,p,fileName)
-  ttree.Add(fName)
+  fName = "{}{}{}".format(prefix,p,fileName)
   print("Reading file: {}".format(fName))
+  ttree.Add(fName)
   evt_trees.append(ttree)
 
 markerColors = [kBlue, kRed, kGreen+2, kBlack, 7, 40]
@@ -132,7 +132,8 @@ if options.efficiencies:
 	#Run2 and Run3 BDT efficiency vs Pt
         effs = []
         for ee in range(0,4):
-          eff = draw_eff(evt_trees[ee], "; p_{T}^{GEN} (GeV) ; Trigger Efficiency", "(50,1.,50.)", "GEN_pt", gen_eta_cut(eta_min[k], eta_max[k]), bdt_pt_cut(pt_cut[l]))
+          eff = draw_eff(evt_trees[ee], "; p_{T}^{GEN} (GeV) ; Trigger Efficiency", "(50,1.,50.)", "GEN_pt",
+                         gen_eta_cut(eta_min[k], eta_max[k]), bdt_pt_cut(pt_cut[l]))
           eff.SetMarkerColor(markerColors[ee])
           eff.SetLineColor(lineColors[ee])
           eff.SetMarkerStyle(markerStyles[ee])
