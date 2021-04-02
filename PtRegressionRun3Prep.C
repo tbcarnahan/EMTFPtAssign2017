@@ -60,7 +60,8 @@ void PtRegressionRun3Prep(TString user = "",
                           bool isRun2 = true,
                           bool useOneQuartPrecision = false,
                           bool useOneEighthPrecision = false,
-                          bool useBitCompression = false) {
+                          bool useBitCompression = false,
+                          int nEvents = -1) {
 
   // Expert options
   // Run-2 overrides all options
@@ -412,7 +413,7 @@ void PtRegressionRun3Prep(TString user = "",
   Bool_t isZB = false;//tag per event
   Bool_t isTEST = false;//tag per event
 
-
+  unsigned iEvent = 0;
   //=================================
   //Register events: loop over chains
   //=================================
@@ -423,6 +424,8 @@ void PtRegressionRun3Prep(TString user = "",
 
     for (UInt_t jEvt = 0; jEvt < in_chain->GetEntries(); jEvt++) {
 
+      if (iEvent > nEvents) break;
+      iEvent++;
       if (jEvt%1000==0) std::cout << "******* About to loop on event " << jEvt << " *******" << std::endl;
       //!!! jEvt restarts from 0 in new chain
 
