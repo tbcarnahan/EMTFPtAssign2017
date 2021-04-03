@@ -102,47 +102,79 @@ void CalcPhiRun3( int& ph, int ring, int strip_quart_bit, int strip_eight_bit, i
 
   if (station == 1) {
     if (ring == 1) {
-      if (strip_quart_bit == 1 ) { (endcap>0 ? ph = ph + 10 : ph = ph - 10 ); }
-      if (useEighthBit and strip_eight_bit == 1 ) { (endcap>0 ? ph = ph + 5 : ph = ph - 5 ); }
+      if (strip_quart_bit == 1 ) {
+        endcap>0 ? ph = ph + 10 : ph = ph - 10;
+      }
+      if (useEighthBit and strip_eight_bit == 1 ) {
+        endcap>0 ? ph = ph + 5 : ph = ph - 5;
+      }
     }
 
     if (ring == 2) {
-      if (strip_quart_bit == 1 ) { (endcap>0 ? ph = ph + 8 : ph = ph - 8 ); }
-      if (useEighthBit and strip_eight_bit == 1 ) { (endcap>0 ? ph = ph + 4 : ph = ph - 4 ); }
+      if (strip_quart_bit == 1 ) {
+        endcap>0 ? ph = ph + 8 : ph = ph - 8 ;
+      }
+      if (useEighthBit and strip_eight_bit == 1 ) {
+        endcap>0 ? ph = ph + 4 : ph = ph - 4 ;
+      }
     }
 
     if (ring == 3) {
-      if (strip_quart_bit == 1 ) { (endcap>0 ? ph = ph + 4 : ph = ph - 4 ); }
-      if (useEighthBit and strip_eight_bit == 1 ) { (endcap>0 ? ph = ph + 2 : ph = ph - 2 ); }
+      if (strip_quart_bit == 1 ) {
+        endcap>0 ? ph = ph + 4 : ph = ph - 4 ;
+      }
+      if (useEighthBit and strip_eight_bit == 1 ) {
+        endcap>0 ? ph = ph + 2 : ph = ph - 2 ;
+      }
     }
 
     if (ring == 4) {
-      if (strip_quart_bit == 1 ) { (endcap>0 ? ph = ph + 13 : ph = ph - 13 ); }
-      if (useEighthBit and strip_eight_bit == 1 ) { (endcap>0 ? ph = ph + 7 : ph = ph - 7 ); }
+      if (strip_quart_bit == 1 ) {
+        endcap>0 ? ph = ph + 13 : ph = ph - 13 ;
+      }
+      if (useEighthBit and strip_eight_bit == 1 ) {
+        endcap>0 ? ph = ph + 7 : ph = ph - 7 ;
+      }
     }
   }
 
   if (station == 2) {
     if (ring == 1) {
-      if (strip_quart_bit == 1 ) { (endcap>0 ? ph = ph + 16 : ph = ph - 16 ); }
-      if (useEighthBit and strip_eight_bit == 1 ) { (endcap>0 ? ph = ph + 8 : ph = ph - 8 ); }
+      if (strip_quart_bit == 1 ) {
+        endcap>0 ? ph = ph + 16 : ph = ph - 16 ;
+      }
+      if (useEighthBit and strip_eight_bit == 1 ) {
+        endcap>0 ? ph = ph + 8 : ph = ph - 8 ;
+      }
     }
 
     if (ring == 2) {
-      if (strip_quart_bit == 1 ) { (endcap>0 ? ph = ph + 8 : ph = ph - 8 ); }
-      if (useEighthBit and strip_eight_bit == 1 ) { (endcap>0 ? ph = ph + 4 : ph = ph - 4 ); }
+      if (strip_quart_bit == 1 ) {
+        endcap>0 ? ph = ph + 8 : ph = ph - 8 ;
+      }
+      if (useEighthBit and strip_eight_bit == 1 ) {
+        endcap>0 ? ph = ph + 4 : ph = ph - 4 ;
+      }
     }
   }
 
   if (station > 2) {
     if ( ring == 1) {
-      if (strip_quart_bit == 1 ) { (endcap>0 ? ph = ph - 16 : ph = ph + 16 ); }
-      if (useEighthBit and strip_eight_bit == 1 ) { (endcap>0 ? ph = ph - 8 : ph = ph + 8 ); }
+      if (strip_quart_bit == 1 ) {
+        endcap>0 ? ph = ph - 16 : ph = ph + 16 ;
+      }
+      if (useEighthBit and strip_eight_bit == 1 ) {
+        endcap>0 ? ph = ph - 8 : ph = ph + 8 ;
+      }
     }
 
     if (ring == 2) {
-      if (strip_quart_bit == 1 ) { (endcap>0 ? ph = ph - 8 : ph = ph + 8 ); }
-      if (useEighthBit and strip_eight_bit == 1 ) { (endcap>0 ? ph = ph - 4 : ph = ph + 4 ); }
+      if (strip_quart_bit == 1 ) {
+        endcap>0 ? ph = ph - 8 : ph = ph + 8 ;
+      }
+      if (useEighthBit and strip_eight_bit == 1 ) {
+        endcap>0 ? ph = ph - 4 : ph = ph + 4 ;
+      }
     }
   }
 }
@@ -315,6 +347,18 @@ void CalcSlopes( const int bend, int& slope, const int endcap, const int mode, c
   assert( slope != -99 );
 }
 
+void CalcDeltaSlopes(const int slope1, const int slope2,
+                     const int slope3, const int slope4,
+                     int& dSlope12, int& dSlope13,
+                     int& dSlope14, int& dSlope23,
+                     int& dSlope24, int& dSlope34) {
+  dSlope12 = slope2 - slope1;
+  dSlope13 = slope3 - slope1;
+  dSlope14 = slope4 - slope1;
+  dSlope23 = slope3 - slope2;
+  dSlope24 = slope4 - slope2;
+  dSlope34 = slope4 - slope3;
+}
 
 void CalcRPCs( int& RPC1, int& RPC2, int& RPC3, int& RPC4, const int mode,
 	       const int st1_ring2, const int theta, const bool BIT_COMP ) {

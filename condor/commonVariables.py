@@ -49,6 +49,13 @@ allowedTrainingVars = [
     'slope_3',
     'slope_4',
     # block 10
+    'dSlope_12',
+    'dSlope_23',
+    'dSlope_34',
+    'dSlope_13',
+    # block 11
+    'dSlope_14',
+    'dSlope_24',
     'dPhi_GE11_ME11',
     'GEM_1'
 ]

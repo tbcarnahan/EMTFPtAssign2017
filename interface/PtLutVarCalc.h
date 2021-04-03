@@ -32,6 +32,9 @@ void CalcBends( int& bend1, int& bend2, int& bend3, int& bend4,
 
 void CalcSlopes( const int bend, int& slope, const int endcap, const int mode, const bool BIT_COMP, const bool isRun2);
 
+void CalcDeltaSlopes(const int slope1, const int slope2, const int slope3, const int slope4,
+                     int& dSlope12, int& dSlope13, int& dSlope14, int& dSlope23, int& dSlope24, int& dSlope34);
+
 void CalcRPCs( int& RPC1, int& RPC2, int& RPC3, int& RPC4, const int mode,
 	       const int st1_ring2, const int theta, const bool BIT_COMP=false );
 
