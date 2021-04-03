@@ -610,8 +610,8 @@ void PtRegressionRun3Prep(TString user = "",
         int strip3 = (i3 >= 0 ? I("hit_strip", i3 ) : -99);
         int strip4 = (i4 >= 0 ? I("hit_strip", i4 ) : -99);
 
-        if (endcap1 == 1 and station1 ==1 and ring1 == 1 and chamber1==1)
-          std::cout << station1 << ring1 << chamber1 << " hit_strip1 " << strip1 << " hit_phi_int1 " << ph1 << std::endl;
+        // if (endcap1 == 1 and station1 == 1 and ring1 == 1 and chamber1==1)
+        //   std::cout << station1 << ring1 << chamber1 << " hit_strip1 " << strip1 << " hit_phi_int1 " << ph1 << std::endl;
         // std::cout << "hit_strip2 " << strip2 << " hit_phi_int2 " << ph2 << std::endl;
         // std::cout << "hit_strip3 " << strip3 << " hit_phi_int3 " << ph3 << std::endl;
         // std::cout << "hit_strip4 " << strip4 << " hit_phi_int4 " << ph4 << std::endl;
@@ -685,6 +685,7 @@ void PtRegressionRun3Prep(TString user = "",
         int dPh12, dPh13, dPh14, dPh23, dPh24, dPh34, dPhSign;
         int dPhSum4, dPhSum4A, dPhSum3, dPhSum3A, outStPh;
         int dTh12, dTh13, dTh14, dTh23, dTh24, dTh34;
+        int dSlope12, dSlope13, dSlope14, dSlope23, dSlope24, dSlope34;
         int FR1, FR2, FR3, FR4;
         //uncommented on 19/1/2021 int bend1, bend2, bend3, bend4;
         int RPC1, RPC2, RPC3, RPC4;

@@ -10,6 +10,13 @@ from commonVariables import *
 from Run2Variables import *
 from Run3Variables import *
 
+def hasDuplicates(listOfElems):
+    ''' Check if given list contains any duplicates '''
+    for elem in listOfElems:
+        if listOfElems.count(elem) > 1:
+            return True
+    return False
+
 def trainVarsSelToHex(trainVariables):
     ## function to return hex string with train variables
     selectedVars = [0] * len(allowedTrainingVars)
@@ -142,6 +149,10 @@ if __name__ == '__main__':
 
     ## get the training variables
     trainVariables = args.trainVars
+
+    ## check for duplicates
+    if hasDuplicates(trainVariables):
+        sys.exit("Error: training variable selection has duplicates. Exiting.")
 
     ## if no selection is provided for Run-2, use the default ones!
     if args.isRun2 and len(trainVariables) == 0:
