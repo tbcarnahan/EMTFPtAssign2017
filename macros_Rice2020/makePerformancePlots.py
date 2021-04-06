@@ -70,7 +70,7 @@ trainings= [
   #'EMTF_BDT_Train_Test3DPhi_eta1.2to1.55_isRun3_useQSBit_useESBit_Selection0x1c_20210406_122719/',
 
   'EMTF_BDT_Train_Test3DPhi_eta2.1to2.4_isRun2_Selection0x1c_20210406_122820/',
-  'EMTF_BDT_Train_Test3DPhi_eta2.1to2.4_isRun3_Selection0x1c_20210406_122920/'
+  'EMTF_BDT_Train_Test3DPhi_eta2.1to2.4_isRun3_Selection0x1c_20210406_122920/',
   'EMTF_BDT_Train_Test3DPhi_eta2.1to2.4_isRun3_useQSBit_Selection0x1c_20210406_123021/',
   'EMTF_BDT_Train_Test3DPhi_eta2.1to2.4_isRun3_useQSBit_useESBit_Selection0x1c_20210406_123918/'
 ]
@@ -181,7 +181,7 @@ if options.efficiencies:
       la1.DrawLatex( -0.6, 0.65, "p_{T}^{GEN}, p_{T}^{L1} > "+str(pt_cut[l])+" GeV")
 
       leg = TLegend(0.40, 0.26, 0.67, 0.53) ;
-      for ee in range(0,2):
+      for ee in range(0,4):
         leg.AddEntry(effs[ee], legendEntries[ee])
       leg.SetBorderSize(0)
       leg.Draw("same")
@@ -191,6 +191,7 @@ if options.efficiencies:
       gStyle.SetOptStat(0)
       graph = eff.GetPaintedGraph() ; graph.SetMinimum(0) ;  graph.SetMaximum(1.003)
 
+      raw_input("Enter")
       checkDir('plots/bdt_eff/eta')
       makePlots(c1, "bdt_eff/eta/BDTeff_eta_pt"+str(pt_str[l]) )
      
