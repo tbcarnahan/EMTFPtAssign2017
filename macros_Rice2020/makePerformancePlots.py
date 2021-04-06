@@ -203,7 +203,7 @@ if options.resolutions:
 	resolutions = []
 	c1 = TCanvas("c1")
 
-	for ee in range(0,2):
+	for ee in range(0,4):
 	  res = draw_res(evt_trees[ee], 64, -10, 10, "(GEN_pt - pow(2, BDTG_AWB_Sq))/GEN_pt", bdt_pt_cut(pt_cut[l]) )
 	  resolutions.append(res)
 	  c1.Close()
@@ -211,11 +211,10 @@ if options.resolutions:
 	c1 = TCanvas("c1")
 	draw_multiple(resolutions, " ; (p_{T}^{GEN} - p_{T}^{L1}) / p_{T}^{GEN} ; ", drawOptions1D, lineColors, legendEntries) 
 
-	checkDir('plots/resolutions')
+	checkDir('./plots') ; checkDir('./plots/resolutions')
 	makePlots(c1,  "resolutions/ptres1D_DiffOverGen_pt"+str(pt_str[l]) )
 	c1.Close()
-	#lat_scale = [270e3, 220e3, 171e3, 140e3, 120e3, 100e3, 79e3, 74e3, 65e3, 57e3]
-	#lat_scale_diff = [4e4, 4e4, 3e4, 2.5e4, 2e4, 2e4, 1.5e4, 1.2e4, 1e4, 1e4]
+
 
     if options.res1D_invDiffOverInvGen:
 
@@ -224,78 +223,19 @@ if options.resolutions:
 	resolutions = []
 	c1 = TCanvas("c1")
 
-	for ee in range(0,2):
+	for ee in range(0,4):
 	  res = draw_res(evt_trees[ee], 64, -10, 10, "(((1./GEN_pt) - (1./pow(2, BDTG_AWB_Sq)))/(1./GEN_pt))", bdt_pt_cut(pt_cut[l]) )
 	  resolutions.append(res)
 	  c1.Close()
 
 	c1 = TCanvas("c1")
 	draw_multiple(resolutions, " ; (p_{T,GEN}^{-1} - p_{T,L1}^{-1}) / p_{T,GEN}^{-1} ; ", drawOptions1D, lineColors, legendEntries) 
-	raw_input("Enter")
 
-	checkDir('plots/resolutions')
+	checkDir('./plots') ; checkDir('./plots/resolutions')
 	makePlots(c1,  "resolutions/ptres1D_invDiffOverInvGen_pt"+str(pt_str[l]) )
 	c1.Close()
 
-      '''
-      for l in range(len(pt_cut)):
-
-	c1 = TCanvas("c1")
-	evt_tree.Draw("(GEN_pt - (1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq)))))/(GEN_pt)>>htemp(64,-2.,2.)", gen_pt_cut(pt_cut[l]))
-	evt_tree2.Draw("(GEN_pt - (1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq)))))/(GEN_pt)>>htemp2(64,-2.,2.)", gen_pt_cut(pt_cut[l]))
-	evt_tree3.Draw("(GEN_pt - (1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq)))))/(GEN_pt)>>htemp3(64,-2.,2.)", gen_pt_cut(pt_cut[l]))
-
-	htemp=gROOT.FindObject("htemp") ; htemp2=gROOT.FindObject("htemp2") ; htemp3=gROOT.FindObject("htemp3")
-	htemp.SetLineColor(kRed) ; htemp2.SetLineColor(kGreen+2) ; htemp3.SetLineColor(kBlue)
-	htemp.Draw() ; htemp2.Draw("same") ; htemp3.Draw("same")
-
-	la1 = TLatex() ; la1.SetTextFont(22) ; la1.SetTextColor(kRed) ; la1.SetTextSize(0.033) ; la1.SetTextAlign(10)
-	la1.DrawLatex( 0.60, lat_scale[l], "Run-2 #mu = "+str(truncate(htemp.GetMean(),3))+", #sigma = "+str(truncate(htemp.GetRMS(),3)))
-	la2 = TLatex() ; la2.SetTextFont(22) ; la2.SetTextColor(kBlue) ; la2.SetTextSize(0.033) ; la2.SetTextAlign(10)
-	la2.DrawLatex( 0.60, lat_scale[l]-lat_scale_diff[l], "Run-3 #mu = "+str(truncate(htemp2.GetMean(),3))+", #sigma = "+str(truncate(htemp2.GetRMS(),3)))
-	la3 = TLatex() ; la3.SetTextFont(22) ; la3.SetTextColor(kBlack) ; la3.SetTextSize(0.033) ; la3.SetTextAlign(10)
-	la3.DrawLatex( 0.60, lat_scale[l]-2*lat_scale_diff[l], "Mode 15, p_{T}^{L1} > "+str(int(pt_cut[l]))+" GeV")
-
-	leg = TLegend(0.61, 0.65, 0.80, 0.87) ; leg.AddEntry(htemp, "Run-2 BDT") ; leg.AddEntry(htemp2, "Run-3 BDT") ; leg.SetBorderSize(0) ; leg.Draw("same")
-
-	htemp = gPad.GetPrimitive("htemp")
-	htemp.SetTitle("")
-	htemp.GetXaxis().SetTitle("(p_{T}^{GEN} - p_{T}^{L1}) / p_{T}^{GEN}")
-	gStyle.SetOptStat(0) ; gPad.Update()
-        makePlot(c1,  "resolutions/ptres1D_DiffOverGen_pt"+str(pt_str[l]))
     '''
-
-    '''
-    if options.res1D_invDiffOverInvGen:
-
-      for l in range(len(pt_cut)):
-
-	c1 = TCanvas("c1")
-	evt_tree.Draw("(((1./GEN_pt) - (1./(1.2 * (2**(BDTG_AWB_Sq)))))/(1 - (0.004 * (2**(BDTG_AWB_Sq))))))/(1./GEN_pt)>>htemp(64,-20.,20.)", gen_pt_cut(pt_cut[l]))
-	evt_tree2.Draw("(((1./GEN_pt) - (1./(1.2 * (2**(BDTG_AWB_Sq)))))/(1 - (0.004 * (2**(BDTG_AWB_Sq))))))/(1./GEN_pt)>>htemp2(64,-20.,20.)", gen_pt_cut(pt_cut[l]))
-	evt_tree3.Draw("(((1./GEN_pt) - (1./(1.2 * (2**(BDTG_AWB_Sq)))))/(1 - (0.004 * (2**(BDTG_AWB_Sq))))))/(1./GEN_pt)>>htemp3(64,-20.,20.)", gen_pt_cut(pt_cut[l]))
-
-	htemp=gROOT.FindObject("htemp") ; htemp2=gROOT.FindObject("htemp2") ; htemp3=gROOT.FindObject("htemp3")
-	htemp.SetLineColor(kRed) ; htemp2.SetLineColor(kGreen+2) ; htemp2.SetLineColor(kBlue)
-	htemp.Draw() ; htemp2.Draw("same") ; htemp3.Draw("same")
-
-	lat_scale = [275e3, 245e3, 210e3, 180e3, 160e3, 145e3, 105e3, 96e3, 85e3, 70e3]
-	lat_scale_diff = [4.2e4, 4e4, 3.3e4, 2.5e4, 2.5e4, 2e4, 1.7e4, 1.6e4, 1.4e4, 1.2e4]
-	la1 = TLatex() ; la1.SetTextFont(22) ; la1.SetTextColor(kRed) ; la1.SetTextSize(0.031) ; la1.SetTextAlign(10)
-	la1.DrawLatex( 6.5, lat_scale[l], "Run-2 #mu = "+str(truncate(htemp.GetMean(),3))+", #sigma = "+str(truncate(htemp.GetRMS(),3)))
-	la2 = TLatex() ; la2.SetTextFont(22) ; la2.SetTextColor(kBlue) ; la2.SetTextSize(0.031) ; la2.SetTextAlign(10)
-	la2.DrawLatex( 6.5, lat_scale[l]-lat_scale_diff[l], "Run-3 #mu = "+str(truncate(htemp2.GetMean(),3))+", #sigma = "+str(truncate(htemp2.GetRMS(),3)))
-	la3 = TLatex() ; la3.SetTextFont(22) ; la3.SetTextColor(kBlack) ; la3.SetTextSize(0.031) ; la3.SetTextAlign(10)
-	la3.DrawLatex( 6.5, lat_scale[l]-2*lat_scale_diff[l], "Mode 15, p_{T}^{L1} > "+str(int(pt_cut[l]))+" GeV")
-
-	leg = TLegend(0.62, 0.65, 0.81, 0.87) ; leg.AddEntry(htemp, "Run-2 BDT") ; leg.AddEntry(htemp2, "Run-3 BDT") ; leg.SetBorderSize(0) ; leg.Draw("same")
-
-	htemp = gPad.GetPrimitive("htemp")
-	htemp.SetTitle("")
-	htemp.GetXaxis().SetTitle("(p_{T}^{GEN} - p_{T}^{L1})^{-1} / (p_{T}^{GEN})^{-1}")
-	gStyle.SetOptStat(0) ; gPad.Update()
-        makePlot(c1, "resolutions/ptres1D_invDiffOverInvGen_pt"+str(pt_str[l]))
-
     if options.res1DvsPt and options.single_pt: print "Error: Must set single_pt to false in order to plot resolutions vs Pt."
     if options.res1DvsPt and not options.single_pt:
 

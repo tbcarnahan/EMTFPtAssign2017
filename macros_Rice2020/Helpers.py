@@ -203,7 +203,7 @@ def draw_multiple(res, title, drawOptions1D, lineColors, texLabel):
 
     for i in range(len(res)):
       tex = TLatex() ; tex.SetTextFont(22) ; tex.SetTextColor(lineColors[i]) ; tex.SetTextSize(0.033) ; tex.SetTextAlign(10)
-      tex.DrawLatex( 3, 0.8-(i*0.1), texLabel[i]+" #mu = "+str(truncate(htemp.GetMean(),3))+", #sigma = "+str(truncate(htemp.GetRMS(),3)))
+      tex.DrawLatex( 2, 0.8-(i*0.1), texLabel[i]+" #mu = "+str(truncate(res[i].GetMean(),3))+", #sigma = "+str(truncate(res[i].GetRMS(),3)))
 	
 
     res[0].SetTitle(title)
