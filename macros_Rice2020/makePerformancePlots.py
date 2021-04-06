@@ -187,8 +187,7 @@ if options.efficiencies:
       gStyle.SetOptStat(0)
       graph = eff.GetPaintedGraph() ; graph.SetMinimum(0) ;  graph.SetMaximum(1.003)
 
-      raw_input("Enter")
-      checkDir('plots/bdt_eff/eta')
+      checkDir('./plots') ; checkDir('./plots/bdt_eff') ; checkDir('./plots/bdt_eff/eta')
       makePlots(c1, "bdt_eff/eta/BDTeff_eta_pt"+str(pt_str[l]) )
      
 
