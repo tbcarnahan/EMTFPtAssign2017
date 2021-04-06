@@ -93,10 +93,6 @@ drawOptions1D = ["", "same", "same", "same"]
 legendEntries = ["Run-2", "Run-3", "Run-3 QSBit", "Run-3 QSBit ESBit"]
 
 ## ================ Helper functions ======================
-def truncate(number, digits):
-  stepper = 10.0 ** digits
-  return float(math.trunc(stepper * number) / stepper)
-
 def gen_pt_cut(pt_min):
   return TCut("GEN_pt >= {0}".format(pt_min))
 
@@ -107,8 +103,8 @@ def bdt_pt_cut(pt_min):
   return TCut("pow(2, BDTG_AWB_Sq) >= {}".format(pt_min))
 
 def bdt_pt_scaled_cut(pt_min):
-  return TCut("pow(2, BDTG_AWB_Sq) >= {}".format(pt_min))
-  #((1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq)))))
+  #return TCut("pow(2, BDTG_AWB_Sq) >= {}".format(pt_min))
+  return TCut("(1.2 * pow(2,BDTG_AWB_Sq)))/(1 - (0.004 * pow(2,BDTG_AWB_Sq))) >= {}".format(pt_min))
 
 def makePlots(canvas, plotTitle):
   c1.SaveAs(plotDir + plotTitle + ".png")
@@ -158,7 +154,7 @@ if options.efficiencies:
 
         leg.Draw("same")
 
-        checkDir('./plots/bdt_eff')
+        checkDir('./plots') ; checkDir('./plots/bdt_eff')
         makePlots(c1, "bdt_eff/BDT_eff_SD_pt{}_eta{}to{}".format(pt_str[l], eta_str_min[k], eta_str_max[k]))
 
 
@@ -209,20 +205,38 @@ if options.resolutions:
 	c1 = TCanvas("c1")
 
 	for ee in range(0,2):
-	  res = draw_res(evt_trees[ee], " ; (p_{T}^{GEN} - p_{T}^{L1}) / p_{T}^{GEN} ; ", 64, -10, 10, "(GEN_pt - pow(2, BDTG_AWB_Sq))/GEN_pt", bdt_pt_cut(pt_cut[l]) )#, drawOptions1D[ee], lineColors[ee])
+	  res = draw_res(evt_trees[ee], 64, -10, 10, "(GEN_pt - pow(2, BDTG_AWB_Sq))/GEN_pt", bdt_pt_cut(pt_cut[l]) )
 	  resolutions.append(res)
 	  c1.Close()
 
 	c1 = TCanvas("c1")
-
-	draw_multiple(resolutions, " ; (p_{T}^{GEN} - p_{T}^{L1}) / p_{T}^{GEN} ; ") 
-	raw_input("Enter")
+	draw_multiple(resolutions, " ; (p_{T}^{GEN} - p_{T}^{L1}) / p_{T}^{GEN} ; ", drawOptions1D, lineColors, legendEntries) 
 
 	checkDir('plots/resolutions')
 	makePlots(c1,  "resolutions/ptres1D_DiffOverGen_pt"+str(pt_str[l]) )
 	c1.Close()
 	#lat_scale = [270e3, 220e3, 171e3, 140e3, 120e3, 100e3, 79e3, 74e3, 65e3, 57e3]
 	#lat_scale_diff = [4e4, 4e4, 3e4, 2.5e4, 2e4, 2e4, 1.5e4, 1.2e4, 1e4, 1e4]
+
+    if options.res1D_invDiffOverInvGen:
+
+      for l in range(len(pt_cut)):
+
+	resolutions = []
+	c1 = TCanvas("c1")
+
+	for ee in range(0,2):
+	  res = draw_res(evt_trees[ee], 64, -10, 10, "(((1./GEN_pt) - (1./pow(2, BDTG_AWB_Sq)))/(1./GEN_pt))", bdt_pt_cut(pt_cut[l]) )
+	  resolutions.append(res)
+	  c1.Close()
+
+	c1 = TCanvas("c1")
+	draw_multiple(resolutions, " ; (p_{T,GEN}^{-1} - p_{T,L1}^{-1}) / p_{T,GEN}^{-1} ; ", drawOptions1D, lineColors, legendEntries) 
+	raw_input("Enter")
+
+	checkDir('plots/resolutions')
+	makePlots(c1,  "resolutions/ptres1D_invDiffOverInvGen_pt"+str(pt_str[l]) )
+	c1.Close()
 
       '''
       for l in range(len(pt_cut)):

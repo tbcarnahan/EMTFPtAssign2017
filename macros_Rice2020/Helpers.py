@@ -2,6 +2,7 @@
 from ROOT import *
 from ROOT import TStyle
 import os
+import math
 
 def ANDtwo(cut1,cut2):
     """AND of two TCuts in PyROOT"""
@@ -185,7 +186,7 @@ def draw_geff(t, title, h_bins, to_draw, den_cut, extra_num_cut,
     return eff
 
 #_______________________________________________________________________________
-def draw_res(t, title, nBins, minBin, maxBin, to_draw, pt_cut):#, drawoptions, lineColor):#,
+def draw_res(t, nBins, minBin, maxBin, to_draw, pt_cut):
 
     htemp = TH1F("htemp", "", nBins, minBin, maxBin)
     t.Draw(to_draw+">>htemp", pt_cut, "goff")
@@ -193,13 +194,19 @@ def draw_res(t, title, nBins, minBin, maxBin, to_draw, pt_cut):#, drawoptions, l
     return htemp
 
 #_______________________________________________________________________________
-def draw_multiple(res, title, drawOption, lineColor):
+def draw_multiple(res, title, drawOptions1D, lineColors, texLabel):
+
+    for i in range(len(res)):	
+	res[i].SetLineColor(lineColors[i])
+	res[i].Scale(1./res[i].Integral(), "WIDTH")
+	res[i].Draw("HIST"+drawOptions1D[i])
 
     for i in range(len(res)):
-	res[i].Draw(drawOptions1D[ee])
-	res[i].SetLineColor(lineColors[ee])
+      tex = TLatex() ; tex.SetTextFont(22) ; tex.SetTextColor(lineColors[i]) ; tex.SetTextSize(0.033) ; tex.SetTextAlign(10)
+      tex.DrawLatex( 3, 0.8-(i*0.1), texLabel[i]+" #mu = "+str(truncate(htemp.GetMean(),3))+", #sigma = "+str(truncate(htemp.GetRMS(),3)))
+	
 
-    resolutions[0].SetTitle(title)
+    res[0].SetTitle(title)
     return
     
 	
@@ -209,4 +216,9 @@ def checkDir(path):
         os.mkdir(path)
     except OSError as error:
         "Could not make output directory."
+
+#_______________________________________________________________________________
+def truncate(number, digits):
+  stepper = 10.0 ** digits
+  return float(math.trunc(stepper * number) / stepper)
 
