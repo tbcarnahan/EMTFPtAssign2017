@@ -6,7 +6,16 @@ import argparse
 import getpass
 import subprocess
 from datetime import datetime
-from bdtVariables import *
+from commonVariables import *
+from Run2Variables import *
+from Run3Variables import *
+
+def hasDuplicates(listOfElems):
+    ''' Check if given list contains any duplicates '''
+    for elem in listOfElems:
+        if listOfElems.count(elem) > 1:
+            return True
+    return False
 
 def trainVarsSelToHex(trainVariables):
     ## function to return hex string with train variables
@@ -113,6 +122,7 @@ if __name__ == '__main__':
     parser.add_argument("--maxPt", action="store", default = 1000.)
     parser.add_argument("--minPtTrain", action="store", default = 1.)
     parser.add_argument("--maxPtTrain", action="store", default = 256.)
+    parser.add_argument("--nEvents", action="store", default = -1)
     args = parser.parse_args()
 
     ## CMSSW version
@@ -139,6 +149,10 @@ if __name__ == '__main__':
 
     ## get the training variables
     trainVariables = args.trainVars
+
+    ## check for duplicates
+    if hasDuplicates(trainVariables):
+        sys.exit("Error: training variable selection has duplicates. Exiting.")
 
     ## if no selection is provided for Run-2, use the default ones!
     if args.isRun2 and len(trainVariables) == 0:
@@ -190,7 +204,7 @@ if __name__ == '__main__':
 
     ## training command
     def runCommand(localdir = './'):
-        command  = 'root -l -b -q "{localdir}PtRegressionRun3Prep.C({user}, {method}, {bemtfMode}, {minPt}, {maxPt}, {minPtTrain}, {maxPtTrain}, {minEta}, {maxEta}, {btrainVarsHex}, {bisRun2}, {buseQSBit}, {buseESBit}, {buseBitComp})"'.format(
+        command  = 'root -l -b -q "{localdir}PtRegressionRun3Prep.C({user}, {method}, {bemtfMode}, {minPt}, {maxPt}, {minPtTrain}, {maxPtTrain}, {minEta}, {maxEta}, {btrainVarsHex}, {btrainVarsSize}, {bisRun2}, {buseQSBit}, {buseESBit}, {buseBitComp}, {nEvents})"'.format(
             user = '''\\\"{}\\\"'''.format(USER),
             method = '''\\\"BDTG_AWB_Sq\\\"''',
             bemtfMode = int(args.emtfMode),
@@ -201,11 +215,13 @@ if __name__ == '__main__':
             minEta = float(args.minEta),
             maxEta = float(args.maxEta),
             btrainVarsHex = int(trainVarsHex, 16),
+            btrainVarsSize = 0,
             bisRun2 = int(isRun2),
             buseQSBit = int(useQSBit),
             buseESBit = int(useESBit),
             buseBitComp = int(useBitComp),
-            localdir = localdir
+            localdir = localdir,
+            nEvents = int(args.nEvents)
         )
         return command
 

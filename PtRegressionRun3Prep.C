@@ -57,10 +57,12 @@ void PtRegressionRun3Prep(TString user = "",
                           float minEta = 1.25,
                           float maxEta = 2.4,
                           unsigned long trainVarsSelection = 0,
+                          unsigned long trainVarsSize = 0,
                           bool isRun2 = true,
                           bool useOneQuartPrecision = false,
                           bool useOneEighthPrecision = false,
-                          bool useBitCompression = false) {
+                          bool useBitCompression = false,
+                          int nEvents = -1) {
 
   // Expert options
   // Run-2 overrides all options
@@ -317,6 +319,14 @@ void PtRegressionRun3Prep(TString user = "",
   in_vars.push_back( MVA_var( "slope_4",    "St 4 LCT slope",      "int", 'I', -88 ) ); // 0x0000 8000
 
   // block 10
+  in_vars.push_back( MVA_var( "dSlope_12",    "slope(2) - slope(1)", "int", 'I', -88 ) ); // 0x0040 0000
+  in_vars.push_back( MVA_var( "dSlope_23",    "slope(3) - slope(2)", "int", 'I', -88 ) ); // 0x0080 0000
+  in_vars.push_back( MVA_var( "dSlope_34",    "slope(4) - slope(3)", "int", 'I', -88 ) ); // 0x0100 0000
+  in_vars.push_back( MVA_var( "dSlope_13",    "slope(3) - slope(1)", "int", 'I', -88 ) ); // 0x0200 0000
+
+  // block 11
+  in_vars.push_back( MVA_var( "dSlope_14",    "slope(4) - slope(1)", "int", 'I', -88 ) ); // 0x0400 0000
+  in_vars.push_back( MVA_var( "dSlope_24",    "slope(4) - slope(2)", "int", 'I', -88 ) ); // 0x0800 0000
   in_vars.push_back( MVA_var( "dPhi_GE11_ME11", "#phi(GE11) - #phi(ME11)", "", 'F', -88 ) ); // 0x1 0000 0000
   in_vars.push_back( MVA_var( "GEM_1",   "St 1 hit is GEM",       "int", 'I', -88 ) ); // 0x1 0000 0000
 
@@ -412,7 +422,7 @@ void PtRegressionRun3Prep(TString user = "",
   Bool_t isZB = false;//tag per event
   Bool_t isTEST = false;//tag per event
 
-
+  unsigned iEvent = 0;
   //=================================
   //Register events: loop over chains
   //=================================
@@ -423,6 +433,8 @@ void PtRegressionRun3Prep(TString user = "",
 
     for (UInt_t jEvt = 0; jEvt < in_chain->GetEntries(); jEvt++) {
 
+      if (iEvent > nEvents) break;
+      iEvent++;
       if (jEvt%1000==0) std::cout << "******* About to loop on event " << jEvt << " *******" << std::endl;
       //!!! jEvt restarts from 0 in new chain
 
@@ -572,6 +584,38 @@ void PtRegressionRun3Prep(TString user = "",
         int th3 = (i3 >= 0 ? I("hit_theta_int", i3 ) : -99);
         int th4 = (i4 >= 0 ? I("hit_theta_int", i4 ) : -99);
 
+        int endcap1 = (i1CSC >= 0 ? I("hit_endcap",i1CSC ) : -99);
+        int endcap2 = (i2 >= 0 ? I("hit_endcap", i2 ) : -99);
+        int endcap3 = (i3 >= 0 ? I("hit_endcap", i3 ) : -99);
+        int endcap4 = (i4 >= 0 ? I("hit_endcap", i4 ) : -99);
+
+        int station1 = (i1CSC >= 0 ? I("hit_station",i1CSC ) : -99);
+        int station2 = (i2 >= 0 ? I("hit_station", i2 ) : -99);
+        int station3 = (i3 >= 0 ? I("hit_station", i3 ) : -99);
+        int station4 = (i4 >= 0 ? I("hit_station", i4 ) : -99);
+
+        int ring1 = (i1CSC >= 0 ? I("hit_ring",i1CSC ) : -99);
+        int ring2 = (i2 >= 0 ? I("hit_ring",i2 ) : -99);
+        int ring3 = (i3 >= 0 ? I("hit_ring",i3 ) : -99);
+        int ring4 = (i4 >= 0 ? I("hit_ring",i4 ) : -99);
+
+        int chamber1 = (i1CSC >= 0 ? I("hit_chamber",i1CSC ) : -99);
+        int chamber2 = (i2 >= 0 ? I("hit_chamber",i2 ) : -99);
+        int chamber3 = (i3 >= 0 ? I("hit_chamber",i3 ) : -99);
+        int chamber4 = (i4 >= 0 ? I("hit_chamber",i4 ) : -99);
+
+        // 4-bit value
+        int strip1 = (i1CSC >= 0 ? I("hit_strip",i1CSC ) : -99);
+        int strip2 = (i2 >= 0 ? I("hit_strip", i2 ) : -99);
+        int strip3 = (i3 >= 0 ? I("hit_strip", i3 ) : -99);
+        int strip4 = (i4 >= 0 ? I("hit_strip", i4 ) : -99);
+
+        // if (endcap1 == 1 and station1 == 1 and ring1 == 1 and chamber1==1)
+        //   std::cout << station1 << ring1 << chamber1 << " hit_strip1 " << strip1 << " hit_phi_int1 " << ph1 << std::endl;
+        // std::cout << "hit_strip2 " << strip2 << " hit_phi_int2 " << ph2 << std::endl;
+        // std::cout << "hit_strip3 " << strip3 << " hit_phi_int3 " << ph3 << std::endl;
+        // std::cout << "hit_strip4 " << strip4 << " hit_phi_int4 " << ph4 << std::endl;
+
         // 4-bit value
         int pat1 = (i1CSC >= 0 ? I("hit_pattern",i1CSC ) : -99);
         int pat2 = (i2 >= 0 ? I("hit_pattern", i2 ) : -99);
@@ -607,11 +651,6 @@ void PtRegressionRun3Prep(TString user = "",
         int strip_eight_bit3 = (i3 >= 0 ? I("hit_strip_eight_bit", i3 ) : -99);
         int strip_eight_bit4 = (i4 >= 0 ? I("hit_strip_eight_bit", i4 ) : -99);
 
-        int ring1 = (i1CSC >= 0 ? I("hit_ring",i1CSC ) : -99);
-        int ring2 = (i2 >= 0 ? I("hit_ring",i2 ) : -99);
-        int ring3 = (i3 >= 0 ? I("hit_ring",i3 ) : -99);
-        int ring4 = (i4 >= 0 ? I("hit_ring",i4 ) : -99);
-
         int st1_ring2 = (i1CSC >= 0 ? ( I("hit_ring",i1CSC ) == 2 || I("hit_ring",i1CSC ) == 3 ) : 0);
 
         //===========
@@ -646,6 +685,7 @@ void PtRegressionRun3Prep(TString user = "",
         int dPh12, dPh13, dPh14, dPh23, dPh24, dPh34, dPhSign;
         int dPhSum4, dPhSum4A, dPhSum3, dPhSum3A, outStPh;
         int dTh12, dTh13, dTh14, dTh23, dTh24, dTh34;
+        int dSlope12, dSlope13, dSlope14, dSlope23, dSlope24, dSlope34;
         int FR1, FR2, FR3, FR4;
         //uncommented on 19/1/2021 int bend1, bend2, bend3, bend4;
         int RPC1, RPC2, RPC3, RPC4;
@@ -700,6 +740,9 @@ void PtRegressionRun3Prep(TString user = "",
         CalcSlopes(bend2, slope2, endcap, mode, BIT_COMP, isRun2 );
         CalcSlopes(bend3, slope3, endcap, mode, BIT_COMP, isRun2 );
         CalcSlopes(bend4, slope4, endcap, mode, BIT_COMP, isRun2 );
+
+        CalcDeltaSlopes(slope1, slope2, slope3, slope4,
+                        dSlope12, dSlope13, dSlope14, dSlope23, dSlope24, dSlope34);
 
         // calculate bendings from pattern numbers (Run-2, Run-3)
         // this function modifies bendX
@@ -813,7 +856,13 @@ void PtRegressionRun3Prep(TString user = "",
             if ( vName == "slope_3" ) var_vals.at(iVar) = slope3;
             if ( vName == "slope_4" ) var_vals.at(iVar) = slope4;
 
-            // Makes output values [0, 1] instead of [-99, 1] which is easier to see in the output histogram.
+            if ( vName == "dSlope_12" ) var_vals.at(iVar) = dSlope12;
+            if ( vName == "dSlope_13" ) var_vals.at(iVar) = dSlope13;
+            if ( vName == "dSlope_14" ) var_vals.at(iVar) = dSlope14;
+            if ( vName == "dSlope_23" ) var_vals.at(iVar) = dSlope23;
+
+            if ( vName == "dSlope_24" ) var_vals.at(iVar) = dSlope24;
+            if ( vName == "dSlope_34" ) var_vals.at(iVar) = dSlope34;
             if ( vName == "GEM_1" ) var_vals.at(iVar) = max(0, GE11);
             if ( vName == "dPhi_GE11_ME11" ) var_vals.at(iVar) = dPhGE11ME11;
 
