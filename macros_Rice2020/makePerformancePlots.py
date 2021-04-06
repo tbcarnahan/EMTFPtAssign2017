@@ -1,4 +1,5 @@
 #! /usr/bin/env python
+# -*- coding: utf-8 -*-
 
 import sys
 import os
@@ -13,16 +14,16 @@ from Helpers import *
 
 ## Configuration settings
 parser = OptionParser()
-parser.add_option('--batchMode', dest='batchMode', action='store_true',default = True)
+parser.add_option('--batchMode', dest='batchMode', action='store_true',default = False)
 parser.add_option("--eta_slices", dest="eta_slices", action="store_true", default = False)
 parser.add_option("--single_pt", dest="single_pt", action="store_true", default = False)
 parser.add_option("--addDateTime", dest="addDateTime", action="store", default = True)
 
-parser.add_option("--efficiencies", dest="efficiencies", action="store_true", default = True)
+parser.add_option("--efficiencies", dest="efficiencies", action="store_true", default = False)
 parser.add_option("--EffVsPt", dest="EffVsPt", action="store_true", default = False)
-parser.add_option("--EffVsEta", dest="EffVsEta", action="store_true", default = True)
+parser.add_option("--EffVsEta", dest="EffVsEta", action="store_true", default = False)
 
-parser.add_option("--resolutions", dest="resolutions", action="store_true", default = True)
+parser.add_option("--resolutions", dest="resolutions", action="store_true", default = False)
 parser.add_option("--res1D", dest="res1D", action="store_true", default = True)
 parser.add_option("--res1D_diffOverGen", dest="res1D_diffOverGen", action="store_true", default = False)
 parser.add_option("--res1D_invDiffOverInvGen", dest="res1D_invDiffOverInvGen", action="store_true", default = False)
@@ -52,9 +53,9 @@ if options.eta_slices:
   eta_str_max = ["1pt4", "1pt6", "1pt8", "2pt0", "2pt2", "2pt4"]
 else:
   #Whole endcap region.
-  eta_min = [1.2]
+  eta_min = [2.1]
   eta_max = [2.4]
-  eta_str_min = ["1pt2"]
+  eta_str_min = ["2pt1"]
   eta_str_max = ["2pt4"]
 
 
@@ -63,20 +64,15 @@ else:
 prefix = "root://cmseos.fnal.gov//store/user/mdecaro/"
 fileName = "PtRegressionRun3Prep_MODE_15_noBitCompr.root"
 trainings= [
-  
-  #'EMTF_BDT_Train_Test3DPhi_eta1.2to1.55_isRun2_Selection0x1c_20210401_213705/',
-  #'EMTF_BDT_Train_Test3DPhi_eta1.2to1.55_isRun3_Selection0x1c_20210401_213807/',
-  #'EMTF_BDT_Train_Test3DPhi_eta1.2to1.55_isRun3_useQSBit_Selection0x1c_20210401_213908/',
-  #'EMTF_BDT_Train_Test3DPhi_eta1.2to1.55_isRun3_useQSBit_useESBit_Selection0x1c_20210401_214009/',
-  #'EMTF_BDT_Train_Test3DPhi_eta2.1to2.4_isRun2_Selection0x1c_20210401_214110/',
-  #'EMTF_BDT_Train_Test3DPhi_eta2.1to2.4_isRun3_Selection0x1c_20210401_214211/',
-  #'EMTF_BDT_Train_Test3DPhi_eta2.1to2.4_isRun3_useQSBit_Selection0x1c_20210401_214313/',
-  #'EMTF_BDT_Train_Test3DPhi_eta2.1to2.4_isRun3_useQSBit_useESBit_Selection0x1c_20210401_214414/'
-  
-  'EMTF_BDT_Train__eta1.25to2.4_isRun2_Selection0x1c_20210402_093938/',
-  #'EMTF_BDT_Train__eta1.25to2.4_isRun3_Selection0x1c_20210402_093932'
-  #'EMTF_BDT_Train__eta1.25to2.4_isRun3_useQSBit_Selection0x1c_20210402_094004',
-  'EMTF_BDT_Train__eta1.25to2.4_isRun3_useQSBit_useESBit_Selection0x1c_20210402_094008/'
+  #'EMTF_BDT_Train_Test3DPhi_eta1.2to1.55_isRun2_Selection0x1c_20210406_122416/',
+  #'EMTF_BDT_Train_Test3DPhi_eta1.2to1.55_isRun3_Selection0x1c_20210406_122517/',
+  #'EMTF_BDT_Train_Test3DPhi_eta1.2to1.55_isRun3_useQSBit_Selection0x1c_20210406_122618/',
+  #'EMTF_BDT_Train_Test3DPhi_eta1.2to1.55_isRun3_useQSBit_useESBit_Selection0x1c_20210406_122719/',
+
+  'EMTF_BDT_Train_Test3DPhi_eta2.1to2.4_isRun2_Selection0x1c_20210406_122820/',
+  'EMTF_BDT_Train_Test3DPhi_eta2.1to2.4_isRun3_Selection0x1c_20210406_122920/'
+  'EMTF_BDT_Train_Test3DPhi_eta2.1to2.4_isRun3_useQSBit_Selection0x1c_20210406_123021/',
+  'EMTF_BDT_Train_Test3DPhi_eta2.1to2.4_isRun3_useQSBit_useESBit_Selection0x1c_20210406_123918/'
 ]
 
 treeName = "f_MODE_15_logPtTarg_invPtWgt_noBitCompr/TestTree"
@@ -89,12 +85,12 @@ for p in trainings:
   ttree.Add(fName)
   evt_trees.append(ttree)
 
-markerColors = [kBlue, kRed]#, kGreen+2, kBlack, 7, 40]
-lineColors = [kBlue, kRed]#, kGreen+2, kBlack, 7, 40]
-markerStyles = [8,8]#,8,8,8,]
-drawOptions = ["AP", "same"]#, "same", "same"]
-legendEntries = ["Run-2", #"Run-3", "Run-3 QSBit", 
-                 "Run-3 QSBit ESBit"]
+markerColors = [kBlue, kRed, kGreen+2, kBlack]#, 7, 40]
+lineColors = [kBlue, kRed, kGreen+2, kBlack]#, 7, 40]
+markerStyles = [8,8,8,8]#,8,8]
+drawOptions = ["AP", "same", "same", "same"]
+drawOptions1D = ["", "same", "same", "same"]
+legendEntries = ["Run-2", "Run-3", "Run-3 QSBit", "Run-3 QSBit ESBit"]
 
 ## ================ Helper functions ======================
 def truncate(number, digits):
@@ -135,7 +131,7 @@ if options.efficiencies:
 
 	#Run2 and Run3 BDT efficiency vs Pt
         effs = []
-        for ee in range(0,2):
+        for ee in range(0,4):
           eff = draw_eff(evt_trees[ee], "; p_{T}^{GEN} (GeV) ; Trigger Efficiency", "(50,1.,50.)", "GEN_pt",
                          gen_eta_cut(eta_min[k], eta_max[k]), bdt_pt_cut(pt_cut[l]))
           eff.SetMarkerColor(markerColors[ee])
@@ -172,7 +168,7 @@ if options.efficiencies:
       binning = "(64,-3.,3.)"
       effs = []
 
-      for ee in range(0,2):
+      for ee in range(0,4):
         eff = draw_eff(evt_trees[ee], " ; #eta^{GEN} ; Trigger Efficiency", binning, "GEN_eta", gen_pt_cut(pt_cut[l]), bdt_pt_cut(pt_cut[l]))
         eff.SetMarkerColor(markerColors[ee])
         eff.SetLineColor(lineColors[ee])
@@ -199,16 +195,35 @@ if options.efficiencies:
       makePlots(c1, "bdt_eff/eta/BDTeff_eta_pt"+str(pt_str[l]) )
      
 
-'''
+
 if options.resolutions:
 
   if options.res1D:
 
     if options.res1D_diffOverGen:
 
-      lat_scale = [270e3, 220e3, 171e3, 140e3, 120e3, 100e3, 79e3, 74e3, 65e3, 57e3]
-      lat_scale_diff = [4e4, 4e4, 3e4, 2.5e4, 2e4, 2e4, 1.5e4, 1.2e4, 1e4, 1e4]
+      for l in range(len(pt_cut)):
 
+	resolutions = []
+	c1 = TCanvas("c1")
+
+	for ee in range(0,2):
+	  res = draw_res(evt_trees[ee], " ; (p_{T}^{GEN} - p_{T}^{L1}) / p_{T}^{GEN} ; ", 64, -10, 10, "(GEN_pt - pow(2, BDTG_AWB_Sq))/GEN_pt", bdt_pt_cut(pt_cut[l]) )#, drawOptions1D[ee], lineColors[ee])
+	  resolutions.append(res)
+	  c1.Close()
+
+	c1 = TCanvas("c1")
+
+	draw_multiple(resolutions, " ; (p_{T}^{GEN} - p_{T}^{L1}) / p_{T}^{GEN} ; ") 
+	raw_input("Enter")
+
+	checkDir('plots/resolutions')
+	makePlots(c1,  "resolutions/ptres1D_DiffOverGen_pt"+str(pt_str[l]) )
+	c1.Close()
+	#lat_scale = [270e3, 220e3, 171e3, 140e3, 120e3, 100e3, 79e3, 74e3, 65e3, 57e3]
+	#lat_scale_diff = [4e4, 4e4, 3e4, 2.5e4, 2e4, 2e4, 1.5e4, 1.2e4, 1e4, 1e4]
+
+      '''
       for l in range(len(pt_cut)):
 
 	c1 = TCanvas("c1")
@@ -234,7 +249,9 @@ if options.resolutions:
 	htemp.GetXaxis().SetTitle("(p_{T}^{GEN} - p_{T}^{L1}) / p_{T}^{GEN}")
 	gStyle.SetOptStat(0) ; gPad.Update()
         makePlot(c1,  "resolutions/ptres1D_DiffOverGen_pt"+str(pt_str[l]))
+    '''
 
+    '''
     if options.res1D_invDiffOverInvGen:
 
       for l in range(len(pt_cut)):

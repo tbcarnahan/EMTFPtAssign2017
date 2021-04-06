@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from ROOT import *
 from ROOT import TStyle
 import os
@@ -183,13 +184,29 @@ def draw_geff(t, title, h_bins, to_draw, den_cut, extra_num_cut,
     SetOwnership(eff, False)
     return eff
 
+#_______________________________________________________________________________
+def draw_res(t, title, nBins, minBin, maxBin, to_draw, pt_cut):#, drawoptions, lineColor):#,
 
+    htemp = TH1F("htemp", "", nBins, minBin, maxBin)
+    t.Draw(to_draw+">>htemp", pt_cut, "goff")
+
+    return htemp
+
+#_______________________________________________________________________________
+def draw_multiple(res, title, drawOption, lineColor):
+
+    for i in range(len(res)):
+	res[i].Draw(drawOptions1D[ee])
+	res[i].SetLineColor(lineColors[ee])
+
+    resolutions[0].SetTitle(title)
+    return
+    
+	
 #_______________________________________________________________________________
 def checkDir(path):
     try: 
         os.mkdir(path)
     except OSError as error:
-        "could not make output directory"
-    #isPath = os.path.isfile(path)
-    #if isPath: return
-    #if not isPath: os.mkdir(path)
+        "Could not make output directory."
+
