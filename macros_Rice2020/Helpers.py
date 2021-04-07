@@ -215,10 +215,13 @@ def draw_multiple(res, title, drawOptions1D, lineColors, texLabel, pt_cut):
     return
     
 #_______________________________________________________________________________
-def draw_multi_res(length, res, resError, x_arr, xtitle, ytitle, lineColors, pt_cut, legendEntries, draw_res_label):
+def draw_multi_res(length, res, resError, x_arr, xtitle, ytitle, lineColors, pt_cut, legendEntries, draw_res_label, res_type):
     
-    if draw_res_label=="invDiffOverInvGen": leg = TLegend(0.13, 0.20, 0.45, 0.40)
-    else: leg = TLegend(0.43, 0.20, 0.75, 0.40)
+    #Decide where the legend gets drawn. Avoid it covering any datapoints.
+    if res_type=="mu" and draw_res_label=="diffOverGen": leg = TLegend(0.43, 0.20, 0.75, 0.40)
+    if res_type=="mu" and draw_res_label!="diffOverGen": leg = TLegend(0.38, 0.65, 0.70, 0.85)
+    if res_type=="sigma" and draw_res_label=="diffOverGen": leg = TLegend(0.43, 0.20, 0.75, 0.40)
+    if res_type=="sigma" and draw_res_label!="diffOverGen": leg = TLegend(0.13, 0.20, 0.45, 0.40)
 
     mg = TMultiGraph()
     c1 = TCanvas("c1")
@@ -236,7 +239,7 @@ def draw_multi_res(length, res, resError, x_arr, xtitle, ytitle, lineColors, pt_
     mg.GetYaxis().SetTitle(ytitle)
     
     checkDir('./plots') ; checkDir('./plots/resolutions')
-    makePlots(c1,  "resolutions/res_vs_pt_"+draw_res_label )
+    makePlots(c1,  "resolutions/"+res_type+"_res_vs_pt_"+draw_res_label )
     c1.Close()
 
 

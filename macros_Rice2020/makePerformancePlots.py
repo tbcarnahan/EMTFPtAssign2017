@@ -89,7 +89,11 @@ markerStyles = [8,8,8,8]#,8,8]
 drawOptions = ["AP", "same", "same", "same"]
 drawOptions1D = ["", "same", "same", "same"]
 legendEntries = ["Run-2", "Run-3", "Run-3 QSBit", "Run-3 QSBit ESBit"]
+
+draw_res_axis_label = ["(p_{T}^{GEN} - p_{T}^{L1}) / p_{T}^{GEN}", "(p_{T,GEN}^{-1} - p_{T,L1}^{-1}) / p_{T,GEN}^{-1}"]
+draw_res_option = ["(GEN_pt - pow(2, BDTG_AWB_Sq))/GEN_pt", "(((1./GEN_pt) - (1./pow(2, BDTG_AWB_Sq)))/(1./GEN_pt))"] 
 draw_res_label = ["diffOverGen", "invDiffOverInvGen"]
+res_type = ["mu", "sigma"]
 
 ## ================ Helper functions ======================
 def gen_pt_cut(pt_min):
@@ -195,30 +199,22 @@ if options.resolutions:
 
   if options.res1D:
 
-    for l in range(len(pt_cut)):
+    for k in range(len(draw_res_option)):
 
-      resolutions = []
-      resolutions_inverse = []
+      for l in range(len(pt_cut)):
 
-      for ee in range(0,4):
-	res = draw_res(evt_trees[ee], 64, -10, 10, "(GEN_pt - pow(2, BDTG_AWB_Sq))/GEN_pt", bdt_pt_cut(pt_cut[l]) )
-	resolutions.append(res)
+	resolutions = []
 
-	res = draw_res(evt_trees[ee], 64, -10, 10, "(((1./GEN_pt) - (1./pow(2, BDTG_AWB_Sq)))/(1./GEN_pt))", bdt_pt_cut(pt_cut[l]) )
-	resolutions_inverse.append(res)
+	for ee in range(0,4):
+	  res = draw_res(evt_trees[ee], 64, -10, 10, draw_res_option[k] , bdt_pt_cut(pt_cut[l]) )
+	  resolutions.append(res)
 
-      checkDir('./plots') ; checkDir('./plots/resolutions')
+	checkDir('./plots') ; checkDir('./plots/resolutions')
 
-
-      c1 = TCanvas("c1")
-      draw_multiple(resolutions, " ; (p_{T}^{GEN} - p_{T}^{L1}) / p_{T}^{GEN} ; ", drawOptions1D, lineColors, legendEntries, pt_cut[l]) 
-      makePlots(c1,  "resolutions/ptres1D_DiffOverGen_pt"+str(pt_str[l]) )
-      c1.Close()
-
-      c1 = TCanvas("c1")
-      draw_multiple(resolutions_inverse, " ; (p_{T,GEN}^{-1} - p_{T,L1}^{-1}) / p_{T,GEN}^{-1} ; ", drawOptions1D, lineColors, legendEntries, pt_cut[l]) 
-      makePlots(c1,  "resolutions/ptres1D_invDiffOverInvGen_pt"+str(pt_str[l]) )
-      c1.Close()
+	c1 = TCanvas("c1")
+	draw_multiple(resolutions, " ; "+draw_res_axis_label[k]+" ; ", drawOptions1D, lineColors, legendEntries, pt_cut[l]) 
+	makePlots(c1,  "resolutions/ptres1D_"+draw_res_label[k]+"_pt"+str(pt_str[l]) )
+	c1.Close()
 
     
   if options.res1DvsPt and options.single_pt: print "Error: Must set single_pt to false in order to plot resolutions vs Pt."
@@ -230,33 +226,20 @@ if options.resolutions:
     sigma_res_err = np.empty((len(evt_trees),len(pt_cut)))
     x_arr = np.empty((len(evt_trees),len(pt_cut)))
 
-    ## ============== Inverse pT Diff Over Inverse GEN ================
+    for k in range(len(draw_res_option)):
 
-    for l in range(len(pt_cut)):
+      for l in range(len(pt_cut)):
 
-      for ee in range(0,4):
-	res = draw_res(evt_trees[ee], 64, -10, 10, "(((1./GEN_pt) - (1./pow(2, BDTG_AWB_Sq)))/(1./GEN_pt))", bdt_pt_cut(pt_cut[l]) )
-	
-	mu_res[ee][l] = res.GetMean()
-	mu_res_err[ee][l] = res.GetMeanError()
-	sigma_res[ee][l] = res.GetRMS()
-	sigma_res_err[ee][l] = res.GetRMSError()
+	for ee in range(0,4):
+	  res = draw_res(evt_trees[ee], 64, -10, 10, draw_res_option[k], bdt_pt_cut(pt_cut[l]) )
+	  
+	  mu_res[ee][l] = res.GetMean()
+	  mu_res_err[ee][l] = res.GetMeanError()
+	  sigma_res[ee][l] = res.GetRMS()
+	  sigma_res_err[ee][l] = res.GetRMSError()
 
-    draw_multi_res(len(evt_trees), sigma_res, sigma_res_err, x_arr, 'p_{T}^{GEN} (GeV)', '#sigma ((p_{T,GEN}^{-1} - p_{T,L1}^{-1}) / p_{T,GEN}^{-1})', lineColors, pt_cut, legendEntries, draw_res_label[1])
-
-    ## ============== pT Diff Over GEN ================
-
-    for l in range(len(pt_cut)):
-
-      for ee in range(0,4):
-	res = draw_res(evt_trees[ee], 64, -10, 10, "((GEN_pt - pow(2, BDTG_AWB_Sq))/GEN_pt)", bdt_pt_cut(pt_cut[l]) )
-	
-	mu_res[ee][l] = res.GetMean()
-	mu_res_err[ee][l] = res.GetMeanError()
-	sigma_res[ee][l] = res.GetRMS()
-	sigma_res_err[ee][l] = res.GetRMSError()
-
-    draw_multi_res(len(evt_trees), sigma_res, sigma_res_err, x_arr, 'p_{T}^{GEN} (GeV)', '#sigma ((p_{T,GEN} - p_{T,L1}) / p_{T,GEN})', lineColors, pt_cut, legendEntries, draw_res_label[0])
+      draw_multi_res(len(evt_trees), mu_res, mu_res_err, x_arr, 'p_{T}^{GEN} (GeV)', '#mu '+draw_res_axis_label[k], lineColors, pt_cut, legendEntries, draw_res_label[k], res_type[0])
+      draw_multi_res(len(evt_trees), sigma_res, sigma_res_err, x_arr, 'p_{T}^{GEN} (GeV)', '#sigma '+draw_res_axis_label[k], lineColors, pt_cut, legendEntries, draw_res_label[k], res_type[1])
 
       
   '''
