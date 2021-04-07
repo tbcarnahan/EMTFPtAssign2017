@@ -24,11 +24,9 @@ parser.add_option("--EffVsPt", dest="EffVsPt", action="store_true", default = Fa
 parser.add_option("--EffVsEta", dest="EffVsEta", action="store_true", default = False)
 
 parser.add_option("--resolutions", dest="resolutions", action="store_true", default = False)
-parser.add_option("--res1D", dest="res1D", action="store_true", default = True)
-parser.add_option("--res1D_diffOverGen", dest="res1D_diffOverGen", action="store_true", default = False)
-parser.add_option("--res1D_invDiffOverInvGen", dest="res1D_invDiffOverInvGen", action="store_true", default = False)
-parser.add_option("--res1DvsPt", dest="res1DvsPt", action="store_true", default = True)
-parser.add_option("--res1DvsEta", dest="res1DvsEta", action="store_true", default = True)
+parser.add_option("--res1D", dest="res1D", action="store_true", default = False)
+parser.add_option("--res1DvsPt", dest="res1DvsPt", action="store_true", default = False)
+parser.add_option("--res1DvsEta", dest="res1DvsEta", action="store_true", default = False)
 parser.add_option("--res2D", dest="res2D", action="store_true", default = False)
 (options, args) = parser.parse_args()
 
@@ -197,44 +195,30 @@ if options.resolutions:
 
   if options.res1D:
 
-    if options.res1D_diffOverGen:
+    for l in range(len(pt_cut)):
 
-      for l in range(len(pt_cut)):
+      resolutions = []
+      resolutions_inverse = []
 
-	resolutions = []
-	c1 = TCanvas("c1")
+      for ee in range(0,4):
+	res = draw_res(evt_trees[ee], 64, -10, 10, "(GEN_pt - pow(2, BDTG_AWB_Sq))/GEN_pt", bdt_pt_cut(pt_cut[l]) )
+	resolutions.append(res)
 
-	for ee in range(0,4):
-	  res = draw_res(evt_trees[ee], 64, -10, 10, "(GEN_pt - pow(2, BDTG_AWB_Sq))/GEN_pt", bdt_pt_cut(pt_cut[l]) )
-	  resolutions.append(res)
-	  c1.Close()
+	res = draw_res(evt_trees[ee], 64, -10, 10, "(((1./GEN_pt) - (1./pow(2, BDTG_AWB_Sq)))/(1./GEN_pt))", bdt_pt_cut(pt_cut[l]) )
+	resolutions_inverse.append(res)
 
-	c1 = TCanvas("c1")
-	draw_multiple(resolutions, " ; (p_{T}^{GEN} - p_{T}^{L1}) / p_{T}^{GEN} ; ", drawOptions1D, lineColors, legendEntries, pt_cut[l]) 
-
-	checkDir('./plots') ; checkDir('./plots/resolutions')
-	makePlots(c1,  "resolutions/ptres1D_DiffOverGen_pt"+str(pt_str[l]) )
-	c1.Close()
+      checkDir('./plots') ; checkDir('./plots/resolutions')
 
 
-    if options.res1D_invDiffOverInvGen:
+      c1 = TCanvas("c1")
+      draw_multiple(resolutions, " ; (p_{T}^{GEN} - p_{T}^{L1}) / p_{T}^{GEN} ; ", drawOptions1D, lineColors, legendEntries, pt_cut[l]) 
+      makePlots(c1,  "resolutions/ptres1D_DiffOverGen_pt"+str(pt_str[l]) )
+      c1.Close()
 
-      for l in range(len(pt_cut)):
-
-	resolutions = []
-	c1 = TCanvas("c1")
-
-	for ee in range(0,4):
-	  res = draw_res(evt_trees[ee], 64, -10, 10, "(((1./GEN_pt) - (1./pow(2, BDTG_AWB_Sq)))/(1./GEN_pt))", bdt_pt_cut(pt_cut[l]) )
-	  resolutions.append(res)
-	  c1.Close()
-
-	c1 = TCanvas("c1")
-	draw_multiple(resolutions, " ; (p_{T,GEN}^{-1} - p_{T,L1}^{-1}) / p_{T,GEN}^{-1} ; ", drawOptions1D, lineColors, legendEntries, pt_cut[l]) 
-
-	checkDir('./plots') ; checkDir('./plots/resolutions')
-	makePlots(c1,  "resolutions/ptres1D_invDiffOverInvGen_pt"+str(pt_str[l]) )
-	c1.Close()
+      c1 = TCanvas("c1")
+      draw_multiple(resolutions_inverse, " ; (p_{T,GEN}^{-1} - p_{T,L1}^{-1}) / p_{T,GEN}^{-1} ; ", drawOptions1D, lineColors, legendEntries, pt_cut[l]) 
+      makePlots(c1,  "resolutions/ptres1D_invDiffOverInvGen_pt"+str(pt_str[l]) )
+      c1.Close()
 
     
   if options.res1DvsPt and options.single_pt: print "Error: Must set single_pt to false in order to plot resolutions vs Pt."
