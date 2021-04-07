@@ -91,6 +91,7 @@ markerStyles = [8,8,8,8]#,8,8]
 drawOptions = ["AP", "same", "same", "same"]
 drawOptions1D = ["", "same", "same", "same"]
 legendEntries = ["Run-2", "Run-3", "Run-3 QSBit", "Run-3 QSBit ESBit"]
+draw_res_label = ["diffOverGen", "invDiffOverInvGen"]
 
 ## ================ Helper functions ======================
 def gen_pt_cut(pt_min):
@@ -209,7 +210,7 @@ if options.resolutions:
 	  c1.Close()
 
 	c1 = TCanvas("c1")
-	draw_multiple(resolutions, " ; (p_{T}^{GEN} - p_{T}^{L1}) / p_{T}^{GEN} ; ", drawOptions1D, lineColors, legendEntries) 
+	draw_multiple(resolutions, " ; (p_{T}^{GEN} - p_{T}^{L1}) / p_{T}^{GEN} ; ", drawOptions1D, lineColors, legendEntries, pt_cut[l]) 
 
 	checkDir('./plots') ; checkDir('./plots/resolutions')
 	makePlots(c1,  "resolutions/ptres1D_DiffOverGen_pt"+str(pt_str[l]) )
@@ -229,149 +230,52 @@ if options.resolutions:
 	  c1.Close()
 
 	c1 = TCanvas("c1")
-	draw_multiple(resolutions, " ; (p_{T,GEN}^{-1} - p_{T,L1}^{-1}) / p_{T,GEN}^{-1} ; ", drawOptions1D, lineColors, legendEntries) 
+	draw_multiple(resolutions, " ; (p_{T,GEN}^{-1} - p_{T,L1}^{-1}) / p_{T,GEN}^{-1} ; ", drawOptions1D, lineColors, legendEntries, pt_cut[l]) 
 
 	checkDir('./plots') ; checkDir('./plots/resolutions')
 	makePlots(c1,  "resolutions/ptres1D_invDiffOverInvGen_pt"+str(pt_str[l]) )
 	c1.Close()
 
-    '''
-    if options.res1DvsPt and options.single_pt: print "Error: Must set single_pt to false in order to plot resolutions vs Pt."
-    if options.res1DvsPt and not options.single_pt:
+    
+  if options.res1DvsPt and options.single_pt: print "Error: Must set single_pt to false in order to plot resolutions vs Pt."
+  if options.res1DvsPt and not options.single_pt:
 
-      ## ============== Inverse Pt Diff Over Inverse GEN ================
+    mu_res = np.empty((len(evt_trees),len(pt_cut)))
+    mu_res_err = np.empty((len(evt_trees),len(pt_cut)))
+    sigma_res = np.empty((len(evt_trees),len(pt_cut)))
+    sigma_res_err = np.empty((len(evt_trees),len(pt_cut)))
+    x_arr = np.empty((len(evt_trees),len(pt_cut)))
 
-      res1 = [] ; res2 = [] ; res3 = [] ; res4 = [] ; res5 = [] ; res6 = []
-      res1Err = [] ; res2Err = [] ; res3Err = [] ; res4Err = [] ; res5Err = [] ; res6Err = []
-      zeros=[]
+    ## ============== Inverse pT Diff Over Inverse GEN ================
 
-      for l in range(len(pt_cut)):
+    for l in range(len(pt_cut)):
 
-	evt_tree1.Draw("((1./GEN_pt) - (1./(2**(BDTG_AWB_Sq))))/(1./GEN_pt)>>htemp1(64,-20.,20.)", bdt_pt_cut(pt_cut[l]))
-	htemp1 = gPad.GetPrimitive("htemp1") ; htemp1.Draw()
-	res1.append(htemp1.GetRMS()) ; res1Err.append(htemp1.GetRMSError())
-	c1.Close()
+      for ee in range(0,4):
+	res = draw_res(evt_trees[ee], 64, -10, 10, "(((1./GEN_pt) - (1./pow(2, BDTG_AWB_Sq)))/(1./GEN_pt))", bdt_pt_cut(pt_cut[l]) )
+	
+	mu_res[ee][l] = res.GetMean()
+	mu_res_err[ee][l] = res.GetMeanError()
+	sigma_res[ee][l] = res.GetRMS()
+	sigma_res_err[ee][l] = res.GetRMSError()
 
-	evt_tree2.Draw("((1./GEN_pt) - (1./(2**(BDTG_AWB_Sq))))/(1./GEN_pt)>>htemp2(64,-20.,20.)", bdt_pt_cut(pt_cut[l]))
-	htemp2 = gPad.GetPrimitive("htemp2") ; htemp2.Draw()
-	res2.append(htemp2.GetRMS()) ; res2Err.append(htemp2.GetRMSError())
-	c1.Close()
+    draw_multi_res(len(evt_trees), sigma_res, sigma_res_err, x_arr, 'p_{T}^{GEN} (GeV)', '#sigma ((p_{T,GEN}^{-1} - p_{T,L1}^{-1}) / p_{T,GEN}^{-1})', lineColors, pt_cut, legendEntries, draw_res_label[1])
 
-	evt_tree3.Draw("((1./GEN_pt) - (1./(2**(BDTG_AWB_Sq))))/(1./GEN_pt)>>htemp3(64,-20.,20.)", bdt_pt_cut(pt_cut[l]))
-	htemp3 = gPad.GetPrimitive("htemp3") ; htemp3.Draw()
-	res3.append(htemp3.GetRMS()) ; res3Err.append(htemp3.GetRMSError())
-	c1.Close()
+    ## ============== pT Diff Over GEN ================
 
-	c1 = TCanvas("c1")
-	evt_tree4.Draw("((1./GEN_pt) - (1./(2**(BDTG_AWB_Sq))))/(1./GEN_pt)>>htemp4(64,-20.,20.)", bdt_pt_cut(pt_cut[l]))
-	htemp4 = gPad.GetPrimitive("htemp4") ; htemp4.Draw()
-	res4.append(htemp4.GetRMS()) ; res4Err.append(htemp4.GetRMSError())
-	c1.Close()
+    for l in range(len(pt_cut)):
 
-	c1 = TCanvas("c1")
-	evt_tree5.Draw("((1./GEN_pt) - (1./(2**(BDTG_AWB_Sq))))/(1./GEN_pt)>>htemp5(64,-20.,20.)", bdt_pt_cut(pt_cut[l]))
-	htemp5 = gPad.GetPrimitive("htemp5") ; htemp5.Draw()
-	res5.append(htemp5.GetRMS()) ; res5Err.append(htemp5.GetRMSError())
-	c1.Close()
+      for ee in range(0,4):
+	res = draw_res(evt_trees[ee], 64, -10, 10, "((GEN_pt - pow(2, BDTG_AWB_Sq))/GEN_pt)", bdt_pt_cut(pt_cut[l]) )
+	
+	mu_res[ee][l] = res.GetMean()
+	mu_res_err[ee][l] = res.GetMeanError()
+	sigma_res[ee][l] = res.GetRMS()
+	sigma_res_err[ee][l] = res.GetRMSError()
 
-	c1 = TCanvas("c1")
-	evt_tree6.Draw("((1./GEN_pt) - (1./(2**(BDTG_AWB_Sq))))/(1./GEN_pt)>>htemp6(64,-20.,20.)", bdt_pt_cut(pt_cut[l]))
-	htemp6 = gPad.GetPrimitive("htemp6") ; htemp6.Draw()
-	res6.append(htemp6.GetRMS()) ; res6Err.append(htemp6.GetRMSError())
-	c1.Close()
+    draw_multi_res(len(evt_trees), sigma_res, sigma_res_err, x_arr, 'p_{T}^{GEN} (GeV)', '#sigma ((p_{T,GEN} - p_{T,L1}) / p_{T,GEN})', lineColors, pt_cut, legendEntries, draw_res_label[0])
 
-	zeros.append(0.)
-
-
-      c1 = TCanvas( 'c1', 'test scatter', 200, 10, 700, 500)
-      g1 = TGraphErrors(len(pt_cut), np.array(pt_cut), np.array(res1), np.array(zeros) , np.array(res1Err))
-      g1.SetMarkerStyle(8) ; g1.SetMarkerSize(1) ; g1.SetMarkerColor(kBlue)
-      g2 = TGraphErrors(len(pt_cut), np.array(pt_cut), np.array(res2), np.array(zeros) , np.array(res2Err))
-      g2.SetMarkerStyle(8) ; g2.SetMarkerSize(1) ; g2.SetMarkerColor(kRed)
-      g3 = TGraphErrors(len(pt_cut), np.array(pt_cut), np.array(res3), np.array(zeros) , np.array(res3Err))
-      g3.SetMarkerStyle(8) ; g3.SetMarkerSize(1) ; g3.SetMarkerColor(kGreen+2)
-      g4 = TGraphErrors(len(pt_cut), np.array(pt_cut), np.array(res4), np.array(zeros) , np.array(res4Err))
-      g4.SetMarkerStyle(8) ; g4.SetMarkerSize(1) ; g4.SetMarkerColor(kBlack)
-      g5 = TGraphErrors(len(pt_cut), np.array(pt_cut), np.array(res5), np.array(zeros) , np.array(res5Err))
-      g5.SetMarkerStyle(8) ; g5.SetMarkerSize(1) ; g5.SetMarkerColor(7)
-      g6 = TGraphErrors(len(pt_cut), np.array(pt_cut), np.array(res6), np.array(zeros) , np.array(res6Err))
-      g6.SetMarkerStyle(8) ; g6.SetMarkerSize(1) ; g6.SetMarkerColor(40)
-
-      mg = TMultiGraph() ; mg.Add(g1) ; mg.Add(g2) ; mg.Add(g3) ; mg.Add(g4) ; mg.Add(g5) ; mg.Add(g6) ; mg.Draw('ap')
-      mg.GetXaxis().SetTitle('p_{T}^{GEN}')
-      mg.GetYaxis().SetTitle('#sigma ((p_{T,GEN}^{-1} - p_{T,L1}^{-1}) / p_{T,GEN}^{-1})')
-
-      #leg = TLegend(0.13, 0.66, 0.45, 0.87) ; leg.AddEntry(g2, "Run-2 BDT") ; leg.AddEntry(g3, "Run-3 BDT (HS precision dPhi)") ; leg.AddEntry(g1, "Run-3 BDT (ES precision dPhi)") ; leg.SetBorderSize(0) ; leg.Draw("same")
-
-      c1.Update()
-      makePlot(c1, "resolutions/res_vs_pt_invDiffOverInvGen_enhancedDPhi_slopeRemoved")
-
-      ## ============== Pt Diff Over GEN ================
-
-      res1 = [] ; res2 = [] ; res3 = [] ; res4 = [] ; res5 = [] ; res6 = []
-      res1Err = [] ; res2Err = [] ; res3Err = [] ; res4Err = [] ; res5Err = [] ; res6Err = []
-      zeros=[]
-
-      for l in range(len(pt_cut)):
-
-	evt_tree1.Draw("(GEN_pt - (2**(BDTG_AWB_Sq)))/(GEN_pt)>>htemp1(64,-3.,3.)", bdt_pt_cut(pt_cut[l]))
-	htemp1 = gPad.GetPrimitive("htemp1") ; htemp1.Draw()
-	res1.append(htemp1.GetRMS()) ; res1Err.append(htemp1.GetRMSError())
-	c1.Close()
-
-	evt_tree2.Draw("(GEN_pt - (2**(BDTG_AWB_Sq)))/(GEN_pt)>>htemp2(64,-3.,3.)", bdt_pt_cut(pt_cut[l]))
-	htemp2 = gPad.GetPrimitive("htemp2") ; htemp2.Draw()
-	res2.append(htemp2.GetRMS()) ; res2Err.append(htemp2.GetRMSError())
-	c1.Close()
-
-	evt_tree3.Draw("(GEN_pt - (2**(BDTG_AWB_Sq)))/(GEN_pt)>>htemp3(64,-3.,3.)", bdt_pt_cut(pt_cut[l]))
-	htemp3 = gPad.GetPrimitive("htemp3") ; htemp3.Draw()
-	res3.append(htemp3.GetRMS()) ; res3Err.append(htemp3.GetRMSError())
-	c1.Close()
-
-	c1 = TCanvas("c1")
-	evt_tree4.Draw("(GEN_pt - (2**(BDTG_AWB_Sq)))/(GEN_pt)>>htemp4(64,-3.,3.)", bdt_pt_cut(pt_cut[l]))
-	htemp4 = gPad.GetPrimitive("htemp4") ; htemp4.Draw()
-	res4.append(htemp4.GetRMS()) ; res4Err.append(htemp4.GetRMSError())
-	c1.Close()
-
-	c1 = TCanvas("c1")
-	evt_tree5.Draw("(GEN_pt - (2**(BDTG_AWB_Sq)))/(GEN_pt)>>htemp5(64,-3.,3.)", bdt_pt_cut(pt_cut[l]))
-	htemp5 = gPad.GetPrimitive("htemp5") ; htemp5.Draw()
-	res5.append(htemp5.GetRMS()) ; res5Err.append(htemp5.GetRMSError())
-	c1.Close()
-
-	c1 = TCanvas("c1")
-	evt_tree6.Draw("(GEN_pt - (2**(BDTG_AWB_Sq)))/(GEN_pt)>>htemp6(64,-3.,3.)", bdt_pt_cut(pt_cut[l]))
-	htemp6 = gPad.GetPrimitive("htemp6") ; htemp6.Draw()
-	res6.append(htemp6.GetRMS()) ; res6Err.append(htemp6.GetRMSError())
-	c1.Close()
-
-	zeros.append(0.)
-
-      c1 = TCanvas( 'c1', 'test scatter', 200, 10, 700, 500)
-      g1 = TGraphErrors(len(pt_cut), np.array(pt_cut), np.array(res1), np.array(zeros) , np.array(res1Err))
-      g1.SetMarkerStyle(8) ; g1.SetMarkerSize(1) ; g1.SetMarkerColor(kBlue)
-      g2 = TGraphErrors(len(pt_cut), np.array(pt_cut), np.array(res2), np.array(zeros) , np.array(res2Err))
-      g2.SetMarkerStyle(8) ; g2.SetMarkerSize(1) ; g2.SetMarkerColor(kRed)
-      g3 = TGraphErrors(len(pt_cut), np.array(pt_cut), np.array(res3), np.array(zeros) , np.array(res3Err))
-      g3.SetMarkerStyle(8) ; g3.SetMarkerSize(1) ; g3.SetMarkerColor(kGreen+2)
-      g4 = TGraphErrors(len(pt_cut), np.array(pt_cut), np.array(res4), np.array(zeros) , np.array(res4Err))
-      g4.SetMarkerStyle(8) ; g4.SetMarkerSize(1) ; g4.SetMarkerColor(kBlack)
-      g5 = TGraphErrors(len(pt_cut), np.array(pt_cut), np.array(res5), np.array(zeros) , np.array(res5Err))
-      g5.SetMarkerStyle(8) ; g5.SetMarkerSize(1) ; g5.SetMarkerColor(7)
-      g6 = TGraphErrors(len(pt_cut), np.array(pt_cut), np.array(res6), np.array(zeros) , np.array(res6Err))
-      g6.SetMarkerStyle(8) ; g6.SetMarkerSize(1) ; g6.SetMarkerColor(40)
-
-      mg = TMultiGraph() ; mg.Add(g1) ; mg.Add(g2) ; mg.Add(g3) ; mg.Add(g4) ; mg.Add(g5) ; mg.Add(g6) ; mg.Draw('ap')
-      mg.GetXaxis().SetTitle('p_{T}^{GEN}')
-      mg.GetYaxis().SetTitle('#sigma ((p_{T}^{GEN} - p_{T}^{L1}) / p_{T}^{GEN})')
-
-      #leg = TLegend(0.13, 0.15, 0.55, 0.47) ; leg.AddEntry(g2, "Run-2 BDT") ; leg.AddEntry(g3, "Run-3 BDT (HS precision dPhi)") ; leg.AddEntry(g1, "Run-3 BDT (ES precision dPhi)") ; leg.SetBorderSize(0) ; leg.Draw("same")
-
-      c1.Update()
-      makePlot(c1, "resolutions/res_vs_pt_diffOverGen_nonEnhanced")
-
+      
+  '''
   if options.res1DvsEta:
 
     eta_min1 = [-2.4, -2.2, -2.0, -1.8, -1.6, -1.4]

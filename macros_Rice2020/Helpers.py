@@ -3,6 +3,9 @@ from ROOT import *
 from ROOT import TStyle
 import os
 import math
+import numpy as np
+
+plotDir = "plots/"
 
 def ANDtwo(cut1,cut2):
     """AND of two TCuts in PyROOT"""
@@ -194,7 +197,7 @@ def draw_res(t, nBins, minBin, maxBin, to_draw, pt_cut):
     return htemp
 
 #_______________________________________________________________________________
-def draw_multiple(res, title, drawOptions1D, lineColors, texLabel):
+def draw_multiple(res, title, drawOptions1D, lineColors, texLabel, pt_cut):
 
     for i in range(len(res)):	
 	res[i].SetLineColor(lineColors[i])
@@ -205,10 +208,43 @@ def draw_multiple(res, title, drawOptions1D, lineColors, texLabel):
       tex = TLatex() ; tex.SetTextFont(22) ; tex.SetTextColor(lineColors[i]) ; tex.SetTextSize(0.033) ; tex.SetTextAlign(10)
       tex.DrawLatex( 2, 0.8-(i*0.1), texLabel[i]+" #mu = "+str(truncate(res[i].GetMean(),3))+", #sigma = "+str(truncate(res[i].GetRMS(),3)))
 	
+    tex = TLatex() ; tex.SetTextFont(22) ; tex.SetTextColor(kBlack) ; tex.SetTextSize(0.033) ; tex.SetTextAlign(10)
+    tex.DrawLatex( 2, 0.8-((i+1)*0.1), "Mode 15, p_{T}^{L1} > "+str(int(pt_cut))+" GeV")
 
     res[0].SetTitle(title)
     return
     
+#_______________________________________________________________________________
+def draw_multi_res(length, res, resError, x_arr, xtitle, ytitle, lineColors, pt_cut, legendEntries, draw_res_label):
+    
+    if draw_res_label=="invDiffOverInvGen": leg = TLegend(0.13, 0.20, 0.45, 0.40)
+    else: leg = TLegend(0.43, 0.20, 0.75, 0.40)
+
+    mg = TMultiGraph()
+    c1 = TCanvas("c1")
+
+    for i in range(length):
+      g = TGraphErrors(len(pt_cut), np.array(pt_cut), np.array(res[i]), np.array(x_arr[i]) , np.array(resError[i]))
+      g.SetMarkerStyle(8) ; g.SetMarkerSize(1) ; g.SetMarkerColor(lineColors[i])
+      leg.AddEntry(g, legendEntries[i])
+      mg.Add(g)
+
+    mg.Draw('AP')
+    leg.SetBorderSize(0)
+    leg.Draw("same")
+    mg.GetXaxis().SetTitle(xtitle)
+    mg.GetYaxis().SetTitle(ytitle)
+    
+    checkDir('./plots') ; checkDir('./plots/resolutions')
+    makePlots(c1,  "resolutions/res_vs_pt_"+draw_res_label )
+    c1.Close()
+
+
+#_______________________________________________________________________________
+def makePlots(canvas, plotTitle):
+  c1.SaveAs(plotDir + plotTitle + ".png")
+  c1.SaveAs(plotDir + plotTitle + ".pdf")
+  c1.SaveAs(plotDir + plotTitle + ".C")
 	
 #_______________________________________________________________________________
 def checkDir(path):
