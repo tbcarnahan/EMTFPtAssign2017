@@ -123,6 +123,7 @@ if __name__ == '__main__':
     parser.add_argument("--minPtTrain", action="store", default = 1.)
     parser.add_argument("--maxPtTrain", action="store", default = 256.)
     parser.add_argument("--nEvents", action="store", default = -1)
+    parser.add_argument("--verbose", action="store_true", default = False)
     args = parser.parse_args()
 
     ## CMSSW version
@@ -204,7 +205,7 @@ if __name__ == '__main__':
 
     ## training command
     def runCommand(localdir = './'):
-        command  = 'root -l -b -q "{localdir}PtRegressionRun3Prep.C({user}, {method}, {bemtfMode}, {minPt}, {maxPt}, {minPtTrain}, {maxPtTrain}, {minEta}, {maxEta}, {btrainVarsHex}, {btrainVarsSize}, {bisRun2}, {buseQSBit}, {buseESBit}, {buseBitComp}, {nEvents})"'.format(
+        command  = 'root -l -b -q "{localdir}PtRegressionRun3Prep.C({user}, {method}, {bemtfMode}, {minPt}, {maxPt}, {minPtTrain}, {maxPtTrain}, {minEta}, {maxEta}, {btrainVarsHex}, {btrainVarsSize}, {bisRun2}, {buseQSBit}, {buseESBit}, {buseBitComp}, {nEvents}, {verbose})"'.format(
             user = '''\\\"{}\\\"'''.format(USER),
             method = '''\\\"BDTG_AWB_Sq\\\"''',
             bemtfMode = int(args.emtfMode),
@@ -221,7 +222,8 @@ if __name__ == '__main__':
             buseESBit = int(useESBit),
             buseBitComp = int(useBitComp),
             localdir = localdir,
-            nEvents = int(args.nEvents)
+            nEvents = int(args.nEvents),
+            verbose = int(args.verbose)
         )
         return command
 

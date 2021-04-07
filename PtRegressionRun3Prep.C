@@ -62,7 +62,8 @@ void PtRegressionRun3Prep(TString user = "",
                           bool useOneQuartPrecision = false,
                           bool useOneEighthPrecision = false,
                           bool useBitCompression = false,
-                          int nEvents = -1) {
+                          int nEvents = -1,
+                          bool verbose = false) {
 
   // Expert options
   // Run-2 overrides all options
@@ -113,7 +114,6 @@ void PtRegressionRun3Prep(TString user = "",
   Use["BDTG_AWB_Hub"]            = 0;
   Use["BDTG_AWB_Sq"]             = 1;
   //==================================
-  bool verbose = false;//for debug
 
   std::cout << std::endl;
   std::cout << "==> Start PtRegressionRun3Prep" << std::endl;
@@ -639,7 +639,12 @@ void PtRegressionRun3Prep(TString user = "",
         int bend2 = (i2 >= 0 ? I("hit_bend", i2 ) : -99);
         int bend3 = (i3 >= 0 ? I("hit_bend", i3 ) : -99);
         int bend4 = (i4 >= 0 ? I("hit_bend", i4 ) : -99);
-
+        if(verbose) {
+        std::cout << "hit_bend1 " << bend1  << std::endl;
+        std::cout << "hit_bend2 " << bend2  << std::endl;
+        std::cout << "hit_bend3 " << bend3 << std::endl;
+        std::cout << "hit_bend4 " << bend4 << std::endl;
+        }
         // CCLUT bit corrections
         int strip_quart_bit1 = (i1CSC >= 0 ? I("hit_strip_quart_bit",i1CSC ) : -99);
         int strip_quart_bit2 = (i2 >= 0 ? I("hit_strip_quart_bit", i2 ) : -99);
@@ -736,13 +741,39 @@ void PtRegressionRun3Prep(TString user = "",
         // calculate bendings from CCLUT slope (Run-3)
         // this needs to be evaluated before the CalcBends
         // this function does not modify bendX
+        if(verbose) {
+          std::cout << "Before" << std::endl;
+          std::cout << "hit_slope1 " << slope1  << std::endl;
+          std::cout << "hit_slope2 " << slope2  << std::endl;
+          std::cout << "hit_slope3 " << slope3 << std::endl;
+          std::cout << "hit_slope4 " << slope4 << std::endl;
+        }
         CalcSlopes(bend1, slope1, endcap, mode, BIT_COMP, isRun2 );
         CalcSlopes(bend2, slope2, endcap, mode, BIT_COMP, isRun2 );
         CalcSlopes(bend3, slope3, endcap, mode, BIT_COMP, isRun2 );
         CalcSlopes(bend4, slope4, endcap, mode, BIT_COMP, isRun2 );
 
+        if(verbose) {
+          std::cout << "After" << std::endl;
+          std::cout << "hit_slope1 " << slope1  << std::endl;
+          std::cout << "hit_slope2 " << slope2  << std::endl;
+          std::cout << "hit_slope3 " << slope3 << std::endl;
+          std::cout << "hit_slope4 " << slope4 << std::endl;
+        }
         CalcDeltaSlopes(slope1, slope2, slope3, slope4,
                         dSlope12, dSlope13, dSlope14, dSlope23, dSlope24, dSlope34);
+
+        if(verbose) {
+          std::cout << "DSlope" << std::endl;
+          std::cout << "dSlope12 " << dSlope12  << std::endl;
+          std::cout << "dSlope13 " << dSlope13  << std::endl;
+          std::cout << "dSlope14 " << dSlope14  << std::endl;
+          std::cout << "dSlope23 " << dSlope23  << std::endl;
+          std::cout << "dSlope24 " << dSlope24  << std::endl;
+          std::cout << "dSlope34 " << dSlope34  << std::endl;
+        }
+        // if (endcap1 == 1 and station1 == 1 and ring1 == 1 and chamber1==1)
+        //   std::cout << station1 << ring1 << chamber1 << " hit_strip1 " << strip1 << " hit_phi_int1 " << ph1 << std::endl;
 
         // calculate bendings from pattern numbers (Run-2, Run-3)
         // this function modifies bendX

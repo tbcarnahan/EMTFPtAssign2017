@@ -338,7 +338,9 @@ void CalcSlopes( const int bend, int& slope, const int endcap, const int mode, c
 
   // multiply with bending
   // make sure that bending convention is not {0,1}, but {1, -1}!!!
-  slope *= bend;
+  // bend == 0 means left bending, thus positive
+  // bend == 1 means right bending, thus negative
+  slope *= (1- 2*bend);
 
   // Reverse to match dPhi convention
   if (endcap == 1)
@@ -437,8 +439,10 @@ int CalcBendFromPattern( const int pattern, const int endcap, const bool isRun2 
   if(isRun2) {
     if (pattern == 10)
       bend = 0;
+    // even numbered -> positive bending (left)
     else if ( (pattern % 2) == 0 )
       bend = (10 - pattern) / 2;
+    // odd numbered -> negative bending (right)
     else if ( (pattern % 2) == 1 )
       bend = -1 * (11 - pattern) / 2;
   }
@@ -446,8 +450,10 @@ int CalcBendFromPattern( const int pattern, const int endcap, const bool isRun2 
   else {
     if (pattern == 4)
       bend = 0;
+    // even numbered -> positive bending (left)
     else if ( (pattern % 2) == 0 )
       bend = (4 - pattern) / 2;
+    // odd numbered -> negative bending (right)
     else if ( (pattern % 2) == 1 )
       bend = -1 * (5 - pattern) / 2;
   }
