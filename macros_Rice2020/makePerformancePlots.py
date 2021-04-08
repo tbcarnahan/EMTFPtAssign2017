@@ -246,7 +246,7 @@ if options.resolutions:
 
     for k in range(len(draw_res_option)):
 
-      #The plotter has trouble between bins -1.2 to 1.2, so the resolutions in the negative and positive endcaps are drawn seperately and then plotted together.
+      #Define the eta range from the negative+positive endcap in a single array.
       eta_range = []
       nbins = int(round(abs((float(eta_min[0]) -  float(eta_max[0]) ) / 0.1)))
 
@@ -267,6 +267,7 @@ if options.resolutions:
 	for i in range(len(eta_range)-2):
 
 	  for ee in range(0,4):
+	    #Add a check to skip the bin at the boundary between endcaps (-1.2 to 1.2).
 	    if i<len(eta_range)/2 - 1: res = draw_resVsEta(evt_trees[ee], 64, -10, 10, draw_res_option[k], bdt_pt_cut(pt_cut[l]), gen_pt_cut(pt_cut[l]), gen_eta_cut(eta_range[i], eta_range[i+1]) )
 	    if i>=len(eta_range)/2 - 1: res = draw_resVsEta(evt_trees[ee], 64, -10, 10, draw_res_option[k], bdt_pt_cut(pt_cut[l]), gen_pt_cut(pt_cut[l]), gen_eta_cut(eta_range[i+1], eta_range[i+2]) )
 
@@ -275,7 +276,7 @@ if options.resolutions:
 	    sigma_res[ee][i] = res.GetRMS()
 	    sigma_res_err[ee][i] = res.GetRMSError()
 
-      #Remove the bins at the edge of the endcaps that won't be plotted.
+      #Remove the bins at the endcaps boundries that won't be plotted.
       eta_range.remove(-1*eta_min[0])
       eta_range.remove(eta_min[0])
 
