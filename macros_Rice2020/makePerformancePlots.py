@@ -53,7 +53,7 @@ else:
   #Whole endcap region.
   eta_min = [2.1]
   eta_max = [2.4]
-  eta_str_min = ["2pt1"]
+  eta_str_min = ["1pt2"]
   eta_str_max = ["2pt4"]
 
 
@@ -83,11 +83,11 @@ for p in trainings:
   ttree.Add(fName)
   evt_trees.append(ttree)
 
-markerColors = [kBlue, kRed, kGreen+2, kBlack]#, 7, 40]
-lineColors = [kBlue, kRed, kGreen+2, kBlack]#, 7, 40]
-markerStyles = [8,8,8,8]#,8,8]
-drawOptions = ["AP", "same", "same", "same"]
-drawOptions1D = ["", "same", "same", "same"]
+markerColors = [kBlue, kRed, kGreen+2, kBlack, kBlue, kRed, kGreen+2, kBlack]#, 7, 40]
+lineColors = [kBlue, kRed, kGreen+2, kBlack, kBlue, kRed, kGreen+2, kBlack]#, 7, 40]
+markerStyles = [8,8,8,8]#,8,8,8,8]
+drawOptions = ["AP", "same", "same", "same"]#, "same", "same", "same", "same"]
+drawOptions1D = ["", "same", "same", "same"]#, "same", "same", "same", "same"]
 legendEntries = ["Run-2", "Run-3", "Run-3 QSBit", "Run-3 QSBit ESBit"]
 
 draw_res_axis_label = ["(p_{T}^{GEN} - p_{T}^{L1}) / p_{T}^{GEN}", "(p_{T,GEN}^{-1} - p_{T,L1}^{-1}) / p_{T,GEN}^{-1}"]
@@ -100,13 +100,12 @@ def gen_pt_cut(pt_min):
   return TCut("GEN_pt >= {0}".format(pt_min))
 
 def gen_eta_cut(eta_min, eta_max):
-  return TCut("abs(GEN_eta) >= {0} && abs(GEN_eta) <= {1}".format(eta_min, eta_max))
+  return TCut("GEN_eta >= {0} && GEN_eta <= {1}".format(eta_min, eta_max))
 
 def bdt_pt_cut(pt_min):
   return TCut("pow(2, BDTG_AWB_Sq) >= {}".format(pt_min))
 
 def bdt_pt_scaled_cut(pt_min):
-  #return TCut("pow(2, BDTG_AWB_Sq) >= {}".format(pt_min))
   return TCut("(1.2 * pow(2,BDTG_AWB_Sq)))/(1 - (0.004 * pow(2,BDTG_AWB_Sq))) >= {}".format(pt_min))
 
 def makePlots(canvas, plotTitle):
@@ -224,7 +223,7 @@ if options.resolutions:
     mu_res_err = np.empty((len(evt_trees),len(pt_cut)))
     sigma_res = np.empty((len(evt_trees),len(pt_cut)))
     sigma_res_err = np.empty((len(evt_trees),len(pt_cut)))
-    x_arr = np.empty((len(evt_trees),len(pt_cut)))
+    xErrors = np.zeros((len(evt_trees),len(pt_cut)))
 
     for k in range(len(draw_res_option)):
 
@@ -238,127 +237,55 @@ if options.resolutions:
 	  sigma_res[ee][l] = res.GetRMS()
 	  sigma_res_err[ee][l] = res.GetRMSError()
 
-      draw_multi_res(len(evt_trees), mu_res, mu_res_err, x_arr, 'p_{T}^{GEN} (GeV)', '#mu '+draw_res_axis_label[k], lineColors, pt_cut, legendEntries, draw_res_label[k], res_type[0])
-      draw_multi_res(len(evt_trees), sigma_res, sigma_res_err, x_arr, 'p_{T}^{GEN} (GeV)', '#sigma '+draw_res_axis_label[k], lineColors, pt_cut, legendEntries, draw_res_label[k], res_type[1])
+      draw_multi_resVsPt(len(evt_trees), mu_res, mu_res_err, xErrors, 'p_{T}^{GEN} (GeV)', '#mu '+draw_res_axis_label[k], lineColors, pt_cut, legendEntries, draw_res_label[k], res_type[0])
+      draw_multi_resVsPt(len(evt_trees), sigma_res, sigma_res_err, xErrors, 'p_{T}^{GEN} (GeV)', '#sigma '+draw_res_axis_label[k], lineColors, pt_cut, legendEntries, draw_res_label[k], res_type[1])
 
       
-  '''
+  
   if options.res1DvsEta:
 
-    eta_min1 = [-2.4, -2.2, -2.0, -1.8, -1.6, -1.4]
-    eta_min2 = [1.2, 1.4, 1.6, 1.8, 2.0, 2.2]
-    eta_max1 = [-2.2, -2.0, -1.8, -1.6, -1.4, -1.2]
-    eta_max2 = [1.4, 1.6, 1.8, 2.0, 2.2, 2.4]
+    for k in range(len(draw_res_option)):
 
-    ## ============== Inverse Pt Diff Over Inverse GEN ================
+      #The plotter has trouble between bins -1.2 to 1.2, so the resolutions in the negative and positive endcaps are drawn seperately and then plotted together.
+      eta_min1 = [] 
+      eta_min2 = []
+      eta_max1 = []
+      eta_max2 = []
+      a = int(round(abs((float(eta_min[0]) -  float(eta_max[0]) ) / 0.1)))
+      for i in range(a):	
+	eta_min1.append(round(-1*float(eta_max[0]) + 0.1*i + 0.1,1))
+	eta_min2.append(round(float(eta_min[0]) + 0.1*i,1))
+	eta_max1.append(round(-1*float(eta_max[0]) + 0.1*i,1))
+	eta_max2.append(round(float(eta_min[0]) + 0.1*i + 0.1,1))
 
-    for k in range(len(pt_cut)):
+      #2x2 arrays to hold the mean and width (and errors) of the pt resolutions.
+      mu_res = np.zeros((len(evt_trees),len(eta_min1)+len(eta_max1)))
+      mu_res_err = np.zeros((len(evt_trees),len(eta_min1)+len(eta_max1)))
+      sigma_res = np.zeros((len(evt_trees),len(eta_min1)+len(eta_max1)))
+      sigma_res_err = np.zeros((len(evt_trees),len(eta_min1)+len(eta_max1)))
+      xErrors = np.zeros((len(evt_trees),len(eta_min1)+len(eta_max1)))
 
-      res = [] ; res2 = [] ; resErr = [] ; res2Err = [] ; zeros=[]
+      for i in range(len(eta_max2)):
+	eta_min1.append(eta_max2[i])
+	eta_max1.append(eta_min2[i])
 
-      for l in range(len(eta_min1)):
+      for l in range(len(pt_cut)):
 
-	c1 = TCanvas("c1")
-	evt_tree2.Draw("((1./GEN_pt) - (1./(1.2 * (2**(BDTG_AWB_Sq)))))/(1 - (0.004 * (2**(BDTG_AWB_Sq))))))/(1./GEN_pt)>>htemp(64,-3.,3.)", gen_pt_cut(pt_cut[k])+" && GEN_eta>"+str(eta_min1[l])+" && GEN_eta<"+str(eta_max1[l]))
-	htemp = gPad.GetPrimitive("htemp") ; htemp.Draw()
-	res.append(htemp.GetRMS()) ; resErr.append(htemp.GetRMSError())
-	c1.Close()
+	for i in range(len(eta_min1)):
 
-	c1 = TCanvas("c1")
-	evt_tree2.Draw("((1./GEN_pt) - (1./(1.2 * (2**(BDTG_AWB_Sq)))))/(1 - (0.004 * (2**(BDTG_AWB_Sq))))))/(1./GEN_pt)>>htemp2(64,-3.,3.)", gen_pt_cut(pt_cut[k])+" && GEN_eta>"+str(eta_min2[l])+" && GEN_eta<"+str(eta_max2[l]))
-	htemp2 = gPad.GetPrimitive("htemp2") ; htemp2.Draw()
-	res.append(htemp2.GetRMS()) ; resErr.append(htemp2.GetRMSError())
-	c1.Close()
+	  for ee in range(0,4):
+	    res = draw_resVsEta(evt_trees[ee], 64, -10, 10, draw_res_option[k], bdt_pt_cut(pt_cut[l]), gen_pt_cut(pt_cut[l]), gen_eta_cut(eta_max1[i], eta_min1[i]) )
+	    
+	    mu_res[ee][i] = res.GetMean()
+	    mu_res_err[ee][i] = res.GetMeanError()
+	    sigma_res[ee][i] = res.GetRMS()
+	    sigma_res_err[ee][i] = res.GetRMSError()
 
-	c1 = TCanvas("c1")
-	evt_tree.Draw("((1./GEN_pt) - (1./(1.2 * (2**(BDTG_AWB_Sq)))))/(1 - (0.004 * (2**(BDTG_AWB_Sq))))))/(1./GEN_pt)>>htemp3(64,-3.,3.)", gen_pt_cut(pt_cut[k])+" && GEN_eta>"+str(eta_min1[l])+" && GEN_eta<"+str(eta_max1[l]))
-	htemp3 = gPad.GetPrimitive("htemp3") ; htemp3.Draw()
-	res2.append(htemp3.GetRMS()) ; res2Err.append(htemp3.GetRMSError())
-	c1.Close()
-
-	c1 = TCanvas("c1")
-	evt_tree.Draw("((1./GEN_pt) - (1./(1.2 * (2**(BDTG_AWB_Sq)))))/(1 - (0.004 * (2**(BDTG_AWB_Sq))))))/(1./GEN_pt)>>htemp4(64,-3.,3.)", gen_pt_cut(pt_cut[k])+" && GEN_eta>"+str(eta_min2[l])+" && GEN_eta<"+str(eta_max2[l]))
-	htemp4 = gPad.GetPrimitive("htemp4") ; htemp4.Draw()
-	res2.append(htemp4.GetRMS()) ; res2Err.append(htemp4.GetRMSError())
-	c1.Close()
-
-	zeros.append(0.) ; zeros.append(0.)
-
-      eta = [-2.4, -2.2, -2.0, -1.8, -1.6, -1.4, 1.2, 1.4, 1.6, 1.8, 2.0, 2.2]
-      c1 = TCanvas( 'c1', 'test scatter', 200, 10, 700, 500)
-      g1 = TGraphErrors(len(eta), np.array(eta), np.array(res), np.array(zeros) , np.array(resErr))
-      g1.SetMarkerStyle(8) ; g1.SetMarkerSize(1) ; g1.SetMarkerColor(kBlue)
-      g2 = TGraphErrors(len(eta), np.array(eta), np.array(res2), np.array(zeros) , np.array(res2Err))
-      g2.SetMarkerStyle(8) ; g2.SetMarkerSize(1) ; g2.SetMarkerColor(kRed)
-
-      mg = TMultiGraph() ; mg.Add(g1) ; mg.Add(g2) ; mg.Draw('ap')
-      mg.GetXaxis().SetTitle('#eta^{GEN}')
-      mg.GetYaxis().SetTitle('#sigma ((p_{T}^{GEN} - p_{T}^{L1})^{-1} / (p_{T}^{GEN})^{-1})')
-
-      lat_scale = [0.87, 0.91, 0.935, 0.965, 0.985, 1.01, 1.08, 1.11, 1.15, 1.215]
-      la = TLatex() ; la.SetTextFont(22) ; la.SetTextColor(kBlack) ; la.SetTextSize(0.031) ; la.SetTextAlign(10)
-      la.DrawLatex( -0.62, lat_scale[k], "Mode 15, p_{T}^{L1} > "+str(int(pt_cut[k]))+" GeV")
-
-      leg = TLegend(0.40, 0.61, 0.62, 0.85) ; leg.AddEntry(g2, "Run-2 BDT") ; leg.AddEntry(g1, "Run-3 BDT") ; leg.SetBorderSize(0) ; leg.Draw("same")
-
-      c1.Update()
-      makePlot(c1, "resolutions/res_vs_eta_InvDiffOverInvGen_pt"+str(pt_str[k]))
-
-    ## ============== Pt Diff Over GEN ================
-
-    for k in range(len(pt_cut)):
-
-      res = [] ; res2 = [] ; resErr = [] ; res2Err = [] ; zeros=[]
-
-      for l in range(len(eta_min1)):
-
-	c1 = TCanvas("c1")
-	evt_tree2.Draw("(GEN_pt - (1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq)))))/(GEN_pt)>>htemp(64,-3.,3.)", gen_pt_cut(pt_cut[k])+" && GEN_eta>"+str(eta_min1[l])+" && GEN_eta<"+str(eta_max1[l]))
-	htemp = gPad.GetPrimitive("htemp") ; htemp.Draw()
-	res.append(htemp.GetRMS()) ; resErr.append(htemp.GetRMSError())
-	c1.Close()
-
-	c1 = TCanvas("c1")
-	evt_tree2.Draw("(GEN_pt - (1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq)))))/(GEN_pt)>>htemp2(64,-3.,3.)", gen_pt_cut(pt_cut[k])+" && GEN_eta>"+str(eta_min2[l])+" && GEN_eta<"+str(eta_max2[l]))
-	htemp2 = gPad.GetPrimitive("htemp2") ; htemp2.Draw()
-	res.append(htemp2.GetRMS()) ; resErr.append(htemp2.GetRMSError())
-	c1.Close()
-
-	c1 = TCanvas("c1")
-	evt_tree.Draw("(GEN_pt - (1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq)))))/(GEN_pt)>>htemp3(64,-3.,3.)", gen_pt_cut(pt_cut[k])+" && GEN_eta>"+str(eta_min1[l])+" && GEN_eta<"+str(eta_max1[l]))
-	htemp3 = gPad.GetPrimitive("htemp3") ; htemp3.Draw()
-	res2.append(htemp3.GetRMS()) ; res2Err.append(htemp3.GetRMSError())
-	c1.Close()
-
-	c1 = TCanvas("c1")
-	evt_tree.Draw("(GEN_pt - (1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq)))))/(GEN_pt)>>htemp4(64,-3.,3.)", gen_pt_cut(pt_cut[k])+" && GEN_eta>"+str(eta_min2[l])+" && GEN_eta<"+str(eta_max2[l]))
-	htemp4 = gPad.GetPrimitive("htemp4") ; htemp4.Draw()
-	res2.append(htemp4.GetRMS()) ; res2Err.append(htemp4.GetRMSError())
-	c1.Close()
-
-	zeros.append(0.) ; zeros.append(0.)
-
-      eta = [-2.4, -2.2, -2.0, -1.8, -1.6, -1.4, 1.2, 1.4, 1.6, 1.8, 2.0, 2.2]
-      c1 = TCanvas( 'c1', 'test scatter', 200, 10, 700, 500)
-      g1 = TGraphErrors(len(eta), np.array(eta), np.array(res), np.array(zeros) , np.array(resErr))
-      g1.SetMarkerStyle(8) ; g1.SetMarkerSize(1) ; g1.SetMarkerColor(kBlue)
-      g2 = TGraphErrors(len(eta), np.array(eta), np.array(res2), np.array(zeros) , np.array(res2Err))
-      g2.SetMarkerStyle(8) ; g2.SetMarkerSize(1) ; g2.SetMarkerColor(kRed)
-
-      mg = TMultiGraph() ; mg.Add(g1) ; mg.Add(g2) ; mg.Draw('ap')
-      mg.GetXaxis().SetTitle('#eta^{GEN}')
-      mg.GetYaxis().SetTitle('#sigma ((p_{T}^{GEN} - p_{T}^{L1}) / p_{T}^{GEN})')
-
-      lat_scale = [.33, .34, .34, .34, .34, .325, .295, .28, .27, .253]
-      la = TLatex() ; la.SetTextFont(22) ; la.SetTextColor(kBlack) ; la.SetTextSize(0.031) ; la.SetTextAlign(10)
-      la.DrawLatex( -0.62, lat_scale[k], "Mode 15, p_{T}^{L1} > "+str(int(pt_cut[k]))+" GeV")
-
-      leg = TLegend(0.40, 0.61, 0.62, 0.85) ; leg.AddEntry(g2, "Run-2 BDT") ; leg.AddEntry(g1, "Run-3 BDT") ; leg.SetBorderSize(0) ; leg.Draw("same")
-
-      c1.Update()
-      makePlot(c1, "resolutions/res_vs_eta_diffOverGen_pt"+str(pt_str[k]))
+      draw_multi_resVsEta(len(evt_trees), mu_res, mu_res_err, xErrors, '#eta^{GEN}', '#mu '+draw_res_axis_label[k], lineColors, eta_max1, legendEntries, draw_res_label[k], res_type[0])
+      draw_multi_resVsEta(len(evt_trees), sigma_res, sigma_res_err, xErrors, '#eta^{GEN}', '#sigma '+draw_res_axis_label[k], lineColors, eta_max1, legendEntries, draw_res_label[k], res_type[1])
 
 
+  '''
   if False:#:options.res2D:
 
     c1 = TCanvas("c1")
