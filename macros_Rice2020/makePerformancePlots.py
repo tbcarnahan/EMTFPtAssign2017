@@ -247,43 +247,41 @@ if options.resolutions:
     for k in range(len(draw_res_option)):
 
       #The plotter has trouble between bins -1.2 to 1.2, so the resolutions in the negative and positive endcaps are drawn seperately and then plotted together.
-      eta_min1 = [] 
-      eta_min2 = []
-      eta_max1 = []
-      eta_max2 = []
-      a = int(round(abs((float(eta_min[0]) -  float(eta_max[0]) ) / 0.1)))
-      for i in range(a):	
-	eta_min1.append(round(-1*float(eta_max[0]) + 0.1*i + 0.1,1))
-	eta_min2.append(round(float(eta_min[0]) + 0.1*i,1))
-	eta_max1.append(round(-1*float(eta_max[0]) + 0.1*i,1))
-	eta_max2.append(round(float(eta_min[0]) + 0.1*i + 0.1,1))
+      eta_range = []
+      nbins = int(round(abs((float(eta_min[0]) -  float(eta_max[0]) ) / 0.1)))
+
+      for i in range(nbins+1):	
+	eta_range.append(round(-1*float(eta_max[0]) + 0.1*i,1))
+      for i in range(nbins+1):
+	eta_range.append(round(float(eta_min[0]) + 0.1*i,1))
 
       #2x2 arrays to hold the mean and width (and errors) of the pt resolutions.
-      mu_res = np.zeros((len(evt_trees),len(eta_min1)+len(eta_max1)))
-      mu_res_err = np.zeros((len(evt_trees),len(eta_min1)+len(eta_max1)))
-      sigma_res = np.zeros((len(evt_trees),len(eta_min1)+len(eta_max1)))
-      sigma_res_err = np.zeros((len(evt_trees),len(eta_min1)+len(eta_max1)))
-      xErrors = np.zeros((len(evt_trees),len(eta_min1)+len(eta_max1)))
-
-      for i in range(len(eta_max2)):
-	eta_min1.append(eta_max2[i])
-	eta_max1.append(eta_min2[i])
+      mu_res = np.zeros((len(evt_trees),len(eta_range)-2))
+      mu_res_err = np.zeros((len(evt_trees),len(eta_range)-2))
+      sigma_res = np.zeros((len(evt_trees),len(eta_range)-2))
+      sigma_res_err = np.zeros((len(evt_trees),len(eta_range)-2))
+      xErrors = np.zeros((len(evt_trees),len(eta_range)-2))
 
       for l in range(len(pt_cut)):
 
-	for i in range(len(eta_min1)):
+	for i in range(len(eta_range)-2):
 
 	  for ee in range(0,4):
-	    res = draw_resVsEta(evt_trees[ee], 64, -10, 10, draw_res_option[k], bdt_pt_cut(pt_cut[l]), gen_pt_cut(pt_cut[l]), gen_eta_cut(eta_max1[i], eta_min1[i]) )
-	    
+	    if i<len(eta_range)/2 - 1: res = draw_resVsEta(evt_trees[ee], 64, -10, 10, draw_res_option[k], bdt_pt_cut(pt_cut[l]), gen_pt_cut(pt_cut[l]), gen_eta_cut(eta_range[i], eta_range[i+1]) )
+	    if i>=len(eta_range)/2 - 1: res = draw_resVsEta(evt_trees[ee], 64, -10, 10, draw_res_option[k], bdt_pt_cut(pt_cut[l]), gen_pt_cut(pt_cut[l]), gen_eta_cut(eta_range[i+1], eta_range[i+2]) )
+
 	    mu_res[ee][i] = res.GetMean()
 	    mu_res_err[ee][i] = res.GetMeanError()
 	    sigma_res[ee][i] = res.GetRMS()
 	    sigma_res_err[ee][i] = res.GetRMSError()
 
-      draw_multi_resVsEta(len(evt_trees), mu_res, mu_res_err, xErrors, '#eta^{GEN}', '#mu '+draw_res_axis_label[k], lineColors, eta_max1, legendEntries, draw_res_label[k], res_type[0])
-      draw_multi_resVsEta(len(evt_trees), sigma_res, sigma_res_err, xErrors, '#eta^{GEN}', '#sigma '+draw_res_axis_label[k], lineColors, eta_max1, legendEntries, draw_res_label[k], res_type[1])
+      #Remove the bins at the edge of the endcaps that won't be plotted.
+      eta_range.remove(-1*eta_min[0])
+      eta_range.remove(eta_min[0])
 
+      draw_multi_resVsEta(len(evt_trees), mu_res, mu_res_err, xErrors, '#eta^{GEN}', '#mu '+draw_res_axis_label[k], lineColors, eta_range, legendEntries, draw_res_label[k], res_type[0])
+      draw_multi_resVsEta(len(evt_trees), sigma_res, sigma_res_err, xErrors, '#eta^{GEN}', '#sigma '+draw_res_axis_label[k], lineColors, eta_range, legendEntries, draw_res_label[k], res_type[1])
+      
 
   '''
   if False:#:options.res2D:

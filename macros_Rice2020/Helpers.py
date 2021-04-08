@@ -261,14 +261,14 @@ def draw_multi_resVsPt(length, res, resError, x_arr, xtitle, ytitle, lineColors,
     c1.Close()
 
 #_______________________________________________________________________________
-def draw_multi_resVsEta(length, res, resError, x_arr, xtitle, ytitle, lineColors, eta_range1, legendEntries, draw_res_label, res_type):
+def draw_multi_resVsEta(length, res, resError, x_arr, xtitle, ytitle, lineColors, eta_range, legendEntries, draw_res_label, res_type):
     
     leg = TLegend(0.38, 0.20, 0.70, 0.40)
     mg = TMultiGraph()
     c1 = TCanvas("c1")
 
     for i in range(length):
-      g = TGraphErrors(len(eta_range1), np.array(eta_range1), np.array(res[i]), np.array(x_arr[i]) , np.array(resError[i]))
+      g = TGraphErrors(len(eta_range), np.array(eta_range), np.array(res[i]), np.array(x_arr[i]) , np.array(resError[i]))
       g.SetMarkerStyle(8)
       g.SetMarkerSize(1)
       g.SetMarkerColor(lineColors[i])
@@ -281,8 +281,8 @@ def draw_multi_resVsEta(length, res, resError, x_arr, xtitle, ytitle, lineColors
     mg.GetXaxis().SetTitle(xtitle)
     mg.GetYaxis().SetTitle(ytitle)
     
-    checkDir('plots')
-    checkDir('plots/resolutions')
+    checkDir('./plots')
+    checkDir('./plots/resolutions')
     makePlots(c1,  "resolutions/"+res_type+"_res_vs_eta_"+draw_res_label )
     c1.Close()
 
@@ -295,12 +295,7 @@ def makePlots(canvas, plotTitle):
 #_______________________________________________________________________________
 def checkDir(path):
     if not os.path.exists(path): os.makedirs(path)
-    '''
-    try: 
-        os.mkdir(path)
-    except OSError as error:
-        "Could not make output directory."
-    '''
+
 #_______________________________________________________________________________
 def truncate(number, digits):
   stepper = 10.0 ** digits
