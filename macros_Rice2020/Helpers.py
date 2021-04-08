@@ -287,6 +287,31 @@ def draw_multi_resVsEta(length, res, resError, x_arr, xtitle, ytitle, lineColors
     c1.Close()
 
 #_______________________________________________________________________________
+def draw_res2D(t, nBinsX, minBinX, maxBinX, nBinsY, minBinY, maxBinY, to_draw, label, outFileString):
+
+  c1 = TCanvas("c1")
+
+  htemp = TH2F("htemp", "", nBinsX, minBinX, maxBinX, nBinsY, minBinY, maxBinY)
+  t.Draw(to_draw+">>htemp", "", "COLZ")
+
+  htemp.SetTitle("Mode 15 CSC-only "+label+", uncompressed (test) vs log2(p_{T}^{GEN})")
+  htemp.GetXaxis().SetTitle("log2(p_{T}^{GEN})")
+  htemp.GetYaxis().SetTitle(label+" unscaled trigger log2(p_{T}^{L1})")
+
+  line = TLine(minBinX, minBinY, maxBinX, maxBinY)
+  line.SetLineColor(kRed)
+  line.SetLineStyle(7)
+  line.Draw("same")
+  gPad.SetLogz()
+  gPad.Update()
+  gStyle.SetOptStat(0)
+
+  checkDir('./plots')
+  checkDir('./plots/resolutions')
+  makePlots(c1, "resolutions/ptres2D_"+outFileString)
+  c1.Close()
+
+#_______________________________________________________________________________
 def makePlots(canvas, plotTitle):
   c1.SaveAs(plotDir + plotTitle + ".png")
   c1.SaveAs(plotDir + plotTitle + ".pdf")

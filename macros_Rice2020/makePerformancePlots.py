@@ -53,7 +53,7 @@ else:
   #Whole endcap region.
   eta_min = [2.1]
   eta_max = [2.4]
-  eta_str_min = ["1pt2"]
+  eta_str_min = ["2pt1"]
   eta_str_max = ["2pt4"]
 
 
@@ -89,6 +89,7 @@ markerStyles = [8,8,8,8]#,8,8,8,8]
 drawOptions = ["AP", "same", "same", "same"]#, "same", "same", "same", "same"]
 drawOptions1D = ["", "same", "same", "same"]#, "same", "same", "same", "same"]
 legendEntries = ["Run-2", "Run-3", "Run-3 QSBit", "Run-3 QSBit ESBit"]
+outFileString = ["Run2", "Run3", "Run3QSBit", "Run3QSBitESBit"]
 
 draw_res_axis_label = ["(p_{T}^{GEN} - p_{T}^{L1}) / p_{T}^{GEN}", "(p_{T,GEN}^{-1} - p_{T,L1}^{-1}) / p_{T,GEN}^{-1}"]
 draw_res_option = ["(GEN_pt - pow(2, BDTG_AWB_Sq))/GEN_pt", "(((1./GEN_pt) - (1./pow(2, BDTG_AWB_Sq)))/(1./GEN_pt))"] 
@@ -189,7 +190,9 @@ if options.efficiencies:
       gStyle.SetOptStat(0)
       graph = eff.GetPaintedGraph() ; graph.SetMinimum(0) ;  graph.SetMaximum(1.003)
 
-      checkDir('./plots') ; checkDir('./plots/bdt_eff') ; checkDir('./plots/bdt_eff/eta')
+      checkDir('./plots')
+      checkDir('./plots/bdt_eff')
+      checkDir('./plots/bdt_eff/eta')
       makePlots(c1, "bdt_eff/eta/BDTeff_eta_pt"+str(pt_str[l]) )
      
 
@@ -284,27 +287,9 @@ if options.resolutions:
       draw_multi_resVsEta(len(evt_trees), sigma_res, sigma_res_err, xErrors, '#eta^{GEN}', '#sigma '+draw_res_axis_label[k], lineColors, eta_range, legendEntries, draw_res_label[k], res_type[1])
       
 
-  '''
-  if False:#:options.res2D:
+  
+  if options.res2D:
 
-    c1 = TCanvas("c1")
-    line = TLine(0, 0, 5.7, 5.7) ; line.SetLineColor(kRed) ; line.SetLineStyle(7)
+    for ee in range(0,4):
 
-    #Run-2 BDT
-    evt_tree.Draw("log2((1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq))))):log2(GEN_pt)>>htemp(100,0,5.7,100,0,6.5)", "", "COLZ")
-    htemp = gPad.GetPrimitive("htemp")
-    htemp.SetTitle("Mode 15 CSC-only Run-2 BDT, uncompressed (test) vs log2(p_{T}^{GEN})")
-    htemp.GetXaxis().SetTitle("log2(p_{T}^{GEN})") ; htemp.GetYaxis().SetTitle("Run-2 Scaled trigger log2(p_{T}^{BDT})")
-    line.Draw("same")
-    gPad.SetLogz() ; gPad.Update() ; gStyle.SetOptStat(0)
-    makePlot(c1, "resolutions/ptres2D_Run2BDT")
-
-    #Run-3 BDT
-    evt_tree2.Draw("log2((1.2 * (2**(BDTG_AWB_Sq)))/(1 - (0.004 * (2**(BDTG_AWB_Sq))))):log2(GEN_pt)>>htemp2(100,0,5.7,100,0,6.5)", "", "COLZ")
-    htemp2 = gPad.GetPrimitive("htemp2")
-    htemp2.SetTitle("Mode 15 CSC-only Run-3 BDT, uncompressed (test) vs log2(p_{T}^{GEN})")
-    htemp2.GetXaxis().SetTitle("log2(p_{T}^{GEN})") ; htemp2.GetYaxis().SetTitle("Run-3 Scaled trigger log2(p_{T}^{BDT})")
-    line.Draw("same")
-    gPad.SetLogz() ; gPad.Update() ; gStyle.SetOptStat(0)
-    makePlot(c1, "resolutions/ptres2D_Run3BDT")
-'''
+      draw_res2D(evt_trees[ee], 100, 0, 5.7, 100, 0, 5.5, "BDTG_AWB_Sq:log2(GEN_pt)", legendEntries[ee], outFileString[ee])
