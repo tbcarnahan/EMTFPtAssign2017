@@ -307,12 +307,8 @@ def draw_res2D(t, nBinsX, minBinX, maxBinX, nBinsY, minBinY, maxBinY, to_draw, l
   gStyle.SetOptStat(0)
   c1.Close()
 
-  #c1 = TCanvas("c1")
-  checkDir('./plots')
-  checkDir('./plots/resolutions')
-  makePlots( Style(htemp, outFileString, 0.10, 0.100, 0.110, 0.110, 0.102), "resolutions/ptres2D_"+outFileString)
-  #c1.Close()
-  
+  Style(htemp, outFileString, 0.10, 0.100, 0.110, 0.110, 0.102)
+
 
 #_______________________________________________________________________________
 def makePlots(canvas, plotTitle):
@@ -366,8 +362,11 @@ def Style(hist, outFileString, LeftMargin, TScale, BScale, LScale, RScale):
     CMS_lumi.CMS_lumi(c1, iPeriod, iPos, "Simulation Preliminary", 52, 0.045, 0.063)
     CMS_lumi.CMS_lumi(c1, iPeriod, iPos, "14 TeV, 0 PU", 42, 0.61, 0.063)
 
-    return c1
-
+    checkDir('./plots')
+    checkDir('./plots/resolutions')
+    makePlots( c1, "resolutions/ptres2D_"+outFileString)
+    c1.Close()
+    
 #_______________________________________________________________________________
 def truncate(number, digits):
   stepper = 10.0 ** digits
