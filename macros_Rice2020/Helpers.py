@@ -4,6 +4,7 @@ from ROOT import TStyle
 import os
 import math
 import numpy as np
+import CMS_lumi, tdrstyle
 
 plotDir = "plots/"
 
@@ -294,9 +295,8 @@ def draw_res2D(t, nBinsX, minBinX, maxBinX, nBinsY, minBinY, maxBinY, to_draw, l
   htemp = TH2F("htemp", "", nBinsX, minBinX, maxBinX, nBinsY, minBinY, maxBinY)
   t.Draw(to_draw+">>htemp", "", "COLZ")
 
-  htemp.SetTitle("Mode 15 CSC-only "+label+", uncompressed (test) vs log2(p_{T}^{GEN})")
   htemp.GetXaxis().SetTitle("log2(p_{T}^{GEN})")
-  htemp.GetYaxis().SetTitle(label+" unscaled trigger log2(p_{T}^{L1})")
+  htemp.GetYaxis().SetTitle(label+" Mode-15 unscaled trigger log2(p_{T}^{L1})")
 
   line = TLine(minBinX, minBinY, maxBinX, maxBinY)
   line.SetLineColor(kRed)
@@ -305,11 +305,14 @@ def draw_res2D(t, nBinsX, minBinX, maxBinX, nBinsY, minBinY, maxBinY, to_draw, l
   gPad.SetLogz()
   gPad.Update()
   gStyle.SetOptStat(0)
+  c1.Close()
 
+  #c1 = TCanvas("c1")
   checkDir('./plots')
   checkDir('./plots/resolutions')
-  makePlots(c1, "resolutions/ptres2D_"+outFileString)
-  c1.Close()
+  makePlots( Style(htemp, outFileString, 0.10, 0.100, 0.110, 0.110, 0.102), "resolutions/ptres2D_"+outFileString)
+  #c1.Close()
+  
 
 #_______________________________________________________________________________
 def makePlots(canvas, plotTitle):
@@ -320,6 +323,50 @@ def makePlots(canvas, plotTitle):
 #_______________________________________________________________________________
 def checkDir(path):
     if not os.path.exists(path): os.makedirs(path)
+
+
+#_______________________________________________________________________________
+def Style(hist, outFileString, LeftMargin, TScale, BScale, LScale, RScale):
+    
+    tdrstyle.setTDRStyle()
+
+    iPos = 11
+    if( iPos==0 ): CMS_lumi.relPosX = 0.12
+
+    H_ref = 600; 
+    W_ref = 800; 
+    W = W_ref
+    H  = H_ref
+
+    iPeriod = 0
+
+    # references for T, B, L, R
+    T = TScale*H_ref
+    B = BScale*H_ref 
+    L = LScale*W_ref
+    R = RScale*W_ref
+
+    c1 = TCanvas("c1","c1",50,50,W,H)
+    c1.SetFillColor(0)
+    c1.SetBorderMode(0)
+    c1.SetFrameFillStyle(0)
+    c1.SetFrameBorderMode(0)
+    c1.SetLeftMargin( LeftMargin )
+    c1.SetRightMargin( R/W )
+    c1.SetTopMargin( T/H )
+    c1.SetBottomMargin( B/H )
+    c1.SetTickx(0)
+    c1.SetTicky(0)
+
+    hist.Draw("COLZ")
+    gPad.SetLogz()
+    gPad.Update()
+
+    CMS_lumi.writeExtraText = True
+    CMS_lumi.CMS_lumi(c1, iPeriod, iPos, "Simulation Preliminary", 52, 0.045, 0.063)
+    CMS_lumi.CMS_lumi(c1, iPeriod, iPos, "14 TeV, 0 PU", 42, 0.61, 0.063)
+
+    return c1
 
 #_______________________________________________________________________________
 def truncate(number, digits):
