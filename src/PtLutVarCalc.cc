@@ -100,84 +100,31 @@ void CalcPhiRun3( int& ph, int ring, int strip_quart_bit, int strip_eight_bit, i
     https://github.com/cms-sw/cmssw/blob/master/L1Trigger/L1TMuonEndCap/interface/TrackTools.h#L201-L207
   */
 
-  if (station == 1) {
-    if (ring == 1) {
-      if (strip_quart_bit == 1 ) {
-        endcap>0 ? ph = ph + 10 : ph = ph - 10;
-      }
-      if (useEighthBit and strip_eight_bit == 1 ) {
-        endcap>0 ? ph = ph + 5 : ph = ph - 5;
-      }
-    }
-
-    if (ring == 2) {
-      if (strip_quart_bit == 1 ) {
-        endcap>0 ? ph = ph + 8 : ph = ph - 8 ;
-      }
-      if (useEighthBit and strip_eight_bit == 1 ) {
-        endcap>0 ? ph = ph + 4 : ph = ph - 4 ;
-      }
-    }
-
-    if (ring == 3) {
-      if (strip_quart_bit == 1 ) {
-        endcap>0 ? ph = ph + 4 : ph = ph - 4 ;
-      }
-      if (useEighthBit and strip_eight_bit == 1 ) {
-        endcap>0 ? ph = ph + 2 : ph = ph - 2 ;
-      }
+  if (station == 1) { 
+    if (ring < 4) {
+      if (strip_quart_bit == 1 ) {endcap>0 ? ph = ph + 2 : ph = ph - 2; }
+      if (useEighthBit and strip_eight_bit == 1 ) {endcap>0 ? ph = ph + 1 : ph = ph - 1; } 
     }
 
     if (ring == 4) {
-      if (strip_quart_bit == 1 ) {
-        endcap>0 ? ph = ph + 13 : ph = ph - 13 ;
-      }
-      if (useEighthBit and strip_eight_bit == 1 ) {
-        endcap>0 ? ph = ph + 7 : ph = ph - 7 ;
-      }
+      if (strip_quart_bit == 1 ) {endcap>0 ? ph = ph + 4 : ph = ph - 4; }
+      if (useEighthBit and strip_eight_bit == 1 ) {endcap>0 ? ph = ph + 2 : ph = ph - 2 ; }
     }
-  }
 
+    
   if (station == 2) {
-    if (ring == 1) {
-      if (strip_quart_bit == 1 ) {
-        endcap>0 ? ph = ph + 16 : ph = ph - 16 ;
-      }
-      if (useEighthBit and strip_eight_bit == 1 ) {
-        endcap>0 ? ph = ph + 8 : ph = ph - 8 ;
-      }
-    }
-
-    if (ring == 2) {
-      if (strip_quart_bit == 1 ) {
-        endcap>0 ? ph = ph + 8 : ph = ph - 8 ;
-      }
-      if (useEighthBit and strip_eight_bit == 1 ) {
-        endcap>0 ? ph = ph + 4 : ph = ph - 4 ;
-      }
-    }
+    if (strip_quart_bit == 1 ) {endcap>0 ? ph = ph + 2 : ph = ph - 2 ;}
+    if (useEighthBit and strip_eight_bit == 1 ) {endcap>0 ? ph = ph + 1 : ph = ph - 1 ;}
   }
 
+    
   if (station > 2) {
-    if ( ring == 1) {
-      if (strip_quart_bit == 1 ) {
-        endcap>0 ? ph = ph - 16 : ph = ph + 16 ;
-      }
-      if (useEighthBit and strip_eight_bit == 1 ) {
-        endcap>0 ? ph = ph - 8 : ph = ph + 8 ;
-      }
-    }
-
-    if (ring == 2) {
-      if (strip_quart_bit == 1 ) {
-        endcap>0 ? ph = ph - 8 : ph = ph + 8 ;
-      }
-      if (useEighthBit and strip_eight_bit == 1 ) {
-        endcap>0 ? ph = ph - 4 : ph = ph + 4 ;
-      }
-    }
+    if (strip_quart_bit == 1 ) { endcap>0 ? ph = ph - 2 : ph = ph + 2 ;}
+    if (useEighthBit and strip_eight_bit == 1 ) { endcap>0 ? ph = ph - 1 : ph = ph + 1 ; }
   }
+      
 }
+
 
 void CalcDeltaPhis( int& dPh12, int& dPh13, int& dPh14, int& dPh23, int& dPh24, int& dPh34, int& dPhSign,
                     int& dPhSum4, int& dPhSum4A, int& dPhSum3, int& dPhSum3A, int& outStPh,
