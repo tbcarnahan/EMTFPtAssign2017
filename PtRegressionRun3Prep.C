@@ -327,7 +327,7 @@ void PtRegressionRun3Prep(TString user = "",
   // block 11
   in_vars.push_back( MVA_var( "dSlope_14",    "slope(4) - slope(1)", "int", 'I', -88 ) ); // 0x0400 0000
   in_vars.push_back( MVA_var( "dSlope_24",    "slope(4) - slope(2)", "int", 'I', -88 ) ); // 0x0800 0000
-  in_vars.push_back( MVA_var( "dPhi_GE11_ME11", "#phi(GE11) - #phi(ME11)", "", 'F', -88 ) ); // 0x1 0000 0000
+  in_vars.push_back( MVA_var( "dPhi_GE11_ME11", "#phi(GE11) - #phi(ME11)", "", 'I', -88 ) ); // 0x1 0000 0000
   in_vars.push_back( MVA_var( "GEM_1",   "St 1 hit is GEM",       "int", 'I', -88 ) ); // 0x1 0000 0000
 
   ////////////////////////////////////////////////////////////
