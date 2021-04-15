@@ -537,6 +537,7 @@ void PtRegressionRun3Prep(TString user = "",
           continue;
         }
 
+	//std::cout << "i1GEM before: " << i1GEM << std::endl;
 
         for (int jhit = 0; jhit < I("trk_nHits", iTrk); jhit++) {
 
@@ -552,6 +553,8 @@ void PtRegressionRun3Prep(TString user = "",
             else if ( I("hit_station", iHit) == 4 && I("hit_isCSC",iHit)==1 ){ i4 = iHit; }
           }
         }//end loop over hits in selected emtf track
+
+	//std::cout << "i1GEM after: " << i1GEM << std::endl;
 
         if(verbose) {
           std::cout << "hit id at 1: "<<i1GEM<< std::endl;
@@ -577,6 +580,15 @@ void PtRegressionRun3Prep(TString user = "",
         int ph2 = (i2 >= 0 ? I("hit_phi_int", i2 ) : -99);
         int ph3 = (i3 >= 0 ? I("hit_phi_int", i3 ) : -99);
         int ph4 = (i4 >= 0 ? I("hit_phi_int", i4 ) : -99);
+
+	//if ( i1CSC>0 && i1GEM>0 ) { std::cout << "ph1 CSC: " << ph1 << ", ph1GEM: " << ph1GEM << std::endl; }
+	//if ( i1CSC>0 && i1GEM>0 ) { std::cout << "ph1 CSC: " << ph1 << ", ph1GEM / 4.: " << ph1GEM/4. << std::endl; }
+        //if ( i1CSC>0 && i1GEM>0 && (abs(ph1 - ph1GEM)>1000) ) { ph1GEM = ph1GEM - 3600; } 
+	//if ( i1CSC>0 && i1GEM>0 ) { std::cout << "dPh : " << ph1 - ph1GEM << std::endl; }
+
+	//std::cout << "Before function: " << ph1GEM << std::endl;
+	//ph1GEM = ph1GEMFix(ph1, ph1GEM);
+	//std::cout << "After function: " << ph1GEM << std::endl;
 
         int th1 = (i1CSC >= 0 ? I("hit_theta_int",i1CSC ) : -99);
         int th1GEM = (i1GEM >= 0 ? I("hit_theta_int",i1GEM ) : -99);
@@ -671,6 +683,8 @@ void PtRegressionRun3Prep(TString user = "",
         else if (i1CSC >= 0) { eta = F("hit_eta",i1CSC ); phi = F("hit_phi",i1CSC ); }
         endcap = (eta > 0 ? +1 : -1);
 
+	//if ( abs(F("hit_eta", i1CSC))>1.6 && abs(F("hit_eta", i1CSC))<2.1 ) { std::cout << "i1GEM: " << i1GEM << std::endl; }
+
         //This block of code adds a correction to the integer phi value based on the quarter and eight-strip position offset.
         if (ph1 != -99) CalcPhiRun3(ph1, ring1, strip_quart_bit1, strip_eight_bit1, 1, endcap,
                                     useOneQuartPrecision, useOneEighthPrecision);
@@ -681,8 +695,7 @@ void PtRegressionRun3Prep(TString user = "",
         if (ph4 != -99) CalcPhiRun3(ph4, ring4, strip_quart_bit4, strip_eight_bit4, 4, endcap,
                                     useOneQuartPrecision, useOneEighthPrecision);
 
-        //std::cout << "ph1 (after): " << ph1 << std::endl;
-
+        
         //========================
         //Variables to go into BDT
         //========================
