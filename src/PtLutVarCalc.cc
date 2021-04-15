@@ -57,8 +57,8 @@ int CalcTrackTheta( const int th1, const int th2, const int th3, const int th4,
 
 
 void CalcDeltaPhisGEM( int& dPh12, int& dPh13, int& dPh14, int& dPh23, int& dPh24, int& dPh34, int& dPhSign,
-                            int& dPhSum4, int& dPhSum4A, int& dPhSum3, int& dPhSum3A, int& outStPh, int& dPhGE11ME11,
-                            const int ph1, const int ph2, const int ph3, const int ph4, const int phGEM, const int mode, const bool BIT_COMP ) {
+                       int& dPhSum4, int& dPhSum4A, int& dPhSum3, int& dPhSum3A, int& outStPh, int& dPhGE11ME11,
+                       const int ph1, const int ph2, const int ph3, const int ph4, const int phGEM, const int mode, const bool BIT_COMP ) {
 
   CalcDeltaPhis(dPh12,dPh13,dPh14,dPh23,dPh24,dPh34,dPhSign,
                 dPhSum4,dPhSum4A,dPhSum3,dPhSum3A,outStPh,
@@ -100,29 +100,28 @@ void CalcPhiRun3( int& ph, int ring, int strip_quart_bit, int strip_eight_bit, i
     https://github.com/cms-sw/cmssw/blob/master/L1Trigger/L1TMuonEndCap/interface/TrackTools.h#L201-L207
   */
 
-  if (station == 1) { 
+  if (station == 1) {
     if (ring < 4) {
       if (strip_quart_bit == 1 ) {endcap>0 ? ph = ph + 2 : ph = ph - 2; }
-      if (useEighthBit and strip_eight_bit == 1 ) {endcap>0 ? ph = ph + 1 : ph = ph - 1; } 
+      if (useEighthBit and strip_eight_bit == 1 ) {endcap>0 ? ph = ph + 1 : ph = ph - 1; }
     }
 
     if (ring == 4) {
       if (strip_quart_bit == 1 ) {endcap>0 ? ph = ph + 4 : ph = ph - 4; }
       if (useEighthBit and strip_eight_bit == 1 ) {endcap>0 ? ph = ph + 2 : ph = ph - 2 ; }
     }
+  }
 
-    
   if (station == 2) {
     if (strip_quart_bit == 1 ) {endcap>0 ? ph = ph + 2 : ph = ph - 2 ;}
     if (useEighthBit and strip_eight_bit == 1 ) {endcap>0 ? ph = ph + 1 : ph = ph - 1 ;}
   }
 
-    
+
   if (station > 2) {
     if (strip_quart_bit == 1 ) { endcap>0 ? ph = ph - 2 : ph = ph + 2 ;}
     if (useEighthBit and strip_eight_bit == 1 ) { endcap>0 ? ph = ph - 1 : ph = ph + 1 ; }
   }
-      
 }
 
 
