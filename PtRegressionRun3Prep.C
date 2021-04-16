@@ -370,6 +370,18 @@ void PtRegressionRun3Prep(TString user = "",
   spec_vars.push_back( MVA_var( "dPhi_sign",     "#phi(B) - #phi(A) sign",    "",    'I', -77 ) );
   spec_vars.push_back( MVA_var( "evt_weight",    "Event weight for training", "",    'F', -77 ) );
 
+  // extra spectator variables to inspect correlations
+  spec_vars.push_back( MVA_var( "slope_1",    "St 1 LCT slope",      "int", 'I', -77 ) ); // 0x0000 1000
+  spec_vars.push_back( MVA_var( "slope_2",    "St 2 LCT slope",      "int", 'I', -77 ) ); // 0x0000 2000
+  spec_vars.push_back( MVA_var( "slope_3",    "St 3 LCT slope",      "int", 'I', -77 ) ); // 0x0000 4000
+  spec_vars.push_back( MVA_var( "slope_4",    "St 4 LCT slope",      "int", 'I', -77 ) ); // 0x0000 8000
+
+  spec_vars.push_back( MVA_var( "ph1",    "St 1 LCT phi",      "int", 'I', -77 ) ); // 0x0000 1000
+  spec_vars.push_back( MVA_var( "ph2",    "St 2 LCT phi",      "int", 'I', -77 ) ); // 0x0000 2000
+  spec_vars.push_back( MVA_var( "ph3",    "St 3 LCT phi",      "int", 'I', -77 ) ); // 0x0000 4000
+  spec_vars.push_back( MVA_var( "ph4",    "St 4 LCT phi",      "int", 'I', -77 ) ); // 0x0000 8000
+
+
   assert( in_vars.size() > 0 );   // Need at least one input variable
   assert( targ_vars.size() > 0 ); // Need at least one target variable
 
@@ -983,6 +995,11 @@ void PtRegressionRun3Prep(TString user = "",
             if ( vName == "TRK_mode_RPC" ) var_vals.at(iVar) = mode_RPC;
             if ( vName == "dPhi_sign" ) var_vals.at(iVar) = dPhSign;
             if ( vName == "evt_weight" ) var_vals.at(iVar) = evt_weight;
+
+            if ( vName == "ph1" ) var_vals.at(iVar) = ph1;
+            if ( vName == "ph2" ) var_vals.at(iVar) = ph2;
+            if ( vName == "ph3" ) var_vals.at(iVar) = ph3;
+            if ( vName == "ph4" ) var_vals.at(iVar) = ph4;
 
           } // End loop: for (UInt_t iVar = 0; iVar < var_names.size(); iVar++)
 
