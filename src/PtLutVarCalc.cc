@@ -299,13 +299,44 @@ void CalcDeltaSlopes(const int slope1, const int slope2,
                      const int slope3, const int slope4,
                      int& dSlope12, int& dSlope13,
                      int& dSlope14, int& dSlope23,
-                     int& dSlope24, int& dSlope34) {
+                     int& dSlope24, int& dSlope34,
+                     int& dSlopeSum4, int& dSlopeSum4A,
+                     int& dSlopeSum3, int& dSlopeSum3A,
+                     int& outStSlope) {
   dSlope12 = slope2 - slope1;
   dSlope13 = slope3 - slope1;
   dSlope14 = slope4 - slope1;
   dSlope23 = slope3 - slope2;
   dSlope24 = slope4 - slope2;
   dSlope34 = slope4 - slope3;
+
+  dSlopeSum4  = dSlope12 + dSlope13 + dSlope14 + dSlope23 + dSlope24 + dSlope34;
+  dSlopeSum4A = abs(dSlope12) + abs(dSlope13) + abs(dSlope14) + abs(dSlope23) + abs(dSlope24) + abs(dSlope34);
+
+  int devSt1 = abs(dSlope12) + abs(dSlope13) + abs(dSlope14);
+  int devSt2 = abs(dSlope12) + abs(dSlope23) + abs(dSlope24);
+  int devSt3 = abs(dSlope13) + abs(dSlope23) + abs(dSlope34);
+  int devSt4 = abs(dSlope14) + abs(dSlope24) + abs(dSlope34);
+
+  if      (devSt4 > devSt3 && devSt4 > devSt2 && devSt4 > devSt1)  outStSlope = 4;
+  else if (devSt3 > devSt4 && devSt3 > devSt2 && devSt3 > devSt1)  outStSlope = 3;
+  else if (devSt2 > devSt4 && devSt2 > devSt3 && devSt2 > devSt1)  outStSlope = 2;
+  else if (devSt1 > devSt4 && devSt1 > devSt3 && devSt1 > devSt2)  outStSlope = 1;
+  else                                                             outStSlope = 0;
+
+  if      (outStSlope == 4) {
+    dSlopeSum3  = dSlope12 + dSlope13 + dSlope23;
+    dSlopeSum3A = abs(dSlope12) + abs(dSlope13) + abs(dSlope23);
+  } else if (outStSlope == 3) {
+    dSlopeSum3  = dSlope12 + dSlope14 + dSlope24;
+    dSlopeSum3A = abs(dSlope12) + abs(dSlope14) + abs(dSlope24);
+  } else if (outStSlope == 2) {
+    dSlopeSum3  = dSlope13 + dSlope14 + dSlope34;
+    dSlopeSum3A = abs(dSlope13) + abs(dSlope14) + abs(dSlope34);
+  } else {
+    dSlopeSum3  = dSlope23 + dSlope24 + dSlope34;
+    dSlopeSum3A = abs(dSlope23) + abs(dSlope24) + abs(dSlope34);
+  }
 }
 
 void CalcRPCs( int& RPC1, int& RPC2, int& RPC3, int& RPC4, const int mode,

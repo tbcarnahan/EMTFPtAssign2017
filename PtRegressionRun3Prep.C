@@ -330,6 +330,15 @@ void PtRegressionRun3Prep(TString user = "",
   in_vars.push_back( MVA_var( "dPhi_GE11_ME11", "#phi(GE11) - #phi(ME11)", "", 'I', -88 ) ); // 0x1 0000 0000
   in_vars.push_back( MVA_var( "GEM_1",   "St 1 hit is GEM",       "int", 'I', -88 ) ); // 0x1 0000 0000
 
+  // block 12
+  in_vars.push_back( MVA_var( "dSlopeSum4",  "#SigmadSlope (6)",       "int", 'I', -88 ) ); // 0x0001 0000
+  in_vars.push_back( MVA_var( "dSlopeSum4A", "#Sigma|dSlope| (6)",     "int", 'I', -88 ) ); // 0x0002 0000
+  in_vars.push_back( MVA_var( "dSlopeSum3",  "#SigmadSlope (3)",       "int", 'I', -88 ) ); // 0x0001 0000
+  in_vars.push_back( MVA_var( "dSlopeSum3A", "#Sigma|dSlope| (3)",     "int", 'I', -88 ) ); // 0x0002 0000
+
+  // block 13
+  in_vars.push_back( MVA_var( "outStSlope",  "slope outlier St",       "int", 'I', -88 ) ); // 0x0010 0000
+
   ////////////////////////////////////////////////////////////
   //  Target variable: true muon pT, or 1/pT, or log2(pT)  ///
   ////////////////////////////////////////////////////////////
@@ -711,6 +720,7 @@ void PtRegressionRun3Prep(TString user = "",
         int dPhSum4, dPhSum4A, dPhSum3, dPhSum3A, outStPh;
         int dTh12, dTh13, dTh14, dTh23, dTh24, dTh34;
         int dSlope12, dSlope13, dSlope14, dSlope23, dSlope24, dSlope34;
+        int dSlopeSum4, dSlopeSum4A, dSlopeSum3, dSlopeSum3A, outStSlope;
         int FR1, FR2, FR3, FR4;
         //uncommented on 19/1/2021 int bend1, bend2, bend3, bend4;
         int RPC1, RPC2, RPC3, RPC4;
@@ -781,7 +791,11 @@ void PtRegressionRun3Prep(TString user = "",
           std::cout << "hit_slope4 " << slope4 << std::endl;
         }
         CalcDeltaSlopes(slope1, slope2, slope3, slope4,
-                        dSlope12, dSlope13, dSlope14, dSlope23, dSlope24, dSlope34);
+                        dSlope12, dSlope13, dSlope14,
+                        dSlope23, dSlope24, dSlope34,
+                        dSlopeSum4, dSlopeSum4A,
+                        dSlopeSum3, dSlopeSum3A,
+                        outStSlope);
 
         if(verbose) {
           std::cout << "DSlope" << std::endl;
@@ -916,6 +930,12 @@ void PtRegressionRun3Prep(TString user = "",
             if ( vName == "dSlope_34" ) var_vals.at(iVar) = dSlope34;
             if ( vName == "GEM_1" ) var_vals.at(iVar) = max(0, GE11);
             if ( vName == "dPhi_GE11_ME11" ) var_vals.at(iVar) = dPhGE11ME11;
+
+            if ( vName == "dSlopeSum4" ) var_vals.at(iVar) = dSlopeSum4;
+            if ( vName == "dSlopeSum4A" ) var_vals.at(iVar) = dSlopeSum4A;
+            if ( vName == "dSlopeSum3" ) var_vals.at(iVar) = dSlopeSum3;
+            if ( vName == "dSlopeSum3A" ) var_vals.at(iVar) = dSlopeSum3A;
+            if ( vName == "outStSlope" ) var_vals.at(iVar) = outStSlope;
 
             //////////////////////////////
             ///  Target and variables  ///

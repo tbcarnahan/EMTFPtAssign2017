@@ -57,5 +57,12 @@ allowedTrainingVars = [
     'dSlope_14',
     'dSlope_24',
     'dPhi_GE11_ME11',
-    'GEM_1'
+    'GEM_1',
+    # block 12
+    'dSlopeSum4',
+    'dSlopeSum4A',
+    'dSlopeSum3',
+    'dSlopeSum3A',
+    # block 12
+    'outStSlope',
 ]
