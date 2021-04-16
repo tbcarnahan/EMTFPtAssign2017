@@ -489,6 +489,13 @@ void PtRegressionRun3Prep(TString user = "",
         mu_phi = F("mu_phi", emtf_unique_iMu);
         mu_charge = I("mu_charge", emtf_unique_iMu);
 
+        if(verbose) {
+          std::cout << "True muon pt " << mu_pt << std::endl;
+          std::cout << "True muon eta " << mu_eta << std::endl;
+          std::cout << "True muon phi " << mu_phi << std::endl;
+          std::cout << "True muon charge " << mu_charge << std::endl;
+        }
+
         if(verbose) std::cout << "RECO kinematics ... "<< std::endl;
 
         //===============================
@@ -554,14 +561,14 @@ void PtRegressionRun3Prep(TString user = "",
           }
         }//end loop over hits in selected emtf track
 
-	//std::cout << "i1GEM after: " << i1GEM << std::endl;
+        //std::cout << "i1GEM after: " << i1GEM << std::endl;
 
         if(verbose) {
-          std::cout << "hit id at 1: "<<i1GEM<< std::endl;
-          std::cout << "hit id at 1: "<<i1CSC<< std::endl;
-          std::cout << "hit id at 2: "<<i2<< std::endl;
-          std::cout << "hit id at 3: "<<i3<< std::endl;
-          std::cout << "hit id at 4: "<<i4<< std::endl;
+          std::cout << "index GE1/1: "<<i1GEM<< std::endl;
+          std::cout << "index ME1: "<<i1CSC<< std::endl;
+          std::cout << "index ME2: "<<i2<< std::endl;
+          std::cout << "index ME3: "<<i3<< std::endl;
+          std::cout << "index ME4: "<<i4<< std::endl;
         }
 
         //Assign built trk properties the same as emtf track
@@ -581,14 +588,14 @@ void PtRegressionRun3Prep(TString user = "",
         int ph3 = (i3 >= 0 ? I("hit_phi_int", i3 ) : -99);
         int ph4 = (i4 >= 0 ? I("hit_phi_int", i4 ) : -99);
 
-	//if ( i1CSC>0 && i1GEM>0 ) { std::cout << "ph1 CSC: " << ph1 << ", ph1GEM: " << ph1GEM << std::endl; }
-	//if ( i1CSC>0 && i1GEM>0 ) { std::cout << "ph1 CSC: " << ph1 << ", ph1GEM / 4.: " << ph1GEM/4. << std::endl; }
-        //if ( i1CSC>0 && i1GEM>0 && (abs(ph1 - ph1GEM)>1000) ) { ph1GEM = ph1GEM - 3600; } 
-	//if ( i1CSC>0 && i1GEM>0 ) { std::cout << "dPh : " << ph1 - ph1GEM << std::endl; }
+        //if ( i1CSC>0 && i1GEM>0 ) { std::cout << "ph1 CSC: " << ph1 << ", ph1GEM: " << ph1GEM << std::endl; }
+        //if ( i1CSC>0 && i1GEM>0 ) { std::cout << "ph1 CSC: " << ph1 << ", ph1GEM / 4.: " << ph1GEM/4. << std::endl; }
+        //if ( i1CSC>0 && i1GEM>0 && (abs(ph1 - ph1GEM)>1000) ) { ph1GEM = ph1GEM - 3600; }
+        //if ( i1CSC>0 && i1GEM>0 ) { std::cout << "dPh : " << ph1 - ph1GEM << std::endl; }
 
-	//std::cout << "Before function: " << ph1GEM << std::endl;
-	//ph1GEM = ph1GEMFix(ph1, ph1GEM);
-	//std::cout << "After function: " << ph1GEM << std::endl;
+        //std::cout << "Before function: " << ph1GEM << std::endl;
+        //ph1GEM = ph1GEMFix(ph1, ph1GEM);
+        //std::cout << "After function: " << ph1GEM << std::endl;
 
         int th1 = (i1CSC >= 0 ? I("hit_theta_int",i1CSC ) : -99);
         int th1GEM = (i1GEM >= 0 ? I("hit_theta_int",i1GEM ) : -99);
@@ -695,7 +702,7 @@ void PtRegressionRun3Prep(TString user = "",
         if (ph4 != -99) CalcPhiRun3(ph4, ring4, strip_quart_bit4, strip_eight_bit4, 4, endcap,
                                     useOneQuartPrecision, useOneEighthPrecision);
 
-        
+
         //========================
         //Variables to go into BDT
         //========================
@@ -985,7 +992,7 @@ void PtRegressionRun3Prep(TString user = "",
   NTe = convertTe.str();
 
   string numTrainStr = "nTrain_Regression="+NTr+":nTest_Regression="+NTe+":";
-  std::cout << "NTr: " << NTr << ", NTe: " << NTe << std::endl;
+  std::cout << "Number of training events: " << NTr << endl << "Number of testing events : " << NTe << std::endl;
 
   // // global event weights per tree (see below for setting event-wise weights)
   // Double_t regWeight  = 1.0;
