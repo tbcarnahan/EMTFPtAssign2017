@@ -338,6 +338,9 @@ void PtRegressionRun3Prep(TString user = "",
 
   // block 13
   in_vars.push_back( MVA_var( "outStSlope",  "slope outlier St",       "int", 'I', -88 ) ); // 0x0010 0000
+  in_vars.push_back( MVA_var( "Ph1Slope1MinusPh2",  "Phi1 + Slope12 - Ph2",       "int", 'I', -88 ) ); // 0x0010 0000
+  in_vars.push_back( MVA_var( "Ph2Slope2MinusPh3",  "Phi2 + Slope23 - Ph3",       "int", 'I', -88 ) ); // 0x0010 0000
+  in_vars.push_back( MVA_var( "Ph3Slope3MinusPh4",  "Phi3 + Slope34 - Ph4",       "int", 'I', -88 ) ); // 0x0010 0000
 
   ////////////////////////////////////////////////////////////
   //  Target variable: true muon pT, or 1/pT, or log2(pT)  ///
@@ -699,7 +702,7 @@ void PtRegressionRun3Prep(TString user = "",
         else if (i1CSC >= 0) { eta = F("hit_eta",i1CSC ); phi = F("hit_phi",i1CSC ); }
         endcap = (eta > 0 ? +1 : -1);
 
-	//if ( abs(F("hit_eta", i1CSC))>1.6 && abs(F("hit_eta", i1CSC))<2.1 ) { std::cout << "i1GEM: " << i1GEM << std::endl; }
+        //if ( abs(F("hit_eta", i1CSC))>1.6 && abs(F("hit_eta", i1CSC))<2.1 ) { std::cout << "i1GEM: " << i1GEM << std::endl; }
 
         //This block of code adds a correction to the integer phi value based on the quarter and eight-strip position offset.
         if (ph1 != -99) CalcPhiRun3(ph1, ring1, strip_quart_bit1, strip_eight_bit1, 1, endcap,
@@ -721,6 +724,7 @@ void PtRegressionRun3Prep(TString user = "",
         int dTh12, dTh13, dTh14, dTh23, dTh24, dTh34;
         int dSlope12, dSlope13, dSlope14, dSlope23, dSlope24, dSlope34;
         int dSlopeSum4, dSlopeSum4A, dSlopeSum3, dSlopeSum3A, outStSlope;
+        int Ph1Slope12MinusPh2, Ph2Slope23MinusPh3, Ph3Slope34MinusPh4;
         int FR1, FR2, FR3, FR4;
         //uncommented on 19/1/2021 int bend1, bend2, bend3, bend4;
         int RPC1, RPC2, RPC3, RPC4;
@@ -806,6 +810,10 @@ void PtRegressionRun3Prep(TString user = "",
           std::cout << "dSlope24 " << dSlope24  << std::endl;
           std::cout << "dSlope34 " << dSlope34  << std::endl;
         }
+
+        // CalcDeltaPhiSlope(dSlope1
+        //                   );
+
         // if (endcap1 == 1 and station1 == 1 and ring1 == 1 and chamber1==1)
         //   std::cout << station1 << ring1 << chamber1 << " hit_strip1 " << strip1 << " hit_phi_int1 " << ph1 << std::endl;
 

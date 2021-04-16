@@ -65,4 +65,7 @@ allowedTrainingVars = [
     'dSlopeSum3A',
     # block 12
     'outStSlope',
+    'Ph1Slope1MinusPh2',
+    'Ph2Slope2MinusPh3',
+    'Ph3Slope3MinusPh4',
 ]
