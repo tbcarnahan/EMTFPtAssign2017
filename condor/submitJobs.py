@@ -112,6 +112,7 @@ if __name__ == '__main__':
     parser.add_argument('--targetVar', action="store", help='Set target variable', default="log2(pt)")
     parser.add_argument("--isRun2", action="store_true", default = False)
     parser.add_argument("--isRun3", action="store_true", default = False)
+    parser.add_argument("--isRun3Default", action="store_true", default = False)
     parser.add_argument("--useQSBit", action="store_true", default = False)
     parser.add_argument("--useESBit", action="store_true", default = False)
     parser.add_argument("--useBitComp", action="store_true", default = False)
@@ -162,6 +163,10 @@ if __name__ == '__main__':
 
     if args.isRun3 and len(trainVariables) == 0:
         sys.exit("Error: no training variable selection provided for Run-3 with mode {mode}. Exiting.".format(mode = args.emtfMode))
+
+    if args.isRun3Default and len(trainVariables) == 0:
+        trainVariables = Run3TrainingVariables[args.emtfMode]
+        print("Info: no training variable selection provided for Run-3 with mode {mode}. Using default selection.".format(mode = args.emtfMode))
 
     ## get the associated hex string for this selection
     trainVarsHex = trainVarsSelToHex(trainVariables)
