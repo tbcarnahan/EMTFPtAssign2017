@@ -165,6 +165,7 @@ if __name__ == '__main__':
         sys.exit("Error: no training variable selection provided for Run-3 with mode {mode}. Exiting.".format(mode = args.emtfMode))
 
     if args.isRun3Default and len(trainVariables) == 0:
+        args.isRun3 = True
         trainVariables = Run3TrainingVariables[args.emtfMode]
         print("Info: no training variable selection provided for Run-3 with mode {mode}. Using default selection.".format(mode = args.emtfMode))
 
