@@ -1,8 +1,8 @@
 #! /usr/bin/env python
 
-##This file contains the Run-2 training variables for each mode
+##This file contains the Run-3 training variables for each mode
 ## the ordering of the variables here does not matter
-Run2TrainingVariables = {
+Run3TrainingVariables = {
 
     ## 4-station tracks
 
