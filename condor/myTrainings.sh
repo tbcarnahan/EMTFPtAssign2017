@@ -26,12 +26,15 @@ python submitJobs.py --isRun3 --emtfMode=15 --trainVars dPhi_12 dPhi_23 dPhi_34 
 sleep 60
 
 
-## check addition of slope1 (does not work, need difference in slope)
+'''
 python submitJobs.py --isRun2 --emtfMode=15 --trainVars dPhi_12 dPhi_23 dPhi_34 --jobLabel=Test3DPhiSlope
 sleep 60
 python submitJobs.py --isRun3 --emtfMode=15 --trainVars dPhi_12 dPhi_23 dPhi_34 --jobLabel=Test3DPhiSlope
 sleep 60
 python submitJobs.py --isRun3 --emtfMode=15 --trainVars dPhi_12 dPhi_23 dPhi_34 slope_1 --jobLabel=Test3DPhiSlope
+sleep 60
+python submitJobs.py --isRun3 --emtfMode=15 --trainVars dPhi_12 dPhi_23 dPhi_34 dSlopeSum4A --jobLabel=Test3DPhiSlope
+'''
 sleep 60
 python submitJobs.py --isRun3 --emtfMode=15 --trainVars dPhi_12 dPhi_23 dPhi_34 dSlope_12 --jobLabel=Test3DPhiSlope
 sleep 60
