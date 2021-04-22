@@ -215,13 +215,14 @@ int PtAssignmentEngineAux2017::getCLCT(int clct, int endcap, int dPhiSign, int b
   }//End conditional: (isRun2)
    
   //Run3 compressed slope mapping:
-  //(-15, -14, ..., -8) -> 0,  (-7, -6, ..., 0) -> 1,  (1, 2, ..., 7) -> 2,  (8, 9, ..., 15) -> 3
+  // (-15, -14, ..., -8) -> 0,  (-7, -6, ..., 0) -> 1,  (1, 2, ..., 7) -> 2,  (8, 9, ..., 15) -> 3
+  // The sign is already corrected in CalcSlopes, unlike for the above Run-2 cases.
   else {
     if (bits ==2) {
-      if                    ( clct >= 8) { clct_ = (sign_ > 0 ? 0 : 3); }
-      else if   ( clct < 8 && clct >= 0) { clct_ = (sign_ > 0 ? 1 : 2); }
-      else if    (clct < 0 && clct > -8) { clct_ = (sign_ >0 ? 2 : 1); }
-      else if (clct < -7 && clct >= -15) { clct_ = (sign_ > 0 ? 3 : 0 ); }
+      if                    ( clct >= 8) { clct_ = 0; }
+      else if   ( clct < 8 && clct >= 0) { clct_ = 1; }
+      else if    (clct < 0 && clct > -8) { clct_ = 2; }
+      else if (clct < -7 && clct >= -15) { clct_ = 2; }
       else if  (clct > 15 || clct < -15) { clct_ = 1; }
     }// End conditional if (bits == 2)
 
