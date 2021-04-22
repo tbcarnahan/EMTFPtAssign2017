@@ -155,7 +155,7 @@ int PtAssignmentEngineAux2017::getdPhiFromBin(int dPhiBin, int bits, int max) co
 } // End function: int PtAssignmentEngineAux2017::getdPhiFromBin()
 
 
-int PtAssignmentEngineAux2017::getCLCT(int clct, int endcap, int dPhiSign, int bits) const {
+int PtAssignmentEngineAux2017::getCLCT(int clct, int endcap, int dPhiSign, int bits, bool isRun2) const {
 
   // std::cout << "Inside getCLCT: clct = " << clct << ", endcap = " << endcap 
   // 	    << ", dPhiSign = " << dPhiSign << ", bits = " << bits << std::endl;
@@ -172,45 +172,63 @@ int PtAssignmentEngineAux2017::getCLCT(int clct, int endcap, int dPhiSign, int b
   //   * 10 --> 0, 9/8 --> 1, 7/6 --> 2, 5/4 --> 3, 3/2 --> 4, 0 indicates RPC hit
   //  sign  = ((pattern % 2) == 1 ? -1 : 1) * (endcap == 1 ? -1 : 1)   
   //   * In ME+, even CLCTs have negative sign, odd CLCTs have positive
-
+  
   // For use in all 3- and 4-station modes (7, 11, 13, 14, 15)
   // Bends [-4, -3, -2] --> 0, [-1, 0] --> 1, [+1] --> 2, [+2, +3, +4] --> 3
-  if (bits == 2) {
-    switch (clct) {
-    case 10: clct_ = 1;                   break;
-    case  9: clct_ = (sign_ > 0 ? 1 : 2); break;
-    case  8: clct_ = (sign_ > 0 ? 2 : 1); break;
-    case  7: clct_ = (sign_ > 0 ? 0 : 3); break;
-    case  6: clct_ = (sign_ > 0 ? 3 : 0); break;
-    case  5: clct_ = (sign_ > 0 ? 0 : 3); break;
-    case  4: clct_ = (sign_ > 0 ? 3 : 0); break;
-    case  3: clct_ = (sign_ > 0 ? 0 : 3); break;
-    case  2: clct_ = (sign_ > 0 ? 3 : 0); break;
-    case  1: clct_ = (sign_ > 0 ? 0 : 3); break;
-    case  0: clct_ = 0;                   break;
-    default: clct_ = 1;                   break;
-    }
-  } // End conditional: if (bits == 2)
 
-  // For use in all 2-station modes (3, 5, 6, 9, 10, 12)
-  // Bends [isRPC] --> 0, [-4, -3] --> 1, [-2] --> 2, [-1] --> 3, [0] --> 4, [+1] --> 5, [+2] --> 6, [+3, +4] --> 7
-  else if (bits == 3) {
-    switch (clct) {
-    case 10: clct_ = 4;                   break;
-    case  9: clct_ = (sign_ > 0 ? 3 : 5); break;
-    case  8: clct_ = (sign_ > 0 ? 5 : 3); break;
-    case  7: clct_ = (sign_ > 0 ? 2 : 6); break;
-    case  6: clct_ = (sign_ > 0 ? 6 : 2); break;
-    case  5: clct_ = (sign_ > 0 ? 1 : 7); break;
-    case  4: clct_ = (sign_ > 0 ? 7 : 1); break;
-    case  3: clct_ = (sign_ > 0 ? 1 : 7); break;
-    case  2: clct_ = (sign_ > 0 ? 7 : 1); break;
-    case  1: clct_ = (sign_ > 0 ? 1 : 7); break;
-    case  0: clct_ = 0;                   break;
-    default: clct_ = 4;                   break;
-    }
-  } // End conditional: else if (bits == 3)
+  if (isRun2) {
+    if (bits == 2) {
+      switch (clct) {
+      case 10: clct_ = 1;                   break;
+      case  9: clct_ = (sign_ > 0 ? 1 : 2); break;
+      case  8: clct_ = (sign_ > 0 ? 2 : 1); break;
+      case  7: clct_ = (sign_ > 0 ? 0 : 3); break;
+      case  6: clct_ = (sign_ > 0 ? 3 : 0); break;
+      case  5: clct_ = (sign_ > 0 ? 0 : 3); break;
+      case  4: clct_ = (sign_ > 0 ? 3 : 0); break;
+      case  3: clct_ = (sign_ > 0 ? 0 : 3); break;
+      case  2: clct_ = (sign_ > 0 ? 3 : 0); break;
+      case  1: clct_ = (sign_ > 0 ? 0 : 3); break;
+      case  0: clct_ = 0;                   break;
+      default: clct_ = 1;                   break;
+      }
+    } // End conditional: if (bits == 2)
 
+    // For use in all 2-station modes (3, 5, 6, 9, 10, 12)
+    // Bends [isRPC] --> 0, [-4, -3] --> 1, [-2] --> 2, [-1] --> 3, [0] --> 4, [+1] --> 5, [+2] --> 6, [+3, +4] --> 7
+    else if (bits == 3) {
+      switch (clct) {
+      case 10: clct_ = 4;                   break;
+      case  9: clct_ = (sign_ > 0 ? 3 : 5); break;
+      case  8: clct_ = (sign_ > 0 ? 5 : 3); break;
+      case  7: clct_ = (sign_ > 0 ? 2 : 6); break;
+      case  6: clct_ = (sign_ > 0 ? 6 : 2); break;
+      case  5: clct_ = (sign_ > 0 ? 1 : 7); break;
+      case  4: clct_ = (sign_ > 0 ? 7 : 1); break;
+      case  3: clct_ = (sign_ > 0 ? 1 : 7); break;
+      case  2: clct_ = (sign_ > 0 ? 7 : 1); break;
+      case  1: clct_ = (sign_ > 0 ? 1 : 7); break;
+      case  0: clct_ = 0;                   break;
+      default: clct_ = 4;                   break;
+      }
+    } // End conditional: else if (bits == 3)
+  }//End conditional: (isRun2)
+   
+  //Run3 compressed slope mapping:
+  //(-15, -14, ..., -8) -> 0,  (-7, -6, ..., 0) -> 1,  (1, 2, ..., 7) -> 2,  (8, 9, ..., 15) -> 3
+  else {
+    if (bits ==2) {
+      if                    ( clct >= 8) { clct_ = (sign_ > 0 ? 0 : 3); }
+      else if   ( clct < 8 && clct >= 0) { clct_ = (sign_ > 0 ? 1 : 2); }
+      else if    (clct < 0 && clct > -8) { clct_ = (sign_ >0 ? 2 : 1); }
+      else if (clct < -7 && clct >= -15) { clct_ = (sign_ > 0 ? 3 : 0 ); }
+      else if  (clct > 15 || clct < -15) { clct_ = 1; }
+    }// End conditional if (bits == 2)
+
+    //Add 3-bit slope compression here.
+
+  }// End conditional if (not isRun2)
+  
   // std::cout << "  * Output clct_ = " << clct_ << std::endl;
 
   assert(clct_ >= 0 && clct_ < pow(2, bits));
@@ -470,7 +488,7 @@ int PtAssignmentEngineAux2017::get8bMode15(int theta, int st1_ring2, int endcap,
   else           theta = (std::min( std::max(theta,  5), 52) -  5) / 6;
   assert(theta >= 0 && theta < 10);
   
-  int clctA_2b = getCLCT(clctA, endcap, sPhiAB, 2);
+  int clctA_2b = getCLCT(clctA, endcap, sPhiAB, 2, 1);
   
   int nRPC = (clctA == 0) + (clctB == 0) + (clctC == 0) + (clctD == 0);
   int rpc_word, rpc_clct, mode15_8b;

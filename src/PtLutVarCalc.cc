@@ -259,18 +259,26 @@ void CalcBends( int& bend1, int& bend2, int& bend3, int& bend4,
   }
 
   if (BIT_COMP) {
+    
     int nBits = 3;
     if (mode == 7 || mode == 11 || mode > 12)
       nBits = 2;
-
+    
     if (  mode      / 8 > 0 ) // Has station 1 hit
-      bend1 = ENG.getCLCT( pat1, endcap, dPhSign, nBits );
+      bend1 = ENG.getCLCT( pat1, endcap, dPhSign, nBits, isRun2 );
     if ( (mode % 8) / 4 > 0 ) // Has station 2 hit
-      bend2 = ENG.getCLCT( pat2, endcap, dPhSign, nBits );
+      bend2 = ENG.getCLCT( pat2, endcap, dPhSign, nBits, isRun2 );
     if ( (mode % 4) / 2 > 0 ) // Has station 3 hit
-      bend3 = ENG.getCLCT( pat3, endcap, dPhSign, nBits );
+      bend3 = ENG.getCLCT( pat3, endcap, dPhSign, nBits, isRun2 );
     if ( (mode % 2)     > 0 ) // Has station 4 hit
-      bend4 = ENG.getCLCT( pat4, endcap, dPhSign, nBits );
+      bend4 = ENG.getCLCT( pat4, endcap, dPhSign, nBits, isRun2 );
+   
+
+    //else {
+    //  if (  mode      / 8 > 0 ) // Has station 1 hit                                                                                       
+    //    slope1 = ENG.getCLCT( slope1, endcap, dPhSign, nBits, isRun2 );
+    //}
+
   } // End conditional: if (BIT_COMP)
 
 } // End function: CalcBends()
@@ -291,6 +299,23 @@ void CalcSlopes( const int bend, int& slope, const int endcap, const int mode, c
   // Reverse to match dPhi convention
   if (endcap == 1)
     slope *= -1;
+
+  std::cout << "Slope before compression: " << slope << ", endcap: " << endcap << std::endl;
+
+  if (BIT_COMP) {
+
+    int nBits = 3;
+    if (mode == 7 || mode == 11 || mode > 12)
+      nBits = 2;
+
+    int dPhSign = (endcap>0 ? -1 : 1);
+
+    if (  mode      / 8 > 0 ) // Has station 1 hit
+      slope = ENG.getCLCT( slope, endcap, dPhSign, nBits, isRun2 );
+
+    std::cout << "Slope after compression: " << slope << std::endl;
+    std::cout << "---Next muon---" << std::endl;
+  }
 
   assert( slope != -99 );
 }
