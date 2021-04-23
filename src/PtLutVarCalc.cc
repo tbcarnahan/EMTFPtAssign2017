@@ -296,11 +296,11 @@ void CalcSlopes( const int bend, int& slope, const int endcap, const int mode, c
   // bend == 1 means right bending, thus negative
   slope *= (1- 2*bend);
 
+  //std::cout << "Slope before compression: " << slope << ", endcap: " << endcap << std::endl;
+
   // Reverse to match dPhi convention
   if (endcap == 1)
     slope *= -1;
-
-  std::cout << "Slope before compression: " << slope << ", endcap: " << endcap << std::endl;
 
   if (BIT_COMP) {
 
@@ -308,13 +308,11 @@ void CalcSlopes( const int bend, int& slope, const int endcap, const int mode, c
     if (mode == 7 || mode == 11 || mode > 12)
       nBits = 2;
 
-    int dPhSign = (endcap>0 ? -1 : 1);
-
     if (  mode      / 8 > 0 ) // Has station 1 hit
-      slope = ENG.getCLCT( slope, endcap, dPhSign, nBits, isRun2 );
+      slope = ENG.getCLCT( slope, endcap, 0, nBits, isRun2 );
 
-    std::cout << "Slope after compression: " << slope << std::endl;
-    std::cout << "---Next muon---" << std::endl;
+    //std::cout << "Slope after compression: " << slope << std::endl;
+    //std::cout << "---Next muon---" << std::endl;
   }
 
   assert( slope != -99 );
