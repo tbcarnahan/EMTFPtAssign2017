@@ -107,14 +107,14 @@ void CalcPhiRun3( int& ph, int ring, int strip_quart_bit, int strip_eight_bit, i
     }
 
     if (ring == 4) {
-      if (strip_quart_bit == 1 ) {endcap>0 ? ph = ph + 4 : ph = ph - 4; }
-      if (useEighthBit and strip_eight_bit == 1 ) {endcap>0 ? ph = ph + 2 : ph = ph - 2 ; }
+      if (strip_quart_bit == 1 ) {endcap>0 ? ph = ph + 3 : ph = ph - 3; }
+      if (useEighthBit and strip_eight_bit == 1 ) {endcap>0 ? ph = ph + 1 : ph = ph - 1 ; }
     }
   }
 
   if (station == 2) {
-    if (strip_quart_bit == 1 ) {endcap>0 ? ph = ph + 2 : ph = ph - 2 ;}
-    if (useEighthBit and strip_eight_bit == 1 ) {endcap>0 ? ph = ph + 1 : ph = ph - 1 ;}
+    if (strip_quart_bit == 1 ) {endcap>0 ? ph = ph + 4 : ph = ph - 4 ;}
+    if (useEighthBit and strip_eight_bit == 1 ) {endcap>0 ? ph = ph + 2 : ph = ph - 2 ;}
   }
 
 
@@ -294,13 +294,13 @@ void CalcSlopes( const int bend, int& slope, const int endcap, const int mode, c
   // make sure that bending convention is not {0,1}, but {1, -1}!!!
   // bend == 0 means left bending, thus positive
   // bend == 1 means right bending, thus negative
-  slope *= (1- 2*bend);
+  //slope *= (1- 2*bend);
 
   //std::cout << "Slope before compression: " << slope << ", endcap: " << endcap << std::endl;
 
   // Reverse to match dPhi convention
-  if (endcap == 1)
-    slope *= -1;
+  //if (endcap == -1)
+  //    slope *= -1;
 
   if (BIT_COMP) {
 
@@ -370,8 +370,8 @@ void CalcRPCs( int& RPC1, int& RPC2, int& RPC3, int& RPC4, const int mode,
     // Mask some invalid locations for RPC hits
     // theta is assumed to be the compressed, mode 15 version
     if (mode == 15 && !st1_ring2) {
-      RPC1 = 0;
-      RPC2 = 0;
+      //RPC1 = 0;
+      //RPC2 = 0;
       if (theta < 4) {
 	RPC3 = 0;
 	RPC4 = 0;

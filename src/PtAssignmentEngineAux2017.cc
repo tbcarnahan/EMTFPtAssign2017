@@ -219,10 +219,10 @@ int PtAssignmentEngineAux2017::getCLCT(int clct, int endcap, int dPhiSign, int b
   // The sign is already corrected in CalcSlopes, unlike for the above Run-2 cases.
   else {
     if (bits ==2) {
-      if                  ( clct <= -8) { clct_ = 0; }
-      else if ( clct > -8 && clct <= 0) { clct_ = 1; }
-      else if    (clct > 0 && clct < 8) { clct_ = 2; }
-      else if (clct >= 8 && clct <= 15) { clct_ = 3; }
+      if                  ( clct <= -3) { clct_ = 0; }
+      else if ( clct > -3 && clct <= 0) { clct_ = 1; }
+      else if    (clct > 0 && clct < 3) { clct_ = 2; }
+      else if (clct >= 3 && clct <= 15) { clct_ = 3; }
       else if (clct > 15 || clct < -15) { clct_ = 1; }
     }// End conditional if (bits == 2)
 
