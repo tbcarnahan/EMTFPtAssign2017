@@ -51,32 +51,42 @@ if options.eta_slices:
   eta_str_max = ["1pt4", "1pt6", "1pt8", "2pt0", "2pt2", "2pt4"]
 else:
   #Whole endcap region.
-  eta_min = [2.1]
+  eta_min = [1.25]
   eta_max = [2.4]
-  eta_str_min = ["2pt1"]
+  eta_str_min = ["1pt25"]
   eta_str_max = ["2pt4"]
 
 
 ## Data
-prefix = "root://cmseos.fnal.gov//store/user/dildick/"
-#prefix = "root://cmseos.fnal.gov//store/user/mdecaro/"
-fileName = "PtRegressionRun3Prep_MODE_15_noBitCompr.root"
+#prefix = "root://cmseos.fnal.gov//store/user/dildick/"
+prefix = "root://cmseos.fnal.gov//store/user/mdecaro/"
+#prefix = '/uscms/home/mdecaro/nobackup/BDTGEM2/CMSSW_10_6_1_patch2/src/EMTFPtAssign2017/condor/'
+fileName = "PtRegressionRun3Prep_bitCompr.root"
 trainings= [
-  #'EMTF_BDT_Train_Test3DPhi_eta1.2to1.55_isRun2_Selection0x1c_20210406_122416/',
-  #'EMTF_BDT_Train_Test3DPhi_eta1.2to1.55_isRun3_Selection0x1c_20210406_122517/',
-  #'EMTF_BDT_Train_Test3DPhi_eta1.2to1.55_isRun3_useQSBit_Selection0x1c_20210406_122618/',
-  #'EMTF_BDT_Train_Test3DPhi_eta1.2to1.55_isRun3_useQSBit_useESBit_Selection0x1c_20210406_122719/',
-  'EMTF_BDT_Train_Test3DPhiSlope_eta1.25to2.4_isRun2_Selection0x1c_20210415_213848/',
-  'EMTF_BDT_Train_Test3DPhiSlope_eta1.25to2.4_isRun3_Selection0x1c_20210415_213956/',
-  'EMTF_BDT_Train_Test3DPhiSlope_eta1.25to2.4_isRun3_Selection0x20000000001c_20210415_214056/'
-  #'EMTF_BDT_Train_Test3DPhi_eta2.1to2.4_isRun2_Selection0x1c_20210406_122820/',
-  #'EMTF_BDT_Train_Test3DPhi_eta2.1to2.4_isRun3_Selection0x1c_20210406_122920/',
-  #'EMTF_BDT_Train_Test3DPhi_eta2.1to2.4_isRun3_useQSBit_Selection0x1c_20210406_123021/',
-  #'EMTF_BDT_Train_Test3DPhi_eta2.1to2.4_isRun3_useQSBit_useESBit_Selection0x1c_20210406_123918/'
-]
-nTrainings = len(trainings)
+  #'', #isRun2 bitCompr
+  #'',       #isRun3Default with slope_1, bitCompr
+  #''        #isRun3Default with bend_1, bitCompr
 
-treeName = "f_MODE_15_logPtTarg_invPtWgt_noBitCompr/TestTree"
+  #'EMTF_BDT_Train__eta1.25to2.4_Selection0x1f41f01ff_20210423_104755/',  #Run3Default with slope_1 (fixed)
+  #'EMTF_BDT_Train__eta1.25to2.4_Selection0xf41f11ff_20210421_161728/'    #Run3Default with bend_1
+
+  #'EMTF_BDT_Train__eta1.25to2.4_isRun2_Selection0x1c_20210427_102908/',  #Run2 with dPhi12,23,34
+  #'EMTF_BDT_Train__eta1.25to2.4_isRun3_Selection0x1c_20210421_102328/',  #Run3 with dPhi12,23,34
+  #'EMTF_BDT_Train__eta1.25to2.4_isRun3_Selection0x20000000001c_20210426_162910/'  #Run3 with dPhi12,23,34 + dSlopeSum4A
+
+  #'EMTF_BDT_Train__eta1.25to2.4_isRun2_Selection0x1c_20210430_092152/',
+  #'EMTF_BDT_Train__eta1.25to2.4_isRun3_useQSBit_useESBit_Selection0x1c_20210430_095501/'
+
+  #'EMTF_BDT_Train__eta1.25to2.4_isRun2_Selection0xf41f11ff_20210430_115058/',
+  #'EMTF_BDT_Train__eta1.25to2.4_Selection0xf41f11ff_20210421_161728/',
+  #'EMTF_BDT_Train__eta1.25to2.4_useQSBit_Selection0xf41f11ff_20210430_115554/',
+  #'EMTF_BDT_Train__eta1.25to2.4_useQSBit_useESBit_Selection0xf41f11ff_20210430_115903/'
+
+  'temp/Run2/mode_14/',
+  'temp/Run3/mode_14/'
+]
+
+treeName = "f_MODE_14_logPtTarg_invPtWgt_bitCompr/TestTree"
 
 evt_trees = []
 for p in trainings:
@@ -88,14 +98,14 @@ for p in trainings:
 
 markerColors = [kBlue, kRed, kGreen+2, kBlack, kBlue, kRed, kGreen+2, kBlack]#, 7, 40]
 lineColors = [kBlue, kRed, kGreen+2, kBlack, kBlue, kRed, kGreen+2, kBlack]#, 7, 40]
-markerStyles = [8,8,8,8]#,8,8,8,8]
-drawOptions = ["AP", "same", "same", "same"]#, "same", "same", "same", "same"]
-drawOptions1D = ["", "same", "same", "same"]#, "same", "same", "same", "same"]
-legendEntries = ["Run-2", "Run-3", "Run-3 QSBit", "Run-3 QSBit ESBit"]
-outFileString = ["Run2", "Run3", "Run3QSBit", "Run3QSBitESBit"]
+markerStyles = [8,8,8,8,8]#,8,8]
+drawOptions = ["AP", "same", "same", "same", "same"]#, "same", "same", "same", "same"]
+drawOptions1D = ["", "same"]#, "same", "same", "same", "same"]
+legendEntries = ["Run-2 Mode 14", "Run-3 Mode 14"]#, "Run-3 w/ dPhi_12,23,34 + dSlopeSum4A"]#, "Run-3Default bend1+bitCompr"]#"Run-3 QSBit", "Run-3 QSBit ESBit"]
+outFileString = ["Run2_dPhi12_23_34","Run3_dPhi12_23_34"]#, "Run3_bend1_bitCompr"]#"Run3QSBit", "Run3QSBitESBit"]
 
 draw_res_axis_label = ["(p_{T}^{GEN} - p_{T}^{L1}) / p_{T}^{GEN}", "(p_{T,GEN}^{-1} - p_{T,L1}^{-1}) / p_{T,GEN}^{-1}"]
-draw_res_option = ["(GEN_pt - pow(2, BDTG_AWB_Sq))/GEN_pt", "(((1./GEN_pt) - (1./pow(2, BDTG_AWB_Sq)))/(1./GEN_pt))"]
+draw_res_option = ["(GEN_pt - pow(2, BDTG_AWB_Sq))/GEN_pt", "(((1./GEN_pt) - (1./pow(2, BDTG_AWB_Sq)))/(1./GEN_pt))"] 
 draw_res_label = ["diffOverGen", "invDiffOverInvGen"]
 res_type = ["mu", "sigma"]
 
@@ -110,7 +120,7 @@ def bdt_pt_cut(pt_min):
   return TCut("pow(2, BDTG_AWB_Sq) >= {}".format(pt_min))
 
 def bdt_pt_scaled_cut(pt_min):
-  return TCut("(1.2 * pow(2,BDTG_AWB_Sq)))/(1 - (0.004 * pow(2,BDTG_AWB_Sq))) >= {}".format(pt_min))
+  return TCut("((1.2 * pow(2,BDTG_AWB_Sq))/(1 - (0.004 * pow(2,BDTG_AWB_Sq)))) >= {}".format(pt_min))
 
 def makePlots(canvas, plotTitle):
   c1.SaveAs(plotDir + plotTitle + ".png")
@@ -127,38 +137,40 @@ if options.efficiencies:
 
       if options.EffVsPt:
 
-	leg = TLegend(0.6, 0.33, 0.9, 0.63)
+	leg = TLegend(0.60, 0.23, 0.90, 0.50)
 	leg.SetBorderSize(0)
 	gStyle.SetOptStat(0)
 
 	#Run2 and Run3 BDT efficiency vs Pt
         effs = []
-        for ee in range(0,nTrainings):
+        for ee in range(0,2):
           eff = draw_eff(evt_trees[ee], "; p_{T}^{GEN} (GeV) ; Trigger Efficiency", "(50,1.,50.)", "GEN_pt",
-                         gen_eta_cut(eta_min[k], eta_max[k]), bdt_pt_cut(pt_cut[l]))
+                         gen_eta_cut(eta_min[k], eta_max[k]), bdt_pt_scaled_cut(pt_cut[l]))
           eff.SetMarkerColor(markerColors[ee])
           eff.SetLineColor(lineColors[ee])
           eff.SetMarkerStyle(markerStyles[ee])
           eff.Draw(drawOptions[ee])
           effs.append(eff)
+
           leg.AddEntry(effs[ee], legendEntries[ee])
-          #graph = eff.GetPaintedGraph()
-          #graph.SetMinimum(0)
-          #graph.SetMaximum(1.1)
           eff.Draw("same")
-        """
-        line = TLine(0, 0.5, 50, 0.5)
-	line2 = TLine(pt_cut[l], 0., pt_cut[l], 1.1)
-	line.SetLineStyle(7) ; line2.SetLineStyle(7)
-        line.Draw("same") ; line2.Draw("same")
 
-	la1 = TLatex() ; la1.SetTextFont(22) ; la1.SetTextColor(1) ; la1.SetTextSize(0.035) ; la1.SetTextAlign(10)
-	la1.DrawLatex( 35., 0.2, "p_{T}^{L1} > "+str(pt_cut[l])+" GeV")
-	la2 = TLatex() ; la2.SetTextFont(22) ; la2.SetTextColor(1) ; la2.SetTextSize(0.035) ; la2.SetTextAlign(10)
-	la2.DrawLatex( 35., 0.1, str(eta_min[k])+" < |#eta^{GEN}| < "+str(eta_max[k]))
-        """
+	  gPad.Update()
+	  graph = eff.GetPaintedGraph()
+	  graph.SetMinimum(0) ;  graph.SetMaximum(1.003)
+	  gPad.Update()
+	  
+	
+	leg.Draw("same")
 
-        leg.Draw("same")
+	tex = TLatex()
+	tex.SetTextColor(kBlack)
+	tex.SetTextFont(22)
+	tex.SetTextSize(0.05)
+	tex.DrawLatex( 35, 0.09, "p_{T}^{L1} > "+str(int(pt_cut[l]))+" GeV")
+
+	c1.Modified() ; c1.Update()
+
 
         checkDir('./plots') ; checkDir('./plots/bdt_eff')
         makePlots(c1, "bdt_eff/BDT_eff_SD_pt{}_eta{}to{}".format(pt_str[l], eta_str_min[k], eta_str_max[k]))
@@ -170,7 +182,7 @@ if options.efficiencies:
       binning = "(64,-3.,3.)"
       effs = []
 
-      for ee in range(0,nTrainings):
+      for ee in range(0,2):
         eff = draw_eff(evt_trees[ee], " ; #eta^{GEN} ; Trigger Efficiency", binning, "GEN_eta", gen_pt_cut(pt_cut[l]), bdt_pt_cut(pt_cut[l]))
         eff.SetMarkerColor(markerColors[ee])
         eff.SetLineColor(lineColors[ee])
@@ -183,7 +195,7 @@ if options.efficiencies:
       la1.DrawLatex( -0.6, 0.65, "p_{T}^{GEN}, p_{T}^{L1} > "+str(pt_cut[l])+" GeV")
 
       leg = TLegend(0.40, 0.26, 0.67, 0.53) ;
-      for ee in range(0,nTrainings):
+      for ee in range(0,4):
         leg.AddEntry(effs[ee], legendEntries[ee])
       leg.SetBorderSize(0)
       leg.Draw("same")
@@ -210,19 +222,18 @@ if options.resolutions:
 
 	resolutions = []
 
-	for ee in range(0,nTrainings):
+	for ee in range(0,2):
 	  res = draw_res(evt_trees[ee], 64, -10, 10, draw_res_option[k] , bdt_pt_cut(pt_cut[l]) )
 	  resolutions.append(res)
 
-	checkDir('./plots') ;
-        checkDir('./plots/resolutions')
+	checkDir('./plots') ; checkDir('./plots/resolutions')
 
 	c1 = TCanvas("c1")
-	draw_multiple(resolutions, " ; "+draw_res_axis_label[k]+" ; ", drawOptions1D, lineColors, legendEntries, pt_cut[l])
+	draw_multiple(resolutions, " ; "+draw_res_axis_label[k]+" ; ", drawOptions1D, lineColors, legendEntries, pt_cut[l]) 
 	makePlots(c1,  "resolutions/ptres1D_"+draw_res_label[k]+"_pt"+str(pt_str[l]) )
 	c1.Close()
 
-
+    
   if options.res1DvsPt and options.single_pt: print "Error: Must set single_pt to false in order to plot resolutions vs Pt."
   if options.res1DvsPt and not options.single_pt:
 
@@ -236,9 +247,9 @@ if options.resolutions:
 
       for l in range(len(pt_cut)):
 
-	for ee in range(0,nTrainings):
+	for ee in range(0,2):
 	  res = draw_res(evt_trees[ee], 64, -10, 10, draw_res_option[k], bdt_pt_cut(pt_cut[l]) )
-
+	  
 	  mu_res[ee][l] = res.GetMean()
 	  mu_res_err[ee][l] = res.GetMeanError()
 	  sigma_res[ee][l] = res.GetRMS()
@@ -247,8 +258,8 @@ if options.resolutions:
       draw_multi_resVsPt(len(evt_trees), mu_res, mu_res_err, xErrors, 'p_{T}^{GEN} (GeV)', '#mu '+draw_res_axis_label[k], lineColors, pt_cut, legendEntries, draw_res_label[k], res_type[0])
       draw_multi_resVsPt(len(evt_trees), sigma_res, sigma_res_err, xErrors, 'p_{T}^{GEN} (GeV)', '#sigma '+draw_res_axis_label[k], lineColors, pt_cut, legendEntries, draw_res_label[k], res_type[1])
 
-
-
+      
+  
   if options.res1DvsEta:
 
     for k in range(len(draw_res_option)):
@@ -257,7 +268,7 @@ if options.resolutions:
       eta_range = []
       nbins = int(round(abs((float(eta_min[0]) -  float(eta_max[0]) ) / 0.1)))
 
-      for i in range(nbins+1):
+      for i in range(nbins+1):	
 	eta_range.append(round(-1*float(eta_max[0]) + 0.1*i,1))
       for i in range(nbins+1):
 	eta_range.append(round(float(eta_min[0]) + 0.1*i,1))
@@ -273,7 +284,7 @@ if options.resolutions:
 
 	for i in range(len(eta_range)-2):
 
-	  for ee in range(0,nTrainings):
+	  for ee in range(0,3):
 	    #Add a check to skip the bin at the boundary between endcaps (-1.2 to 1.2).
 	    if i<len(eta_range)/2 - 1: res = draw_resVsEta(evt_trees[ee], 64, -10, 10, draw_res_option[k], bdt_pt_cut(pt_cut[l]), gen_pt_cut(pt_cut[l]), gen_eta_cut(eta_range[i], eta_range[i+1]) )
 	    if i>=len(eta_range)/2 - 1: res = draw_resVsEta(evt_trees[ee], 64, -10, 10, draw_res_option[k], bdt_pt_cut(pt_cut[l]), gen_pt_cut(pt_cut[l]), gen_eta_cut(eta_range[i+1], eta_range[i+2]) )
@@ -289,11 +300,11 @@ if options.resolutions:
 
       draw_multi_resVsEta(len(evt_trees), mu_res, mu_res_err, xErrors, '#eta^{GEN}', '#mu '+draw_res_axis_label[k], lineColors, eta_range, legendEntries, draw_res_label[k], res_type[0])
       draw_multi_resVsEta(len(evt_trees), sigma_res, sigma_res_err, xErrors, '#eta^{GEN}', '#sigma '+draw_res_axis_label[k], lineColors, eta_range, legendEntries, draw_res_label[k], res_type[1])
+      
 
-
-
+  
   if options.res2D:
 
-    for ee in range(0,nTrainings):
+    for ee in range(0,3):
 
       draw_res2D(evt_trees[ee], 100, 0, 5.7, 100, 0, 5.5, "BDTG_AWB_Sq:log2(GEN_pt)", legendEntries[ee], outFileString[ee])

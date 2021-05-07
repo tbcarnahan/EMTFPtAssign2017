@@ -61,7 +61,7 @@ void PtRegressionRun3Prep(TString user = "",
                           bool isRun2 = true,
                           bool useOneQuartPrecision = false,
                           bool useOneEighthPrecision = false,
-                          bool useBitCompression = false,
+                          bool useBitCompression = true,
                           int nEvents = -1,
                           bool verbose = false) {
 
@@ -199,6 +199,9 @@ void PtRegressionRun3Prep(TString user = "",
   if (isRun2) {
     treeString = "FlatNtupleMCRun2/tree";
   }
+
+  std::cout << treeString << std::endl;
+
   TChain *SM_in_chain = new TChain(treeString);
   TChain *ZB_in_chain = new TChain(treeString);
   for (int i = 0; i < SM_in_file_names.size(); i++) {
@@ -371,10 +374,10 @@ void PtRegressionRun3Prep(TString user = "",
   spec_vars.push_back( MVA_var( "evt_weight",    "Event weight for training", "",    'F', -77 ) );
 
   // extra spectator variables to inspect correlations
-  spec_vars.push_back( MVA_var( "slope_1",    "St 1 LCT slope",      "int", 'I', -77 ) ); // 0x0000 1000
-  spec_vars.push_back( MVA_var( "slope_2",    "St 2 LCT slope",      "int", 'I', -77 ) ); // 0x0000 2000
-  spec_vars.push_back( MVA_var( "slope_3",    "St 3 LCT slope",      "int", 'I', -77 ) ); // 0x0000 4000
-  spec_vars.push_back( MVA_var( "slope_4",    "St 4 LCT slope",      "int", 'I', -77 ) ); // 0x0000 8000
+  //spec_vars.push_back( MVA_var( "slope_1",    "St 1 LCT slope",      "int", 'I', -77 ) ); // 0x0000 1000
+  //spec_vars.push_back( MVA_var( "slope_2",    "St 2 LCT slope",      "int", 'I', -77 ) ); // 0x0000 2000
+  //spec_vars.push_back( MVA_var( "slope_3",    "St 3 LCT slope",      "int", 'I', -77 ) ); // 0x0000 4000
+  //spec_vars.push_back( MVA_var( "slope_4",    "St 4 LCT slope",      "int", 'I', -77 ) ); // 0x0000 8000
 
   spec_vars.push_back( MVA_var( "ph1",    "St 1 LCT phi",      "int", 'I', -77 ) ); // 0x0000 1000
   spec_vars.push_back( MVA_var( "ph2",    "St 2 LCT phi",      "int", 'I', -77 ) ); // 0x0000 2000
@@ -794,10 +797,10 @@ void PtRegressionRun3Prep(TString user = "",
           std::cout << "hit_slope3 " << slope3 << std::endl;
           std::cout << "hit_slope4 " << slope4 << std::endl;
         }
-        CalcSlopes(bend1, slope1, endcap, mode, BIT_COMP, isRun2 );
-        CalcSlopes(bend2, slope2, endcap, mode, BIT_COMP, isRun2 );
-        CalcSlopes(bend3, slope3, endcap, mode, BIT_COMP, isRun2 );
-        CalcSlopes(bend4, slope4, endcap, mode, BIT_COMP, isRun2 );
+        CalcSlopes(bend1, slope1, endcap, mode, useBitCompression, isRun2 );
+        CalcSlopes(bend2, slope2, endcap, mode, useBitCompression, isRun2 );
+        CalcSlopes(bend3, slope3, endcap, mode, useBitCompression, isRun2 );
+        CalcSlopes(bend4, slope4, endcap, mode, useBitCompression, isRun2 );
 
         if(verbose) {
           std::cout << "After" << std::endl;
@@ -836,11 +839,14 @@ void PtRegressionRun3Prep(TString user = "",
                   pat1_run3, pat2_run3, pat3_run3, pat4_run3,
                   dPhSign, endcap, mode, BIT_COMP, isRun2 );
 
+	//std::cout << "(Before assignment) RPC1: " << RPC1 << ", RPC2: " << RPC2 << ", RPC3: " << RPC3 << ", RPC4: " << RPC4 << std::endl;
         // Check for additional hits
         RPC1 = (i1CSC >= 0 ? ( I("hit_isRPC",i1CSC ) == 1 ? 1 : 0) : -99);
         RPC2 = (i2 >= 0 ? ( I("hit_isRPC", i2 ) == 1 ? 1 : 0) : -99);
         RPC3 = (i3 >= 0 ? ( I("hit_isRPC", i3 ) == 1 ? 1 : 0) : -99);
         RPC4 = (i4 >= 0 ? ( I("hit_isRPC", i4 ) == 1 ? 1 : 0) : -99);
+
+	//std::cout << "(After assignment) RPC1: " << RPC1 << ", RPC2: " << RPC2 << ", RPC3: " << RPC3 << ", RPC4: " << RPC4 << std::endl;
 
         GE11 = (i1GEM >= 0 ? ( I("hit_isGEM",i1GEM ) == 1 ? 1 : 0) : -99);
 
