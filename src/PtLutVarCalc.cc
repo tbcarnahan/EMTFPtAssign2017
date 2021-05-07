@@ -113,14 +113,25 @@ void CalcPhiRun3( int& ph, int ring, int strip_quart_bit, int strip_eight_bit, i
   }
 
   if (station == 2) {
-    if (strip_quart_bit == 1 ) {endcap>0 ? ph = ph + 4 : ph = ph - 4 ;}
-    if (useEighthBit and strip_eight_bit == 1 ) {endcap>0 ? ph = ph + 2 : ph = ph - 2 ;}
+    if (ring==1) {
+      if (strip_quart_bit == 1 ) {endcap>0 ? ph = ph + 4 : ph = ph - 4 ;}
+      if (useEighthBit and strip_eight_bit == 1 ) {endcap>0 ? ph = ph + 2 : ph = ph - 2 ;}
+    }
+    if (ring==2) {
+      if (strip_quart_bit == 1 ) {endcap>0 ? ph = ph + 2 : ph = ph - 2 ;}
+      if (useEighthBit and strip_eight_bit == 1 ) {endcap>0 ? ph = ph + 1 : ph = ph - 1 ;}
+    }
   }
 
-
   if (station > 2) {
-    if (strip_quart_bit == 1 ) { endcap>0 ? ph = ph - 2 : ph = ph + 2 ;}
-    if (useEighthBit and strip_eight_bit == 1 ) { endcap>0 ? ph = ph - 1 : ph = ph + 1 ; }
+    if (ring==1) {
+      if (strip_quart_bit == 1 ) { endcap>0 ? ph = ph - 4 : ph = ph + 4 ;}
+      if (useEighthBit and strip_eight_bit == 1 ) { endcap>0 ? ph = ph - 2 : ph = ph + 2 ; }
+    }
+    if (ring==2) {
+      if (strip_quart_bit == 1 ) { endcap>0 ? ph = ph - 2 : ph = ph + 2 ;}
+      if (useEighthBit and strip_eight_bit == 1 ) { endcap>0 ? ph = ph - 1 : ph = ph + 1 ; }
+    }
   }
 }
 
