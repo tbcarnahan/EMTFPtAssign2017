@@ -1,5 +1,12 @@
+# -*- coding: utf-8 -*-
 from ROOT import *
 from ROOT import TStyle
+import os
+import math
+import numpy as np
+import CMS_lumi, tdrstyle
+
+plotDir = "plots/"
 
 def ANDtwo(cut1,cut2):
     """AND of two TCuts in PyROOT"""
@@ -181,3 +188,187 @@ def draw_geff(t, title, h_bins, to_draw, den_cut, extra_num_cut,
 
     SetOwnership(eff, False)
     return eff
+
+#_______________________________________________________________________________
+def draw_res(t, nBins, minBin, maxBin, to_draw, pt_cut):
+
+    htemp = TH1F("htemp", "", nBins, minBin, maxBin)
+    t.Draw(to_draw+">>htemp", pt_cut, "goff")
+
+    return htemp
+
+#_______________________________________________________________________________
+def draw_resVsEta(t, nBins, minBin, maxBin, to_draw, bdt_pt_cut, gen_pt_cut, eta_cut):
+
+    cut = AND(bdt_pt_cut, gen_pt_cut, eta_cut)
+    htemp = TH1F("htemp", "", nBins, minBin, maxBin)
+    t.Draw(to_draw+">>htemp", cut, "goff")
+
+    return htemp
+
+
+#_______________________________________________________________________________
+def draw_multiple(res, title, drawOptions1D, lineColors, texLabel, pt_cut):
+
+    for i in range(len(res)):	
+	res[i].SetLineColor(lineColors[i])
+	res[i].Scale(1./res[i].Integral(), "WIDTH")
+	res[i].Draw("HIST"+drawOptions1D[i])
+
+    for i in range(len(res)):
+      tex = TLatex() 
+      tex.SetTextFont(22)
+      tex.SetTextColor(lineColors[i])
+      tex.SetTextSize(0.033)
+      tex.SetTextAlign(10)
+      tex.DrawLatex( 2, 0.8-(i*0.1), texLabel[i]+" #mu = "+str(truncate(res[i].GetMean(),3))+", #sigma = "+str(truncate(res[i].GetRMS(),3)))
+	
+    tex = TLatex()
+    tex.SetTextColor(kBlack)
+    tex.DrawLatex( 2, 0.8-((i+1)*0.1), "Mode 15, p_{T}^{L1} > "+str(int(pt_cut))+" GeV")
+
+    res[0].SetTitle(title)
+    return
+    
+#_______________________________________________________________________________
+def draw_multi_resVsPt(length, res, resError, x_arr, xtitle, ytitle, lineColors, pt_cut, legendEntries, draw_res_label, res_type):
+    
+    #Decide where the legend gets drawn. Avoid it covering any datapoints.
+    if res_type=="mu" and draw_res_label=="diffOverGen": leg = TLegend(0.43, 0.20, 0.75, 0.40)
+    if res_type=="mu" and draw_res_label!="diffOverGen": leg = TLegend(0.38, 0.65, 0.70, 0.85)
+    if res_type=="sigma" and draw_res_label=="diffOverGen": leg = TLegend(0.43, 0.20, 0.75, 0.40)
+    if res_type=="sigma" and draw_res_label!="diffOverGen": leg = TLegend(0.13, 0.20, 0.45, 0.40)
+
+    mg = TMultiGraph()
+    c1 = TCanvas("c1")
+
+    for i in range(length):
+      g = TGraphErrors(len(pt_cut), np.array(pt_cut), np.array(res[i]), np.array(x_arr[i]) , np.array(resError[i]))
+      g.SetMarkerStyle(8)
+      g.SetMarkerSize(1)
+      g.SetMarkerColor(lineColors[i])
+      leg.AddEntry(g, legendEntries[i])
+      mg.Add(g)
+
+    mg.Draw('AP')
+    leg.SetBorderSize(0)
+    leg.Draw("same")
+    mg.GetXaxis().SetTitle(xtitle)
+    mg.GetYaxis().SetTitle(ytitle)
+    
+    checkDir('./plots')
+    checkDir('./plots/resolutions')
+    makePlots(c1,  "resolutions/"+res_type+"_res_vs_pt_"+draw_res_label )
+    c1.Close()
+
+#_______________________________________________________________________________
+def draw_multi_resVsEta(length, res, resError, x_arr, xtitle, ytitle, lineColors, eta_range, legendEntries, draw_res_label, res_type):
+    
+    leg = TLegend(0.38, 0.20, 0.70, 0.40)
+    mg = TMultiGraph()
+    c1 = TCanvas("c1")
+
+    for i in range(length):
+      g = TGraphErrors(len(eta_range), np.array(eta_range), np.array(res[i]), np.array(x_arr[i]) , np.array(resError[i]))
+      g.SetMarkerStyle(8)
+      g.SetMarkerSize(1)
+      g.SetMarkerColor(lineColors[i])
+      leg.AddEntry(g, legendEntries[i])
+      mg.Add(g)
+
+    mg.Draw('AP')
+    leg.SetBorderSize(0)
+    leg.Draw("same")
+    mg.GetXaxis().SetTitle(xtitle)
+    mg.GetYaxis().SetTitle(ytitle)
+    
+    checkDir('./plots')
+    checkDir('./plots/resolutions')
+    makePlots(c1,  "resolutions/"+res_type+"_res_vs_eta_"+draw_res_label )
+    c1.Close()
+
+#_______________________________________________________________________________
+def draw_res2D(t, nBinsX, minBinX, maxBinX, nBinsY, minBinY, maxBinY, to_draw, label, outFileString):
+
+  c1 = TCanvas("c1")
+
+  htemp = TH2F("htemp", "", nBinsX, minBinX, maxBinX, nBinsY, minBinY, maxBinY)
+  t.Draw(to_draw+">>htemp", "", "COLZ")
+
+  htemp.GetXaxis().SetTitle("log2(p_{T}^{GEN})")
+  htemp.GetYaxis().SetTitle(label+" Mode-15 unscaled trigger log2(p_{T}^{L1})")
+
+  line = TLine(minBinX, minBinY, maxBinX, maxBinY)
+  line.SetLineColor(kRed)
+  line.SetLineStyle(7)
+  line.Draw("same")
+  gPad.SetLogz()
+  gPad.Update()
+  gStyle.SetOptStat(0)
+  c1.Close()
+
+  Style(htemp, outFileString, 0.10, 0.100, 0.110, 0.110, 0.102)
+
+
+#_______________________________________________________________________________
+def makePlots(canvas, plotTitle):
+  c1.SaveAs(plotDir + plotTitle + ".png")
+  c1.SaveAs(plotDir + plotTitle + ".pdf")
+  c1.SaveAs(plotDir + plotTitle + ".C")
+	
+#_______________________________________________________________________________
+def checkDir(path):
+    if not os.path.exists(path): os.makedirs(path)
+
+
+#_______________________________________________________________________________
+def Style(hist, outFileString, LeftMargin, TScale, BScale, LScale, RScale):
+    
+    tdrstyle.setTDRStyle()
+
+    iPos = 11
+    if( iPos==0 ): CMS_lumi.relPosX = 0.12
+
+    H_ref = 600; 
+    W_ref = 800; 
+    W = W_ref
+    H  = H_ref
+
+    iPeriod = 0
+
+    # references for T, B, L, R
+    T = TScale*H_ref
+    B = BScale*H_ref 
+    L = LScale*W_ref
+    R = RScale*W_ref
+
+    c1 = TCanvas("c1","c1",50,50,W,H)
+    c1.SetFillColor(0)
+    c1.SetBorderMode(0)
+    c1.SetFrameFillStyle(0)
+    c1.SetFrameBorderMode(0)
+    c1.SetLeftMargin( LeftMargin )
+    c1.SetRightMargin( R/W )
+    c1.SetTopMargin( T/H )
+    c1.SetBottomMargin( B/H )
+    c1.SetTickx(0)
+    c1.SetTicky(0)
+
+    hist.Draw("COLZ")
+    gPad.SetLogz()
+    gPad.Update()
+
+    CMS_lumi.writeExtraText = True
+    CMS_lumi.CMS_lumi(c1, iPeriod, iPos, "Simulation Preliminary", 52, 0.045, 0.063)
+    CMS_lumi.CMS_lumi(c1, iPeriod, iPos, "14 TeV, 0 PU", 42, 0.61, 0.063)
+
+    checkDir('./plots')
+    checkDir('./plots/resolutions')
+    makePlots( c1, "resolutions/ptres2D_"+outFileString)
+    c1.Close()
+    
+#_______________________________________________________________________________
+def truncate(number, digits):
+  stepper = 10.0 ** digits
+  return float(math.trunc(stepper * number) / stepper)
+

@@ -57,10 +57,13 @@ void PtRegressionRun3Prep(TString user = "",
                           float minEta = 1.25,
                           float maxEta = 2.4,
                           unsigned long trainVarsSelection = 0,
+                          unsigned long trainVarsSize = 0,
                           bool isRun2 = true,
                           bool useOneQuartPrecision = false,
                           bool useOneEighthPrecision = false,
-                          bool useBitCompression = false) {
+                          bool useBitCompression = true,
+                          int nEvents = -1,
+                          bool verbose = false) {
 
   // Expert options
   // Run-2 overrides all options
@@ -111,7 +114,6 @@ void PtRegressionRun3Prep(TString user = "",
   Use["BDTG_AWB_Hub"]            = 0;
   Use["BDTG_AWB_Sq"]             = 1;
   //==================================
-  bool verbose = false;//for debug
 
   std::cout << std::endl;
   std::cout << "==> Start PtRegressionRun3Prep" << std::endl;
@@ -197,6 +199,9 @@ void PtRegressionRun3Prep(TString user = "",
   if (isRun2) {
     treeString = "FlatNtupleMCRun2/tree";
   }
+
+  std::cout << treeString << std::endl;
+
   TChain *SM_in_chain = new TChain(treeString);
   TChain *ZB_in_chain = new TChain(treeString);
   for (int i = 0; i < SM_in_file_names.size(); i++) {
@@ -317,8 +322,28 @@ void PtRegressionRun3Prep(TString user = "",
   in_vars.push_back( MVA_var( "slope_4",    "St 4 LCT slope",      "int", 'I', -88 ) ); // 0x0000 8000
 
   // block 10
-  in_vars.push_back( MVA_var( "dPhi_GE11_ME11", "#phi(GE11) - #phi(ME11)", "", 'F', -88 ) ); // 0x1 0000 0000
+  in_vars.push_back( MVA_var( "dSlope_12",    "slope(2) - slope(1)", "int", 'I', -88 ) ); // 0x0040 0000
+  in_vars.push_back( MVA_var( "dSlope_23",    "slope(3) - slope(2)", "int", 'I', -88 ) ); // 0x0080 0000
+  in_vars.push_back( MVA_var( "dSlope_34",    "slope(4) - slope(3)", "int", 'I', -88 ) ); // 0x0100 0000
+  in_vars.push_back( MVA_var( "dSlope_13",    "slope(3) - slope(1)", "int", 'I', -88 ) ); // 0x0200 0000
+
+  // block 11
+  in_vars.push_back( MVA_var( "dSlope_14",    "slope(4) - slope(1)", "int", 'I', -88 ) ); // 0x0400 0000
+  in_vars.push_back( MVA_var( "dSlope_24",    "slope(4) - slope(2)", "int", 'I', -88 ) ); // 0x0800 0000
+  in_vars.push_back( MVA_var( "dPhi_GE11_ME11", "#phi(GE11) - #phi(ME11)", "", 'I', -88 ) ); // 0x1 0000 0000
   in_vars.push_back( MVA_var( "GEM_1",   "St 1 hit is GEM",       "int", 'I', -88 ) ); // 0x1 0000 0000
+
+  // block 12
+  in_vars.push_back( MVA_var( "dSlopeSum4",  "#SigmadSlope (6)",       "int", 'I', -88 ) ); // 0x0001 0000
+  in_vars.push_back( MVA_var( "dSlopeSum4A", "#Sigma|dSlope| (6)",     "int", 'I', -88 ) ); // 0x0002 0000
+  in_vars.push_back( MVA_var( "dSlopeSum3",  "#SigmadSlope (3)",       "int", 'I', -88 ) ); // 0x0001 0000
+  in_vars.push_back( MVA_var( "dSlopeSum3A", "#Sigma|dSlope| (3)",     "int", 'I', -88 ) ); // 0x0002 0000
+
+  // block 13
+  in_vars.push_back( MVA_var( "outStSlope",  "slope outlier St",       "int", 'I', -88 ) ); // 0x0010 0000
+  in_vars.push_back( MVA_var( "Ph1Slope1MinusPh2",  "Phi1 + Slope12 - Ph2",       "int", 'I', -88 ) ); // 0x0010 0000
+  in_vars.push_back( MVA_var( "Ph2Slope2MinusPh3",  "Phi2 + Slope23 - Ph3",       "int", 'I', -88 ) ); // 0x0010 0000
+  in_vars.push_back( MVA_var( "Ph3Slope3MinusPh4",  "Phi3 + Slope34 - Ph4",       "int", 'I', -88 ) ); // 0x0010 0000
 
   ////////////////////////////////////////////////////////////
   //  Target variable: true muon pT, or 1/pT, or log2(pT)  ///
@@ -347,6 +372,18 @@ void PtRegressionRun3Prep(TString user = "",
   spec_vars.push_back( MVA_var( "TRK_mode_RPC",  "Track RPC-only mode",       "",    'I', -77 ) );
   spec_vars.push_back( MVA_var( "dPhi_sign",     "#phi(B) - #phi(A) sign",    "",    'I', -77 ) );
   spec_vars.push_back( MVA_var( "evt_weight",    "Event weight for training", "",    'F', -77 ) );
+
+  // extra spectator variables to inspect correlations
+  //spec_vars.push_back( MVA_var( "slope_1",    "St 1 LCT slope",      "int", 'I', -77 ) ); // 0x0000 1000
+  //spec_vars.push_back( MVA_var( "slope_2",    "St 2 LCT slope",      "int", 'I', -77 ) ); // 0x0000 2000
+  //spec_vars.push_back( MVA_var( "slope_3",    "St 3 LCT slope",      "int", 'I', -77 ) ); // 0x0000 4000
+  //spec_vars.push_back( MVA_var( "slope_4",    "St 4 LCT slope",      "int", 'I', -77 ) ); // 0x0000 8000
+
+  spec_vars.push_back( MVA_var( "ph1",    "St 1 LCT phi",      "int", 'I', -77 ) ); // 0x0000 1000
+  spec_vars.push_back( MVA_var( "ph2",    "St 2 LCT phi",      "int", 'I', -77 ) ); // 0x0000 2000
+  spec_vars.push_back( MVA_var( "ph3",    "St 3 LCT phi",      "int", 'I', -77 ) ); // 0x0000 4000
+  spec_vars.push_back( MVA_var( "ph4",    "St 4 LCT phi",      "int", 'I', -77 ) ); // 0x0000 8000
+
 
   assert( in_vars.size() > 0 );   // Need at least one input variable
   assert( targ_vars.size() > 0 ); // Need at least one target variable
@@ -412,7 +449,7 @@ void PtRegressionRun3Prep(TString user = "",
   Bool_t isZB = false;//tag per event
   Bool_t isTEST = false;//tag per event
 
-
+  unsigned iEvent = 0;
   //=================================
   //Register events: loop over chains
   //=================================
@@ -423,6 +460,8 @@ void PtRegressionRun3Prep(TString user = "",
 
     for (UInt_t jEvt = 0; jEvt < in_chain->GetEntries(); jEvt++) {
 
+      if (iEvent > nEvents) break;
+      iEvent++;
       if (jEvt%1000==0) std::cout << "******* About to loop on event " << jEvt << " *******" << std::endl;
       //!!! jEvt restarts from 0 in new chain
 
@@ -477,6 +516,13 @@ void PtRegressionRun3Prep(TString user = "",
         mu_phi = F("mu_phi", emtf_unique_iMu);
         mu_charge = I("mu_charge", emtf_unique_iMu);
 
+        if(verbose) {
+          std::cout << "True muon pt " << mu_pt << std::endl;
+          std::cout << "True muon eta " << mu_eta << std::endl;
+          std::cout << "True muon phi " << mu_phi << std::endl;
+          std::cout << "True muon charge " << mu_charge << std::endl;
+        }
+
         if(verbose) std::cout << "RECO kinematics ... "<< std::endl;
 
         //===============================
@@ -525,6 +571,7 @@ void PtRegressionRun3Prep(TString user = "",
           continue;
         }
 
+	//std::cout << "i1GEM before: " << i1GEM << std::endl;
 
         for (int jhit = 0; jhit < I("trk_nHits", iTrk); jhit++) {
 
@@ -541,12 +588,14 @@ void PtRegressionRun3Prep(TString user = "",
           }
         }//end loop over hits in selected emtf track
 
+        //std::cout << "i1GEM after: " << i1GEM << std::endl;
+
         if(verbose) {
-          std::cout << "hit id at 1: "<<i1GEM<< std::endl;
-          std::cout << "hit id at 1: "<<i1CSC<< std::endl;
-          std::cout << "hit id at 2: "<<i2<< std::endl;
-          std::cout << "hit id at 3: "<<i3<< std::endl;
-          std::cout << "hit id at 4: "<<i4<< std::endl;
+          std::cout << "index GE1/1: "<<i1GEM<< std::endl;
+          std::cout << "index ME1: "<<i1CSC<< std::endl;
+          std::cout << "index ME2: "<<i2<< std::endl;
+          std::cout << "index ME3: "<<i3<< std::endl;
+          std::cout << "index ME4: "<<i4<< std::endl;
         }
 
         //Assign built trk properties the same as emtf track
@@ -566,17 +615,60 @@ void PtRegressionRun3Prep(TString user = "",
         int ph3 = (i3 >= 0 ? I("hit_phi_int", i3 ) : -99);
         int ph4 = (i4 >= 0 ? I("hit_phi_int", i4 ) : -99);
 
+        //if ( i1CSC>0 && i1GEM>0 ) { std::cout << "ph1 CSC: " << ph1 << ", ph1GEM: " << ph1GEM << std::endl; }
+        //if ( i1CSC>0 && i1GEM>0 ) { std::cout << "ph1 CSC: " << ph1 << ", ph1GEM / 4.: " << ph1GEM/4. << std::endl; }
+        //if ( i1CSC>0 && i1GEM>0 && (abs(ph1 - ph1GEM)>1000) ) { ph1GEM = ph1GEM - 3600; }
+        //if ( i1CSC>0 && i1GEM>0 ) { std::cout << "dPh : " << ph1 - ph1GEM << std::endl; }
+
+        //std::cout << "Before function: " << ph1GEM << std::endl;
+        //ph1GEM = ph1GEMFix(ph1, ph1GEM);
+        //std::cout << "After function: " << ph1GEM << std::endl;
+
         int th1 = (i1CSC >= 0 ? I("hit_theta_int",i1CSC ) : -99);
         int th1GEM = (i1GEM >= 0 ? I("hit_theta_int",i1GEM ) : -99);
         int th2 = (i2 >= 0 ? I("hit_theta_int", i2 ) : -99);
         int th3 = (i3 >= 0 ? I("hit_theta_int", i3 ) : -99);
         int th4 = (i4 >= 0 ? I("hit_theta_int", i4 ) : -99);
 
+        int endcap1 = (i1CSC >= 0 ? I("hit_endcap",i1CSC ) : -99);
+        int endcap2 = (i2 >= 0 ? I("hit_endcap", i2 ) : -99);
+        int endcap3 = (i3 >= 0 ? I("hit_endcap", i3 ) : -99);
+        int endcap4 = (i4 >= 0 ? I("hit_endcap", i4 ) : -99);
+
+        int station1 = (i1CSC >= 0 ? I("hit_station",i1CSC ) : -99);
+        int station2 = (i2 >= 0 ? I("hit_station", i2 ) : -99);
+        int station3 = (i3 >= 0 ? I("hit_station", i3 ) : -99);
+        int station4 = (i4 >= 0 ? I("hit_station", i4 ) : -99);
+
+        int ring1 = (i1CSC >= 0 ? I("hit_ring",i1CSC ) : -99);
+        int ring2 = (i2 >= 0 ? I("hit_ring",i2 ) : -99);
+        int ring3 = (i3 >= 0 ? I("hit_ring",i3 ) : -99);
+        int ring4 = (i4 >= 0 ? I("hit_ring",i4 ) : -99);
+
+        int chamber1 = (i1CSC >= 0 ? I("hit_chamber",i1CSC ) : -99);
+        int chamber2 = (i2 >= 0 ? I("hit_chamber",i2 ) : -99);
+        int chamber3 = (i3 >= 0 ? I("hit_chamber",i3 ) : -99);
+        int chamber4 = (i4 >= 0 ? I("hit_chamber",i4 ) : -99);
+
+        // 4-bit value
+        int strip1 = (i1CSC >= 0 ? I("hit_strip",i1CSC ) : -99);
+        int strip2 = (i2 >= 0 ? I("hit_strip", i2 ) : -99);
+        int strip3 = (i3 >= 0 ? I("hit_strip", i3 ) : -99);
+        int strip4 = (i4 >= 0 ? I("hit_strip", i4 ) : -99);
+
+        // if (endcap1 == 1 and station1 == 1 and ring1 == 1 and chamber1==1)
+        //   std::cout << station1 << ring1 << chamber1 << " hit_strip1 " << strip1 << " hit_phi_int1 " << ph1 << std::endl;
+        // std::cout << "hit_strip2 " << strip2 << " hit_phi_int2 " << ph2 << std::endl;
+        // std::cout << "hit_strip3 " << strip3 << " hit_phi_int3 " << ph3 << std::endl;
+        // std::cout << "hit_strip4 " << strip4 << " hit_phi_int4 " << ph4 << std::endl;
+
+        // 4-bit value
         int pat1 = (i1CSC >= 0 ? I("hit_pattern",i1CSC ) : -99);
         int pat2 = (i2 >= 0 ? I("hit_pattern", i2 ) : -99);
         int pat3 = (i3 >= 0 ? I("hit_pattern", i3 ) : -99);
         int pat4 = (i4 >= 0 ? I("hit_pattern", i4 ) : -99);
 
+        // 4-bit value
         int pat1_run3 = (i1CSC >= 0 ? I("hit_pattern_run3",i1CSC ) : -99);
         int pat2_run3 = (i2 >= 0 ? I("hit_pattern_run3", i2 ) : -99);
         int pat3_run3 = (i3 >= 0 ? I("hit_pattern_run3", i3 ) : -99);
@@ -593,18 +685,13 @@ void PtRegressionRun3Prep(TString user = "",
         int bend2 = (i2 >= 0 ? I("hit_bend", i2 ) : -99);
         int bend3 = (i3 >= 0 ? I("hit_bend", i3 ) : -99);
         int bend4 = (i4 >= 0 ? I("hit_bend", i4 ) : -99);
-
-        // 5-bit slope: 1-bit sign + 4-bit value
-        int slopeshift1 = (bend1 == 0) ? 0 : 16;
-        int slopeshift2 = (bend2 == 0) ? 0 : 16;
-        int slopeshift3 = (bend3 == 0) ? 0 : 16;
-        int slopeshift4 = (bend4 == 0) ? 0 : 16;
-
-        slope1 += slopeshift1;
-        slope2 += slopeshift2;
-        slope3 += slopeshift3;
-        slope4 += slopeshift4;
-
+        if(verbose) {
+        std::cout << "hit_bend1 " << bend1  << std::endl;
+        std::cout << "hit_bend2 " << bend2  << std::endl;
+        std::cout << "hit_bend3 " << bend3 << std::endl;
+        std::cout << "hit_bend4 " << bend4 << std::endl;
+        }
+        // CCLUT bit corrections
         int strip_quart_bit1 = (i1CSC >= 0 ? I("hit_strip_quart_bit",i1CSC ) : -99);
         int strip_quart_bit2 = (i2 >= 0 ? I("hit_strip_quart_bit", i2 ) : -99);
         int strip_quart_bit3 = (i3 >= 0 ? I("hit_strip_quart_bit", i3 ) : -99);
@@ -614,11 +701,6 @@ void PtRegressionRun3Prep(TString user = "",
         int strip_eight_bit2 = (i2 >= 0 ? I("hit_strip_eight_bit", i2 ) : -99);
         int strip_eight_bit3 = (i3 >= 0 ? I("hit_strip_eight_bit", i3 ) : -99);
         int strip_eight_bit4 = (i4 >= 0 ? I("hit_strip_eight_bit", i4 ) : -99);
-
-        int ring1 = (i1CSC >= 0 ? I("hit_ring",i1CSC ) : -99);
-        int ring2 = (i2 >= 0 ? I("hit_ring",i2 ) : -99);
-        int ring3 = (i3 >= 0 ? I("hit_ring",i3 ) : -99);
-        int ring4 = (i4 >= 0 ? I("hit_ring",i4 ) : -99);
 
         int st1_ring2 = (i1CSC >= 0 ? ( I("hit_ring",i1CSC ) == 2 || I("hit_ring",i1CSC ) == 3 ) : 0);
 
@@ -635,6 +717,8 @@ void PtRegressionRun3Prep(TString user = "",
         else if (i1CSC >= 0) { eta = F("hit_eta",i1CSC ); phi = F("hit_phi",i1CSC ); }
         endcap = (eta > 0 ? +1 : -1);
 
+        //if ( abs(F("hit_eta", i1CSC))>1.6 && abs(F("hit_eta", i1CSC))<2.1 ) { std::cout << "i1GEM: " << i1GEM << std::endl; }
+
         //This block of code adds a correction to the integer phi value based on the quarter and eight-strip position offset.
         if (ph1 != -99) CalcPhiRun3(ph1, ring1, strip_quart_bit1, strip_eight_bit1, 1, endcap,
                                     useOneQuartPrecision, useOneEighthPrecision);
@@ -645,7 +729,6 @@ void PtRegressionRun3Prep(TString user = "",
         if (ph4 != -99) CalcPhiRun3(ph4, ring4, strip_quart_bit4, strip_eight_bit4, 4, endcap,
                                     useOneQuartPrecision, useOneEighthPrecision);
 
-        //std::cout << "ph1 (after): " << ph1 << std::endl;
 
         //========================
         //Variables to go into BDT
@@ -654,6 +737,9 @@ void PtRegressionRun3Prep(TString user = "",
         int dPh12, dPh13, dPh14, dPh23, dPh24, dPh34, dPhSign;
         int dPhSum4, dPhSum4A, dPhSum3, dPhSum3A, outStPh;
         int dTh12, dTh13, dTh14, dTh23, dTh24, dTh34;
+        int dSlope12, dSlope13, dSlope14, dSlope23, dSlope24, dSlope34;
+        int dSlopeSum4, dSlopeSum4A, dSlopeSum3, dSlopeSum3A, outStSlope;
+        int Ph1Slope12MinusPh2, Ph2Slope23MinusPh3, Ph3Slope34MinusPh4;
         int FR1, FR2, FR3, FR4;
         //uncommented on 19/1/2021 int bend1, bend2, bend3, bend4;
         int RPC1, RPC2, RPC3, RPC4;
@@ -701,16 +787,66 @@ void PtRegressionRun3Prep(TString user = "",
         FR4 = (i4 >= 0 ? (cham4 % 2 == 1) : -99);
         if (ring1 == 3) FR1 = 0;                   // In ME1/3 chambers are non-overlapping
 
+        // calculate bendings from CCLUT slope (Run-3)
+        // this needs to be evaluated before the CalcBends
+        // this function does not modify bendX
+        if(verbose) {
+          std::cout << "Before" << std::endl;
+          std::cout << "hit_slope1 " << slope1  << std::endl;
+          std::cout << "hit_slope2 " << slope2  << std::endl;
+          std::cout << "hit_slope3 " << slope3 << std::endl;
+          std::cout << "hit_slope4 " << slope4 << std::endl;
+        }
+        CalcSlopes(bend1, slope1, endcap, mode, useBitCompression, isRun2 );
+        CalcSlopes(bend2, slope2, endcap, mode, useBitCompression, isRun2 );
+        CalcSlopes(bend3, slope3, endcap, mode, useBitCompression, isRun2 );
+        CalcSlopes(bend4, slope4, endcap, mode, useBitCompression, isRun2 );
 
+        if(verbose) {
+          std::cout << "After" << std::endl;
+          std::cout << "hit_slope1 " << slope1  << std::endl;
+          std::cout << "hit_slope2 " << slope2  << std::endl;
+          std::cout << "hit_slope3 " << slope3 << std::endl;
+          std::cout << "hit_slope4 " << slope4 << std::endl;
+        }
+        CalcDeltaSlopes(slope1, slope2, slope3, slope4,
+                        dSlope12, dSlope13, dSlope14,
+                        dSlope23, dSlope24, dSlope34,
+                        dSlopeSum4, dSlopeSum4A,
+                        dSlopeSum3, dSlopeSum3A,
+                        outStSlope);
+
+        if(verbose) {
+          std::cout << "DSlope" << std::endl;
+          std::cout << "dSlope12 " << dSlope12  << std::endl;
+          std::cout << "dSlope13 " << dSlope13  << std::endl;
+          std::cout << "dSlope14 " << dSlope14  << std::endl;
+          std::cout << "dSlope23 " << dSlope23  << std::endl;
+          std::cout << "dSlope24 " << dSlope24  << std::endl;
+          std::cout << "dSlope34 " << dSlope34  << std::endl;
+        }
+
+        // CalcDeltaPhiSlope(dSlope1
+        //                   );
+
+        // if (endcap1 == 1 and station1 == 1 and ring1 == 1 and chamber1==1)
+        //   std::cout << station1 << ring1 << chamber1 << " hit_strip1 " << strip1 << " hit_phi_int1 " << ph1 << std::endl;
+
+        // calculate bendings from pattern numbers (Run-2, Run-3)
+        // this function modifies bendX
         CalcBends(bend1, bend2, bend3, bend4,
                   pat1, pat2, pat3, pat4,
                   pat1_run3, pat2_run3, pat3_run3, pat4_run3,
                   dPhSign, endcap, mode, BIT_COMP, isRun2 );
 
+	//std::cout << "(Before assignment) RPC1: " << RPC1 << ", RPC2: " << RPC2 << ", RPC3: " << RPC3 << ", RPC4: " << RPC4 << std::endl;
+        // Check for additional hits
         RPC1 = (i1CSC >= 0 ? ( I("hit_isRPC",i1CSC ) == 1 ? 1 : 0) : -99);
         RPC2 = (i2 >= 0 ? ( I("hit_isRPC", i2 ) == 1 ? 1 : 0) : -99);
         RPC3 = (i3 >= 0 ? ( I("hit_isRPC", i3 ) == 1 ? 1 : 0) : -99);
         RPC4 = (i4 >= 0 ? ( I("hit_isRPC", i4 ) == 1 ? 1 : 0) : -99);
+
+	//std::cout << "(After assignment) RPC1: " << RPC1 << ", RPC2: " << RPC2 << ", RPC3: " << RPC3 << ", RPC4: " << RPC4 << std::endl;
 
         GE11 = (i1GEM >= 0 ? ( I("hit_isGEM",i1GEM ) == 1 ? 1 : 0) : -99);
 
@@ -811,9 +947,21 @@ void PtRegressionRun3Prep(TString user = "",
             if ( vName == "slope_3" ) var_vals.at(iVar) = slope3;
             if ( vName == "slope_4" ) var_vals.at(iVar) = slope4;
 
-            // Makes output values [0, 1] instead of [-99, 1] which is easier to see in the output histogram.
+            if ( vName == "dSlope_12" ) var_vals.at(iVar) = dSlope12;
+            if ( vName == "dSlope_13" ) var_vals.at(iVar) = dSlope13;
+            if ( vName == "dSlope_14" ) var_vals.at(iVar) = dSlope14;
+            if ( vName == "dSlope_23" ) var_vals.at(iVar) = dSlope23;
+
+            if ( vName == "dSlope_24" ) var_vals.at(iVar) = dSlope24;
+            if ( vName == "dSlope_34" ) var_vals.at(iVar) = dSlope34;
             if ( vName == "GEM_1" ) var_vals.at(iVar) = max(0, GE11);
             if ( vName == "dPhi_GE11_ME11" ) var_vals.at(iVar) = dPhGE11ME11;
+
+            if ( vName == "dSlopeSum4" ) var_vals.at(iVar) = dSlopeSum4;
+            if ( vName == "dSlopeSum4A" ) var_vals.at(iVar) = dSlopeSum4A;
+            if ( vName == "dSlopeSum3" ) var_vals.at(iVar) = dSlopeSum3;
+            if ( vName == "dSlopeSum3A" ) var_vals.at(iVar) = dSlopeSum3A;
+            if ( vName == "outStSlope" ) var_vals.at(iVar) = outStSlope;
 
             //////////////////////////////
             ///  Target and variables  ///
@@ -854,6 +1002,11 @@ void PtRegressionRun3Prep(TString user = "",
             if ( vName == "dPhi_sign" ) var_vals.at(iVar) = dPhSign;
             if ( vName == "evt_weight" ) var_vals.at(iVar) = evt_weight;
 
+            if ( vName == "ph1" ) var_vals.at(iVar) = ph1;
+            if ( vName == "ph2" ) var_vals.at(iVar) = ph2;
+            if ( vName == "ph3" ) var_vals.at(iVar) = ph3;
+            if ( vName == "ph4" ) var_vals.at(iVar) = ph4;
+
           } // End loop: for (UInt_t iVar = 0; iVar < var_names.size(); iVar++)
 
           // Load values into event
@@ -890,7 +1043,7 @@ void PtRegressionRun3Prep(TString user = "",
   NTe = convertTe.str();
 
   string numTrainStr = "nTrain_Regression="+NTr+":nTest_Regression="+NTe+":";
-  std::cout << "NTr: " << NTr << ", NTe: " << NTe << std::endl;
+  std::cout << "Number of training events: " << NTr << endl << "Number of testing events : " << NTe << std::endl;
 
   // // global event weights per tree (see below for setting event-wise weights)
   // Double_t regWeight  = 1.0;

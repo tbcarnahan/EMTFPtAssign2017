@@ -8,21 +8,42 @@
 
 #If "Run 3" is better, then start adding in variables (e.g. bend) until "Run 2" starts to pass it up, then look at that variable.
 
-python submitJobs.py --isRun2 --emtfMode=15 --trainVars dPhi_12 dPhi_23 dPhi_34 --minEta=1.2 --maxEta=1.55 --jobLabel=Test3DPhi
-sleep 2
-python submitJobs.py --isRun3 --emtfMode=15 --trainVars dPhi_12 dPhi_23 dPhi_34 --minEta=1.2 --maxEta=1.55 --jobLabel=Test3DPhi
-sleep 2
-python submitJobs.py --isRun3 --emtfMode=15 --trainVars dPhi_12 dPhi_23 dPhi_34 --useQSBit --minEta=1.2 --maxEta=1.55 --jobLabel=Test3DPhi
-sleep 2
-python submitJobs.py --isRun3 --emtfMode=15 --trainVars dPhi_12 dPhi_23 dPhi_34 --useQSBit --useESBit --minEta=1.2 --maxEta=1.55 --jobLabel=Test3DPhi
-sleep 2
+## test if the half-strip is working ok
+python submitJobs.py --isRun2 --emtfMode=15 --trainVars dPhi_12 dPhi_23 dPhi_34 --minEta=1.2 --maxEta=2.4 --jobLabel=Test3DPhi
+sleep 60
+python submitJobs.py --isRun3 --emtfMode=15 --trainVars dPhi_12 dPhi_23 dPhi_34 --minEta=1.2 --maxEta=2.4 --jobLabel=Test3DPhi
+sleep 60
+python submitJobs.py --isRun3 --emtfMode=15 --trainVars dPhi_12 dPhi_23 dPhi_34 dSlope_12 --minEta=1.2 --maxEta=2.4 --jobLabel=Test3DPhi
 
-
+'''
 python submitJobs.py --isRun2 --emtfMode=15 --trainVars dPhi_12 dPhi_23 dPhi_34 --minEta=2.1 --maxEta=2.4 --jobLabel=Test3DPhi
-sleep 2
+sleep 60
 python submitJobs.py --isRun3 --emtfMode=15 --trainVars dPhi_12 dPhi_23 dPhi_34 --minEta=2.1 --maxEta=2.4 --jobLabel=Test3DPhi
-sleep 2
+sleep 60
 python submitJobs.py --isRun3 --emtfMode=15 --trainVars dPhi_12 dPhi_23 dPhi_34 --useQSBit --minEta=2.1 --maxEta=2.4 --jobLabel=Test3DPhi
-sleep 2
+sleep 60
 python submitJobs.py --isRun3 --emtfMode=15 --trainVars dPhi_12 dPhi_23 dPhi_34 --useQSBit --useESBit --minEta=2.1 --maxEta=2.4 --jobLabel=Test3DPhi
-sleep 2
+sleep 60
+
+
+'''
+python submitJobs.py --isRun2 --emtfMode=15 --trainVars dPhi_12 dPhi_23 dPhi_34 --jobLabel=Test3DPhiSlope
+sleep 60
+python submitJobs.py --isRun3 --emtfMode=15 --trainVars dPhi_12 dPhi_23 dPhi_34 --jobLabel=Test3DPhiSlope
+sleep 60
+python submitJobs.py --isRun3 --emtfMode=15 --trainVars dPhi_12 dPhi_23 dPhi_34 slope_1 --jobLabel=Test3DPhiSlope
+sleep 60
+python submitJobs.py --isRun3 --emtfMode=15 --trainVars dPhi_12 dPhi_23 dPhi_34 dSlopeSum4A --jobLabel=Test3DPhiSlope
+'''
+sleep 60
+python submitJobs.py --isRun3 --emtfMode=15 --trainVars dPhi_12 dPhi_23 dPhi_34 dSlope_12 --jobLabel=Test3DPhiSlope
+sleep 60
+python submitJobs.py --isRun3 --emtfMode=15 --trainVars dPhi_12 dPhi_23 dPhi_34 dSlope_12 dSlope_23 --jobLabel=Test3DPhiSlope
+sleep 60
+python submitJobs.py --isRun3 --emtfMode=15 --trainVars dPhi_12 dPhi_23 dPhi_34 dSlope_12 dSlope_23 dSlope_23 --jobLabel=Test3DPhiSlope
+
+## check performance of all dphis
+python submitJobs.py --isRun2 --emtfMode=15 --trainVars dPhi_12 dPhi_23 dPhi_34 dPhi_13 dPhi_14 dPhi_24 dPhiSum4 dPhiSum4A dPhiSum3 dPhiSum3A --jobLabel=TestAllDPhi
+sleep 60
+python submitJobs.py --isRun3 --emtfMode=15 --trainVars dPhi_12 dPhi_23 dPhi_34 dPhi_13 dPhi_14 dPhi_24 dPhiSum4 dPhiSum4A dPhiSum3 dPhiSum3A --jobLabel=TestAllDPhi
+'''

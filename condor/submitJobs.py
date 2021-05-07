@@ -6,7 +6,16 @@ import argparse
 import getpass
 import subprocess
 from datetime import datetime
-from bdtVariables import *
+from commonVariables import *
+from Run2Variables import *
+from Run3Variables import *
+
+def hasDuplicates(listOfElems):
+    ''' Check if given list contains any duplicates '''
+    for elem in listOfElems:
+        if listOfElems.count(elem) > 1:
+            return True
+    return False
 
 def trainVarsSelToHex(trainVariables):
     ## function to return hex string with train variables
@@ -103,6 +112,7 @@ if __name__ == '__main__':
     parser.add_argument('--targetVar', action="store", help='Set target variable', default="log2(pt)")
     parser.add_argument("--isRun2", action="store_true", default = False)
     parser.add_argument("--isRun3", action="store_true", default = False)
+    parser.add_argument("--isRun3Default", action="store_true", default = False)
     parser.add_argument("--useQSBit", action="store_true", default = False)
     parser.add_argument("--useESBit", action="store_true", default = False)
     parser.add_argument("--useBitComp", action="store_true", default = False)
@@ -113,13 +123,19 @@ if __name__ == '__main__':
     parser.add_argument("--maxPt", action="store", default = 1000.)
     parser.add_argument("--minPtTrain", action="store", default = 1.)
     parser.add_argument("--maxPtTrain", action="store", default = 256.)
+    parser.add_argument("--nEvents", action="store", default = -1)
+    parser.add_argument("--verbose", action="store_true", default = False)
     args = parser.parse_args()
 
     ## CMSSW version
+    CWD = subprocess.Popen("echo $PWD", shell=True, stdout=subprocess.PIPE).stdout.read().strip('\n')
     CMSSW = subprocess.Popen("echo $CMSSW_VERSION", shell=True, stdout=subprocess.PIPE).stdout.read().strip('\n')
     CMSSW_DIR = subprocess.Popen("echo $CMSSW_BASE", shell=True, stdout=subprocess.PIPE).stdout.read().strip('\n')
     SCRAM_ARCH = subprocess.Popen("echo $SCRAM_ARCH", shell=True, stdout=subprocess.PIPE).stdout.read().strip('\n')
     USER = getpass.getuser()
+
+    if CMSSW not in CWD:
+        sys.exit("Error: CMSSW environment variable has not been set! Exiting.")
 
     ## few checks
     if CMSSW == '' or CMSSW_DIR == '' or SCRAM_ARCH == '' or USER == '':
@@ -136,6 +152,10 @@ if __name__ == '__main__':
     ## get the training variables
     trainVariables = args.trainVars
 
+    ## check for duplicates
+    if hasDuplicates(trainVariables):
+        sys.exit("Error: training variable selection has duplicates. Exiting.")
+
     ## if no selection is provided for Run-2, use the default ones!
     if args.isRun2 and len(trainVariables) == 0:
         trainVariables = Run2TrainingVariables[args.emtfMode]
@@ -143,6 +163,11 @@ if __name__ == '__main__':
 
     if args.isRun3 and len(trainVariables) == 0:
         sys.exit("Error: no training variable selection provided for Run-3 with mode {mode}. Exiting.".format(mode = args.emtfMode))
+
+    if args.isRun3Default and len(trainVariables) == 0:
+        args.isRun3 = True
+        trainVariables = Run3TrainingVariables[args.emtfMode]
+        print("Info: no training variable selection provided for Run-3 with mode {mode}. Using default selection.".format(mode = args.emtfMode))
 
     ## get the associated hex string for this selection
     trainVarsHex = trainVarsSelToHex(trainVariables)
@@ -186,7 +211,7 @@ if __name__ == '__main__':
 
     ## training command
     def runCommand(localdir = './'):
-        command  = 'root -l -b -q "{localdir}PtRegressionRun3Prep.C({user}, {method}, {bemtfMode}, {minPt}, {maxPt}, {minPtTrain}, {maxPtTrain}, {minEta}, {maxEta}, {btrainVarsHex}, {bisRun2}, {buseQSBit}, {buseESBit}, {buseBitComp})"'.format(
+        command  = 'root -l -b -q "{localdir}PtRegressionRun3Prep.C({user}, {method}, {bemtfMode}, {minPt}, {maxPt}, {minPtTrain}, {maxPtTrain}, {minEta}, {maxEta}, {btrainVarsHex}, {btrainVarsSize}, {bisRun2}, {buseQSBit}, {buseESBit}, {buseBitComp}, {nEvents}, {verbose})"'.format(
             user = '''\\\"{}\\\"'''.format(USER),
             method = '''\\\"BDTG_AWB_Sq\\\"''',
             bemtfMode = int(args.emtfMode),
@@ -197,11 +222,14 @@ if __name__ == '__main__':
             minEta = float(args.minEta),
             maxEta = float(args.maxEta),
             btrainVarsHex = int(trainVarsHex, 16),
+            btrainVarsSize = 0,
             bisRun2 = int(isRun2),
             buseQSBit = int(useQSBit),
             buseESBit = int(useESBit),
             buseBitComp = int(useBitComp),
-            localdir = localdir
+            localdir = localdir,
+            nEvents = int(args.nEvents),
+            verbose = int(args.verbose)
         )
         return command
 

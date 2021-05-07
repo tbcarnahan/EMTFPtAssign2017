@@ -57,8 +57,8 @@ int CalcTrackTheta( const int th1, const int th2, const int th3, const int th4,
 
 
 void CalcDeltaPhisGEM( int& dPh12, int& dPh13, int& dPh14, int& dPh23, int& dPh24, int& dPh34, int& dPhSign,
-                            int& dPhSum4, int& dPhSum4A, int& dPhSum3, int& dPhSum3A, int& outStPh, int& dPhGE11ME11,
-                            const int ph1, const int ph2, const int ph3, const int ph4, const int phGEM, const int mode, const bool BIT_COMP ) {
+                       int& dPhSum4, int& dPhSum4A, int& dPhSum3, int& dPhSum3A, int& outStPh, int& dPhGE11ME11,
+                       const int ph1, const int ph2, const int ph3, const int ph4, const int phGEM, const int mode, const bool BIT_COMP ) {
 
   CalcDeltaPhis(dPh12,dPh13,dPh14,dPh23,dPh24,dPh34,dPhSign,
                 dPhSum4,dPhSum4A,dPhSum3,dPhSum3A,outStPh,
@@ -85,7 +85,7 @@ void CalcDeltaPhisGEM( int& dPh12, int& dPh13, int& dPh14, int& dPh23, int& dPh2
 
 void CalcPhiRun3( int& ph, int ring, int strip_quart_bit, int strip_eight_bit, int station, int endcap, bool useQuartBit, bool useEighthBit) {
 
-  // if not bit was set, do no thing
+  // if not bit was set, do nothing
   if (!useQuartBit) return;
 
   /*
@@ -101,51 +101,29 @@ void CalcPhiRun3( int& ph, int ring, int strip_quart_bit, int strip_eight_bit, i
   */
 
   if (station == 1) {
-    if (ring == 1) {
-      if (strip_quart_bit == 1 ) { (endcap>0 ? ph = ph + 10 : ph = ph - 10 ); }
-      if (useEighthBit and strip_eight_bit == 1 ) { (endcap>0 ? ph = ph + 5 : ph = ph - 5 ); }
-    }
-
-    if (ring == 2) {
-      if (strip_quart_bit == 1 ) { (endcap>0 ? ph = ph + 8 : ph = ph - 8 ); }
-      if (useEighthBit and strip_eight_bit == 1 ) { (endcap>0 ? ph = ph + 4 : ph = ph - 4 ); }
-    }
-
-    if (ring == 3) {
-      if (strip_quart_bit == 1 ) { (endcap>0 ? ph = ph + 4 : ph = ph - 4 ); }
-      if (useEighthBit and strip_eight_bit == 1 ) { (endcap>0 ? ph = ph + 2 : ph = ph - 2 ); }
+    if (ring < 4) {
+      if (strip_quart_bit == 1 ) {endcap>0 ? ph = ph + 2 : ph = ph - 2; }
+      if (useEighthBit and strip_eight_bit == 1 ) {endcap>0 ? ph = ph + 1 : ph = ph - 1; }
     }
 
     if (ring == 4) {
-      if (strip_quart_bit == 1 ) { (endcap>0 ? ph = ph + 13 : ph = ph - 13 ); }
-      if (useEighthBit and strip_eight_bit == 1 ) { (endcap>0 ? ph = ph + 7 : ph = ph - 7 ); }
+      if (strip_quart_bit == 1 ) {endcap>0 ? ph = ph + 3 : ph = ph - 3; }
+      if (useEighthBit and strip_eight_bit == 1 ) {endcap>0 ? ph = ph + 1 : ph = ph - 1 ; }
     }
   }
 
   if (station == 2) {
-    if (ring == 1) {
-      if (strip_quart_bit == 1 ) { (endcap>0 ? ph = ph + 16 : ph = ph - 16 ); }
-      if (useEighthBit and strip_eight_bit == 1 ) { (endcap>0 ? ph = ph + 8 : ph = ph - 8 ); }
-    }
-
-    if (ring == 2) {
-      if (strip_quart_bit == 1 ) { (endcap>0 ? ph = ph + 8 : ph = ph - 8 ); }
-      if (useEighthBit and strip_eight_bit == 1 ) { (endcap>0 ? ph = ph + 4 : ph = ph - 4 ); }
-    }
+    if (strip_quart_bit == 1 ) {endcap>0 ? ph = ph + 4 : ph = ph - 4 ;}
+    if (useEighthBit and strip_eight_bit == 1 ) {endcap>0 ? ph = ph + 2 : ph = ph - 2 ;}
   }
+
 
   if (station > 2) {
-    if ( ring == 1) {
-      if (strip_quart_bit == 1 ) { (endcap>0 ? ph = ph - 16 : ph = ph + 16 ); }
-      if (useEighthBit and strip_eight_bit == 1 ) { (endcap>0 ? ph = ph - 8 : ph = ph + 8 ); }
-    }
-
-    if (ring == 2) {
-      if (strip_quart_bit == 1 ) { (endcap>0 ? ph = ph - 8 : ph = ph + 8 ); }
-      if (useEighthBit and strip_eight_bit == 1 ) { (endcap>0 ? ph = ph - 4 : ph = ph + 4 ); }
-    }
+    if (strip_quart_bit == 1 ) { endcap>0 ? ph = ph - 2 : ph = ph + 2 ;}
+    if (useEighthBit and strip_eight_bit == 1 ) { endcap>0 ? ph = ph - 1 : ph = ph + 1 ; }
   }
 }
+
 
 void CalcDeltaPhis( int& dPh12, int& dPh13, int& dPh14, int& dPh23, int& dPh24, int& dPh34, int& dPhSign,
                     int& dPhSum4, int& dPhSum4A, int& dPhSum3, int& dPhSum3A, int& outStPh,
@@ -281,21 +259,108 @@ void CalcBends( int& bend1, int& bend2, int& bend3, int& bend4,
   }
 
   if (BIT_COMP) {
+    
+    int nBits = 3;
+    if (mode == 7 || mode == 11 || mode > 12)
+      nBits = 2;
+    
+    if (  mode      / 8 > 0 ) // Has station 1 hit
+      bend1 = ENG.getCLCT( pat1, endcap, dPhSign, nBits, isRun2 );
+    if ( (mode % 8) / 4 > 0 ) // Has station 2 hit
+      bend2 = ENG.getCLCT( pat2, endcap, dPhSign, nBits, isRun2 );
+    if ( (mode % 4) / 2 > 0 ) // Has station 3 hit
+      bend3 = ENG.getCLCT( pat3, endcap, dPhSign, nBits, isRun2 );
+    if ( (mode % 2)     > 0 ) // Has station 4 hit
+      bend4 = ENG.getCLCT( pat4, endcap, dPhSign, nBits, isRun2 );
+   
+
+    //else {
+    //  if (  mode      / 8 > 0 ) // Has station 1 hit                                                                                       
+    //    slope1 = ENG.getCLCT( slope1, endcap, dPhSign, nBits, isRun2 );
+    //}
+
+  } // End conditional: if (BIT_COMP)
+
+} // End function: CalcBends()
+
+void CalcSlopes( const int bend, int& slope, const int endcap, const int mode, const bool BIT_COMP, const bool isRun2) {
+
+  if (std::abs(slope) > 15) {
+    slope = -99;
+    return;
+  }
+
+  // multiply with bending
+  // make sure that bending convention is not {0,1}, but {1, -1}!!!
+  // bend == 0 means left bending, thus positive
+  // bend == 1 means right bending, thus negative
+  //slope *= (1- 2*bend);
+
+  //std::cout << "Slope before compression: " << slope << ", endcap: " << endcap << std::endl;
+
+  // Reverse to match dPhi convention
+  //if (endcap == -1)
+  //    slope *= -1;
+
+  if (BIT_COMP) {
+
     int nBits = 3;
     if (mode == 7 || mode == 11 || mode > 12)
       nBits = 2;
 
     if (  mode      / 8 > 0 ) // Has station 1 hit
-      bend1 = ENG.getCLCT( pat1, endcap, dPhSign, nBits );
-    if ( (mode % 8) / 4 > 0 ) // Has station 2 hit
-      bend2 = ENG.getCLCT( pat2, endcap, dPhSign, nBits );
-    if ( (mode % 4) / 2 > 0 ) // Has station 3 hit
-      bend3 = ENG.getCLCT( pat3, endcap, dPhSign, nBits );
-    if ( (mode % 2)     > 0 ) // Has station 4 hit
-      bend4 = ENG.getCLCT( pat4, endcap, dPhSign, nBits );
-  } // End conditional: if (BIT_COMP)
+      slope = ENG.getCLCT( slope, endcap, 0, nBits, isRun2 );
 
-} // End function: CalcBends()
+    //std::cout << "Slope after compression: " << slope << std::endl;
+    //std::cout << "---Next muon---" << std::endl;
+  }
+
+  assert( slope != -99 );
+}
+
+void CalcDeltaSlopes(const int slope1, const int slope2,
+                     const int slope3, const int slope4,
+                     int& dSlope12, int& dSlope13,
+                     int& dSlope14, int& dSlope23,
+                     int& dSlope24, int& dSlope34,
+                     int& dSlopeSum4, int& dSlopeSum4A,
+                     int& dSlopeSum3, int& dSlopeSum3A,
+                     int& outStSlope) {
+  dSlope12 = slope2 - slope1;
+  dSlope13 = slope3 - slope1;
+  dSlope14 = slope4 - slope1;
+  dSlope23 = slope3 - slope2;
+  dSlope24 = slope4 - slope2;
+  dSlope34 = slope4 - slope3;
+
+  dSlopeSum4  = dSlope12 + dSlope13 + dSlope14 + dSlope23 + dSlope24 + dSlope34;
+  dSlopeSum4A = abs(dSlope12) + abs(dSlope13) + abs(dSlope14) + abs(dSlope23) + abs(dSlope24) + abs(dSlope34);
+
+  int devSt1 = abs(dSlope12) + abs(dSlope13) + abs(dSlope14);
+  int devSt2 = abs(dSlope12) + abs(dSlope23) + abs(dSlope24);
+  int devSt3 = abs(dSlope13) + abs(dSlope23) + abs(dSlope34);
+  int devSt4 = abs(dSlope14) + abs(dSlope24) + abs(dSlope34);
+
+  if      (devSt4 > devSt3 && devSt4 > devSt2 && devSt4 > devSt1)  outStSlope = 4;
+  else if (devSt3 > devSt4 && devSt3 > devSt2 && devSt3 > devSt1)  outStSlope = 3;
+  else if (devSt2 > devSt4 && devSt2 > devSt3 && devSt2 > devSt1)  outStSlope = 2;
+  else if (devSt1 > devSt4 && devSt1 > devSt3 && devSt1 > devSt2)  outStSlope = 1;
+  else                                                             outStSlope = 0;
+
+  if      (outStSlope == 4) {
+    dSlopeSum3  = dSlope12 + dSlope13 + dSlope23;
+    dSlopeSum3A = abs(dSlope12) + abs(dSlope13) + abs(dSlope23);
+  } else if (outStSlope == 3) {
+    dSlopeSum3  = dSlope12 + dSlope14 + dSlope24;
+    dSlopeSum3A = abs(dSlope12) + abs(dSlope14) + abs(dSlope24);
+  } else if (outStSlope == 2) {
+    dSlopeSum3  = dSlope13 + dSlope14 + dSlope34;
+    dSlopeSum3A = abs(dSlope13) + abs(dSlope14) + abs(dSlope34);
+  } else {
+    dSlopeSum3  = dSlope23 + dSlope24 + dSlope34;
+    dSlopeSum3A = abs(dSlope23) + abs(dSlope24) + abs(dSlope34);
+  }
+}
 
 void CalcRPCs( int& RPC1, int& RPC2, int& RPC3, int& RPC4, const int mode,
 	       const int st1_ring2, const int theta, const bool BIT_COMP ) {
@@ -305,8 +370,8 @@ void CalcRPCs( int& RPC1, int& RPC2, int& RPC3, int& RPC4, const int mode,
     // Mask some invalid locations for RPC hits
     // theta is assumed to be the compressed, mode 15 version
     if (mode == 15 && !st1_ring2) {
-      RPC1 = 0;
-      RPC2 = 0;
+      //RPC1 = 0;
+      //RPC2 = 0;
       if (theta < 4) {
 	RPC3 = 0;
 	RPC4 = 0;
@@ -374,8 +439,10 @@ int CalcBendFromPattern( const int pattern, const int endcap, const bool isRun2 
   if(isRun2) {
     if (pattern == 10)
       bend = 0;
+    // even numbered -> positive bending (left)
     else if ( (pattern % 2) == 0 )
       bend = (10 - pattern) / 2;
+    // odd numbered -> negative bending (right)
     else if ( (pattern % 2) == 1 )
       bend = -1 * (11 - pattern) / 2;
   }
@@ -383,8 +450,10 @@ int CalcBendFromPattern( const int pattern, const int endcap, const bool isRun2 
   else {
     if (pattern == 4)
       bend = 0;
+    // even numbered -> positive bending (left)
     else if ( (pattern % 2) == 0 )
       bend = (4 - pattern) / 2;
+    // odd numbered -> negative bending (right)
     else if ( (pattern % 2) == 1 )
       bend = -1 * (5 - pattern) / 2;
   }
