@@ -86,6 +86,7 @@ def write_bash(temp = 'runJob.sh', tarball = '', command = '', outputdirectory =
     out += command + '\n'
     ## copy the output to EOS
     out += "xrdcp -f Pt*.root root://cmseos.fnal.gov//store/user/{user}/{outdir}/\n".format(outdir=outputdirectory, user=USER)
+    out += "xrdcp -r f_MODE* root://cmseos.fnal.gov//store/user/{user}/{outdir}/\n".format(outdir=outputdirectory, user=USER)
     out += 'echo "Removing tarball"\n'
     out += "rm {tarball}\n".format(tarball=tarball)
     ## cleanup
