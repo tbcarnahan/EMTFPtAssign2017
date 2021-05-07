@@ -246,6 +246,7 @@ if __name__ == '__main__':
 
     ## name for output directory on EOS
     outputdirectory = "EMTF_BDT_Train"
+    outputdirectory += "_Mode{}".format(args.emtfMode)
     outputdirectory += "_{}".format(args.jobLabel)
     outputdirectory += "_eta{}to{}".format(args.minEta, args.maxEta)
     if isRun2:      outputdirectory += "_isRun2"
