@@ -61,7 +61,7 @@ void PtRegressionRun3Prep(TString user = "",
                           bool isRun2 = true,
                           bool useOneQuartPrecision = false,
                           bool useOneEighthPrecision = false,
-                          bool useBitCompression = true,
+                          bool useBitCompression = false,
                           int nEvents = -1,
                           bool verbose = false) {
 
