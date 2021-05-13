@@ -123,6 +123,8 @@ def draw_eff(t,title, h_bins, to_draw, denom_cut, extra_num_cut,
 
     ## total numerator selection cut
     num_cut = AND(denom_cut,extra_num_cut)
+    #num_cut = AND(denom_cut2,num_cut)
+    #den_cut = AND(denom_cut,denom_cut2)
 
     t.Draw(to_draw + ">>num_" + h_bins, num_cut, "goff")
     num = TH1F(gDirectory.Get("num_").Clone("num_"))
@@ -188,6 +190,8 @@ def draw_geff(t, title, h_bins, to_draw, den_cut, extra_num_cut,
 
     SetOwnership(eff, False)
     return eff
+
+
 
 #_______________________________________________________________________________
 def draw_res(t, nBins, minBin, maxBin, to_draw, pt_cut):
@@ -255,6 +259,7 @@ def draw_multi_resVsPt(length, res, resError, x_arr, xtitle, ytitle, lineColors,
     leg.Draw("same")
     mg.GetXaxis().SetTitle(xtitle)
     mg.GetYaxis().SetTitle(ytitle)
+
     
     checkDir('./plots')
     checkDir('./plots/resolutions')
@@ -290,13 +295,12 @@ def draw_multi_resVsEta(length, res, resError, x_arr, xtitle, ytitle, lineColors
 #_______________________________________________________________________________
 def draw_res2D(t, nBinsX, minBinX, maxBinX, nBinsY, minBinY, maxBinY, to_draw, label, outFileString):
 
-  c1 = TCanvas("c1")
-
+  canvas = TCanvas("canvas","canvas")
   htemp = TH2F("htemp", "", nBinsX, minBinX, maxBinX, nBinsY, minBinY, maxBinY)
   t.Draw(to_draw+">>htemp", "", "COLZ")
 
   htemp.GetXaxis().SetTitle("log2(p_{T}^{GEN})")
-  htemp.GetYaxis().SetTitle(label+" Mode-15 unscaled trigger log2(p_{T}^{L1})")
+  htemp.GetYaxis().SetTitle(label+" Mode-15 unscaled trigger log2(p_{T}^{L1} )")
 
   line = TLine(minBinX, minBinY, maxBinX, maxBinY)
   line.SetLineColor(kRed)
@@ -305,7 +309,12 @@ def draw_res2D(t, nBinsX, minBinX, maxBinX, nBinsY, minBinY, maxBinY, to_draw, l
   gPad.SetLogz()
   gPad.Update()
   gStyle.SetOptStat(0)
-  c1.Close()
+  gStyle.SetOptTitle(0)
+  gStyle.SetOptFit(0)
+  gStyle.SetTextFont(42)
+  gStyle.SetTitleOffset(1.15,"xyz")
+  gStyle.SetLabelFont(42, "xyz")
+  gStyle.SetLabelSize(0.030, "xyz")  
 
   Style(htemp, outFileString, 0.10, 0.100, 0.110, 0.110, 0.102)
 
@@ -324,7 +333,7 @@ def checkDir(path):
 #_______________________________________________________________________________
 def Style(hist, outFileString, LeftMargin, TScale, BScale, LScale, RScale):
     
-    tdrstyle.setTDRStyle()
+    #tdrstyle.setTDRStyle()
 
     iPos = 11
     if( iPos==0 ): CMS_lumi.relPosX = 0.12
@@ -342,7 +351,13 @@ def Style(hist, outFileString, LeftMargin, TScale, BScale, LScale, RScale):
     L = LScale*W_ref
     R = RScale*W_ref
 
+    hist.GetXaxis().SetLabelSize(0.05)
+    hist.GetYaxis().SetLabelSize(0.05)
+
     c1 = TCanvas("c1","c1",50,50,W,H)
+
+    gPad.Clear()
+
     c1.SetFillColor(0)
     c1.SetBorderMode(0)
     c1.SetFrameFillStyle(0)
@@ -356,17 +371,12 @@ def Style(hist, outFileString, LeftMargin, TScale, BScale, LScale, RScale):
 
     hist.Draw("COLZ")
     gPad.SetLogz()
-    gPad.Update()
-
-    CMS_lumi.writeExtraText = True
-    CMS_lumi.CMS_lumi(c1, iPeriod, iPos, "Simulation Preliminary", 52, 0.045, 0.063)
-    CMS_lumi.CMS_lumi(c1, iPeriod, iPos, "14 TeV, 0 PU", 42, 0.61, 0.063)
 
     checkDir('./plots')
     checkDir('./plots/resolutions')
     makePlots( c1, "resolutions/ptres2D_"+outFileString)
-    c1.Close()
-    
+
+
 #_______________________________________________________________________________
 def truncate(number, digits):
   stepper = 10.0 ** digits

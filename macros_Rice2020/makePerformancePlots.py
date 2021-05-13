@@ -37,9 +37,13 @@ if options.batchMode:
   sys.argv.append('-b')
   gROOT.SetBatch(1)
 
+mode = 7
+pt_scaling_A = [1.3, 1.3, 1.3]
+pt_scaling_B = [0.004, 0.004, 0.004]
+
 if options.single_pt:
-  pt_cut = [24]
-  pt_str = ["24"]
+  pt_cut = [22]
+  pt_str = ["22"]
 else:
   pt_cut = [3., 5., 7., 10., 12., 15., 20., 22., 24., 27.]
   pt_str = ["3", "5", "7", "10", "12", "15", "20", "22", "24", "27"]
@@ -60,33 +64,15 @@ else:
 ## Data
 #prefix = "root://cmseos.fnal.gov//store/user/dildick/"
 prefix = "root://cmseos.fnal.gov//store/user/mdecaro/"
-#prefix = '/uscms/home/mdecaro/nobackup/BDTGEM2/CMSSW_10_6_1_patch2/src/EMTFPtAssign2017/condor/'
-fileName = "PtRegressionRun3Prep_bitCompr.root"
+fileName = "PtRegressionRun3Prep_MODE_15_bitCompr.root"
+
 trainings= [
-  #'', #isRun2 bitCompr
-  #'',       #isRun3Default with slope_1, bitCompr
-  #''        #isRun3Default with bend_1, bitCompr
-
-  #'EMTF_BDT_Train__eta1.25to2.4_Selection0x1f41f01ff_20210423_104755/',  #Run3Default with slope_1 (fixed)
-  #'EMTF_BDT_Train__eta1.25to2.4_Selection0xf41f11ff_20210421_161728/'    #Run3Default with bend_1
-
-  #'EMTF_BDT_Train__eta1.25to2.4_isRun2_Selection0x1c_20210427_102908/',  #Run2 with dPhi12,23,34
-  #'EMTF_BDT_Train__eta1.25to2.4_isRun3_Selection0x1c_20210421_102328/',  #Run3 with dPhi12,23,34
-  #'EMTF_BDT_Train__eta1.25to2.4_isRun3_Selection0x20000000001c_20210426_162910/'  #Run3 with dPhi12,23,34 + dSlopeSum4A
-
-  #'EMTF_BDT_Train__eta1.25to2.4_isRun2_Selection0x1c_20210430_092152/',
-  #'EMTF_BDT_Train__eta1.25to2.4_isRun3_useQSBit_useESBit_Selection0x1c_20210430_095501/'
-
-  #'EMTF_BDT_Train__eta1.25to2.4_isRun2_Selection0xf41f11ff_20210430_115058/',
-  #'EMTF_BDT_Train__eta1.25to2.4_Selection0xf41f11ff_20210421_161728/',
-  #'EMTF_BDT_Train__eta1.25to2.4_useQSBit_Selection0xf41f11ff_20210430_115554/',
-  #'EMTF_BDT_Train__eta1.25to2.4_useQSBit_useESBit_Selection0xf41f11ff_20210430_115903/'
-
-  'temp/Run2/mode_14/',
-  'temp/Run3/mode_14/'
+  'EMTF_BDT_Train_Mode15__eta1.25to2.4_isRun2_Selection0xf41f11ff_20210511_165653/', #isRun2 bitCompr
+  'EMTF_BDT_Train__eta1.25to2.4_Selection0xf41f11ff_20210423_105341/',               #isRun3Default with bend_1, bitCompr
+  'EMTF_BDT_Train_Mode15__eta1.25to2.4_isRun3_Selection0x1f41f01ff_20210512_095112/'               #isRun3Default with slope_1, bitCompr
 ]
 
-treeName = "f_MODE_14_logPtTarg_invPtWgt_bitCompr/TestTree"
+treeName = "f_MODE_15_logPtTarg_invPtWgt_bitCompr/TestTree"
 
 evt_trees = []
 for p in trainings:
@@ -101,7 +87,7 @@ lineColors = [kBlue, kRed, kGreen+2, kBlack, kBlue, kRed, kGreen+2, kBlack]#, 7,
 markerStyles = [8,8,8,8,8]#,8,8]
 drawOptions = ["AP", "same", "same", "same", "same"]#, "same", "same", "same", "same"]
 drawOptions1D = ["", "same"]#, "same", "same", "same", "same"]
-legendEntries = ["Run-2 Mode 14", "Run-3 Mode 14"]#, "Run-3 w/ dPhi_12,23,34 + dSlopeSum4A"]#, "Run-3Default bend1+bitCompr"]#"Run-3 QSBit", "Run-3 QSBit ESBit"]
+legendEntries = ["Run-2 Mode 15", "Run-3 w/ bend Mode 15", "Run-3 w/ slope Mode 15"]#, "Run-3Default bend1+bitCompr"]#"Run-3 QSBit", "Run-3 QSBit ESBit"]
 outFileString = ["Run2_dPhi12_23_34","Run3_dPhi12_23_34"]#, "Run3_bend1_bitCompr"]#"Run3QSBit", "Run3QSBitESBit"]
 
 draw_res_axis_label = ["(p_{T}^{GEN} - p_{T}^{L1}) / p_{T}^{GEN}", "(p_{T,GEN}^{-1} - p_{T,L1}^{-1}) / p_{T,GEN}^{-1}"]
@@ -116,11 +102,14 @@ def gen_pt_cut(pt_min):
 def gen_eta_cut(eta_min, eta_max):
   return TCut("GEN_eta >= {0} && GEN_eta <= {1}".format(eta_min, eta_max))
 
+def mode_cut(mode):
+  return TCut("TRK_mode == {0}".format(mode))
+
 def bdt_pt_cut(pt_min):
   return TCut("pow(2, BDTG_AWB_Sq) >= {}".format(pt_min))
 
-def bdt_pt_scaled_cut(pt_min):
-  return TCut("((1.2 * pow(2,BDTG_AWB_Sq))/(1 - (0.004 * pow(2,BDTG_AWB_Sq)))) >= {}".format(pt_min))
+def bdt_pt_scaled_cut(pt_scaling_A, pt_scaling_B, pt_min):
+  return TCut("(({0} * pow(2,BDTG_AWB_Sq))/(1 - ({1} * pow(2,BDTG_AWB_Sq)))) >= {2}".format(pt_scaling_A, pt_scaling_B, pt_min))
 
 def makePlots(canvas, plotTitle):
   c1.SaveAs(plotDir + plotTitle + ".png")
@@ -143,9 +132,9 @@ if options.efficiencies:
 
 	#Run2 and Run3 BDT efficiency vs Pt
         effs = []
-        for ee in range(0,2):
+        for ee in range(0,3):
           eff = draw_eff(evt_trees[ee], "; p_{T}^{GEN} (GeV) ; Trigger Efficiency", "(50,1.,50.)", "GEN_pt",
-                         gen_eta_cut(eta_min[k], eta_max[k]), bdt_pt_scaled_cut(pt_cut[l]))
+                         gen_eta_cut(eta_min[k], eta_max[k]), bdt_pt_scaled_cut(pt_scaling_A[ee], pt_scaling_B[ee], pt_cut[l]))
           eff.SetMarkerColor(markerColors[ee])
           eff.SetLineColor(lineColors[ee])
           eff.SetMarkerStyle(markerStyles[ee])
@@ -162,6 +151,11 @@ if options.efficiencies:
 	  
 	
 	leg.Draw("same")
+
+	line = TLine(0, 0.9, 50, 0.9)
+	line2 = TLine(pt_cut[l], 0., pt_cut[l], 1.1)
+	line.SetLineStyle(7) ; line2.SetLineStyle(7)
+	line.Draw("same") ; line2.Draw("same")
 
 	tex = TLatex()
 	tex.SetTextColor(kBlack)
