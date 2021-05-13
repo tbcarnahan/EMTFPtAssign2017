@@ -85,8 +85,9 @@ def write_bash(temp = 'runJob.sh', tarball = '', command = '', outputdirectory =
     out += 'ls\n'
     out += command + '\n'
     ## copy the output to EOS
-    out += "xrdcp -f Pt*.root root://cmseos.fnal.gov//store/user/{user}/{outdir}/\n".format(outdir=outputdirectory, user=USER)
-    out += "xrdcp -r f_MODE* root://cmseos.fnal.gov//store/user/{user}/{outdir}/\n".format(outdir=outputdirectory, user=USER)
+    out += "xrdcp -f PtRegressionOutput.root root://cmseos.fnal.gov//store/user/{user}/{outdir}/\n".format(outdir=outputdirectory, user=USER)
+    ## copy the XML file to EOS as well
+    out += "xrdcp -r f_logPtTarg_invPtWgt root://cmseos.fnal.gov//store/user/{user}/{outdir}/\n".format(outdir=outputdirectory, user=USER)
     out += 'echo "Removing tarball"\n'
     out += "rm {tarball}\n".format(tarball=tarball)
     ## cleanup

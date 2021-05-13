@@ -148,9 +148,8 @@ void PtRegressionRun3Prep(TString user = "",
   TString out_file_str;
   TString bit_str = (useBitCompression ? "bitCompr" : "noBitCompr");
 
-  out_file_str.Form( "%s/%s_MODE_%d_%s.root",
-                     OUT_DIR_NAME.Data(), OUT_FILE_NAME.Data(),
-                     emtfMode, bit_str.Data());
+  out_file_str.Form( "%s/%s.root",
+                     OUT_DIR_NAME.Data(), OUT_FILE_NAME.Data());
 
   TFile* out_file = TFile::Open( out_file_str, "RECREATE" );
 
@@ -240,9 +239,8 @@ void PtRegressionRun3Prep(TString user = "",
     for (unsigned iWgt = 0; iWgt < EVT_WGTS.size(); iWgt++) {
 
       TString factName;  // "Targ" and "Wgt" components not arbitrary - correspond to specific options later on
-      factName.Form( "f_MODE_%d_%sTarg_%sWgt_%s",
-                     emtfMode, TARG_VARS.at(iTarg).Data(), EVT_WGTS.at(iWgt).Data(),
-                     bit_str.Data());
+      factName.Form( "f_%sTarg_%sWgt",
+                     TARG_VARS.at(iTarg).Data(), EVT_WGTS.at(iWgt).Data());
 
       // the selection is now done in the Python configuration, not here!
       factories.push_back( std::make_tuple( nullF, nullL, factName, var_names, var_vals, trainVarsSelection) );

@@ -231,7 +231,7 @@ int PtAssignmentEngineAux2017::getCLCT(int clct, int endcap, int dPhiSign, int b
     // 3-bit compression (for 2 St. modes):
     // (-15, -14, ..., -5) -> 1, (-4, -3) -> 2, (-2, -1) -> 3, 0 -> 4, (1, 2) -> 5, (3, 4) -> 6, (5, 6, ..., 15) -> 7
     else if (bits == 3) {
-      if           (clct >= -15 && <=-5) { clct_ = 1; }
+      if      (clct >= -15 && clct <=-5) { clct_ = 1; }
       else if (clct >= -4 && clct < -2 ) { clct_ = 2; }
       else if  (clct >= -2 && clct < 0 ) { clct_ = 3; }
       else if                (clct ==0 ) { clct_ = 4; }
