@@ -215,18 +215,31 @@ int PtAssignmentEngineAux2017::getCLCT(int clct, int endcap, int dPhiSign, int b
   }//End conditional: (isRun2)
    
   //Run3 compressed slope mapping:
-  // (-15, -14, ..., -8) -> 0,  (-7, -6, ..., 0) -> 1,  (1, 2, ..., 7) -> 2,  (8, 9, ..., 15) -> 3
-  // The sign is already corrected in CalcSlopes, unlike for the above Run-2 cases.
+  // (Note: May need to account for sign correction, as this is no longer done in CalcBends)
   else {
+
+    // 2-bit compression (for 3 and 4 St. modes):
+    // (-15, -14, ..., -4) -> 0,  (-3, -2, -1, 0) -> 1,  (1, 2, 3) -> 2,  (4, 5, ..., 15) -> 3
     if (bits ==2) {
-      if                  ( clct <= -3) { clct_ = 0; }
-      else if ( clct > -3 && clct <= 0) { clct_ = 1; }
-      else if    (clct > 0 && clct < 3) { clct_ = 2; }
-      else if (clct >= 3 && clct <= 15) { clct_ = 3; }
+      if                  ( clct <= -4) { clct_ = 0; }
+      else if ( clct > -4 && clct <= 0) { clct_ = 1; }
+      else if    (clct > 0 && clct < 4) { clct_ = 2; }
+      else if (clct >= 4 && clct <= 15) { clct_ = 3; }
       else if (clct > 15 || clct < -15) { clct_ = 1; }
     }// End conditional if (bits == 2)
 
-    //Add 3-bit slope compression here.
+    // 3-bit compression (for 2 St. modes):
+    // (-15, -14, ..., -5) -> 1, (-4, -3) -> 2, (-2, -1) -> 3, 0 -> 4, (1, 2) -> 5, (3, 4) -> 6, (5, 6, ..., 15) -> 7
+    else if (bits == 3) {
+      if           (clct >= -15 && <=-5) { clct_ = 1; }
+      else if (clct >= -4 && clct < -2 ) { clct_ = 2; }
+      else if  (clct >= -2 && clct < 0 ) { clct_ = 3; }
+      else if                (clct ==0 ) { clct_ = 4; }
+      else if      (clct >0 && clct < 3) { clct_ = 5; }
+      else if    (clct >= 3 && clct < 5) { clct_ = 6; }
+      else if   (clct >=5 && clct <= 15) { clct_ = 7; }
+      else if    (clct <-15 && clct >15) { clct_ = 0; }
+    }// End conditional if (bits == 3)
 
   }// End conditional if (not isRun2)
   

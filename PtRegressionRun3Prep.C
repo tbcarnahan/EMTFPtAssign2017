@@ -835,6 +835,7 @@ void PtRegressionRun3Prep(TString user = "",
         // calculate bendings from pattern numbers (Run-2, Run-3)
         // this function modifies bendX
         CalcBends(bend1, bend2, bend3, bend4,
+		  slope1, slope2, slope3, slope4,
                   pat1, pat2, pat3, pat4,
                   pat1_run3, pat2_run3, pat3_run3, pat4_run3,
                   dPhSign, endcap, mode, BIT_COMP, isRun2 );

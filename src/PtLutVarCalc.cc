@@ -250,6 +250,7 @@ void CalcDeltaThetas( int& dTh12, int& dTh13, int& dTh14, int& dTh23, int& dTh24
 
 
 void CalcBends( int& bend1, int& bend2, int& bend3, int& bend4,
+		int& slope1, int& slope2, int& slope3, int& slope4,
                 const int pat1, const int pat2, const int pat3, const int pat4,
                 const int pat1_run3, const int pat2_run3, const int pat3_run3, const int pat4_run3,
                 const int dPhSign, const int endcap, const int mode, const bool BIT_COMP, const bool isRun2) {
@@ -275,21 +276,29 @@ void CalcBends( int& bend1, int& bend2, int& bend3, int& bend4,
     if (mode == 7 || mode == 11 || mode > 12)
       nBits = 2;
     
-    if (  mode      / 8 > 0 ) // Has station 1 hit
-      bend1 = ENG.getCLCT( pat1, endcap, dPhSign, nBits, isRun2 );
-    if ( (mode % 8) / 4 > 0 ) // Has station 2 hit
-      bend2 = ENG.getCLCT( pat2, endcap, dPhSign, nBits, isRun2 );
-    if ( (mode % 4) / 2 > 0 ) // Has station 3 hit
-      bend3 = ENG.getCLCT( pat3, endcap, dPhSign, nBits, isRun2 );
-    if ( (mode % 2)     > 0 ) // Has station 4 hit
-      bend4 = ENG.getCLCT( pat4, endcap, dPhSign, nBits, isRun2 );
-   
 
-    //else {
-    //  if (  mode      / 8 > 0 ) // Has station 1 hit                                                                                       
-    //    slope1 = ENG.getCLCT( slope1, endcap, dPhSign, nBits, isRun2 );
-    //}
+    if (isRun2) {
+      if (  mode      / 8 > 0 ) // Has station 1 hit
+        bend1 = ENG.getCLCT( pat1, endcap, dPhSign, nBits, isRun2 );
+      if ( (mode % 8) / 4 > 0 ) // Has station 2 hit
+        bend2 = ENG.getCLCT( pat2, endcap, dPhSign, nBits, isRun2 );
+      if ( (mode % 4) / 2 > 0 ) // Has station 3 hit
+        bend3 = ENG.getCLCT( pat3, endcap, dPhSign, nBits, isRun2 );
+      if ( (mode % 2)     > 0 ) // Has station 4 hit
+        bend4 = ENG.getCLCT( pat4, endcap, dPhSign, nBits, isRun2 );
+    }
 
+    else {
+      if (  mode      / 8 > 0 ) // Has station 1 hit                                                                                       
+        slope1 = ENG.getCLCT( slope1, endcap, dPhSign, nBits, isRun2 );
+      if ( (mode % 8) / 4 > 0 ) // Has station 2 hit                                                                                                          
+        slope2 = ENG.getCLCT( slope2, endcap, dPhSign, nBits, isRun2 );
+      if ( (mode % 4) / 2 > 0 ) // Has station 3 hit                                                                                                          
+        slope3 = ENG.getCLCT( slope3, endcap, dPhSign, nBits, isRun2 );
+      if ( (mode % 2)     > 0 ) // Has station 4 hit                                                                                                          
+        slope4 = ENG.getCLCT( slope4, endcap, dPhSign, nBits, isRun2 );
+    }
+    
   } // End conditional: if (BIT_COMP)
 
 } // End function: CalcBends()
