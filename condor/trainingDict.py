@@ -11,12 +11,12 @@ trainings = {
     ## Run-2 uncompressed
 
     # 4-station
-    "Run2_Mode15_Uncompressed" : [prefix + "EMTF_BDT_Train_Mode15_Prep2018DataRate_eta1.25to2.4_isRun2_Selection0xf41f11ff_20210513_140026" + fileName, "Run-2, Mode 15"],
+    "Run2_Mode15_Uncompressed" : [prefix + "EMTF_BDT_Train_Mode15_Prep2018DataRate_eta1.25to2.4_isRun2_Selection0xf41f11ff_20210513_140026/" + fileName, "Run-2, Mode 15"],
     # 3-station
     "Run2_Mode14_Uncompressed" : [prefix + "" + fileName, "Run-2, Mode 14"],
     "Run2_Mode13_Uncompressed" : [prefix + "" + fileName, "Run-2, Mode 13"],
     "Run2_Mode11_Uncompressed" : [prefix + "" + fileName, "Run-2, Mode 11"],
-    "Run2_Mode7_Uncompressed" : [prefix + "" + fileName, "Run-2, Mode 17"],
+    "Run2_Mode7_Uncompressed" : [prefix + "" + fileName, "Run-2, Mode 7"],
     # 2-station
     "Run2_Mode12_Uncompressed" : [prefix + "" + fileName, "Run-2, Mode 12"],
     "Run2_Mode10_Uncompressed" : [prefix + "" + fileName, "Run-2, Mode 10"],
@@ -34,7 +34,7 @@ trainings = {
     "Run2_Mode14_Compressed" : [prefix + "" + fileName, "Run-2, Mode 14, Compr."],
     "Run2_Mode13_Compressed" : [prefix + "" + fileName, "Run-2, Mode 13, Compr."],
     "Run2_Mode11_Compressed" : [prefix + "" + fileName, "Run-2, Mode 11, Compr."],
-    "Run2_Mode7_Compressed" : [prefix + "" + fileName, "Run-2, Mode 17, Compr."],
+    "Run2_Mode7_Compressed" : [prefix + "" + fileName, "Run-2, Mode 7, Compr."],
     # 2-station
     "Run2_Mode12_Compressed" : [prefix + "" + fileName, "Run-2, Mode 12, Compr."],
     "Run2_Mode10_Compressed" : [prefix + "" + fileName, "Run-2, Mode 10, Compr."],
@@ -51,7 +51,7 @@ trainings = {
     "Run3_V1p0_Mode14_Uncompressed" : [prefix + "" + fileName, "Run-3 V1.0, Mode 14"],
     "Run3_V1p0_Mode13_Uncompressed" : [prefix + "" + fileName, "Run-3 V1.0, Mode 13"],
     "Run3_V1p0_Mode11_Uncompressed" : [prefix + "" + fileName, "Run-3 V1.0, Mode 11"],
-    "Run3_V1p0_Mode7_Uncompressed" : [prefix + "" + fileName, "Run-3 V1.0, Mode 17"],
+    "Run3_V1p0_Mode7_Uncompressed" : [prefix + "" + fileName, "Run-3 V1.0, Mode 7"],
     # 2-station
     "Run3_V1p0_Mode12_Uncompressed" : [prefix + "" + fileName, "Run-3 V1.0, Mode 12"],
     "Run3_V1p0_Mode10_Uncompressed" : [prefix + "" + fileName, "Run-3 V1.0, Mode 10"],
@@ -68,7 +68,7 @@ trainings = {
     "Run3_V1p0_Mode14_Compressed" : [prefix + "" + fileName, "Run-3 V1.0, Mode 14, Compr."],
     "Run3_V1p0_Mode13_Compressed" : [prefix + "" + fileName, "Run-3 V1.0, Mode 13, Compr."],
     "Run3_V1p0_Mode11_Compressed" : [prefix + "" + fileName, "Run-3 V1.0, Mode 11, Compr."],
-    "Run3_V1p0_Mode7_Compressed" : [prefix + "" + fileName, "Run-3 V1.0, Mode 17, Compr."],
+    "Run3_V1p0_Mode7_Compressed" : [prefix + "" + fileName, "Run-3 V1.0, Mode 7, Compr."],
     # 2-station
     "Run3_V1p0_Mode12_Compressed" : [prefix + "" + fileName, "Run-3 V1.0, Mode 12, Compr."],
     "Run3_V1p0_Mode10_Compressed" : [prefix + "" + fileName, "Run-3 V1.0, Mode 10, Compr."],
@@ -85,7 +85,7 @@ trainings = {
     "Run3_V1p1_Mode14_Uncompressed" : [prefix + "" + fileName, "Run-3 V1.0, Mode 14"],
     "Run3_V1p1_Mode13_Uncompressed" : [prefix + "" + fileName, "Run-3 V1.0, Mode 13"],
     "Run3_V1p1_Mode11_Uncompressed" : [prefix + "" + fileName, "Run-3 V1.0, Mode 11"],
-    "Run3_V1p1_Mode7_Uncompressed" : [prefix + "" + fileName, "Run-3 V1.0, Mode 17"],
+    "Run3_V1p1_Mode7_Uncompressed" : [prefix + "" + fileName, "Run-3 V1.0, Mode 7"],
     # 2-station
     "Run3_V1p1_Mode12_Uncompressed" : [prefix + "" + fileName, "Run-3 V1.0, Mode 12"],
     "Run3_V1p1_Mode10_Uncompressed" : [prefix + "" + fileName, "Run-3 V1.0, Mode 10"],
@@ -102,7 +102,7 @@ trainings = {
     "Run3_V1p1_Mode14_Compressed" : [prefix + "" + fileName, "Run-3 V1.0, Mode 14, Compr."],
     "Run3_V1p1_Mode13_Compressed" : [prefix + "" + fileName, "Run-3 V1.0, Mode 13, Compr."],
     "Run3_V1p1_Mode11_Compressed" : [prefix + "" + fileName, "Run-3 V1.0, Mode 11, Compr."],
-    "Run3_V1p1_Mode7_Compressed" : [prefix + "" + fileName, "Run-3 V1.0, Mode 17, Compr."],
+    "Run3_V1p1_Mode7_Compressed" : [prefix + "" + fileName, "Run-3 V1.0, Mode 7, Compr."],
     # 2-station
     "Run3_V1p1_Mode12_Compressed" : [prefix + "" + fileName, "Run-3 V1.0, Mode 12, Compr."],
     "Run3_V1p1_Mode10_Compressed" : [prefix + "" + fileName, "Run-3 V1.0, Mode 10, Compr."],
@@ -119,7 +119,7 @@ trainings = {
     "Run3_V1p2_Mode14_Uncompressed" : [prefix + "" + fileName, "Run-3 V1.0, Mode 14"],
     "Run3_V1p2_Mode13_Uncompressed" : [prefix + "" + fileName, "Run-3 V1.0, Mode 13"],
     "Run3_V1p2_Mode11_Uncompressed" : [prefix + "" + fileName, "Run-3 V1.0, Mode 11"],
-    "Run3_V1p2_Mode7_Uncompressed" : [prefix + "" + fileName, "Run-3 V1.0, Mode 17"],
+    "Run3_V1p2_Mode7_Uncompressed" : [prefix + "" + fileName, "Run-3 V1.0, Mode 7"],
     # 2-station
     "Run3_V1p2_Mode12_Uncompressed" : [prefix + "" + fileName, "Run-3 V1.0, Mode 12"],
     "Run3_V1p2_Mode10_Uncompressed" : [prefix + "" + fileName, "Run-3 V1.0, Mode 10"],
@@ -136,7 +136,7 @@ trainings = {
     "Run3_V1p2_Mode14_Compressed" : [prefix + "" + fileName, "Run-3 V1.0, Mode 14, Compr."],
     "Run3_V1p2_Mode13_Compressed" : [prefix + "" + fileName, "Run-3 V1.0, Mode 13, Compr."],
     "Run3_V1p2_Mode11_Compressed" : [prefix + "" + fileName, "Run-3 V1.0, Mode 11, Compr."],
-    "Run3_V1p2_Mode7_Compressed" : [prefix + "" + fileName, "Run-3 V1.0, Mode 17, Compr."],
+    "Run3_V1p2_Mode7_Compressed" : [prefix + "" + fileName, "Run-3 V1.0, Mode 7, Compr."],
     # 2-station
     "Run3_V1p2_Mode12_Compressed" : [prefix + "" + fileName, "Run-3 V1.0, Mode 12, Compr."],
     "Run3_V1p2_Mode10_Compressed" : [prefix + "" + fileName, "Run-3 V1.0, Mode 10, Compr."],
