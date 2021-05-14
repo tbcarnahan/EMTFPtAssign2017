@@ -11,7 +11,7 @@ trainings = {
     ## Run-2 uncompressed
 
     # 4-station
-    "Run2_Mode15_Uncompressed" : [prefix + "" + fileName, "Run-2, Mode 15"],
+    "Run2_Mode15_Uncompressed" : [prefix + "EMTF_BDT_Train_Mode15_Prep2018DataRate_eta1.25to2.4_isRun2_Selection0xf41f11ff_20210513_140026" + fileName, "Run-2, Mode 15"],
     # 3-station
     "Run2_Mode14_Uncompressed" : [prefix + "" + fileName, "Run-2, Mode 14"],
     "Run2_Mode13_Uncompressed" : [prefix + "" + fileName, "Run-2, Mode 13"],

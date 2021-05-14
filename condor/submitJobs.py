@@ -252,8 +252,9 @@ if __name__ == '__main__':
     outputdirectory += "_eta{}to{}".format(args.minEta, args.maxEta)
     if isRun2:      outputdirectory += "_isRun2"
     if isRun3:      outputdirectory += "_isRun3"
-    if useQSBit:    outputdirectory += "_useQSBit"
-    if useESBit:    outputdirectory += "_useESBit"
+    if useQSBit:    outputdirectory += "_useQS"
+    if useESBit:    outputdirectory += "_useES"
+    if useBitComp:  outputdirectory += "_bitComp"
     outputdirectory += "_Selection{}".format(trainVarsHex)
     if addDateTime: outputdirectory += "_{}".format(currentDateTime)
 
