@@ -1,6 +1,6 @@
 #! /usr/bin/env python
-
-{'Run2_Mode10_Compressed': ['root://cmseos.fnal.gov//store/user/dildick/EMTF_BDT_Train_Mode10_Prep2018DataRate_eta1.25to2.4_isRun2_bitComp_Selection0x52005523_20210514_071105/PtRegression_output.root',
+trainingDict = {
+ 'Run2_Mode10_Compressed': ['root://cmseos.fnal.gov//store/user/dildick/EMTF_BDT_Train_Mode10_Prep2018DataRate_eta1.25to2.4_isRun2_bitComp_Selection0x52005523_20210514_071105/PtRegression_output.root',
                             'Run-2, Mode 10, Compr.'],
  'Run2_Mode10_Uncompressed': ['root://cmseos.fnal.gov//store/user/dildick/EMTF_BDT_Train_Mode10_Prep2018DataRate_eta1.25to2.4_isRun2_Selection0x52005523_20210514_065957/PtRegression_output.root',
                               'Run-2, Mode 10, Uncompr.'],
