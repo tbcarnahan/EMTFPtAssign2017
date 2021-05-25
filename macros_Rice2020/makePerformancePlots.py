@@ -66,9 +66,9 @@ else:
 ## Data
 
 trainings= [
-  trainingDict['Run2_Mode15_Compressed'],
-  trainingDict['Run2_Mode14_Compressed'],
-  trainingDict['Run2_Mode13_Compressed'],
+  'Run2_Mode15_Compressed',
+  'Run2_Mode12_Compressed',
+  'Run2_Mode7_Compressed',
 ]
 
 treeName = "f_logPtTarg_invPtWgt/TestTree"
@@ -76,16 +76,19 @@ treeName = "f_logPtTarg_invPtWgt/TestTree"
 evt_trees = []
 for p in trainings:
   ttree = TChain(treeName)
-  print("Reading file: {}".format(p[0]))
-  ttree.Add(p[0])
+  print("Reading file: {}".format(trainingDict[p][0]))
+  ttree.Add(trainingDict[p][0])
   evt_trees.append(ttree)
+
+legendEntries = []
+for p in trainings:
+  legendEntries.append(trainingDict[p][1])
 
 markerColors = [kBlue, kRed, kGreen+2, kBlack, kBlue, kRed, kGreen+2, kBlack]#, 7, 40]
 lineColors = [kBlue, kRed, kGreen+2, kBlack, kBlue, kRed, kGreen+2, kBlack]#, 7, 40]
 markerStyles = [8,8,8,8,8]#,8,8]
 drawOptions = ["AP", "same", "same", "same", "same"]#, "same", "same", "same", "same"]
 drawOptions1D = ["", "same"]#, "same", "same", "same", "same"]
-legendEntries = ["Run-2 Mode 15", "Run-3 w/ bend Mode 15", "Run-3 w/ slope Mode 15"]#, "Run-3Default bend1+bitCompr"]#"Run-3 QSBit", "Run-3 QSBit ESBit"]
 outFileString = ["Run2_dPhi12_23_34","Run3_dPhi12_23_34"]#, "Run3_bend1_bitCompr"]#"Run3QSBit", "Run3QSBitESBit"]
 
 draw_res_axis_label = ["(p_{T}^{GEN} - p_{T}^{L1}) / p_{T}^{GEN}", "(p_{T,GEN}^{-1} - p_{T,L1}^{-1}) / p_{T,GEN}^{-1}"]
