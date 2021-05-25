@@ -22,6 +22,9 @@ def trainVarsSelToHex(trainVariables):
     hexsel = hex(int(selection, 2))
     return hexsel
 
+def selHexToTrainVars(selHex):
+    pass
+
 if __name__ == '__main__':
 
     ## expert options
@@ -30,7 +33,6 @@ if __name__ == '__main__':
     parser.add_argument("--isRun3Default", action="store_true", default = False)
     parser.add_argument("--emtfMode", action="store", default = 15)
     args = parser.parse_args()
-
 
     ## if no selection is provided for Run-2, use the default ones!
     trainVariables = []

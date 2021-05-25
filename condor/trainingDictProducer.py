@@ -14,7 +14,7 @@ f.close()
 mydict = {}
 
 prefix = "root://cmseos.fnal.gov//store/user/dildick/"
-outfile = "PtRegression_output.root"
+outfile = "PtRegressionOutput.root"
 
 ## loop on the list
 for myentry in mylist:
