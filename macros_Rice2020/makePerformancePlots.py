@@ -77,7 +77,7 @@ evt_trees = []
 for p in trainings:
   ttree = TChain(treeName)
   print("Reading file: {}".format(p[0]))
-  ttree.Add(p)
+  ttree.Add(p[0])
   evt_trees.append(ttree)
 
 markerColors = [kBlue, kRed, kGreen+2, kBlack, kBlue, kRed, kGreen+2, kBlack]#, 7, 40]
