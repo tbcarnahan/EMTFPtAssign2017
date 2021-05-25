@@ -11,6 +11,8 @@ from termcolor import colored
 from ROOT import gROOT
 from optparse import OptionParser,OptionGroup
 from Helpers import *
+from trainingDict import trainingDict
+
 
 ## Configuration settings
 parser = OptionParser()
@@ -62,24 +64,20 @@ else:
 
 
 ## Data
-#prefix = "root://cmseos.fnal.gov//store/user/dildick/"
-prefix = "root://cmseos.fnal.gov//store/user/mdecaro/"
-fileName = "PtRegressionRun3Prep_MODE_15_bitCompr.root"
 
 trainings= [
-  'EMTF_BDT_Train_Mode15__eta1.25to2.4_isRun2_Selection0xf41f11ff_20210511_165653/', #isRun2 bitCompr
-  'EMTF_BDT_Train__eta1.25to2.4_Selection0xf41f11ff_20210423_105341/',               #isRun3Default with bend_1, bitCompr
-  'EMTF_BDT_Train_Mode15__eta1.25to2.4_isRun3_Selection0x1f41f01ff_20210512_095112/'               #isRun3Default with slope_1, bitCompr
+  trainingDict['Run2_Mode15_Compressed'],
+  trainingDict['Run2_Mode14_Compressed'],
+  trainingDict['Run2_Mode13_Compressed'],
 ]
 
-treeName = "f_MODE_15_logPtTarg_invPtWgt_bitCompr/TestTree"
+treeName = "f_logPtTarg_invPtWgt/TestTree"
 
 evt_trees = []
 for p in trainings:
   ttree = TChain(treeName)
-  fName = "{}{}{}".format(prefix,p,fileName)
-  print("Reading file: {}".format(fName))
-  ttree.Add(fName)
+  print("Reading file: {}".format(p[0]))
+  ttree.Add(p)
   evt_trees.append(ttree)
 
 markerColors = [kBlue, kRed, kGreen+2, kBlack, kBlue, kRed, kGreen+2, kBlack]#, 7, 40]
@@ -91,7 +89,7 @@ legendEntries = ["Run-2 Mode 15", "Run-3 w/ bend Mode 15", "Run-3 w/ slope Mode 
 outFileString = ["Run2_dPhi12_23_34","Run3_dPhi12_23_34"]#, "Run3_bend1_bitCompr"]#"Run3QSBit", "Run3QSBitESBit"]
 
 draw_res_axis_label = ["(p_{T}^{GEN} - p_{T}^{L1}) / p_{T}^{GEN}", "(p_{T,GEN}^{-1} - p_{T,L1}^{-1}) / p_{T,GEN}^{-1}"]
-draw_res_option = ["(GEN_pt - pow(2, BDTG_AWB_Sq))/GEN_pt", "(((1./GEN_pt) - (1./pow(2, BDTG_AWB_Sq)))/(1./GEN_pt))"] 
+draw_res_option = ["(GEN_pt - pow(2, BDTG_AWB_Sq))/GEN_pt", "(((1./GEN_pt) - (1./pow(2, BDTG_AWB_Sq)))/(1./GEN_pt))"]
 draw_res_label = ["diffOverGen", "invDiffOverInvGen"]
 res_type = ["mu", "sigma"]
 
@@ -148,8 +146,8 @@ if options.efficiencies:
 	  graph = eff.GetPaintedGraph()
 	  graph.SetMinimum(0) ;  graph.SetMaximum(1.003)
 	  gPad.Update()
-	  
-	
+
+
 	leg.Draw("same")
 
 	line = TLine(0, 0.9, 50, 0.9)
@@ -203,7 +201,7 @@ if options.efficiencies:
       checkDir('./plots/bdt_eff')
       checkDir('./plots/bdt_eff/eta')
       makePlots(c1, "bdt_eff/eta/BDTeff_eta_pt"+str(pt_str[l]) )
-     
+
 
 
 if options.resolutions:
@@ -223,11 +221,11 @@ if options.resolutions:
 	checkDir('./plots') ; checkDir('./plots/resolutions')
 
 	c1 = TCanvas("c1")
-	draw_multiple(resolutions, " ; "+draw_res_axis_label[k]+" ; ", drawOptions1D, lineColors, legendEntries, pt_cut[l]) 
+	draw_multiple(resolutions, " ; "+draw_res_axis_label[k]+" ; ", drawOptions1D, lineColors, legendEntries, pt_cut[l])
 	makePlots(c1,  "resolutions/ptres1D_"+draw_res_label[k]+"_pt"+str(pt_str[l]) )
 	c1.Close()
 
-    
+
   if options.res1DvsPt and options.single_pt: print "Error: Must set single_pt to false in order to plot resolutions vs Pt."
   if options.res1DvsPt and not options.single_pt:
 
@@ -243,7 +241,7 @@ if options.resolutions:
 
 	for ee in range(0,2):
 	  res = draw_res(evt_trees[ee], 64, -10, 10, draw_res_option[k], bdt_pt_cut(pt_cut[l]) )
-	  
+
 	  mu_res[ee][l] = res.GetMean()
 	  mu_res_err[ee][l] = res.GetMeanError()
 	  sigma_res[ee][l] = res.GetRMS()
@@ -252,8 +250,8 @@ if options.resolutions:
       draw_multi_resVsPt(len(evt_trees), mu_res, mu_res_err, xErrors, 'p_{T}^{GEN} (GeV)', '#mu '+draw_res_axis_label[k], lineColors, pt_cut, legendEntries, draw_res_label[k], res_type[0])
       draw_multi_resVsPt(len(evt_trees), sigma_res, sigma_res_err, xErrors, 'p_{T}^{GEN} (GeV)', '#sigma '+draw_res_axis_label[k], lineColors, pt_cut, legendEntries, draw_res_label[k], res_type[1])
 
-      
-  
+
+
   if options.res1DvsEta:
 
     for k in range(len(draw_res_option)):
@@ -262,7 +260,7 @@ if options.resolutions:
       eta_range = []
       nbins = int(round(abs((float(eta_min[0]) -  float(eta_max[0]) ) / 0.1)))
 
-      for i in range(nbins+1):	
+      for i in range(nbins+1):
 	eta_range.append(round(-1*float(eta_max[0]) + 0.1*i,1))
       for i in range(nbins+1):
 	eta_range.append(round(float(eta_min[0]) + 0.1*i,1))
@@ -294,9 +292,9 @@ if options.resolutions:
 
       draw_multi_resVsEta(len(evt_trees), mu_res, mu_res_err, xErrors, '#eta^{GEN}', '#mu '+draw_res_axis_label[k], lineColors, eta_range, legendEntries, draw_res_label[k], res_type[0])
       draw_multi_resVsEta(len(evt_trees), sigma_res, sigma_res_err, xErrors, '#eta^{GEN}', '#sigma '+draw_res_axis_label[k], lineColors, eta_range, legendEntries, draw_res_label[k], res_type[1])
-      
 
-  
+
+
   if options.res2D:
 
     for ee in range(0,3):
