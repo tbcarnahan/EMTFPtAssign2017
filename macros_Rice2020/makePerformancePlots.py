@@ -23,7 +23,7 @@ if( iPos==0 ): CMS_lumi.relPosX = 0.12
 parser = OptionParser()
 parser.add_option('--batchMode', dest='batchMode', action='store_true',default = True)
 parser.add_option("--eta_slices", dest="eta_slices", action="store_true", default = False)
-parser.add_option("--single_pt", dest="single_pt", action="store_true", default = True)
+parser.add_option("--single_pt", dest="single_pt", action="store_true", default = False)
 parser.add_option("--addDateTime", dest="addDateTime", action="store", default = True)
 
 parser.add_option("--effVsPt", dest="effVsPt", action="store_true", default = False)
@@ -196,46 +196,94 @@ if options.effVsPt:
 
 if options.effVsEta:
 
-  #Run2 and Run3 BDT efficiency vs Eta
-  binning = "(64,-3.,3.)"
-  effs = []
+  for l in range(len(pt_cut)):
+    #Run2 and Run3 BDT efficiency vs Eta
+    binning = "(64,-3.,3.)"
+    effs = []
 
-  c1 = newCanvas()
-  for ee in range(0,2):
-    eff = draw_eff(evt_trees[ee], " ; #eta^{GEN} ; Trigger Efficiency", binning, "GEN_eta", gen_pt_cut(pt_cut[l]), bdt_pt_scaled_Run2(pt_cut[l]))
-    eff.SetMarkerColor(markerColors[ee])
-    eff.SetLineColor(lineColors[ee])
-    eff.SetMarkerStyle(markerStyles[ee])
-    eff.Draw(drawOptions[ee])
-    effs.append(eff)
+    c1 = newCanvas()
+    for ee in range(0,len(trainings)):
+      eff = draw_eff(evt_trees[ee], " ; #eta^{GEN} ; Trigger Efficiency", binning, "GEN_eta", gen_pt_cut(pt_cut[l]), bdt_pt_scaled_Run3(pt_cut[l]))
+      eff.SetMarkerColor(markerColors[ee])
+      eff.SetLineColor(lineColors[ee])
+      eff.SetMarkerStyle(markerStyles[ee])
+      eff.Draw(drawOptions[ee])
+      effs.append(eff)
 
-    la1 = TLatex()
-    la1.SetTextFont(22)
-    la1.SetTextColor(1)
-    la1.SetTextSize(0.033)
-    la1.SetTextAlign(10)
-    #Note that the position of the label in the following line is hard-coded onto the axis (easier way to do this?)
-    la1.DrawLatex( -0.6, 0.65, "p_{T}^{GEN}, p_{T}^{L1} > "+str(pt_cut[l])+" GeV")
-
-    leg = TLegend(0.40, 0.26, 0.67, 0.53) ;
-    for ee in range(0,4):
-      leg.AddEntry(effs[ee], legendEntries[ee])
-      leg.SetBorderSize(0)
-      leg.SetFillStyle(0)
-      leg.SetTextSize(0.05)
+    leg = TLegend(0.35, 0.2, 0.6, 0.5);
+    leg.SetHeader("p_{T}^{GEN}, p_{T}^{L1} > "+str(pt_cut[l])+" GeV")
+    leg.SetBorderSize(0)
+    leg.SetFillStyle(0)
+    leg.SetFillColor(0)
+    leg.SetTextSize(0.04)
+    for ee in range(0,len(trainings)):
+      leg.AddEntry(effs[ee], legendEntries[ee], "pl")
       leg.Draw("same")
 
     gPad.Update()
-    eff.SetTitle(" ; #eta^{GEN} ; Trigger Efficiency")
     gStyle.SetOptStat(0)
     graph = eff.GetPaintedGraph()
     graph.SetMinimum(0)
     graph.SetMaximum(1.1)
+    graph.GetXaxis().SetLabelSize(0.05)
+    graph.GetYaxis().SetLabelSize(0.05)
+    graph.GetXaxis().SetTitleSize(0.05)
+    graph.GetYaxis().SetTitleSize(0.05)
+
+    c1.Modified()
+    c1.Update()
+    CMS_lumi.CMS_lumi(c1, iPeriod, iPos)
 
     checkDir('./plots')
     checkDir('./plots/bdt_eff')
     checkDir('./plots/bdt_eff/eta')
     makePlots(c1, "bdt_eff/eta/BDTeff_eta_pt"+str(pt_str[l]) )
+
+
+if options.effVsPhi:
+
+  for l in range(len(pt_cut)):
+    #Run2 and Run3 BDT efficiency vs Phi
+    binning = "(64,-3.2,3.2)"
+    effs = []
+
+    c1 = newCanvas()
+    for ee in range(0,len(trainings)):
+      eff = draw_eff(evt_trees[ee], " ; #phi^{GEN} ; Trigger Efficiency", binning, "GEN_phi", gen_pt_cut(pt_cut[l]), bdt_pt_scaled_Run3(pt_cut[l]))
+      eff.SetMarkerColor(markerColors[ee])
+      eff.SetLineColor(lineColors[ee])
+      eff.SetMarkerStyle(markerStyles[ee])
+      eff.Draw(drawOptions[ee])
+      effs.append(eff)
+
+    leg = TLegend(0.35, 0.2, 0.6, 0.5);
+    leg.SetHeader("p_{T}^{GEN}, p_{T}^{L1} > "+str(pt_cut[l])+" GeV")
+    leg.SetBorderSize(0)
+    leg.SetFillStyle(0)
+    leg.SetFillColor(0)
+    leg.SetTextSize(0.04)
+    for ee in range(0,len(trainings)):
+      leg.AddEntry(effs[ee], legendEntries[ee], "pl")
+      leg.Draw("same")
+
+    gPad.Update()
+    gStyle.SetOptStat(0)
+    graph = eff.GetPaintedGraph()
+    graph.SetMinimum(0)
+    graph.SetMaximum(1.1)
+    graph.GetXaxis().SetLabelSize(0.05)
+    graph.GetYaxis().SetLabelSize(0.05)
+    graph.GetXaxis().SetTitleSize(0.05)
+    graph.GetYaxis().SetTitleSize(0.05)
+
+    c1.Modified()
+    c1.Update()
+    CMS_lumi.CMS_lumi(c1, iPeriod, iPos)
+
+    checkDir('./plots')
+    checkDir('./plots/bdt_eff')
+    checkDir('./plots/bdt_eff/phi')
+    makePlots(c1, "bdt_eff/phi/BDTeff_phi_pt"+str(pt_str[l]) )
 
 
 
@@ -253,7 +301,8 @@ if options.resolutions:
 	  res = draw_res(evt_trees[ee], 64, -10, 10, draw_res_option[k] , bdt_pt(pt_cut[l]) )
 	  resolutions.append(res)
 
-	checkDir('./plots') ; checkDir('./plots/resolutions')
+	checkDir('./plots')
+        checkDir('./plots/resolutions')
 
 	c1 = TCanvas("c1")
 	draw_multiple(resolutions, " ; "+draw_res_axis_label[k]+" ; ", drawOptions1D, lineColors, legendEntries, pt_cut[l])
