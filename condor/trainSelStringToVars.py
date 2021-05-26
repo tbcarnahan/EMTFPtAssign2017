@@ -12,13 +12,12 @@ def selHexToTrainVars(selHex):
     selectedVars = []
     for idx in xrange(len(bitstring)-1,-1,-1):
         if int(bitstring[idx]):
-            selectedVars.append(allowedTrainingVars[nBits - idx])
+            selectedVars.append(allowedTrainingVars[maxBit - idx])
     return selectedVars
 
 if __name__ == '__main__':
-
     ## expert options
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser("Converts a hexadecimal string to a list with training variables")
     parser.add_argument("--hex", action="store", default = 0x0)
     args = parser.parse_args()
 

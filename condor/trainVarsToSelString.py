@@ -1,7 +1,5 @@
 #! /usr/bin/env python
 
-import glob
-import sys, commands, os, fnmatch
 import argparse
 from commonVariables import *
 from Run2Variables import *
@@ -24,8 +22,10 @@ def trainVarsSelToHex(trainVariables):
 if __name__ == '__main__':
 
     ## expert options
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--hex", action="store", default = 0x0)
+    parser = argparse.ArgumentParser("Converts a list of training variables to a hexadecimal string")
+    parser.add_argument("--isRun2", action="store_true", default = False)
+    parser.add_argument("--isRun3Default", action="store_true", default = False)
+    parser.add_argument("--emtfMode", action="store", default = 15)
     args = parser.parse_args()
 
     ## if no selection is provided for Run-2, use the default ones!
@@ -40,5 +40,6 @@ if __name__ == '__main__':
         print("Info: no training variable selection provided for Run-3 with mode {mode}. Using default selection.".format(
             mode = args.emtfMode))
 
+    print(trainVariables)
     hexkey = trainVarsSelToHex(trainVariables)
     print(hexkey)
