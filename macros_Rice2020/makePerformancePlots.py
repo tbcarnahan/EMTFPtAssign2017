@@ -12,18 +12,23 @@ from ROOT import gROOT
 from optparse import OptionParser,OptionGroup
 from Helpers import *
 from trainingDict import trainingDict
+from tdrstyle import *
+import CMS_lumi as CMS_lumi
 
+iPeriod = 0
+iPos = 0
+if( iPos==0 ): CMS_lumi.relPosX = 0.12
 
 ## Configuration settings
 parser = OptionParser()
-parser.add_option('--batchMode', dest='batchMode', action='store_true',default = False)
+parser.add_option('--batchMode', dest='batchMode', action='store_true',default = True)
 parser.add_option("--eta_slices", dest="eta_slices", action="store_true", default = False)
-parser.add_option("--single_pt", dest="single_pt", action="store_true", default = False)
+parser.add_option("--single_pt", dest="single_pt", action="store_true", default = True)
 parser.add_option("--addDateTime", dest="addDateTime", action="store", default = True)
 
-parser.add_option("--efficiencies", dest="efficiencies", action="store_true", default = False)
-parser.add_option("--EffVsPt", dest="EffVsPt", action="store_true", default = False)
-parser.add_option("--EffVsEta", dest="EffVsEta", action="store_true", default = False)
+parser.add_option("--effVsPt", dest="effVsPt", action="store_true", default = False)
+parser.add_option("--effVsEta", dest="effVsEta", action="store_true", default = False)
+parser.add_option("--effVsPhi", dest="effVsPhi", action="store_true", default = False)
 
 parser.add_option("--resolutions", dest="resolutions", action="store_true", default = False)
 parser.add_option("--res1D", dest="res1D", action="store_true", default = False)
@@ -67,8 +72,9 @@ else:
 
 trainings= [
   'Run2_Mode15_Compressed',
-  'Run2_Mode12_Compressed',
-  'Run2_Mode7_Compressed',
+  'Run3_V1p0_Mode15_Compressed',
+  'Run3_V1p1_Mode15_Compressed',
+  'Run3_V1p2_Mode15_Compressed'
 ]
 
 treeName = "f_logPtTarg_invPtWgt/TestTree"
@@ -109,101 +115,127 @@ def mode_cut(mode):
 def bdt_pt_cut(pt_min):
   return TCut("pow(2, BDTG_AWB_Sq) >= {}".format(pt_min))
 
-def bdt_pt_scaled_cut(pt_scaling_A, pt_scaling_B, pt_min):
+def bdt_pt_scaled(pt_scaling_A, pt_scaling_B, pt_min):
   return TCut("(({0} * pow(2,BDTG_AWB_Sq))/(1 - ({1} * pow(2,BDTG_AWB_Sq)))) >= {2}".format(pt_scaling_A, pt_scaling_B, pt_min))
+
+def bdt_pt_scaled_Run2(pt_min):
+  return bdt_pt_scaled(1.2, 0.015, pt_min)
+
+def bdt_pt_scaled_Run3(pt_min):
+  return bdt_pt_scaled(1.3, 0.004, pt_min)
 
 def makePlots(canvas, plotTitle):
   c1.SaveAs(plotDir + plotTitle + ".png")
   c1.SaveAs(plotDir + plotTitle + ".pdf")
   c1.SaveAs(plotDir + plotTitle + ".C")
 
+setTDRStyle()
+
 ## ================ Plotting script ======================
-if options.efficiencies:
+if options.effVsPt:
 
   for l in range(len(pt_cut)):
     for k in range(len(eta_min)):
 
-      c1 = TCanvas("c1")
+      c1 = newCanvas()
 
-      if options.EffVsPt:
+      leg = TLegend(0.45, 0.23, 0.90, 0.50, "", "brNDC")
+      leg.SetBorderSize(0)
+      leg.SetFillStyle(0)
+      leg.SetFillColor(0)
+      leg.SetTextSize(0.04)
+      gStyle.SetOptStat(0)
 
-	leg = TLegend(0.60, 0.23, 0.90, 0.50)
-	leg.SetBorderSize(0)
-	gStyle.SetOptStat(0)
-
-	#Run2 and Run3 BDT efficiency vs Pt
-        effs = []
-        for ee in range(0,3):
-          eff = draw_eff(evt_trees[ee], "; p_{T}^{GEN} (GeV) ; Trigger Efficiency", "(50,1.,50.)", "GEN_pt",
-                         gen_eta_cut(eta_min[k], eta_max[k]), bdt_pt_scaled_cut(pt_scaling_A[ee], pt_scaling_B[ee], pt_cut[l]))
-          eff.SetMarkerColor(markerColors[ee])
-          eff.SetLineColor(lineColors[ee])
-          eff.SetMarkerStyle(markerStyles[ee])
-          eff.Draw(drawOptions[ee])
-          effs.append(eff)
-
-          leg.AddEntry(effs[ee], legendEntries[ee])
-          eff.Draw("same")
-
-	  gPad.Update()
-	  graph = eff.GetPaintedGraph()
-	  graph.SetMinimum(0) ;  graph.SetMaximum(1.003)
-	  gPad.Update()
-
-
-	leg.Draw("same")
-
-	line = TLine(0, 0.9, 50, 0.9)
-	line2 = TLine(pt_cut[l], 0., pt_cut[l], 1.1)
-	line.SetLineStyle(7) ; line2.SetLineStyle(7)
-	line.Draw("same") ; line2.Draw("same")
-
-	tex = TLatex()
-	tex.SetTextColor(kBlack)
-	tex.SetTextFont(22)
-	tex.SetTextSize(0.05)
-	tex.DrawLatex( 35, 0.09, "p_{T}^{L1} > "+str(int(pt_cut[l]))+" GeV")
-
-	c1.Modified() ; c1.Update()
-
-
-        checkDir('./plots') ; checkDir('./plots/bdt_eff')
-        makePlots(c1, "bdt_eff/BDT_eff_SD_pt{}_eta{}to{}".format(pt_str[l], eta_str_min[k], eta_str_max[k]))
-
-
-    if options.EffVsEta:
-
-      #Run2 and Run3 BDT efficiency vs Eta
-      binning = "(64,-3.,3.)"
+      #Run2 and Run3 BDT efficiency vs Pt
       effs = []
-
-      for ee in range(0,2):
-        eff = draw_eff(evt_trees[ee], " ; #eta^{GEN} ; Trigger Efficiency", binning, "GEN_eta", gen_pt_cut(pt_cut[l]), bdt_pt_cut(pt_cut[l]))
+      for ee in range(0,len(trainings)):
+        eff = draw_eff(evt_trees[ee], "; p_{T}^{GEN} (GeV) ; Trigger Efficiency", "(50,1.,50.)", "GEN_pt",
+                       gen_eta_cut(eta_min[k], eta_max[k]), bdt_pt_scaled_Run3(pt_cut[l]))
         eff.SetMarkerColor(markerColors[ee])
         eff.SetLineColor(lineColors[ee])
         eff.SetMarkerStyle(markerStyles[ee])
         eff.Draw(drawOptions[ee])
         effs.append(eff)
 
-      la1 = TLatex() ; la1.SetTextFont(22) ; la1.SetTextColor(1) ; la1.SetTextSize(0.033) ; la1.SetTextAlign(10)
-      #Note that the position of the label in the following line is hard-coded onto the axis (easier way to do this?)
-      la1.DrawLatex( -0.6, 0.65, "p_{T}^{GEN}, p_{T}^{L1} > "+str(pt_cut[l])+" GeV")
+        leg.AddEntry(effs[ee], legendEntries[ee], "pl")
+        eff.Draw("same")
 
-      leg = TLegend(0.40, 0.26, 0.67, 0.53) ;
-      for ee in range(0,4):
-        leg.AddEntry(effs[ee], legendEntries[ee])
-      leg.SetBorderSize(0)
+        gPad.Update()
+        graph = eff.GetPaintedGraph()
+        graph.SetMinimum(0)
+        graph.SetMaximum(1.1)
+        graph.GetXaxis().SetLabelSize(0.05)
+        graph.GetYaxis().SetLabelSize(0.05)
+        graph.GetXaxis().SetTitleSize(0.05)
+        graph.GetYaxis().SetTitleSize(0.05)
+        gPad.Update()
+
       leg.Draw("same")
 
-      gPad.Update()
-      eff.SetTitle(" ; #eta^{GEN} ; Trigger Efficiency")
-      gStyle.SetOptStat(0)
-      graph = eff.GetPaintedGraph() ; graph.SetMinimum(0) ;  graph.SetMaximum(1.003)
+      line = TLine(0, 0.9, 50, 0.9)
+      line2 = TLine(pt_cut[l], 0., pt_cut[l], 1.1)
+      line.SetLineStyle(7)
+      line2.SetLineStyle(7)
+      line.Draw("same")
+      line2.Draw("same")
+
+      tex = TLatex()
+      tex.SetTextColor(kBlack)
+      #tex.SetTextFont(22)
+      tex.SetTextSize(0.05)
+      tex.DrawLatex( 35, 0.09, "p_{T}^{L1} > "+str(int(pt_cut[l]))+" GeV")
+
+      c1.Modified()
+      c1.Update()
+      CMS_lumi.CMS_lumi(c1, iPeriod, iPos)
 
       checkDir('./plots')
       checkDir('./plots/bdt_eff')
-      checkDir('./plots/bdt_eff/eta')
-      makePlots(c1, "bdt_eff/eta/BDTeff_eta_pt"+str(pt_str[l]) )
+      makePlots(c1, "bdt_eff/BDT_eff_SD_pt{}_eta{}to{}".format(pt_str[l], eta_str_min[k], eta_str_max[k]))
+
+
+if options.effVsEta:
+
+  #Run2 and Run3 BDT efficiency vs Eta
+  binning = "(64,-3.,3.)"
+  effs = []
+
+  c1 = newCanvas()
+  for ee in range(0,2):
+    eff = draw_eff(evt_trees[ee], " ; #eta^{GEN} ; Trigger Efficiency", binning, "GEN_eta", gen_pt_cut(pt_cut[l]), bdt_pt_scaled_Run2(pt_cut[l]))
+    eff.SetMarkerColor(markerColors[ee])
+    eff.SetLineColor(lineColors[ee])
+    eff.SetMarkerStyle(markerStyles[ee])
+    eff.Draw(drawOptions[ee])
+    effs.append(eff)
+
+    la1 = TLatex()
+    la1.SetTextFont(22)
+    la1.SetTextColor(1)
+    la1.SetTextSize(0.033)
+    la1.SetTextAlign(10)
+    #Note that the position of the label in the following line is hard-coded onto the axis (easier way to do this?)
+    la1.DrawLatex( -0.6, 0.65, "p_{T}^{GEN}, p_{T}^{L1} > "+str(pt_cut[l])+" GeV")
+
+    leg = TLegend(0.40, 0.26, 0.67, 0.53) ;
+    for ee in range(0,4):
+      leg.AddEntry(effs[ee], legendEntries[ee])
+      leg.SetBorderSize(0)
+      leg.SetFillStyle(0)
+      leg.SetTextSize(0.05)
+      leg.Draw("same")
+
+    gPad.Update()
+    eff.SetTitle(" ; #eta^{GEN} ; Trigger Efficiency")
+    gStyle.SetOptStat(0)
+    graph = eff.GetPaintedGraph()
+    graph.SetMinimum(0)
+    graph.SetMaximum(1.1)
+
+    checkDir('./plots')
+    checkDir('./plots/bdt_eff')
+    checkDir('./plots/bdt_eff/eta')
+    makePlots(c1, "bdt_eff/eta/BDTeff_eta_pt"+str(pt_str[l]) )
 
 
 
@@ -218,7 +250,7 @@ if options.resolutions:
 	resolutions = []
 
 	for ee in range(0,2):
-	  res = draw_res(evt_trees[ee], 64, -10, 10, draw_res_option[k] , bdt_pt_cut(pt_cut[l]) )
+	  res = draw_res(evt_trees[ee], 64, -10, 10, draw_res_option[k] , bdt_pt(pt_cut[l]) )
 	  resolutions.append(res)
 
 	checkDir('./plots') ; checkDir('./plots/resolutions')
@@ -243,7 +275,7 @@ if options.resolutions:
       for l in range(len(pt_cut)):
 
 	for ee in range(0,2):
-	  res = draw_res(evt_trees[ee], 64, -10, 10, draw_res_option[k], bdt_pt_cut(pt_cut[l]) )
+	  res = draw_res(evt_trees[ee], 64, -10, 10, draw_res_option[k], bdt_pt(pt_cut[l]) )
 
 	  mu_res[ee][l] = res.GetMean()
 	  mu_res_err[ee][l] = res.GetMeanError()
@@ -279,10 +311,10 @@ if options.resolutions:
 
 	for i in range(len(eta_range)-2):
 
-	  for ee in range(0,3):
+	  for ee in range(0,len(trainings)):
 	    #Add a check to skip the bin at the boundary between endcaps (-1.2 to 1.2).
-	    if i<len(eta_range)/2 - 1: res = draw_resVsEta(evt_trees[ee], 64, -10, 10, draw_res_option[k], bdt_pt_cut(pt_cut[l]), gen_pt_cut(pt_cut[l]), gen_eta_cut(eta_range[i], eta_range[i+1]) )
-	    if i>=len(eta_range)/2 - 1: res = draw_resVsEta(evt_trees[ee], 64, -10, 10, draw_res_option[k], bdt_pt_cut(pt_cut[l]), gen_pt_cut(pt_cut[l]), gen_eta_cut(eta_range[i+1], eta_range[i+2]) )
+	    if i<len(eta_range)/2 - 1: res = draw_resVsEta(evt_trees[ee], 64, -10, 10, draw_res_option[k], bdt_pt(pt_cut[l]), gen_pt_cut(pt_cut[l]), gen_eta_cut(eta_range[i], eta_range[i+1]) )
+	    if i>=len(eta_range)/2 - 1: res = draw_resVsEta(evt_trees[ee], 64, -10, 10, draw_res_option[k], bdt_pt(pt_cut[l]), gen_pt_cut(pt_cut[l]), gen_eta_cut(eta_range[i+1], eta_range[i+2]) )
 
 	    mu_res[ee][i] = res.GetMean()
 	    mu_res_err[ee][i] = res.GetMeanError()
@@ -300,6 +332,6 @@ if options.resolutions:
 
   if options.res2D:
 
-    for ee in range(0,3):
+    for ee in range(0,len(trainings)):
 
       draw_res2D(evt_trees[ee], 100, 0, 5.7, 100, 0, 5.5, "BDTG_AWB_Sq:log2(GEN_pt)", legendEntries[ee], outFileString[ee])
