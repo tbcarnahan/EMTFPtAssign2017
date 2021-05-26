@@ -23,7 +23,7 @@ if __name__ == '__main__':
   parser = OptionParser()
   parser.add_option('--batchMode', dest='batchMode', action='store_true',default = True)
   parser.add_option("--addDateTime", dest="addDateTime", action="store_true", default = True)
-  parser.add_option("--eta_slices", dest="eta_slices", action="store_true", default = False)
+  parser.add_option("--useEtaSlices", dest="useEtaSlices", action="store_true", default = False)
   parser.add_option("--single_pt", dest="single_pt", action="store_true", default = False)
   parser.add_option("--effVsPt", dest="effVsPt", action="store_true", default = False)
   parser.add_option("--effVsEta", dest="effVsEta", action="store_true", default = False)
@@ -34,81 +34,85 @@ if __name__ == '__main__':
   parser.add_option('--emtfModes',nargs='+', help='Set EMTF modes',
                     choices=[15,14,13,11,7,12,10,9,6,5,3],
                     default = [15,14,13,11,7,12,10,9,6,5,3])
-  parser.add_option('--training',nargs='+', help='Set trainings', choices = trainingChoices, default = [])
   parser.add_option('--emtfVersions',nargs='+', help='Set EMTF versions',
                     choices=['Run2','Run3_V1p0','Run3_V1p1','Run3_V1p2'],
                     default = ['Run2','Run3_V1p0','Run3_V1p1','Run3_V1p2'])
+  parser.add_option('--emtfColors',nargs='+', help='Set EMTF colors',
+                    default = [kBlue, kRed, kGreen+2, kBlack])
+  parser.add_option('--etaMins',nargs='+', help='Set eta minima',
+                    default = [1.2, 1.4, 1.6, 1.8, 2.0, 2.2, 1.25])
+  parser.add_option('--etaMaxs',nargs='+', help='Set eta maxima',
+                    default = [1.4, 1.6, 1.8, 2.0, 2.2, 2.4, 2.4])
+  parser.add_option('--emtfPtCuts',nargs='+', help='Set pT cuts',
+                    default = [5, 7, 10, 12, 15, 20, 22])
+  parser.add_option("--treeName", dest="treeName", action="store", default = "f_logPtTarg_invPtWgt/TestTree")
+  parser.add_option("--etaSlices", dest="etaSlices", action="store_true", default = False)
+
   (options, args) = parser.parse_args()
+
+  print(colored("Configuring:", 'blue'))
 
   ## Run in quiet mode
   if options.batchMode:
     sys.argv.append('-b')
     gROOT.SetBatch(1)
 
+  ## all data files have the same tree name
+  print(colored("- Using Tree name: {}".format(options.treeName), 'blue'))
+
   ## default output directory takes a date and time
   currentDateTime = datetime.now().strftime("%Y%m%d_%H%M%S")
   plotDir = "plots_{}_TEST/".format(currentDateTime)
-  print(colored("Using output directory {}\n".format(plotDir), 'blue'))
+  print(colored("- Using output directory {}".format(plotDir), 'blue'))
 
   ## EMTF modes
-  print(colored("Analyzing EMTF modes {}\n".format(options.emtfModes), 'blue'))
+  print(colored("- Analyzing EMTF modes {}".format(options.emtfModes), 'blue'))
 
   ## EMTF versions
-  print(colored("Analyzing EMTF versions {}\n".format(options.emtfVersions), 'blue'))
+  print(colored("- Analyzing EMTF versions {}".format(options.emtfVersions), 'blue'))
 
-  #setTDRStyle()
+  ## EMTF pT thresholds
+  print(colored("- Analyzing EMTF pT thresholds {}".format(options.emtfPtCuts), 'blue'))
 
-  plotEfficiencies(options)
+  ## eta minima and maxima
+  print(colored("- Analyzing eta slices with minima {}".format(options.etaMins), 'blue'))
+  print(colored("- Analyzing eta slices with maxima {}".format(options.etaMaxs), 'blue'))
 
-"""
-iPeriod = 0
-iPos = 0
-if( iPos==0 ): CMS_lumi.relPosX = 0.12
+  ## Set proper ROOT style for plots...
+  iPeriod = 0
+  iPos = 0
+  if( iPos==0 ): CMS_lumi.relPosX = 0.12
+  setTDRStyle()
+  print(colored("- Setting TDR style for plots\n", 'blue'))
 
-if options.single_pt:
-  pt_cut = [22]
-  pt_str = ["22"]
-else:
-  pt_cut = [3, 5, 7, 10, 12, 15, 20, 22, 24, 27]
-  pt_str = ["3", "5", "7", "10", "12", "15", "20", "22", "24", "27"]
+  ## get testing data for each mode
+  for emtfMode in options.emtfModes:
 
-if options.eta_slices:
-  eta_min = [1.2, 1.4, 1.6, 1.8, 2.0, 2.2]
-  eta_max = [1.4, 1.6, 1.8, 2.0, 2.2, 2.4]
-  eta_str_min = ["1pt2", "1pt4", "1pt6", "1pt8", "2pt0", "2pt2"]
-  eta_str_max = ["1pt4", "1pt6", "1pt8", "2pt0", "2pt2", "2pt4"]
-else:
-  #Whole endcap region.
-  eta_min = [1.25]
-  eta_max = [2.4]
-  eta_str_min = ["1pt25"]
-  eta_str_max = ["2pt4"]
+    print(colored("Analyzing EMTF Mode {}".format(emtfMode), 'blue'))
 
+    ## need option to consider uncompressed or compressed
+    trainings = []
+    for emtfVersion in options.emtfVersions:
+      trainings.append("{}_Mode{}_Compressed".format(emtfVersion, emtfMode))
+    print(colored("{}".format(trainings), 'blue'))
 
+    eventTrees = []
+    for p in trainings:
+      tTree = TChain(options.treeName)
+      tTree.Add(trainingDict[p][0])
+      eventTrees.append(tTree)
+
+    legendEntries = []
+    for p in trainings:
+      legendEntries.append(trainingDict[p][1])
+
+    plotEfficienciesSingleMode(options, emtfMode, eventTrees, legendEntries)
+    plotResolutionsSingleMode(options, emtfMode, eventTrees, legendEntries)
+
+  """
 ## Data
 
-trainings= [
-  'Run2_Mode15_Compressed',
-  'Run3_V1p0_Mode15_Compressed',
-  'Run3_V1p1_Mode15_Compressed',
-  'Run3_V1p2_Mode15_Compressed'
-]
 
-treeName = "f_logPtTarg_invPtWgt/TestTree"
-
-evt_trees = []
-for p in trainings:
-  ttree = TChain(treeName)
-  print("Reading file: {}".format(trainingDict[p][0]))
-  ttree.Add(trainingDict[p][0])
-  evt_trees.append(ttree)
-
-legendEntries = []
-for p in trainings:
-  legendEntries.append(trainingDict[p][1])
-
-markerColors = [kBlue, kRed, kGreen+2, kBlack, kBlue, kRed, kGreen+2, kBlack]#, 7, 40]
-lineColors = [kBlue, kRed, kGreen+2, kBlack, kBlue, kRed, kGreen+2, kBlack]#, 7, 40]
 markerStyles = [8,8,8,8,8]#,8,8]
 drawOptions = ["AP", "same", "same", "same", "same"]#, "same", "same", "same", "same"]
 drawOptions1D = ["", "same"]#, "same", "same", "same", "same"]

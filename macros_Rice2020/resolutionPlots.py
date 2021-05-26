@@ -1,3 +1,38 @@
+#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import sys
+import os
+import math
+import numpy as np
+from array import *
+from termcolor import colored
+from optparse import OptionParser,OptionGroup
+
+def resolutionVsPt(options, emtfMode, eventTrees, legendEntries):
+  print(colored("Producing resolution vs pT plots for mode {}".format(emtfMode), 'yellow'))
+  pass
+
+def resolutionVsEta(options, emtfMode, eventTrees, legendEntries):
+  print(colored("Producing resolution vs eta plots for mode {}".format(emtfMode), 'yellow'))
+  pass
+
+def resolutionVsPhi(options, emtfMode, eventTrees, legendEntries):
+  print(colored("Producing resolution vs phi plots for mode {}".format(emtfMode), 'yellow'))
+  pass
+
+def plotResolutionsSingleMode(options, emtfMode, eventTrees, legendEntries):
+
+  if options.effVsPt:
+    resolutionVsPt(options, emtfMode, eventTrees, legendEntries)
+
+  if options.effVsEta:
+    resolutionVsEta(options, emtfMode, eventTrees, legendEntries)
+
+  if options.effVsPhi:
+    resolutionVsPhi(options, emtfMode, eventTrees, legendEntries)
+
+
 """
 \draw_res_axis_label = ["(p_{T}^{GEN} - p_{T}^{L1}) / p_{T}^{GEN}", "(p_{T,GEN}^{-1} - p_{T,L1}^{-1}) / p_{T,GEN}^{-1}"]
 draw_res_option = ["(GEN_pt - pow(2, BDTG_AWB_Sq))/GEN_pt", "(((1./GEN_pt) - (1./pow(2, BDTG_AWB_Sq)))/(1./GEN_pt))"]

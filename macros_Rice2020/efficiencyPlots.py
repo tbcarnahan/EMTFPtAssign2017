@@ -9,27 +9,28 @@ from array import *
 from termcolor import colored
 from optparse import OptionParser,OptionGroup
 
-def efficiencyVsPt():
-  print("Producing efficiency vs pT plots")
+def efficiencyVsPt(options, emtfMode, eventTrees, legendEntries):
+  print(colored("Producing efficiency vs pT plots for mode {}".format(emtfMode), 'green'))
   pass
 
-def efficiencyVsEta():
-  print("Producing efficiency vs eta plots")
+def efficiencyVsEta(options, emtfMode, eventTrees, legendEntries):
+  print(colored("Producing efficiency vs eta plots for mode {}".format(emtfMode), 'green'))
   pass
 
-def efficiencyVsPhi():
-  print("Producing efficiency vs phi plots")
+def efficiencyVsPhi(options, emtfMode, eventTrees, legendEntries):
+  print(colored("Producing efficiency vs phi plots for mode {}".format(emtfMode), 'green'))
   pass
 
-def plotEfficiencies(options):
+def plotEfficienciesSingleMode(options, emtfMode, eventTrees, legendEntries):
+
   if options.effVsPt:
-    efficiencyVsPt()
+    efficiencyVsPt(options, emtfMode, eventTrees, legendEntries)
 
   if options.effVsEta:
-    efficiencyVsPt()
+    efficiencyVsEta(options, emtfMode, eventTrees, legendEntries)
 
   if options.effVsPhi:
-    efficiencyVsPhi()
+    efficiencyVsPhi(options, emtfMode, eventTrees, legendEntries)
 
 """
   for l in range(len(pt_cut)):
