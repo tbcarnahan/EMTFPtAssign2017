@@ -1,4 +1,5 @@
 #! /usr/bin/env python
+
 trainingDict = {
  'Run2_Mode10_Compressed': ['root://cmseos.fnal.gov//store/user/dildick/EMTF_BDT_Train_Mode10_Prep2018DataRate_eta1.25to2.4_isRun2_bitComp_Selection0x52005523_20210514_071105/PtRegressionOutput.root',
                             'Run-2, Mode 10, Compr.'],
@@ -176,3 +177,5 @@ trainingDict = {
                                 'Run-3 V1.2, Mode 9, Compr.'],
  'Run3_V1p2_Mode9_Uncompressed': ['root://cmseos.fnal.gov//store/user/dildick/EMTF_BDT_Train_Mode9_Prep2018DataRate_eta1.25to2.4_isRun3_useQS_useES_Selection0x994000943_20210514_080751/PtRegressionOutput.root',
                                   'Run-3 V1.2, Mode 9, Uncompr.']}
+
+trainingChoices = list(trainingDict.keys())
