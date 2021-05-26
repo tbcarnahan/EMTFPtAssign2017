@@ -10,12 +10,16 @@ from ROOT import gROOT
 from optparse import OptionParser,OptionGroup
 from helpers import *
 from datetime import datetime
-from trainingDict import *
 from tdrstyle import *
 from CMS_lumi import *
 from efficiencyPlots import *
 from occupancyPlots import *
 from resolutionPlots import *
+
+currentdir = os.path.dirname(os.path.realpath(__file__))
+parentdir = os.path.dirname(currentdir)
+sys.path.insert(0, parentdir +  "/condor")
+from trainingDict_Prep2018DataRate import *
 
 if __name__ == '__main__':
 
