@@ -6,6 +6,27 @@ import math
 import numpy as np
 import CMS_lumi, tdrstyle
 
+def gen_pt_cut(pt_min):
+  return TCut("GEN_pt >= {0}".format(pt_min))
+
+def gen_eta_cut(eta_min, eta_max):
+  return TCut("abs(GEN_eta) >= {0} && abs(GEN_eta) <= {1}".format(eta_min, eta_max))
+
+def mode_cut(mode):
+  return TCut("TRK_mode == {0}".format(mode))
+
+def bdt_pt_cut(pt_min):
+  return TCut("pow(2, BDTG_AWB_Sq) >= {}".format(pt_min))
+
+def bdt_pt_scaled(pt_scaling_A, pt_scaling_B, pt_min):
+  return TCut("(({0} * pow(2,BDTG_AWB_Sq))/(1 - ({1} * pow(2,BDTG_AWB_Sq)))) >= {2}".format(pt_scaling_A, pt_scaling_B, pt_min))
+
+def bdt_pt_scaled_Run2(pt_min):
+  return bdt_pt_scaled(1.2, 0.015, pt_min)
+
+def bdt_pt_scaled_Run3(pt_min):
+  return bdt_pt_scaled(1.3, 0.004, pt_min)
+
 def ANDtwo(cut1,cut2):
     """AND of two TCuts in PyROOT"""
     if cut1.GetTitle() == "":
