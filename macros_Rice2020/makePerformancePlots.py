@@ -11,40 +11,42 @@ from termcolor import colored
 from ROOT import gROOT
 from optparse import OptionParser,OptionGroup
 from Helpers import *
+from datetime import datetime
 from trainingDict import trainingDict
 from tdrstyle import *
 import CMS_lumi as CMS_lumi
 
-iPeriod = 0
-iPos = 0
-if( iPos==0 ): CMS_lumi.relPosX = 0.12
-
 ## Configuration settings
 parser = OptionParser()
 parser.add_option('--batchMode', dest='batchMode', action='store_true',default = True)
+parser.add_option("--addDateTime", dest="addDateTime", action="store_true", default = True)
 parser.add_option("--eta_slices", dest="eta_slices", action="store_true", default = False)
 parser.add_option("--single_pt", dest="single_pt", action="store_true", default = False)
-parser.add_option("--addDateTime", dest="addDateTime", action="store", default = True)
-
 parser.add_option("--effVsPt", dest="effVsPt", action="store_true", default = False)
 parser.add_option("--effVsEta", dest="effVsEta", action="store_true", default = False)
 parser.add_option("--effVsPhi", dest="effVsPhi", action="store_true", default = False)
-
 parser.add_option("--resolutions", dest="resolutions", action="store_true", default = False)
 parser.add_option("--res1D", dest="res1D", action="store_true", default = False)
 parser.add_option("--res1DvsPt", dest="res1DvsPt", action="store_true", default = False)
 parser.add_option("--res1DvsEta", dest="res1DvsEta", action="store_true", default = False)
 parser.add_option("--res2D", dest="res2D", action="store_true", default = False)
+parser.add_option('--emtfModes',nargs='+', help='Set EMTF modes', choices=[15,14,13,11,7,12,10,9,6,5,3], default = [15,14,13,11,7,12,10,9,6,5,3])
 (options, args) = parser.parse_args()
-
-plotDir = "plots/"
 
 ## Run in quiet mode
 if options.batchMode:
   sys.argv.append('-b')
   gROOT.SetBatch(1)
 
-mode = 7
+## default output directory takes a date and time
+currentDateTime = datetime.now().strftime("%Y%m%d_%H%M%S")
+plotDir = "plots_{}/".format(currentDateTime)
+print("Using output directory", plotDir)
+
+iPeriod = 0
+iPos = 0
+if( iPos==0 ): CMS_lumi.relPosX = 0.12
+
 pt_scaling_A = [1.3, 1.3, 1.3]
 pt_scaling_B = [0.004, 0.004, 0.004]
 
@@ -52,7 +54,7 @@ if options.single_pt:
   pt_cut = [22]
   pt_str = ["22"]
 else:
-  pt_cut = [3., 5., 7., 10., 12., 15., 20., 22., 24., 27.]
+  pt_cut = [3, 5, 7, 10, 12, 15, 20, 22, 24, 27]
   pt_str = ["3", "5", "7", "10", "12", "15", "20", "22", "24", "27"]
 
 if options.eta_slices:
@@ -102,12 +104,16 @@ draw_res_option = ["(GEN_pt - pow(2, BDTG_AWB_Sq))/GEN_pt", "(((1./GEN_pt) - (1.
 draw_res_label = ["diffOverGen", "invDiffOverInvGen"]
 res_type = ["mu", "sigma"]
 
+
+setTDRStyle()
+
+
 ## ================ Helper functions ======================
 def gen_pt_cut(pt_min):
   return TCut("GEN_pt >= {0}".format(pt_min))
 
 def gen_eta_cut(eta_min, eta_max):
-  return TCut("GEN_eta >= {0} && GEN_eta <= {1}".format(eta_min, eta_max))
+  return TCut("abs(GEN_eta) >= {0} && abs(GEN_eta) <= {1}".format(eta_min, eta_max))
 
 def mode_cut(mode):
   return TCut("TRK_mode == {0}".format(mode))
@@ -124,12 +130,6 @@ def bdt_pt_scaled_Run2(pt_min):
 def bdt_pt_scaled_Run3(pt_min):
   return bdt_pt_scaled(1.3, 0.004, pt_min)
 
-def makePlots(canvas, plotTitle):
-  c1.SaveAs(plotDir + plotTitle + ".png")
-  c1.SaveAs(plotDir + plotTitle + ".pdf")
-  c1.SaveAs(plotDir + plotTitle + ".C")
-
-setTDRStyle()
 
 ## ================ Plotting script ======================
 if options.effVsPt:
@@ -189,9 +189,7 @@ if options.effVsPt:
       c1.Update()
       CMS_lumi.CMS_lumi(c1, iPeriod, iPos)
 
-      checkDir('./plots')
-      checkDir('./plots/bdt_eff')
-      makePlots(c1, "bdt_eff/BDT_eff_SD_pt{}_eta{}to{}".format(pt_str[l], eta_str_min[k], eta_str_max[k]))
+      makePlots(c1, plotDir, "BDT_eff_SD_pt{}_eta{}to{}".format(pt_str[l], eta_str_min[k], eta_str_max[k]))
 
 
 if options.effVsEta:
@@ -234,10 +232,7 @@ if options.effVsEta:
     c1.Update()
     CMS_lumi.CMS_lumi(c1, iPeriod, iPos)
 
-    checkDir('./plots')
-    checkDir('./plots/bdt_eff')
-    checkDir('./plots/bdt_eff/eta')
-    makePlots(c1, "bdt_eff/eta/BDTeff_eta_pt"+str(pt_str[l]) )
+    makePlots(c1, plotDir, "BDTeff_eta_pt"+str(pt_str[l]) )
 
 
 if options.effVsPhi:
@@ -280,10 +275,7 @@ if options.effVsPhi:
     c1.Update()
     CMS_lumi.CMS_lumi(c1, iPeriod, iPos)
 
-    checkDir('./plots')
-    checkDir('./plots/bdt_eff')
-    checkDir('./plots/bdt_eff/phi')
-    makePlots(c1, "bdt_eff/phi/BDTeff_phi_pt"+str(pt_str[l]) )
+    makePlots(c1, plotDir, "BDTeff_phi_pt"+str(pt_str[l]) )
 
 
 
@@ -301,12 +293,9 @@ if options.resolutions:
 	  res = draw_res(evt_trees[ee], 64, -10, 10, draw_res_option[k] , bdt_pt(pt_cut[l]) )
 	  resolutions.append(res)
 
-	checkDir('./plots')
-        checkDir('./plots/resolutions')
-
 	c1 = TCanvas("c1")
 	draw_multiple(resolutions, " ; "+draw_res_axis_label[k]+" ; ", drawOptions1D, lineColors, legendEntries, pt_cut[l])
-	makePlots(c1,  "resolutions/ptres1D_"+draw_res_label[k]+"_pt"+str(pt_str[l]) )
+	makePlots(c1, plotDir,  "ptres1D_"+draw_res_label[k]+"_pt"+str(pt_str[l]) )
 	c1.Close()
 
 

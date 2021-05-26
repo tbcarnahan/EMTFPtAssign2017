@@ -6,8 +6,6 @@ import math
 import numpy as np
 import CMS_lumi, tdrstyle
 
-plotDir = "plots/"
-
 def ANDtwo(cut1,cut2):
     """AND of two TCuts in PyROOT"""
     if cut1.GetTitle() == "":
@@ -214,29 +212,29 @@ def draw_resVsEta(t, nBins, minBin, maxBin, to_draw, bdt_pt_cut, gen_pt_cut, eta
 #_______________________________________________________________________________
 def draw_multiple(res, title, drawOptions1D, lineColors, texLabel, pt_cut):
 
-    for i in range(len(res)):	
+    for i in range(len(res)):
 	res[i].SetLineColor(lineColors[i])
 	res[i].Scale(1./res[i].Integral(), "WIDTH")
 	res[i].Draw("HIST"+drawOptions1D[i])
 
     for i in range(len(res)):
-      tex = TLatex() 
+      tex = TLatex()
       tex.SetTextFont(22)
       tex.SetTextColor(lineColors[i])
       tex.SetTextSize(0.033)
       tex.SetTextAlign(10)
       tex.DrawLatex( 2, 0.8-(i*0.1), texLabel[i]+" #mu = "+str(truncate(res[i].GetMean(),3))+", #sigma = "+str(truncate(res[i].GetRMS(),3)))
-	
+
     tex = TLatex()
     tex.SetTextColor(kBlack)
     tex.DrawLatex( 2, 0.8-((i+1)*0.1), "Mode 15, p_{T}^{L1} > "+str(int(pt_cut))+" GeV")
 
     res[0].SetTitle(title)
     return
-    
+
 #_______________________________________________________________________________
 def draw_multi_resVsPt(length, res, resError, x_arr, xtitle, ytitle, lineColors, pt_cut, legendEntries, draw_res_label, res_type):
-    
+
     #Decide where the legend gets drawn. Avoid it covering any datapoints.
     if res_type=="mu" and draw_res_label=="diffOverGen": leg = TLegend(0.43, 0.20, 0.75, 0.40)
     if res_type=="mu" and draw_res_label!="diffOverGen": leg = TLegend(0.38, 0.65, 0.70, 0.85)
@@ -260,7 +258,7 @@ def draw_multi_resVsPt(length, res, resError, x_arr, xtitle, ytitle, lineColors,
     mg.GetXaxis().SetTitle(xtitle)
     mg.GetYaxis().SetTitle(ytitle)
 
-    
+
     checkDir('./plots')
     checkDir('./plots/resolutions')
     makePlots(c1,  "resolutions/"+res_type+"_res_vs_pt_"+draw_res_label )
@@ -268,7 +266,7 @@ def draw_multi_resVsPt(length, res, resError, x_arr, xtitle, ytitle, lineColors,
 
 #_______________________________________________________________________________
 def draw_multi_resVsEta(length, res, resError, x_arr, xtitle, ytitle, lineColors, eta_range, legendEntries, draw_res_label, res_type):
-    
+
     leg = TLegend(0.38, 0.20, 0.70, 0.40)
     mg = TMultiGraph()
     c1 = TCanvas("c1")
@@ -286,7 +284,7 @@ def draw_multi_resVsEta(length, res, resError, x_arr, xtitle, ytitle, lineColors
     leg.Draw("same")
     mg.GetXaxis().SetTitle(xtitle)
     mg.GetYaxis().SetTitle(ytitle)
-    
+
     checkDir('./plots')
     checkDir('./plots/resolutions')
     makePlots(c1,  "resolutions/"+res_type+"_res_vs_eta_"+draw_res_label )
@@ -314,32 +312,31 @@ def draw_res2D(t, nBinsX, minBinX, maxBinX, nBinsY, minBinY, maxBinY, to_draw, l
   gStyle.SetTextFont(42)
   gStyle.SetTitleOffset(1.15,"xyz")
   gStyle.SetLabelFont(42, "xyz")
-  gStyle.SetLabelSize(0.030, "xyz")  
+  gStyle.SetLabelSize(0.030, "xyz")
 
   Style(htemp, outFileString, 0.10, 0.100, 0.110, 0.110, 0.102)
 
 
 #_______________________________________________________________________________
-def makePlots(canvas, plotTitle):
-  c1.SaveAs(plotDir + plotTitle + ".png")
-  c1.SaveAs(plotDir + plotTitle + ".pdf")
-  c1.SaveAs(plotDir + plotTitle + ".C")
-	
-#_______________________________________________________________________________
-def checkDir(path):
-    if not os.path.exists(path): os.makedirs(path)
+def makePlots(c1, plotDir, plotTitle):
+    if not os.path.exists(plotDir):
+        os.makedirs(plotDir)
+
+    c1.SaveAs(plotDir + plotTitle + ".png")
+    c1.SaveAs(plotDir + plotTitle + ".pdf")
+    c1.SaveAs(plotDir + plotTitle + ".C")
 
 
 #_______________________________________________________________________________
 def Style(hist, outFileString, LeftMargin, TScale, BScale, LScale, RScale):
-    
+
     #tdrstyle.setTDRStyle()
 
     iPos = 11
     if( iPos==0 ): CMS_lumi.relPosX = 0.12
 
-    H_ref = 600; 
-    W_ref = 800; 
+    H_ref = 600;
+    W_ref = 800;
     W = W_ref
     H  = H_ref
 
@@ -347,7 +344,7 @@ def Style(hist, outFileString, LeftMargin, TScale, BScale, LScale, RScale):
 
     # references for T, B, L, R
     T = TScale*H_ref
-    B = BScale*H_ref 
+    B = BScale*H_ref
     L = LScale*W_ref
     R = RScale*W_ref
 
@@ -374,11 +371,10 @@ def Style(hist, outFileString, LeftMargin, TScale, BScale, LScale, RScale):
 
     checkDir('./plots')
     checkDir('./plots/resolutions')
-    makePlots( c1, "resolutions/ptres2D_"+outFileString)
+    makePlots(c1, "resolutions/ptres2D_"+outFileString)
 
 
 #_______________________________________________________________________________
 def truncate(number, digits):
   stepper = 10.0 ** digits
   return float(math.trunc(stepper * number) / stepper)
-
