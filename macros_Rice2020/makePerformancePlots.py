@@ -106,8 +106,18 @@ if __name__ == '__main__':
     for p in trainings:
       legendEntries.append(trainingDict[p][1])
 
-    plotEfficienciesSingleMode(options, emtfMode, eventTrees, legendEntries)
-    plotResolutionsSingleMode(options, emtfMode, eventTrees, legendEntries)
+    ## create a simple helper object to attach attributes to
+    class Plotter():
+      def __init__(self, emtfMode, options, eventTrees, legendEntries):
+        self.options = options
+        self.emtfMode = emtfMode
+        self.eventTrees = eventTrees
+        self.legendEntries = legendEntries
+
+    myPlotter = Plotter(emtfMode, options, eventTrees, legendEntries)
+
+    plotEfficienciesSingleMode(myPlotter)
+    #plotResolutionsSingleMode(myPlotter)
 
   """
 ## Data

@@ -9,28 +9,32 @@ from array import *
 from termcolor import colored
 from optparse import OptionParser,OptionGroup
 
-def efficiencyVsPt(options, emtfMode, eventTrees, legendEntries):
-  print(colored("Producing efficiency vs pT plots for mode {}".format(emtfMode), 'green'))
+def efficiencyVsPt(plotter):
+  print(colored("Producing efficiency vs pT plots for mode {}".format(plotter.emtfMode), 'green'))
   pass
 
-def efficiencyVsEta(options, emtfMode, eventTrees, legendEntries):
-  print(colored("Producing efficiency vs eta plots for mode {}".format(emtfMode), 'green'))
+def efficiencyVsPt(plotter):
+  print(colored("Producing efficiency vs pT plots for mode {}".format(plotter.emtfMode), 'green'))
   pass
 
-def efficiencyVsPhi(options, emtfMode, eventTrees, legendEntries):
-  print(colored("Producing efficiency vs phi plots for mode {}".format(emtfMode), 'green'))
+def efficiencyVsEta(plotter):
+  print(colored("Producing efficiency vs eta plots for mode {}".format(plotter.emtfMode), 'green'))
   pass
 
-def plotEfficienciesSingleMode(options, emtfMode, eventTrees, legendEntries):
+def efficiencyVsPhi(plotter):
+  print(colored("Producing efficiency vs phi plots for mode {}".format(plotter.emtfMode), 'green'))
+  pass
 
-  if options.effVsPt:
-    efficiencyVsPt(options, emtfMode, eventTrees, legendEntries)
+def plotEfficienciesSingleMode(plotter):
 
-  if options.effVsEta:
-    efficiencyVsEta(options, emtfMode, eventTrees, legendEntries)
+  if plotter.options.effVsPt:
+    efficiencyVsPt(plotter)
 
-  if options.effVsPhi:
-    efficiencyVsPhi(options, emtfMode, eventTrees, legendEntries)
+  if plotter.options.effVsEta:
+    efficiencyVsEta(plotter)
+
+  if plotter.options.effVsPhi:
+    efficiencyVsPhi(plotter)
 
 """
   for l in range(len(pt_cut)):
