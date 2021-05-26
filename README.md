@@ -1,2 +1,2 @@
 # EMTFPtAssign2017
-EMTF code for pT LUT training (Run II)
+EMTF code for pT LUT training (Run II-RunIII)

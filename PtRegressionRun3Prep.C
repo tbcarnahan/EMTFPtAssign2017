@@ -61,7 +61,7 @@ void PtRegressionRun3Prep(TString user = "",
                           bool isRun2 = true,
                           bool useOneQuartPrecision = false,
                           bool useOneEighthPrecision = false,
-                          bool useBitCompression = true,
+                          bool useBitCompression = false,
                           int nEvents = -1,
                           bool verbose = false) {
 
@@ -148,9 +148,8 @@ void PtRegressionRun3Prep(TString user = "",
   TString out_file_str;
   TString bit_str = (useBitCompression ? "bitCompr" : "noBitCompr");
 
-  out_file_str.Form( "%s/%s_MODE_%d_%s.root",
-                     OUT_DIR_NAME.Data(), OUT_FILE_NAME.Data(),
-                     emtfMode, bit_str.Data());
+  out_file_str.Form( "%s/%s.root",
+                     OUT_DIR_NAME.Data(), OUT_FILE_NAME.Data());
 
   TFile* out_file = TFile::Open( out_file_str, "RECREATE" );
 
@@ -240,9 +239,8 @@ void PtRegressionRun3Prep(TString user = "",
     for (unsigned iWgt = 0; iWgt < EVT_WGTS.size(); iWgt++) {
 
       TString factName;  // "Targ" and "Wgt" components not arbitrary - correspond to specific options later on
-      factName.Form( "f_MODE_%d_%sTarg_%sWgt_%s",
-                     emtfMode, TARG_VARS.at(iTarg).Data(), EVT_WGTS.at(iWgt).Data(),
-                     bit_str.Data());
+      factName.Form( "f_%sTarg_%sWgt",
+                     TARG_VARS.at(iTarg).Data(), EVT_WGTS.at(iWgt).Data());
 
       // the selection is now done in the Python configuration, not here!
       factories.push_back( std::make_tuple( nullF, nullL, factName, var_names, var_vals, trainVarsSelection) );
@@ -360,6 +358,7 @@ void PtRegressionRun3Prep(TString user = "",
   spec_vars.push_back( MVA_var( "GEN_pt",        "GEN p_{T}",                 "GeV", 'F', -77 ) );
   spec_vars.push_back( MVA_var( "EMTF_pt",       "EMTF p_{T}",                "GeV", 'F', -77 ) );
   spec_vars.push_back( MVA_var( "GEN_eta",       "GEN #eta",                  "",    'F', -77 ) );
+  spec_vars.push_back( MVA_var( "GEN_phi",       "GEN #phi",                  "",    'F', -77 ) );
   spec_vars.push_back( MVA_var( "EMTF_eta",      "EMTF #eta",                 "",    'F', -77 ) );
   spec_vars.push_back( MVA_var( "TRK_eta",       "Track #eta",                "",    'F', -77 ) );
   spec_vars.push_back( MVA_var( "GEN_charge",    "GEN charge",                "",    'I', -77 ) );
@@ -835,6 +834,7 @@ void PtRegressionRun3Prep(TString user = "",
         // calculate bendings from pattern numbers (Run-2, Run-3)
         // this function modifies bendX
         CalcBends(bend1, bend2, bend3, bend4,
+		  slope1, slope2, slope3, slope4,
                   pat1, pat2, pat3, pat4,
                   pat1_run3, pat2_run3, pat3_run3, pat4_run3,
                   dPhSign, endcap, mode, BIT_COMP, isRun2 );

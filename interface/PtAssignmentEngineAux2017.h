@@ -16,7 +16,7 @@ public:
 
   int getdPhiFromBin(int dPhiBin, int bits=7, int max=512) const;
 
-  int getCLCT(int clct, int endcap, int dPhiSign, int bits=3) const;
+  int getCLCT(int clct, int endcap, int dPhiSign, int bits=3, bool isRun2 = true) const;
 
   int unpackCLCT(int clct, int endcap, int dPhiSign, int bits) const;
 

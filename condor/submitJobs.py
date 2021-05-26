@@ -85,7 +85,9 @@ def write_bash(temp = 'runJob.sh', tarball = '', command = '', outputdirectory =
     out += 'ls\n'
     out += command + '\n'
     ## copy the output to EOS
-    out += "xrdcp -f Pt*.root root://cmseos.fnal.gov//store/user/{user}/{outdir}/\n".format(outdir=outputdirectory, user=USER)
+    out += "xrdcp -f PtRegressionOutput.root root://cmseos.fnal.gov//store/user/{user}/{outdir}/\n".format(outdir=outputdirectory, user=USER)
+    ## copy the XML file to EOS as well
+    out += "xrdcp -r f_logPtTarg_invPtWgt root://cmseos.fnal.gov//store/user/{user}/{outdir}/\n".format(outdir=outputdirectory, user=USER)
     out += 'echo "Removing tarball"\n'
     out += "rm {tarball}\n".format(tarball=tarball)
     ## cleanup
@@ -245,12 +247,14 @@ if __name__ == '__main__':
 
     ## name for output directory on EOS
     outputdirectory = "EMTF_BDT_Train"
+    outputdirectory += "_Mode{}".format(args.emtfMode)
     outputdirectory += "_{}".format(args.jobLabel)
     outputdirectory += "_eta{}to{}".format(args.minEta, args.maxEta)
     if isRun2:      outputdirectory += "_isRun2"
     if isRun3:      outputdirectory += "_isRun3"
-    if useQSBit:    outputdirectory += "_useQSBit"
-    if useESBit:    outputdirectory += "_useESBit"
+    if useQSBit:    outputdirectory += "_useQS"
+    if useESBit:    outputdirectory += "_useES"
+    if useBitComp:  outputdirectory += "_bitComp"
     outputdirectory += "_Selection{}".format(trainVarsHex)
     if addDateTime: outputdirectory += "_{}".format(currentDateTime)
 

@@ -20,7 +20,7 @@ TString ZeroBias_files[1] = {
 const int USESingleMu = SingleMu_files.size();//# of SM files to use
 const int USEZerobias = 0;//# of ZB files to use
 TString OUT_DIR_NAME  = "./";
-TString OUT_FILE_NAME = "PtRegressionRun3Prep";  // Name base for output ROOT file
+TString OUT_FILE_NAME = "PtRegressionOutput";  // Name base for output ROOT file
 
 namespace PtRegression2018_cfg {
 
