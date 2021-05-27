@@ -271,11 +271,11 @@ void CalcBends( int& bend1, int& bend2, int& bend3, int& bend4,
   }
 
   if (BIT_COMP) {
-    
+
     int nBits = 3;
     if (mode == 7 || mode == 11 || mode > 12)
       nBits = 2;
-    
+
 
     if (isRun2) {
       if (  mode      / 8 > 0 ) // Has station 1 hit
@@ -289,16 +289,16 @@ void CalcBends( int& bend1, int& bend2, int& bend3, int& bend4,
     }
 
     else {
-      if (  mode      / 8 > 0 ) // Has station 1 hit                                                                                       
+      if (  mode      / 8 > 0 ) // Has station 1 hit
         slope1 = ENG.getCLCT( slope1, endcap, dPhSign, nBits, isRun2 );
-      if ( (mode % 8) / 4 > 0 ) // Has station 2 hit                                                                                                          
+      if ( (mode % 8) / 4 > 0 ) // Has station 2 hit
         slope2 = ENG.getCLCT( slope2, endcap, dPhSign, nBits, isRun2 );
-      if ( (mode % 4) / 2 > 0 ) // Has station 3 hit                                                                                                          
+      if ( (mode % 4) / 2 > 0 ) // Has station 3 hit
         slope3 = ENG.getCLCT( slope3, endcap, dPhSign, nBits, isRun2 );
-      if ( (mode % 2)     > 0 ) // Has station 4 hit                                                                                                          
+      if ( (mode % 2)     > 0 ) // Has station 4 hit
         slope4 = ENG.getCLCT( slope4, endcap, dPhSign, nBits, isRun2 );
     }
-    
+
   } // End conditional: if (BIT_COMP)
 
 } // End function: CalcBends()
@@ -310,17 +310,24 @@ void CalcSlopes( const int bend, int& slope, const int endcap, const int mode, c
     return;
   }
 
-  // multiply with bending
-  // make sure that bending convention is not {0,1}, but {1, -1}!!!
-  // bend == 0 means left bending, thus positive
-  // bend == 1 means right bending, thus negative
-  //slope *= (1- 2*bend);
+  /*
+     multiply with bending
+     make sure that bending convention is not {0,1}, but {1, -1}!!!
+     bend == 0 means left bending, thus negative in CSCPatternBank
+     bend == 1 means right bending, thus positive in CSCPatternBank
+  */
+  slope *= (1- 2*bend);
 
-  //std::cout << "Slope before compression: " << slope << ", endcap: " << endcap << std::endl;
+  /*
+    However, in the EMTF we flip the convention, so that
+    - positive bending (left)
+    - negative bending (right)
+  */
+  slope *= -1;
 
   // Reverse to match dPhi convention
-  //if (endcap == -1)
-  //    slope *= -1;
+  if (endcap == -1)
+    slope *= -1;
 
   if (BIT_COMP) {
 
