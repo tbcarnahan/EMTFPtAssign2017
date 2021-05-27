@@ -7,7 +7,7 @@ import math
 from ROOT import *
 from termcolor import colored
 from ROOT import gROOT
-from optparse import OptionParser,OptionGroup
+import argparse
 from helpers import *
 from datetime import datetime
 from tdrstyle import *
@@ -24,33 +24,32 @@ from trainingDict_Prep2018DataRate import *
 if __name__ == '__main__':
 
   ## Configuration settings
-  parser = OptionParser()
-  parser.add_option('--batchMode', dest='batchMode', action='store_true',default = True)
-  parser.add_option("--addDateTime", dest="addDateTime", action="store_true", default = True)
-  parser.add_option("--useEtaSlices", dest="useEtaSlices", action="store_true", default = False)
-  parser.add_option("--single_pt", dest="single_pt", action="store_true", default = False)
-  parser.add_option("--effVsPt", dest="effVsPt", action="store_true", default = False)
-  parser.add_option("--effVsEta", dest="effVsEta", action="store_true", default = False)
-  parser.add_option("--effVsPhi", dest="effVsPhi", action="store_true", default = False)
-  parser.add_option("--res1DvsPt", dest="res1DvsPt", action="store_true", default = False)
-  parser.add_option("--res1DvsEta", dest="res1DvsEta", action="store_true", default = False)
-  parser.add_option("--res2D", dest="res2D", action="store_true", default = False)
-  parser.add_option('--emtfModes',nargs='+', help='Set EMTF modes',
+  parser = argparse.ArgumentParser()
+  parser.add_argument('--batchMode', dest='batchMode', action='store_true',default = True)
+  parser.add_argument("--addDateTime", dest="addDateTime", action="store_true", default = True)
+  parser.add_argument("--useEtaSlices", dest="useEtaSlices", action="store_true", default = False)
+  parser.add_argument("--single_pt", dest="single_pt", action="store_true", default = False)
+  parser.add_argument("--effVsPt", dest="effVsPt", action="store_true", default = False)
+  parser.add_argument("--effVsEta", dest="effVsEta", action="store_true", default = False)
+  parser.add_argument("--effVsPhi", dest="effVsPhi", action="store_true", default = False)
+  parser.add_argument("--res1DvsPt", dest="res1DvsPt", action="store_true", default = False)
+  parser.add_argument("--res1DvsEta", dest="res1DvsEta", action="store_true", default = False)
+  parser.add_argument("--res2D", dest="res2D", action="store_true", default = False)
+  parser.add_argument('--emtfModes', type=int, nargs='+', help='Set EMTF modes',
                     default = [15,14,13,11,7,12,10,9,6,5,3])
-  parser.add_option('--emtfVersions',nargs='+', help='Set EMTF versions',
+  parser.add_argument('--emtfVersions',nargs='+', help='Set EMTF versions',
                     choices=['Run2','Run3_V1p0','Run3_V1p1','Run3_V1p2'],
                     default = ['Run2','Run3_V1p0','Run3_V1p1','Run3_V1p2'])
-  parser.add_option('--etaMins',nargs='+', help='Set eta minima',
-                    default = [1.2, 1.4, 1.6, 1.8, 2.0, 2.2, 1.25])
-  parser.add_option('--etaMaxs',nargs='+', help='Set eta maxima',
-                    default = [1.4, 1.6, 1.8, 2.0, 2.2, 2.4, 2.4])
-  parser.add_option('--emtfPtCuts',nargs='+', help='Set pT cuts',
-                    default = [5, 7, 10, 12, 15, 20, 22])
-  parser.add_option("--treeName", dest="treeName", action="store", default = "f_logPtTarg_invPtWgt/TestTree")
-  parser.add_option("--verbosity", dest="verbosity", action="store", default = 1, type=int)
-  parser.add_option("--etaSlices", dest="etaSlices", action="store_true", default = False)
-
-  (options, args) = parser.parse_args()
+  parser.add_argument('--etaMins',nargs='+', help='Set eta minima',
+                      default = [1.2, 1.4, 1.6, 1.8, 2.0, 2.2, 1.25], type-float)
+  parser.add_argument('--etaMaxs',nargs='+', help='Set eta maxima',
+                      default = [1.4, 1.6, 1.8, 2.0, 2.2, 2.4, 2.4], type=float)
+  parser.add_argument('--emtfPtCuts',nargs='+', help='Set pT cuts',
+                      default = [5, 7, 10, 12, 15, 20, 22], type=int)
+  parser.add_argument("--treeName", dest="treeName", action="store", default = "f_logPtTarg_invPtWgt/TestTree")
+  parser.add_argument("--verbosity", dest="verbosity", action="store", default = 1, type=int)
+  parser.add_argument("--etaSlices", dest="etaSlices", action="store_true", default = False)
+  options = parser.parse_args()
 
   ## Run in quiet mode
   if options.batchMode:
@@ -65,7 +64,7 @@ if __name__ == '__main__':
 
   ## default output directory takes a date and time
   currentDateTime = datetime.now().strftime("%Y%m%d_%H%M%S")
-  plotDir = "plots_{}_TEST/".format(currentDateTime)
+  plotDir = "plots_{}/".format(currentDateTime)
   if options.verbosity >= 1:
     print(colored("- Using output directory {}".format(plotDir), 'blue'))
 
@@ -134,14 +133,3 @@ if __name__ == '__main__':
 
     plotEfficienciesSingleMode(myPlotter)
     #plotResolutionsSingleMode(myPlotter)
-
-  """
-## Data
-
-
-markerStyles = [8,8,8,8,8]#,8,8]
-drawOptions = ["AP", "same", "same", "same", "same"]#, "same", "same", "same", "same"]
-drawOptions1D = ["", "same"]#, "same", "same", "same", "same"]
-outFileString = ["Run2_dPhi12_23_34","Run3_dPhi12_23_34"]#, "Run3_bend1_bitCompr"]#"Run3QSBit", "Run3QSBitESBit"]
-
-"""
