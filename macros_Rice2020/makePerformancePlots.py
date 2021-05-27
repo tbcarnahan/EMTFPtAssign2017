@@ -41,7 +41,7 @@ if __name__ == '__main__':
                     choices=['Run2','Run3_V1p0','Run3_V1p1','Run3_V1p2'],
                     default = ['Run2','Run3_V1p0','Run3_V1p1','Run3_V1p2'])
   parser.add_argument('--etaMins',nargs='+', help='Set eta minima',
-                      default = [1.2, 1.4, 1.6, 1.8, 2.0, 2.2, 1.25], type-float)
+                      default = [1.2, 1.4, 1.6, 1.8, 2.0, 2.2, 1.25], type=float)
   parser.add_argument('--etaMaxs',nargs='+', help='Set eta maxima',
                       default = [1.4, 1.6, 1.8, 2.0, 2.2, 2.4, 2.4], type=float)
   parser.add_argument('--emtfPtCuts',nargs='+', help='Set pT cuts',
