@@ -39,7 +39,6 @@ def efficiencyVsPt_PtCutEtaSlice(emtfMode, plotter, ptCutIndex, etaSliceIndex):
     eff.Draw(plotter.emtfDrawOptions[ee])
     effs.append(eff)
     leg.AddEntry(effs[ee], plotter.legendEntries[ee], "pl")
-  eff.Draw("same")
 
   gPad.Update()
   graph = eff.GetPaintedGraph()
@@ -78,6 +77,14 @@ def efficiencyVsEta_PtCut(emtfMode, plotter, ptCutIndex):
   effs = []
 
   c1 = newCanvas()
+  leg = TLegend(0.35, 0.2, 0.6, 0.5);
+  leg.SetHeader("p_{T}^{GEN}, p_{T}^{L1} #geq %d GeV"%ptCut)
+  leg.SetBorderSize(0)
+  leg.SetFillStyle(0)
+  leg.SetFillColor(0)
+  leg.SetTextSize(0.04)
+  gStyle.SetOptStat(0)
+
   for ee in range(0,len(plotter.eventTrees)):
     eff = draw_eff(plotter.eventTrees[ee], " ; #eta^{GEN} ; Trigger Efficiency", binning, "GEN_eta", gen_pt_cut(ptCut), bdt_pt_scaled_Run3(ptCut))
     eff.SetMarkerColor(plotter.emtfColors[ee])
@@ -85,16 +92,9 @@ def efficiencyVsEta_PtCut(emtfMode, plotter, ptCutIndex):
     eff.SetMarkerStyle(8)
     eff.Draw(plotter.emtfDrawOptions[ee])
     effs.append(eff)
-
-  leg = TLegend(0.35, 0.2, 0.6, 0.5);
-  leg.SetHeader("p_{T}^{GEN}, p_{T}^{L1} #geq %d GeV"%ptCut)
-  leg.SetBorderSize(0)
-  leg.SetFillStyle(0)
-  leg.SetFillColor(0)
-  leg.SetTextSize(0.04)
+    leg.AddEntry(effs[ee], plotter.legendEntries[ee], "pl")
 
   gPad.Update()
-  gStyle.SetOptStat(0)
   graph = eff.GetPaintedGraph()
   graph.SetMinimum(0)
   graph.SetMaximum(1.1)
@@ -102,6 +102,7 @@ def efficiencyVsEta_PtCut(emtfMode, plotter, ptCutIndex):
   graph.GetYaxis().SetLabelSize(0.05)
   graph.GetXaxis().SetTitleSize(0.05)
   graph.GetYaxis().SetTitleSize(0.05)
+  gPad.Update()
 
   leg.Draw("same")
 
@@ -127,6 +128,14 @@ def efficiencyVsPhi_PtCut(emtfMode, plotter, ptCutIndex):
   effs = []
 
   c1 = newCanvas()
+  leg = TLegend(0.35, 0.2, 0.6, 0.5, "", "brNDC");
+  leg.SetHeader("p_{T}^{GEN}, p_{T}^{L1} #geq %d GeV"%ptCut)
+  leg.SetBorderSize(0)
+  leg.SetFillStyle(0)
+  leg.SetFillColor(0)
+  leg.SetTextSize(0.04)
+  gStyle.SetOptStat(0)
+
   for ee in range(0,len(plotter.eventTrees)):
     eff = draw_eff(plotter.eventTrees[ee], " ; #phi^{GEN} ; Trigger Efficiency",
                    binning, "GEN_phi", gen_pt_cut(ptCut), bdt_pt_scaled_Run3(ptCut))
@@ -135,16 +144,9 @@ def efficiencyVsPhi_PtCut(emtfMode, plotter, ptCutIndex):
     eff.SetMarkerStyle(8)
     eff.Draw(plotter.emtfDrawOptions[ee])
     effs.append(eff)
-
-  leg = TLegend(0.35, 0.2, 0.6, 0.5);
-  leg.SetHeader("p_{T}^{GEN}, p_{T}^{L1} #geq %d GeV"%ptCut)
-  leg.SetBorderSize(0)
-  leg.SetFillStyle(0)
-  leg.SetFillColor(0)
-  leg.SetTextSize(0.04)
+    leg.AddEntry(effs[ee], plotter.legendEntries[ee], "pl")
 
   gPad.Update()
-  gStyle.SetOptStat(0)
   graph = eff.GetPaintedGraph()
   graph.SetMinimum(0)
   graph.SetMaximum(1.1)
@@ -152,6 +154,7 @@ def efficiencyVsPhi_PtCut(emtfMode, plotter, ptCutIndex):
   graph.GetYaxis().SetLabelSize(0.05)
   graph.GetXaxis().SetTitleSize(0.05)
   graph.GetYaxis().SetTitleSize(0.05)
+  gPad.Update()
 
   leg.Draw("same")
 

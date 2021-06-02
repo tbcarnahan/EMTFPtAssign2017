@@ -124,7 +124,7 @@ if __name__ == '__main__':
         self.eventTrees = eventTrees
         self.legendEntries = legendEntries
         self.plotDir = plotDir
-        self.emtfColors = [kBlue, kRed, kGreen+2, kBlack]
+        self.emtfColors = [kBlack, kBlue, kGreen+2, kRed]
         self.emtfDrawOptions = ["", "same", "same", "same"]
         self.iPos = iPos
         self.iPeriod = iPeriod
