@@ -493,6 +493,27 @@ int CalcBendFromPattern( const int pattern, const int endcap, const bool isRun2 
   return bend;
 }
 
+int CalcBendFromRun3Pattern( const int pattern, const int endcap ) {
+
+  int bend = -99;
+  if (pattern < 0)
+    return bend;
+
+  if (pattern == 4)
+    bend = 0;
+  else if ( (pattern % 2) == 0 )
+    bend = (4 - pattern) / 2;
+  else if ( (pattern % 2) == 1 )
+    bend = -1 * (5 - pattern) / 2;
+
+  // Reverse to match dPhi convention                                                                                                         
+  if (endcap == 1)
+    bend *= -1;
+
+  assert( bend != -99 );
+  return bend;
+}
+
 
 void CalcDeltaPhiSums( int& dPhSum4, int& dPhSum4A, int& dPhSum3, int& dPhSum3A, int& outStPh,
 		       const int dPh12, const int dPh13, const int dPh14, const int dPh23, const int dPh24, const int dPh34 ) {
