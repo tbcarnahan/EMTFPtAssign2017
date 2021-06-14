@@ -825,16 +825,16 @@ void PtRegressionRun3Prep(TString user = "",
           std::cout << "dSlope34 " << dSlope34  << std::endl;
         }
 
-        // CalcDeltaPhiSlope(dSlope1
-        //                   );
-
-        // if (endcap1 == 1 and station1 == 1 and ring1 == 1 and chamber1==1)
-        //   std::cout << station1 << ring1 << chamber1 << " hit_strip1 " << strip1 << " hit_phi_int1 " << ph1 << std::endl;
+        // convert the 5-bit slope to run-2 pattern
+        if (!isRun2) {
+          ConvertSlopeToRun2Pattern(slope1, slope2, slope3, slope4,
+                                    pat1, pat2, pat3, pat4);
+        }
 
         // calculate bendings from pattern numbers (Run-2, Run-3)
         // this function modifies bendX
         CalcBends(bend1, bend2, bend3, bend4,
-		  slope1, slope2, slope3, slope4,
+                  slope1, slope2, slope3, slope4,
                   pat1, pat2, pat3, pat4,
                   pat1_run3, pat2_run3, pat3_run3, pat4_run3,
                   dPhSign, endcap, mode, BIT_COMP, isRun2 );

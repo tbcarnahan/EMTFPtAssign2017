@@ -248,9 +248,22 @@ void CalcDeltaThetas( int& dTh12, int& dTh13, int& dTh14, int& dTh23, int& dTh24
 } // CalcDeltaThetas()
 
 
+void ConvertSlopeToRun2Pattern(const int slope, int& pattern) {
+  const unsigned slopeList[32] = {10, 10, 10, 8, 8, 8, 6, 6, 6, 6, 4, 4, 2, 2, 2, 2,
+                                  10, 10, 10, 9, 9, 9, 7, 7, 7, 7, 5, 5, 3, 3, 3, 3};
+  pattern = slopeList[slope];
+
+)
+void ConvertSlopeToRun2Pattern(const int slope1, const int slope2, const int slope3, const int slope4,
+                               int& pat1, int& pat2, int& pat3, int& pat4) {
+  ConvertSlopeToRun2Pattern(slope1, pat1);
+  ConvertSlopeToRun2Pattern(slope2, pat2);
+  ConvertSlopeToRun2Pattern(slope3, pat3);
+  ConvertSlopeToRun2Pattern(slope4, pat4);
+}
 
 void CalcBends( int& bend1, int& bend2, int& bend3, int& bend4,
-		int& slope1, int& slope2, int& slope3, int& slope4,
+                int& slope1, int& slope2, int& slope3, int& slope4,
                 const int pat1, const int pat2, const int pat3, const int pat4,
                 const int pat1_run3, const int pat2_run3, const int pat3_run3, const int pat4_run3,
                 const int dPhSign, const int endcap, const int mode, const bool BIT_COMP, const bool isRun2) {
@@ -506,7 +519,7 @@ int CalcBendFromRun3Pattern( const int pattern, const int endcap ) {
   else if ( (pattern % 2) == 1 )
     bend = -1 * (5 - pattern) / 2;
 
-  // Reverse to match dPhi convention                                                                                                         
+  // Reverse to match dPhi convention
   if (endcap == 1)
     bend *= -1;
 
