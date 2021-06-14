@@ -252,8 +252,8 @@ void ConvertSlopeToRun2Pattern(const int slope, int& pattern) {
   const unsigned slopeList[32] = {10, 10, 10, 8, 8, 8, 6, 6, 6, 6, 4, 4, 2, 2, 2, 2,
                                   10, 10, 10, 9, 9, 9, 7, 7, 7, 7, 5, 5, 3, 3, 3, 3};
   pattern = slopeList[slope];
+}
 
-)
 void ConvertSlopeToRun2Pattern(const int slope1, const int slope2, const int slope3, const int slope4,
                                int& pat1, int& pat2, int& pat3, int& pat4) {
   ConvertSlopeToRun2Pattern(slope1, pat1);

@@ -25,6 +25,11 @@ void CalcPhiRun3( int& ph, int ring, int strip_quart_bit, int strip_eight_bit, i
 void CalcDeltaThetas( int& dTh12, int& dTh13, int& dTh14, int& dTh23, int& dTh24, int& dTh34,
 		      const int th1, const int th2, const int th3, const int th4, const int mode, const bool BIT_COMP=false );
 
+void ConvertSlopeToRun2Pattern(const int slope, int& pattern);
+
+void ConvertSlopeToRun2Pattern(const int slope1, const int slope2, const int slope3, const int slope4,
+                               int& pat1, int& pat2, int& pat3, int& pat4);
+
 void CalcBends( int& bend1, int& bend2, int& bend3, int& bend4,
 		const int pat1, const int pat2, const int pat3, const int pat4,
 		const int pat1_run3, const int pat2_run3, const int pat3_run3, const int pat4_run3,
