@@ -3,15 +3,15 @@ TString EOS_DIR_NAME = "root://cmseos.fnal.gov//store/user/dildick/SingleMu_Run3
 //TString EOS_DIR_NAME = "root://cmseos.fnal.gov//store/user/mdecaro/Ntuples/";
 TString in_dir = "";
 std::vector<TString> SingleMu_files = {
-        "EMTF_MC_NTuple_SingleMu_1-1.root",
+  "EMTF_MC_NTuple_SingleMu_1-1.root",
 	"EMTF_MC_NTuple_SingleMu_1-2.root",
 	"EMTF_MC_NTuple_SingleMu_1-3.root",
 	"EMTF_MC_NTuple_SingleMu_1-4.root",
-        "EMTF_MC_NTuple_SingleMu_2.root",
-        "EMTF_MC_NTuple_SingleMu_3.root",
-        "EMTF_MC_NTuple_SingleMu_4.root",
-        "EMTF_MC_NTuple_SingleMu_5.root",
-    	"EMTF_MC_NTuple_SingleMu_7.root"
+  "EMTF_MC_NTuple_SingleMu_2.root",
+  "EMTF_MC_NTuple_SingleMu_3.root",
+  "EMTF_MC_NTuple_SingleMu_4.root",
+  "EMTF_MC_NTuple_SingleMu_5.root",
+  "EMTF_MC_NTuple_SingleMu_7.root"
 };
 
 TString ZeroBias_files[1] = {

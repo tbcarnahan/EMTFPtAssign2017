@@ -8,7 +8,8 @@ import subprocess
 from datetime import datetime
 from commonVariables import *
 from Run2Variables import *
-from Run3Variables import *
+from Run3Variables_v0 import *
+from Run3Variables_v1 import *
 
 def hasDuplicates(listOfElems):
     ''' Check if given list contains any duplicates '''
