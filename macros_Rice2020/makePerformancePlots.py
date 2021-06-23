@@ -19,12 +19,14 @@ from resolutionPlots import *
 currentdir = os.path.dirname(os.path.realpath(__file__))
 parentdir = os.path.dirname(currentdir)
 sys.path.insert(0, parentdir +  "/condor")
-from trainingDict_Prep2018DataRate import *
+from trainingDict_endcap_06142021 import * ##change dictionary to pull updated training runs
 
 if __name__ == '__main__':
 
   ## Configuration settings
   parser = argparse.ArgumentParser()
+  parser.add_argument("--nEvents", action="store", default = -1)
+  parser.add_argument("--interactiveRun", action="store_true", default = False)
   parser.add_argument('--batchMode', dest='batchMode', action='store_true',default = True)
   parser.add_argument("--addDateTime", dest="addDateTime", action="store_true", default = True)
   parser.add_argument("--useEtaSlices", dest="useEtaSlices", action="store_true", default = False)
