@@ -319,7 +319,7 @@ void PtRegressionRun3Prep(TString user = "",
   in_vars.push_back( MVA_var( "slope_3",    "St 3 LCT slope",      "int", 'I', -88 ) ); // 0x0000 4000
   in_vars.push_back( MVA_var( "slope_4",    "St 4 LCT slope",      "int", 'I', -88 ) ); // 0x0000 8000
 
-  // block 10
+ // block 10
   in_vars.push_back( MVA_var( "dSlope_12",    "slope(2) - slope(1)", "int", 'I', -88 ) ); // 0x0040 0000
   in_vars.push_back( MVA_var( "dSlope_23",    "slope(3) - slope(2)", "int", 'I', -88 ) ); // 0x0080 0000
   in_vars.push_back( MVA_var( "dSlope_34",    "slope(4) - slope(3)", "int", 'I', -88 ) ); // 0x0100 0000
@@ -485,6 +485,13 @@ void PtRegressionRun3Prep(TString user = "",
       UInt_t nTrks  = I("nTracks");//trk_* branches are EMTF tracks
       UInt_t nSegs  = I("nSegs");//csc segments number
 
+      //add printouts to see what's going on with slope
+      std::cout << "jEvt in_chain entries " << std::endl;
+      std::cout << "nMuons " << nMuons  << std::endl;
+      std::cout << "nHits " << nHits  << std::endl;
+      std::cout << "nTrks " << nTrks  << std::endl;
+      std::cout << "nSegs " << nSegs  << std::endl;
+
       //===================
       //Loop over EMTF trks
       //===================
@@ -507,6 +514,14 @@ void PtRegressionRun3Prep(TString user = "",
         int mu_charge = -99;
         int gmt_pt = 999;
         Bool_t mu_train = false;  // tag muon for training
+
+	//add printouts to see what's going on with slope calc
+	std::cout << "emtf tracks " << std::endl;
+	std::cout << "trk_eta " << emtf_eta  << std::endl;
+	std::cout << "emtf_eta_int " << emtf_eta_int  << std::endl;
+	std::cout << "emtf_mode_CSC " << emtf_mode_CSC  << std::endl;
+	std::cout << "emtf_mode_RPC " << emtf_mode_RPC  << std::endl;
+	std::cout << "trk_dR_match_unique " << emtf_unique_match  << std::endl;
 
         // index of emtf_unique_iMu is 0 or 1
         mu_train = true;
@@ -656,10 +671,10 @@ void PtRegressionRun3Prep(TString user = "",
         int strip4 = (i4 >= 0 ? I("hit_strip", i4 ) : -99);
 
         // if (endcap1 == 1 and station1 == 1 and ring1 == 1 and chamber1==1)
-        //   std::cout << station1 << ring1 << chamber1 << " hit_strip1 " << strip1 << " hit_phi_int1 " << ph1 << std::endl;
-        // std::cout << "hit_strip2 " << strip2 << " hit_phi_int2 " << ph2 << std::endl;
-        // std::cout << "hit_strip3 " << strip3 << " hit_phi_int3 " << ph3 << std::endl;
-        // std::cout << "hit_strip4 " << strip4 << " hit_phi_int4 " << ph4 << std::endl;
+	std::cout << station1 << ring1 << chamber1 << " hit_strip1 " << strip1 << " hit_phi_int1 " << ph1 << std::endl;//Tay
+         std::cout << "hit_strip2 " << strip2 << " hit_phi_int2 " << ph2 << std::endl;
+         std::cout << "hit_strip3 " << strip3 << " hit_phi_int3 " << ph3 << std::endl;
+         std::cout << "hit_strip4 " << strip4 << " hit_phi_int4 " << ph4 << std::endl;//Tay
 
         // 4-bit value
         int pat1 = (i1CSC >= 0 ? I("hit_pattern",i1CSC ) : -99);
@@ -781,7 +796,7 @@ void PtRegressionRun3Prep(TString user = "",
         cham4 = (i4 >= 0 ? I("hit_chamber", i4 ) : -99);
 
         FR1 = (i1CSC >= 0 ? (cham1 % 2 == 0) : -99);  // Odd chambers are bolted to the iron,
-        FR2 = (i2 >= 0 ? (cham2 % 2 == 0) : -99);  // which faces forwared in stations 1 & 2,
+        FR2 = (i2 >= 0 ? (cham2 % 2 == 0) : -99);  // which faces forward in stations 1 & 2,
         FR3 = (i3 >= 0 ? (cham3 % 2 == 1) : -99);  // backwards in 3 & 4
         FR4 = (i4 >= 0 ? (cham4 % 2 == 1) : -99);
         if (ring1 == 3) FR1 = 0;                   // In ME1/3 chambers are non-overlapping
@@ -789,25 +804,29 @@ void PtRegressionRun3Prep(TString user = "",
         // calculate bendings from CCLUT slope (Run-3)
         // this needs to be evaluated before the CalcBends
         // this function does not modify bendX
-        if(verbose) {
+        //Tay keep
+	if(verbose) {
           std::cout << "Before" << std::endl;
           std::cout << "hit_slope1 " << slope1  << std::endl;
           std::cout << "hit_slope2 " << slope2  << std::endl;
           std::cout << "hit_slope3 " << slope3 << std::endl;
           std::cout << "hit_slope4 " << slope4 << std::endl;
-        }
+	} 
+	//Tay
+	if (verbose){
         CalcSlopes(bend1, slope1, endcap, mode, useBitCompression, isRun2 );
         CalcSlopes(bend2, slope2, endcap, mode, useBitCompression, isRun2 );
         CalcSlopes(bend3, slope3, endcap, mode, useBitCompression, isRun2 );
         CalcSlopes(bend4, slope4, endcap, mode, useBitCompression, isRun2 );
-
-        if(verbose) {
+	}
+        //Tay keep
+	if(verbose) {
           std::cout << "After" << std::endl;
           std::cout << "hit_slope1 " << slope1  << std::endl;
           std::cout << "hit_slope2 " << slope2  << std::endl;
           std::cout << "hit_slope3 " << slope3 << std::endl;
           std::cout << "hit_slope4 " << slope4 << std::endl;
-        }
+	}//Tay}
         CalcDeltaSlopes(slope1, slope2, slope3, slope4,
                         dSlope12, dSlope13, dSlope14,
                         dSlope23, dSlope24, dSlope34,
@@ -815,7 +834,8 @@ void PtRegressionRun3Prep(TString user = "",
                         dSlopeSum3, dSlopeSum3A,
                         outStSlope);
 
-        if(verbose) {
+        //Tay keep
+	if(verbose) {
           std::cout << "DSlope" << std::endl;
           std::cout << "dSlope12 " << dSlope12  << std::endl;
           std::cout << "dSlope13 " << dSlope13  << std::endl;
@@ -823,7 +843,7 @@ void PtRegressionRun3Prep(TString user = "",
           std::cout << "dSlope23 " << dSlope23  << std::endl;
           std::cout << "dSlope24 " << dSlope24  << std::endl;
           std::cout << "dSlope34 " << dSlope34  << std::endl;
-        }
+	}  //Tay}
 
         // convert the 5-bit slope to run-2 pattern
         if (!isRun2) {
@@ -839,14 +859,16 @@ void PtRegressionRun3Prep(TString user = "",
                   pat1_run3, pat2_run3, pat3_run3, pat4_run3,
                   dPhSign, endcap, mode, BIT_COMP, isRun2 );
 
-	//std::cout << "(Before assignment) RPC1: " << RPC1 << ", RPC2: " << RPC2 << ", RPC3: " << RPC3 << ", RPC4: " << RPC4 << std::endl;
+	//Tay keep uncommented
+	std::cout << "(Before assignment) RPC1: " << RPC1 << ", RPC2: " << RPC2 << ", RPC3: " << RPC3 << ", RPC4: " << RPC4 << std::endl;
         // Check for additional hits
         RPC1 = (i1CSC >= 0 ? ( I("hit_isRPC",i1CSC ) == 1 ? 1 : 0) : -99);
         RPC2 = (i2 >= 0 ? ( I("hit_isRPC", i2 ) == 1 ? 1 : 0) : -99);
         RPC3 = (i3 >= 0 ? ( I("hit_isRPC", i3 ) == 1 ? 1 : 0) : -99);
         RPC4 = (i4 >= 0 ? ( I("hit_isRPC", i4 ) == 1 ? 1 : 0) : -99);
 
-	//std::cout << "(After assignment) RPC1: " << RPC1 << ", RPC2: " << RPC2 << ", RPC3: " << RPC3 << ", RPC4: " << RPC4 << std::endl;
+	//Tay keep uncommented
+	std::cout << "(After assignment) RPC1: " << RPC1 << ", RPC2: " << RPC2 << ", RPC3: " << RPC3 << ", RPC4: " << RPC4 << std::endl;
 
         GE11 = (i1GEM >= 0 ? ( I("hit_isGEM",i1GEM ) == 1 ? 1 : 0) : -99);
 
@@ -1008,6 +1030,59 @@ void PtRegressionRun3Prep(TString user = "",
             if ( vName == "ph4" ) var_vals.at(iVar) = ph4;
 
           } // End loop: for (UInt_t iVar = 0; iVar < var_names.size(); iVar++)
+	  
+	  /*Tay attempt at histogram data dump June 27, 2021
+	    Slope v endcap treatment */
+
+	  std::cout << "Preparing Histograms" << std::endl;
+
+	  //Initialize histograms to understand  the difference between slope and bend
+
+	  if (endcap > 0)
+	    {
+	      h_slope_endcap_pos = TH2D('h_slope_endcap_pos', '', 25, 0, 10, 25, 0, 10);//name,title,nbinsx,xlow,xup,nbinsy,ylow,yup
+	      h_bend_endcap_pos = TH2D('h_bend_endcap_pos', '', 25, 0, 10, 25, 0, 10); //see a distinction between slope and bend v endcap
+	      
+	      std::cout << "You are in the positive endcap region.\n";
+
+	      //Dump data; Fill()--need ALL slope variables associated
+	      /*
+	      h_slope_endcap_pos->Fill((endcap), (slope_1));
+	      h_slope_endcap_pos->Fill((endcap), (slope_2));
+	      h_slope_endcap_pos->Fill((endcap), (slope_3));
+	      h_slope_endcap_pos->Fill((endcap), (slope_4));
+
+	      h_bend_endcap_pos->Fill((endcap), (bend_1));
+	      h_bend_endcap_pos->Fill((endcap), (bend_2));
+	      h_bend_endcap_pos->Fill((endcap), (bend_3));
+	      h_bend_endcap_pos->Fill((endcap), (bend_4));
+	      */
+	      c1 = TCanvas('c1', '', 200, 10, 700, 500);
+	      h_slope_endcap_pos->Draw();
+	      gStyle->SetOptStat(0);
+	      h_slope_endcap_pos->SetTitle('slope v. +endcap');
+	      h_slope_endcap_pos->GetXaxis()->SetTitle('Endcap (eta range)'); h_slope_endcap_pos->GetYaxis()->SetTitle('slope');
+	      h_slope_endcap_pos->Write();
+	      c1->SaveAs('asymmetry_Qs/h_slope_endcap_pos.png');
+	      c1->Close();
+
+	      else
+		h_slope_endcap_neg = TH2D('h_slope_endcap_neg', 'Slope v endcap -1', 25, -10, 5, 25, -10, 0);
+	      h_bend_endcap_neg = TH1D('h_bend_endcap_neg', 'Bend v endcap -1', 25, -10, 5, 25, -10, 0);
+
+	      std::cout << "You are in the negative endcap region.\n";
+
+	      h_slope_endcap_neg->Fill((endcap), (slope_1));
+	      h_slope_endcap_neg->Fill((endcap), (slope_2));
+	      h_slope_endcap_neg->Fill((endcap), (slope_3));
+	      h_slope_endcap_neg->Fill((endcap), (slope_4));
+
+	      h_bend_endcap_neg->Fill((endcap), (bend_1));
+	      h_bend_endcap_neg->Fill((endcap), (bend_2));
+	      h_bend_endcap_neg->Fill((endcap), (bend_3));
+	      h_bend_endcap_neg->Fill((endcap), (bend_4));
+	      return 0;
+	    }
 
           // Load values into event
           if ( (NonZBEvt % 2)==0 && mu_train && emtfMode > 0 ) {
