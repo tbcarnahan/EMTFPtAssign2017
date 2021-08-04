@@ -115,37 +115,6 @@ void PtRegressionRun3Prep(TString user = "",
   Use["BDTG_AWB_Sq"]             = 1;
   //==================================
 
-  /*Define the container for the data analysis--histograms
-    Mod by Tay to solve asymmetry of slope variable on August 2, 2021
-  */
-
-  std::cout << "Preparing Histograms" << std::endl;
-  void hslope()
-  {
-    TCanvas *c1 = new TCanvas("c1", "Slope vs +endcap",200,10,600,400);
-    c1->SetGrid();
-    gBenchmark->Start("hslope");
-
-    //Create some histograms. (Reference: https://root.cern.ch/root/htmldoc/guides/users-guide/Histograms.html)
-
-    auto slope = new TH2F("slope v endcap", "Slope v. Endcap", 100, -10, 10, 100, -10, 10); //do total range for endcaps here
-      //TH2F--(name, title, x dim (100, -10, 10), y dim (100, -10, 10))--when add dimensionality, need to add dimensionality
-    slope->SetMarkerStyle(21);
-    slope->SetMarkerSize(0.7);
-    slope->SetFillColor(14); //can use any parameter to help define histo
-
-    //Fill histogram
-
-    slope->Fill(endcap,slope_1);
-    slope->Fill(endcap, slope_2);
-    slope->Fill(endcap, slope_3);
-    slope->Fill(endcap, slope_4); //correct syntax for trying to fill with variables? Need {}?
-
-    c1->Update();
-    slope->Draw();
-    gBenchmark->Show("hslope");
-  }
-
 
   std::cout << std::endl;
   std::cout << "==> Start PtRegressionRun3Prep" << std::endl;
@@ -604,7 +573,7 @@ void PtRegressionRun3Prep(TString user = "",
         int i2=-99;
         int i3=-99;
         int i4=-99;
-
+  
         // added on 2019-11-05 per Andrew's suggestions
         if ( I("trk_nHits", iTrk) != VI("trk_iHit", iTrk).size() and false) {
 
@@ -616,7 +585,7 @@ void PtRegressionRun3Prep(TString user = "",
 
           continue;
         }
-
+       
 	//std::cout << "i1GEM before: " << i1GEM << std::endl;
 
         for (int jhit = 0; jhit < I("trk_nHits", iTrk); jhit++) {
@@ -703,10 +672,10 @@ void PtRegressionRun3Prep(TString user = "",
         int strip4 = (i4 >= 0 ? I("hit_strip", i4 ) : -99);
 
         // if (endcap1 == 1 and station1 == 1 and ring1 == 1 and chamber1==1)
-	std::cout << station1 << ring1 << chamber1 << " hit_strip1 " << strip1 << " hit_phi_int1 " << ph1 << std::endl;//Tay
+	std::cout << station1 << ring1 << chamber1 << " hit_strip1 " << strip1 << " hit_phi_int1 " << ph1 << std::endl;
          std::cout << "hit_strip2 " << strip2 << " hit_phi_int2 " << ph2 << std::endl;
          std::cout << "hit_strip3 " << strip3 << " hit_phi_int3 " << ph3 << std::endl;
-         std::cout << "hit_strip4 " << strip4 << " hit_phi_int4 " << ph4 << std::endl;//Tay
+         std::cout << "hit_strip4 " << strip4 << " hit_phi_int4 " << ph4 << std::endl;
 
         // 4-bit value
         int pat1 = (i1CSC >= 0 ? I("hit_pattern",i1CSC ) : -99);
@@ -725,6 +694,31 @@ void PtRegressionRun3Prep(TString user = "",
         int slope2 = (i2 >= 0 ? I("hit_slope", i2 ) : -99);
         int slope3 = (i3 >= 0 ? I("hit_slope", i3 ) : -99);
         int slope4 = (i4 >= 0 ? I("hit_slope", i4 ) : -99);
+
+	//Create Histograms to measure health of new variable v. +/- endcaps
+
+	std::cout << "Preparing Histograms" << std::endl;
+	  TCanvas *c1 = new TCanvas("c1", "Slope vs +endcap",200,10,600,400);
+	  c1->SetGrid();
+
+	  auto slope = new TH2F("slope v endcap", "Slope v. Endcap", 100, -10, 10, 100, -10, 10); //do total range for endcaps here
+	  //TH2F--(name, title, x dim (100, -10, 10), y dim (100, -10, 10))--when add dimensionality, need to add dimensionality
+	  slope->SetMarkerStyle(21);
+	  slope->SetMarkerSize(0.7);
+	  slope->SetFillColor(14); //can use any parameter to help define histo
+
+	  //Fill histogram
+
+	  slope->Fill(endcap, slope1);
+	  slope->Fill(endcap, slope2);
+	  slope->Fill(endcap, slope3);
+	  slope->Fill(endcap, slope4); //correct syntax for trying to fill with variables? Need {}?
+
+	  c1->Update();
+	  slope->Draw();
+	  c1->SaveAs(asymmetry_Qs/"slope_pos_endcap.png");
+	  c1->Close();
+	
 
         // 1-bit sign
         int bend1 = (i1CSC >= 0 ? I("hit_bend",i1CSC ) : -99);
@@ -836,14 +830,16 @@ void PtRegressionRun3Prep(TString user = "",
         // calculate bendings from CCLUT slope (Run-3)
         // this needs to be evaluated before the CalcBends
         // this function does not modify bendX
-        //Tay keep
-	if(verbose) {
+       
+	//Tay
+	if (verbose) {
           std::cout << "Before" << std::endl;
           std::cout << "hit_slope1 " << slope1  << std::endl;
           std::cout << "hit_slope2 " << slope2  << std::endl;
           std::cout << "hit_slope3 " << slope3 << std::endl;
           std::cout << "hit_slope4 " << slope4 << std::endl;
 	} 
+   
 	//Tay
 	if (verbose){
         CalcSlopes(bend1, slope1, endcap, mode, useBitCompression, isRun2 );
@@ -851,14 +847,15 @@ void PtRegressionRun3Prep(TString user = "",
         CalcSlopes(bend3, slope3, endcap, mode, useBitCompression, isRun2 );
         CalcSlopes(bend4, slope4, endcap, mode, useBitCompression, isRun2 );
 	}
-        //Tay keep
-	if(verbose) {
+        //Tay
+	if (verbose) {
           std::cout << "After" << std::endl;
           std::cout << "hit_slope1 " << slope1  << std::endl;
           std::cout << "hit_slope2 " << slope2  << std::endl;
           std::cout << "hit_slope3 " << slope3 << std::endl;
           std::cout << "hit_slope4 " << slope4 << std::endl;
-	}//Tay}
+	}
+	
         CalcDeltaSlopes(slope1, slope2, slope3, slope4,
                         dSlope12, dSlope13, dSlope14,
                         dSlope23, dSlope24, dSlope34,
@@ -866,8 +863,8 @@ void PtRegressionRun3Prep(TString user = "",
                         dSlopeSum3, dSlopeSum3A,
                         outStSlope);
 
-        //Tay keep
-	if(verbose) {
+        //Tay
+	if (verbose) {
           std::cout << "DSlope" << std::endl;
           std::cout << "dSlope12 " << dSlope12  << std::endl;
           std::cout << "dSlope13 " << dSlope13  << std::endl;
@@ -875,7 +872,7 @@ void PtRegressionRun3Prep(TString user = "",
           std::cout << "dSlope23 " << dSlope23  << std::endl;
           std::cout << "dSlope24 " << dSlope24  << std::endl;
           std::cout << "dSlope34 " << dSlope34  << std::endl;
-	}  //Tay}
+	}  
 
         // convert the 5-bit slope to run-2 pattern
         if (!isRun2) {
@@ -891,7 +888,6 @@ void PtRegressionRun3Prep(TString user = "",
                   pat1_run3, pat2_run3, pat3_run3, pat4_run3,
                   dPhSign, endcap, mode, BIT_COMP, isRun2 );
 
-	//Tay keep uncommented
 	std::cout << "(Before assignment) RPC1: " << RPC1 << ", RPC2: " << RPC2 << ", RPC3: " << RPC3 << ", RPC4: " << RPC4 << std::endl;
         // Check for additional hits
         RPC1 = (i1CSC >= 0 ? ( I("hit_isRPC",i1CSC ) == 1 ? 1 : 0) : -99);
@@ -899,7 +895,6 @@ void PtRegressionRun3Prep(TString user = "",
         RPC3 = (i3 >= 0 ? ( I("hit_isRPC", i3 ) == 1 ? 1 : 0) : -99);
         RPC4 = (i4 >= 0 ? ( I("hit_isRPC", i4 ) == 1 ? 1 : 0) : -99);
 
-	//Tay keep uncommented
 	std::cout << "(After assignment) RPC1: " << RPC1 << ", RPC2: " << RPC2 << ", RPC3: " << RPC3 << ", RPC4: " << RPC4 << std::endl;
 
         GE11 = (i1GEM >= 0 ? ( I("hit_isGEM",i1GEM ) == 1 ? 1 : 0) : -99);
@@ -1062,7 +1057,7 @@ void PtRegressionRun3Prep(TString user = "",
             if ( vName == "ph4" ) var_vals.at(iVar) = ph4;
 
           } // End loop: for (UInt_t iVar = 0; iVar < var_names.size(); iVar++)
-	  
+   
           // Load values into event
           if ( (NonZBEvt % 2)==0 && mu_train && emtfMode > 0 ) {
             std::get<1>(factories.at(iFact))->AddTrainingEvent( "Regression", var_vals, evt_weight );
@@ -1083,6 +1078,7 @@ void PtRegressionRun3Prep(TString user = "",
     } // End loop: for jEvt
 
   } // End loop: for iCh
+
 
   std::cout << "******* Made it out of the event loop *******" << std::endl;
 
