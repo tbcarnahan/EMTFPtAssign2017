@@ -115,6 +115,38 @@ void PtRegressionRun3Prep(TString user = "",
   Use["BDTG_AWB_Sq"]             = 1;
   //==================================
 
+  /*Define the container for the data analysis--histograms
+    Mod by Tay to solve asymmetry of slope variable on August 2, 2021
+  */
+
+  std::cout << "Preparing Histograms" << std::endl;
+  void hslope()
+  {
+    TCanvas *c1 = new TCanvas("c1", "Slope vs +endcap",200,10,600,400);
+    c1->SetGrid();
+    gBenchmark->Start("hslope");
+
+    //Create some histograms. (Reference: https://root.cern.ch/root/htmldoc/guides/users-guide/Histograms.html)
+
+    auto slope = new TH2F("slope v endcap", "Slope v. Endcap", 100, -10, 10, 100, -10, 10); //do total range for endcaps here
+      //TH2F--(name, title, x dim (100, -10, 10), y dim (100, -10, 10))--when add dimensionality, need to add dimensionality
+    slope->SetMarkerStyle(21);
+    slope->SetMarkerSize(0.7);
+    slope->SetFillColor(14); //can use any parameter to help define histo
+
+    //Fill histogram
+
+    slope->Fill(endcap,slope_1);
+    slope->Fill(endcap, slope_2);
+    slope->Fill(endcap, slope_3);
+    slope->Fill(endcap, slope_4); //correct syntax for trying to fill with variables? Need {}?
+
+    c1->Update();
+    slope->Draw();
+    gBenchmark->Show("hslope");
+  }
+
+
   std::cout << std::endl;
   std::cout << "==> Start PtRegressionRun3Prep" << std::endl;
 
@@ -1031,59 +1063,6 @@ void PtRegressionRun3Prep(TString user = "",
 
           } // End loop: for (UInt_t iVar = 0; iVar < var_names.size(); iVar++)
 	  
-	  /*Tay attempt at histogram data dump June 27, 2021
-	    Slope v endcap treatment */
-
-	  std::cout << "Preparing Histograms" << std::endl;
-
-	  //Initialize histograms to understand  the difference between slope and bend
-
-	  if (endcap > 0)
-	    {
-	      h_slope_endcap_pos = TH2D('h_slope_endcap_pos', '', 25, 0, 10, 25, 0, 10);//name,title,nbinsx,xlow,xup,nbinsy,ylow,yup
-	      h_bend_endcap_pos = TH2D('h_bend_endcap_pos', '', 25, 0, 10, 25, 0, 10); //see a distinction between slope and bend v endcap
-	      
-	      std::cout << "You are in the positive endcap region.\n";
-
-	      //Dump data; Fill()--need ALL slope variables associated
-	      /*
-	      h_slope_endcap_pos->Fill((endcap), (slope_1));
-	      h_slope_endcap_pos->Fill((endcap), (slope_2));
-	      h_slope_endcap_pos->Fill((endcap), (slope_3));
-	      h_slope_endcap_pos->Fill((endcap), (slope_4));
-
-	      h_bend_endcap_pos->Fill((endcap), (bend_1));
-	      h_bend_endcap_pos->Fill((endcap), (bend_2));
-	      h_bend_endcap_pos->Fill((endcap), (bend_3));
-	      h_bend_endcap_pos->Fill((endcap), (bend_4));
-	      */
-	      c1 = TCanvas('c1', '', 200, 10, 700, 500);
-	      h_slope_endcap_pos->Draw();
-	      gStyle->SetOptStat(0);
-	      h_slope_endcap_pos->SetTitle('slope v. +endcap');
-	      h_slope_endcap_pos->GetXaxis()->SetTitle('Endcap (eta range)'); h_slope_endcap_pos->GetYaxis()->SetTitle('slope');
-	      h_slope_endcap_pos->Write();
-	      c1->SaveAs('asymmetry_Qs/h_slope_endcap_pos.png');
-	      c1->Close();
-
-	      else
-		h_slope_endcap_neg = TH2D('h_slope_endcap_neg', 'Slope v endcap -1', 25, -10, 5, 25, -10, 0);
-	      h_bend_endcap_neg = TH1D('h_bend_endcap_neg', 'Bend v endcap -1', 25, -10, 5, 25, -10, 0);
-
-	      std::cout << "You are in the negative endcap region.\n";
-
-	      h_slope_endcap_neg->Fill((endcap), (slope_1));
-	      h_slope_endcap_neg->Fill((endcap), (slope_2));
-	      h_slope_endcap_neg->Fill((endcap), (slope_3));
-	      h_slope_endcap_neg->Fill((endcap), (slope_4));
-
-	      h_bend_endcap_neg->Fill((endcap), (bend_1));
-	      h_bend_endcap_neg->Fill((endcap), (bend_2));
-	      h_bend_endcap_neg->Fill((endcap), (bend_3));
-	      h_bend_endcap_neg->Fill((endcap), (bend_4));
-	      return 0;
-	    }
-
           // Load values into event
           if ( (NonZBEvt % 2)==0 && mu_train && emtfMode > 0 ) {
             std::get<1>(factories.at(iFact))->AddTrainingEvent( "Regression", var_vals, evt_weight );
