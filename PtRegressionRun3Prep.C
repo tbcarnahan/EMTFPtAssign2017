@@ -695,42 +695,19 @@ void PtRegressionRun3Prep(TString user = "",
         int slope3 = (i3 >= 0 ? I("hit_slope", i3 ) : -99);
         int slope4 = (i4 >= 0 ? I("hit_slope", i4 ) : -99);
 
-	//Create Histograms to measure health of new variable v. +/- endcaps
-
-	std::cout << "Preparing Histograms" << std::endl;
-	  TCanvas *c1 = new TCanvas("c1", "Slope vs +endcap",200,10,600,400);
-	  c1->SetGrid();
-
-	  auto slope = new TH2F("slope v endcap", "Slope v. Endcap", 100, -10, 10, 100, -10, 10); //do total range for endcaps here
-	  //TH2F--(name, title, x dim (100, -10, 10), y dim (100, -10, 10))--when add dimensionality, need to add dimensionality
-	  slope->SetMarkerStyle(21);
-	  slope->SetMarkerSize(0.7);
-	  slope->SetFillColor(14); //can use any parameter to help define histo
-
-	  //Fill histogram
-
-	  slope->Fill(endcap, slope1);
-	  slope->Fill(endcap, slope2);
-	  slope->Fill(endcap, slope3);
-	  slope->Fill(endcap, slope4); //correct syntax for trying to fill with variables? Need {}?
-
-	  c1->Update();
-	  slope->Draw();
-	  c1->SaveAs(asymmetry_Qs/"slope_pos_endcap.png");
-	  c1->Close();
-	
-
         // 1-bit sign
         int bend1 = (i1CSC >= 0 ? I("hit_bend",i1CSC ) : -99);
         int bend2 = (i2 >= 0 ? I("hit_bend", i2 ) : -99);
         int bend3 = (i3 >= 0 ? I("hit_bend", i3 ) : -99);
         int bend4 = (i4 >= 0 ? I("hit_bend", i4 ) : -99);
+
         if(verbose) {
         std::cout << "hit_bend1 " << bend1  << std::endl;
         std::cout << "hit_bend2 " << bend2  << std::endl;
         std::cout << "hit_bend3 " << bend3 << std::endl;
         std::cout << "hit_bend4 " << bend4 << std::endl;
         }
+
         // CCLUT bit corrections
         int strip_quart_bit1 = (i1CSC >= 0 ? I("hit_strip_quart_bit",i1CSC ) : -99);
         int strip_quart_bit2 = (i2 >= 0 ? I("hit_strip_quart_bit", i2 ) : -99);
@@ -758,6 +735,33 @@ void PtRegressionRun3Prep(TString user = "",
         endcap = (eta > 0 ? +1 : -1);
 
         //if ( abs(F("hit_eta", i1CSC))>1.6 && abs(F("hit_eta", i1CSC))<2.1 ) { std::cout << "i1GEM: " << i1GEM << std::endl; }
+
+
+	//Create Histograms to measure health of new variable v. +/- endcaps
+
+	std::cout << "Preparing Histograms" << std::endl;
+	TCanvas *c1 = new TCanvas("c1", "Slope vs +endcap",200,10,600,400);
+	c1->SetGrid();
+
+	auto slope = new TH2F("slope v endcap", "Slope v. Endcap", 100, -10, 10, 100, -10, 10); //do total range for endcaps here
+	//TH2F--(name, title, x dim (100, -10, 10), y dim (100, -10, 10))--when add dimensionality, need to add dimensionality
+	slope->SetMarkerStyle(21);
+	slope->SetMarkerSize(0.7);
+	slope->SetFillColor(14); //can use any parameter to help define histo
+
+	//Fill histogram
+
+	slope->Fill(endcap, slope1);
+	slope->Fill(endcap, slope2);
+	slope->Fill(endcap, slope3);
+	slope->Fill(endcap, slope4); //correct syntax for trying to fill with variables? Need {}?
+
+	c1->Update();
+	slope->Draw();
+	c1->SaveAs("slope_pos_endcap.png");
+	c1->Close();
+
+
 
         //This block of code adds a correction to the integer phi value based on the quarter and eight-strip position offset.
         if (ph1 != -99) CalcPhiRun3(ph1, ring1, strip_quart_bit1, strip_eight_bit1, 1, endcap,
@@ -840,14 +844,14 @@ void PtRegressionRun3Prep(TString user = "",
           std::cout << "hit_slope4 " << slope4 << std::endl;
 	} 
    
-	//Tay
 	if (verbose){
         CalcSlopes(bend1, slope1, endcap, mode, useBitCompression, isRun2 );
         CalcSlopes(bend2, slope2, endcap, mode, useBitCompression, isRun2 );
         CalcSlopes(bend3, slope3, endcap, mode, useBitCompression, isRun2 );
         CalcSlopes(bend4, slope4, endcap, mode, useBitCompression, isRun2 );
 	}
-        //Tay
+   
+	//Tay
 	if (verbose) {
           std::cout << "After" << std::endl;
           std::cout << "hit_slope1 " << slope1  << std::endl;
