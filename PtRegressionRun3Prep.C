@@ -71,11 +71,11 @@ void PtRegressionRun3Prep(TString user = "",
   TCanvas *c1 = new TCanvas("c1", "Slope vs +endcap",200,10,600,400);
   c1->SetGrid();
 
-  auto slope = new TH2F("slope v endcap", "Slope v. Endcap", 100, -10, 10, 100, -10, 10); //do total range for endcaps here
+  auto slope_hist = new TH2F("slope v endcap", "Slope v. Endcap", 100, -10, 10, 100, -10, 10); //do total range for endcaps here
   //TH2F--(name, title, x dim (100, -10, 10), y dim (100, -10, 10))--when add dimensionality, need to add dimensionality
-  slope->SetMarkerStyle(21);
-  slope->SetMarkerSize(0.7);
-  slope->SetFillColor(14); //can use any parameter to help define histo
+  slope_hist->SetMarkerStyle(21);
+  slope_hist->SetMarkerSize(0.7);
+  slope_hist->SetFillColor(14); //can use any parameter to help define histo
 
   //Fill histogram on line 1074 & save on line 1091
 
@@ -753,10 +753,10 @@ void PtRegressionRun3Prep(TString user = "",
 
 	//Fill histogram parameters
 
-	slope->Fill(endcap, slope1);
-	slope->Fill(endcap, slope2);
-	slope->Fill(endcap, slope3);
-	slope->Fill(endcap, slope4);
+	slope_hist->Fill(endcap, slope1);
+	slope_hist->Fill(endcap, slope2);
+	slope_hist->Fill(endcap, slope3);
+	slope_hist->Fill(endcap, slope4);
 
 
 
@@ -1086,7 +1086,7 @@ void PtRegressionRun3Prep(TString user = "",
   //save histogram
 
   c1->Update();
-  slope->Draw();
+  slope_hist->Draw();
   c1->SaveAs("slope_pos_endcap.png");
   c1->Close();
 
