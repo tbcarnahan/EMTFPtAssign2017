@@ -65,6 +65,20 @@ void PtRegressionRun3Prep(TString user = "",
                           int nEvents = -1,
                           bool verbose = false) {
 
+  //Create Histograms to measure health of new variable v. +/- endcaps
+
+  std::cout << "Preparing Histograms" << std::endl;
+  TCanvas *c1 = new TCanvas("c1", "Slope vs +endcap",200,10,600,400);
+  c1->SetGrid();
+
+  auto slope = new TH2F("slope v endcap", "Slope v. Endcap", 100, -10, 10, 100, -10, 10); //do total range for endcaps here
+  //TH2F--(name, title, x dim (100, -10, 10), y dim (100, -10, 10))--when add dimensionality, need to add dimensionality
+  slope->SetMarkerStyle(21);
+  slope->SetMarkerSize(0.7);
+  slope->SetFillColor(14); //can use any parameter to help define histo
+
+  //Fill histogram on line 1074 & save on line 1091
+
   // Expert options
   // Run-2 overrides all options
   if (isRun2) {
@@ -737,29 +751,12 @@ void PtRegressionRun3Prep(TString user = "",
         //if ( abs(F("hit_eta", i1CSC))>1.6 && abs(F("hit_eta", i1CSC))<2.1 ) { std::cout << "i1GEM: " << i1GEM << std::endl; }
 
 
-	//Create Histograms to measure health of new variable v. +/- endcaps
-
-	std::cout << "Preparing Histograms" << std::endl;
-	TCanvas *c1 = new TCanvas("c1", "Slope vs +endcap",200,10,600,400);
-	c1->SetGrid();
-
-	auto slope = new TH2F("slope v endcap", "Slope v. Endcap", 100, -10, 10, 100, -10, 10); //do total range for endcaps here
-	//TH2F--(name, title, x dim (100, -10, 10), y dim (100, -10, 10))--when add dimensionality, need to add dimensionality
-	slope->SetMarkerStyle(21);
-	slope->SetMarkerSize(0.7);
-	slope->SetFillColor(14); //can use any parameter to help define histo
-
-	//Fill histogram
+	//Fill histogram parameters
 
 	slope->Fill(endcap, slope1);
 	slope->Fill(endcap, slope2);
 	slope->Fill(endcap, slope3);
-	slope->Fill(endcap, slope4); //correct syntax for trying to fill with variables? Need {}?
-
-	c1->Update();
-	slope->Draw();
-	c1->SaveAs("slope_pos_endcap.png");
-	c1->Close();
+	slope->Fill(endcap, slope4);
 
 
 
@@ -1086,6 +1083,13 @@ void PtRegressionRun3Prep(TString user = "",
 
   std::cout << "******* Made it out of the event loop *******" << std::endl;
 
+  //save histogram
+
+  c1->Update();
+  slope->Draw();
+  c1->SaveAs("slope_pos_endcap.png");
+  c1->Close();
+
   string NTr;
   string NTe;
 
@@ -1152,7 +1156,7 @@ void PtRegressionRun3Prep(TString user = "",
 
     // Evaluate and compare performance of all configured MVAs
     // Instead of "EvaluateAllMethods()", just write out the training and testing trees
-    // Skip unnecessary evaluatioh histograms, which take time on large datasets
+    // Skip unnecessary evaluation histograms, which take time on large datasets
     //factX->EvaluateAllMethods();
 
     // Code gleaned from original "EvaluateAllMethods()" function in tmva/tmva/src/Factory.cxx - AWB 31.01.17
