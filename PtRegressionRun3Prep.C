@@ -1,4 +1,4 @@
-///   pT Regression with Run-3 MC for 2022 EMTF pT assignment  ///
+//   pT Regression with Run-3 MC for 2022 EMTF pT assignment  ///
 //////////////////////////////////////////////////////////////////
 ///                   Sven Dildick                             ///
 ///  Adapted from PtRegression_Apr_2017.C                      ///
@@ -128,7 +128,7 @@ std::cout << "Preparing Histograms" << std::endl;
   // This loads the library
   TMVA::Tools::Instance();
 
-  // Default MVA methods to be trained + tested
+// Default MVA methods to be trained + tested
   std::map<std::string,int> Use;
 
   /////////////////////////
@@ -1108,16 +1108,24 @@ std::cout << "Preparing Histograms" << std::endl;
 
   //save histogram(s):
 
-  //  currentDateTime = strftime("%Y%m%d_%H%M%S");
-
+  //currentDateTime = strftime(MY_TIME, 10, "%Y%m%d_%H%M%S", tmp);
   c1->Update();
   slope_hist->Draw();
-  c1->SaveAs("slope_v_endcap.png");
+
+  time_t t;
+  struct tm *tmp;
+  char MY_TIME[20];
+  time( &t );
+  tmp = localtime( &t );
+
+  strftime(MY_TIME, 20, "%Y%m%d_%H%M%S", tmp);
+
+  c1->SaveAs(Form("%s%s.png","slope_v_endcap_", MY_TIME));
   c1->Close();
  
   c2->Update();
   bend_hist->Draw();
-  c2->SaveAs("bend_v_endcap.png");
+  c2->SaveAs(Form("%s%s.png","bend_v_endcap_", MY_TIME));
   c2->Close();
 
   string NTr;
