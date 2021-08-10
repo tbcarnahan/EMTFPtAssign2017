@@ -8,7 +8,6 @@
 #include <map>
 #include <string>
 #include <list>
-//#include <ctime>
 
 #include "TChain.h"
 #include "TFile.h"
@@ -75,7 +74,7 @@ std::cout << "Preparing Histograms" << std::endl;
  TCanvas *c1 = new TCanvas("c1", "Slope vs +endcap",200,10,600,400);
   c1->SetGrid();
 
-  auto slope_hist = new TH2F("slope v endcap", "Slope v. Endcap", 100, -10, 10, 100, -10, 10); //do total range for endcaps here
+  auto slope_hist = new TH2F("slope v endcap", "Slope v. Endcap", 10, -10, 10, 10, -10, 10); //do total range for endcaps here; realize binning for 1 bit data = smaller (10)
   slope_hist->SetMarkerStyle(21);
   slope_hist->SetMarkerSize(0.7);
   slope_hist->SetFillColor(14);
@@ -1107,11 +1106,6 @@ std::cout << "Preparing Histograms" << std::endl;
   std::cout << "******* Made it out of the event loop *******" << std::endl;
 
   //save histogram(s):
-
-  //currentDateTime = strftime(MY_TIME, 10, "%Y%m%d_%H%M%S", tmp);
-  c1->Update();
-  slope_hist->Draw();
-
   time_t t;
   struct tm *tmp;
   char MY_TIME[20];
@@ -1120,12 +1114,20 @@ std::cout << "Preparing Histograms" << std::endl;
 
   strftime(MY_TIME, 20, "%Y%m%d_%H%M%S", tmp);
 
-  c1->SaveAs(Form("%s%s.png","slope_v_endcap_", MY_TIME));
+  const char *NEW_DIR = "analysis_histos";
+  gSystem->mkdir(NEW_DIR, kTRUE);
+
+  //currentDateTime = strftime(MY_TIME, 10, "%Y%m%d_%H%M%S", tmp);
+  c1->Update();
+  c1->cd(1);
+  slope_hist->Draw(); //trying to get rid of black dot
+  c1->SaveAs(Form("%s/slope_v_endcap_%s.png", NEW_DIR, MY_TIME));
   c1->Close();
  
   c2->Update();
-  bend_hist->Draw();
-  c2->SaveAs(Form("%s%s.png","bend_v_endcap_", MY_TIME));
+  c2->cd(2);
+  bend_hist->Draw("HIST");
+  c2->SaveAs(Form("%s/bend_v_endcap_%s.png", NEW_DIR, MY_TIME));
   c2->Close();
 
   string NTr;
