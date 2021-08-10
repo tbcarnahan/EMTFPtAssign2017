@@ -1,5 +1,5 @@
-//////////////////////////////////////////////////////////////////
 ///   pT Regression with Run-3 MC for 2022 EMTF pT assignment  ///
+//////////////////////////////////////////////////////////////////
 ///                   Sven Dildick                             ///
 ///  Adapted from PtRegression_Apr_2017.C                      ///
 //////////////////////////////////////////////////////////////////
@@ -8,6 +8,7 @@
 #include <map>
 #include <string>
 #include <list>
+#include <ctime>
 
 #include "TChain.h"
 #include "TFile.h"
@@ -65,19 +66,36 @@ void PtRegressionRun3Prep(TString user = "",
                           int nEvents = -1,
                           bool verbose = false) {
 
-  //Create Histograms to measure health of new variable v. +/- endcaps
+//Create Histograms to measure health of new variable v. +/- endcaps
 
-  std::cout << "Preparing Histograms" << std::endl;
-  TCanvas *c1 = new TCanvas("c1", "Slope vs +endcap",200,10,600,400);
+std::cout << "Preparing Histograms" << std::endl;
+ 
+//Histogram for slope variable analysis:
+
+ TCanvas *c1 = new TCanvas("c1", "Slope vs +endcap",200,10,600,400);
   c1->SetGrid();
 
   auto slope_hist = new TH2F("slope v endcap", "Slope v. Endcap", 100, -10, 10, 100, -10, 10); //do total range for endcaps here
-  //TH2F--(name, title, x dim (100, -10, 10), y dim (100, -10, 10))--when add dimensionality, need to add dimensionality
   slope_hist->SetMarkerStyle(21);
   slope_hist->SetMarkerSize(0.7);
-  slope_hist->SetFillColor(14); //can use any parameter to help define histo
+  slope_hist->SetFillColor(14);
+  slope_hist->GetXaxis()->SetTitle("slope");
+  slope_hist->GetYaxis()->SetTitle("endcap (-1 or +1)");
 
-  //Fill histogram on line 1074 & save on line 1091
+  //Histogram for bend variable analysis:
+
+  TCanvas *c2 = new TCanvas("c2", "Bend vs endcap", 200, 10, 600, 400);
+  c2->SetGrid();
+
+  auto bend_hist = new TH2F("bend v endcap", "Bend v. Endcap", 100, -10, 10, 100, -10, 10);
+
+  bend_hist->SetMarkerStyle(21);
+  bend_hist->SetMarkerSize(0.7);
+  bend_hist->SetFillColor(14);
+  bend_hist->GetXaxis()->SetTitle("Endcap (-1 or +1)");
+  bend_hist->GetYaxis()->SetTitle("Bend");
+
+  //Fill histogram on line 745 & save on line 1091
 
   // Expert options
   // Run-2 overrides all options
@@ -756,7 +774,12 @@ void PtRegressionRun3Prep(TString user = "",
 	slope_hist->Fill(endcap, slope1);
 	slope_hist->Fill(endcap, slope2);
 	slope_hist->Fill(endcap, slope3);
-	slope_hist->Fill(endcap, slope4);
+	slope_hist->Fill(endcap, slope4); //Hist 1: slope v endcap
+
+	bend_hist->Fill(endcap, bend2);
+	bend_hist->Fill(endcap, bend3);
+	bend_hist->Fill(endcap, bend1);
+	bend_hist->Fill(endcap, bend4); //Histo 2: bend v endcap
 
 
 
@@ -1083,12 +1106,19 @@ void PtRegressionRun3Prep(TString user = "",
 
   std::cout << "******* Made it out of the event loop *******" << std::endl;
 
-  //save histogram
+  //save histogram(s):
+
+  //  currentDateTime = strftime("%Y%m%d_%H%M%S");
 
   c1->Update();
   slope_hist->Draw();
-  c1->SaveAs("slope_pos_endcap.png");
+  c1->SaveAs("slope_v_endcap.png");
   c1->Close();
+ 
+  c2->Update();
+  bend_hist->Draw();
+  c2->SaveAs("bend_v_endcap.png");
+  c2->Close();
 
   string NTr;
   string NTe;
@@ -1203,4 +1233,5 @@ void PtRegressionRun3Prep(TString user = "",
 
   // Launch the GUI for the root macros
   if (!gROOT->IsBatch()) TMVA::TMVARegGui( out_file_str );
+
 }
