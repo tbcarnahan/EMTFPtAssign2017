@@ -65,34 +65,26 @@ void PtRegressionRun3Prep(TString user = "",
                           int nEvents = -1,
                           bool verbose = false) {
 
-//Create Histograms to measure health of new variable v. +/- endcaps
+  //Create Histograms to measure health of new variable v. +/- endcaps
 
-std::cout << "Preparing Histograms" << std::endl;
- 
-//Histogram for slope variable analysis:
-
- TCanvas *c1 = new TCanvas("c1", "Slope vs +endcap",200,10,600,400);
+  std::cout << "Preparing Histograms" << std::endl;
+  TCanvas *c1 = new TCanvas("c1", "Slope vs endcap",200,10,600,400);
   c1->SetGrid();
 
-  auto slope_hist = new TH2F("slope v endcap", "Slope v. Endcap", 10, -10, 10, 10, -10, 10); //do total range for endcaps here; realize binning for 1 bit data = smaller (10)
-  slope_hist->SetMarkerStyle(21);
-  slope_hist->SetMarkerSize(0.7);
-  slope_hist->SetFillColor(14);
-  slope_hist->GetXaxis()->SetTitle("slope");
-  slope_hist->GetYaxis()->SetTitle("endcap (-1 or +1)");
+  auto slope_hist = new TH2F("slope v endcap", "Slope v. Endcap", 10, -1.5, 1.5, 10, -2, 20); //do total range for endcaps here
+  slope_hist->SetMarkerStyle(29);
+  slope_hist->SetMarkerSize(1);
+  slope_hist->SetMarkerColor(kAzure);
+  slope_hist->GetXaxis()->SetTitle("Endcap (-1 or +1)");
+  slope_hist->GetYaxis()->SetTitle("Variable by color");
 
-  //Histogram for bend variable analysis:
+  //Fill histogram on line 1074 & save on line 1091
 
-  TCanvas *c2 = new TCanvas("c2", "Bend vs endcap", 200, 10, 600, 400);
-  c2->SetGrid();
+  auto bend_hist = new TH2F("bend v endcap", "Bend v. Endcap", 10, -1.5, 1.5, 10, -2, 20);
 
-  auto bend_hist = new TH2F("bend v endcap", "Bend v. Endcap", 100, -10, 10, 100, -10, 10);
-
-  bend_hist->SetMarkerStyle(21);
-  bend_hist->SetMarkerSize(0.7);
-  bend_hist->SetFillColor(14);
-  bend_hist->GetXaxis()->SetTitle("Endcap (-1 or +1)");
-  bend_hist->GetYaxis()->SetTitle("Bend");
+  bend_hist->SetMarkerStyle(43);
+  bend_hist->SetMarkerSize(1);
+  bend_hist->SetMarkerColorAlpha(kTeal, 0.35);
 
   //Fill histogram on line 745 & save on line 1091
 
@@ -775,10 +767,10 @@ std::cout << "Preparing Histograms" << std::endl;
 	slope_hist->Fill(endcap, slope3);
 	slope_hist->Fill(endcap, slope4); //Hist 1: slope v endcap
 
+	bend_hist->Fill(endcap, bend1);
 	bend_hist->Fill(endcap, bend2);
 	bend_hist->Fill(endcap, bend3);
-	bend_hist->Fill(endcap, bend1);
-	bend_hist->Fill(endcap, bend4); //Histo 2: bend v endcap
+	bend_hist->Fill(endcap, bend4); //Hist 2: bend v endcap
 
 
 
@@ -1119,17 +1111,21 @@ std::cout << "Preparing Histograms" << std::endl;
 
   //currentDateTime = strftime(MY_TIME, 10, "%Y%m%d_%H%M%S", tmp);
   c1->Update();
-  c1->cd(1);
-  slope_hist->Draw(); //trying to get rid of black dot
-  c1->SaveAs(Form("%s/slope_v_endcap_%s.png", NEW_DIR, MY_TIME));
+  slope_hist->Draw();
+  bend_hist->Draw("same");
+ 
+  TLegend *legend = new TLegend(-0.5,17,0.5,20, "Legend", "");
+  legend->AddEntry(slope_hist, "Slope", "p");
+  legend->AddEntry(bend_hist, "Bend", "p");
+  legend->SetBorderSize(0.);
+  legend->SetFillColor(19);
+  legend->SetTextSize(0.);
+  legend->SetTextAlign(12);
+  legend->SetTextSize(0.);
+  legend->Draw("same");
+  c1->SaveAs(Form("%s/vars_v_endcap_%s.png", NEW_DIR, MY_TIME));
   c1->Close();
  
-  c2->Update();
-  c2->cd(2);
-  bend_hist->Draw("HIST");
-  c2->SaveAs(Form("%s/bend_v_endcap_%s.png", NEW_DIR, MY_TIME));
-  c2->Close();
-
   string NTr;
   string NTe;
 
