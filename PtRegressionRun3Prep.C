@@ -71,20 +71,20 @@ void PtRegressionRun3Prep(TString user = "",
   TCanvas *c1 = new TCanvas("c1", "Slope vs endcap",200,10,600,400);
   c1->SetGrid();
 
-  auto slope_hist = new TH2F("slope v endcap", "Slope v. Endcap", 10, -1.5, 1.5, 10, -2, 20); //do total range for endcaps here
-  slope_hist->SetMarkerStyle(29);
-  slope_hist->SetMarkerSize(1);
-  slope_hist->SetMarkerColor(kAzure);
-  slope_hist->GetXaxis()->SetTitle("Endcap (-1 or +1)");
-  slope_hist->GetYaxis()->SetTitle("Variable by color");
+  auto var1_hist = new TH2F("slope v endcap", "Slope v. Endcap", 10, -1.5, 1.5, 10, -2, 20); //do total range for endcaps here
+  var1_hist->SetMarkerStyle(29);
+  var1_hist->SetMarkerSize(1);
+  var1_hist->SetMarkerColor(kAzure);
+  var1_hist->GetXaxis()->SetTitle("Endcap (-1 or +1)");
+  var1_hist->GetYaxis()->SetTitle("Variable by color");
 
   //Fill histogram on line 1074 & save on line 1091
 
-  auto bend_hist = new TH2F("bend v endcap", "Bend v. Endcap", 10, -1.5, 1.5, 10, -2, 20);
+  auto var2_hist = new TH2F("bend v endcap", "Bend v. Endcap", 10, -1.5, 1.5, 10, -2, 20);
 
-  bend_hist->SetMarkerStyle(43);
-  bend_hist->SetMarkerSize(1);
-  bend_hist->SetMarkerColorAlpha(kTeal, 0.35);
+  var2_hist->SetMarkerStyle(43);
+  var2_hist->SetMarkerSize(1);
+  var2_hist->SetMarkerColorAlpha(kTeal, 0.45);
 
   //Fill histogram on line 745 & save on line 1091
 
@@ -762,15 +762,15 @@ void PtRegressionRun3Prep(TString user = "",
 
 	//Fill histogram parameters
 
-	slope_hist->Fill(endcap, slope1);
-	slope_hist->Fill(endcap, slope2);
-	slope_hist->Fill(endcap, slope3);
-	slope_hist->Fill(endcap, slope4); //Hist 1: slope v endcap
+	var1_hist->Fill(endcap, slope1);
+	var1_hist->Fill(endcap, slope2);
+	var1_hist->Fill(endcap, slope3);
+	var1_hist->Fill(endcap, slope4); //Hist 1: slope v endcap
 
-	bend_hist->Fill(endcap, bend1);
-	bend_hist->Fill(endcap, bend2);
-	bend_hist->Fill(endcap, bend3);
-	bend_hist->Fill(endcap, bend4); //Hist 2: bend v endcap
+	var2_hist->Fill(endcap, bend1);
+	var2_hist->Fill(endcap, bend2);
+	var2_hist->Fill(endcap, bend3);
+	var2_hist->Fill(endcap, bend4); //Hist 2: bend v endcap
 
 
 
@@ -1111,12 +1111,12 @@ void PtRegressionRun3Prep(TString user = "",
 
   //currentDateTime = strftime(MY_TIME, 10, "%Y%m%d_%H%M%S", tmp);
   c1->Update();
-  slope_hist->Draw();
-  bend_hist->Draw("same");
+  var1_hist->Draw();
+  var2_hist->Draw("same");
  
   TLegend *legend = new TLegend(-0.5,17,0.5,20, "Legend", "");
-  legend->AddEntry(slope_hist, "Slope", "p");
-  legend->AddEntry(bend_hist, "Bend", "p");
+  legend->AddEntry(var1_hist, "Slope", "p"); //variable 1 name
+  legend->AddEntry(var2_hist, "Bend", "p"); //variable 2 name
   legend->SetBorderSize(0.);
   legend->SetFillColor(19);
   legend->SetTextSize(0.);
