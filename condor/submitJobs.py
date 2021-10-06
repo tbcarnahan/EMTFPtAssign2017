@@ -280,6 +280,7 @@ if __name__ == '__main__':
     if tarBallCode != 0:
         print("Info: Copying tarball")
         exec_me('xrdcp {cmssw}/src/EMTFPtAssign2017/condor/{tarball} root://cmseos.fnal.gov//store/user/{user}/'.format(cmssw=CMSSW_DIR, user=USER, tarball=tarball), dryRun)
+        print("Info: Removing tarball")
         exec_me('rm {cmssw}/src/EMTFPtAssign2017/condor/{tarball}'.format(cmssw=CMSSW_DIR, tarball=tarball), dryRun)
     else:
         print("Warning: Tarball {tarball} exists already on EOS LPC!".format(tarball=tarball))
