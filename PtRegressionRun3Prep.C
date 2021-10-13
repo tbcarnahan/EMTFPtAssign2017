@@ -737,10 +737,10 @@ void PtRegressionRun3Prep(TString user = "",
         int strip_quart_bit3 = (i3 >= 0 ? I("hit_strip_quart_bit", i3 ) : -99);
         int strip_quart_bit4 = (i4 >= 0 ? I("hit_strip_quart_bit", i4 ) : -99);
 
-        int strip_eight_bit1 = (i1CSC >= 0 ? I("hit_strip_eight_bit",i1CSC ) : -99);
-        int strip_eight_bit2 = (i2 >= 0 ? I("hit_strip_eight_bit", i2 ) : -99);
-        int strip_eight_bit3 = (i3 >= 0 ? I("hit_strip_eight_bit", i3 ) : -99);
-        int strip_eight_bit4 = (i4 >= 0 ? I("hit_strip_eight_bit", i4 ) : -99);
+        int strip_eight_bit1 = (i1CSC >= 0 ? I("hit_strip_eighth_bit",i1CSC ) : -99);
+        int strip_eight_bit2 = (i2 >= 0 ? I("hit_strip_eighth_bit", i2 ) : -99);
+        int strip_eight_bit3 = (i3 >= 0 ? I("hit_strip_eighth_bit", i3 ) : -99);
+        int strip_eight_bit4 = (i4 >= 0 ? I("hit_strip_eighth_bit", i4 ) : -99);
 
         int st1_ring2 = (i1CSC >= 0 ? ( I("hit_ring",i1CSC ) == 2 || I("hit_ring",i1CSC ) == 3 ) : 0);
 
